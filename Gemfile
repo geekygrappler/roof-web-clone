@@ -11,6 +11,7 @@ gem 'turbolinks'
 gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'puma'
 gem 'font-awesome-rails'
+gem 'active_model_serializers', github: "rails-api/active_model_serializers"
 
 group :development, :test do
   gem 'byebug'
@@ -19,4 +20,6 @@ end
 group :development do
   gem 'web-console', '~> 2.0'
   gem 'spring'
+
+  gem 'roof_api', path: '../roof-api'
 end

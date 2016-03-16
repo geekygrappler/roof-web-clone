@@ -5,8 +5,7 @@ module.exports = {
   cache: true,
   context: path.join(__dirname, 'webpack', 'javascripts'),
   entry: {
-    application: './app/index',
-    brief: './brief/index'
+    application: './application',
   },
   output: {
     path: path.join(__dirname, 'app', 'assets', 'javascripts'),
@@ -33,5 +32,5 @@ module.exports = {
       }
     ]
   },
-  externals: { jquery: "jQuery" }
+  externals: { jquery: "jQuery", underscore: "_" }
 }

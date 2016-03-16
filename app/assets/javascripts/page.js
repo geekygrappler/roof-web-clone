@@ -2,4 +2,7 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require jquery.disclosure
-//= require_tree .
+
+$(document).on('page:change', function () {
+  $('[data-disclosure]').disclosure()
+})

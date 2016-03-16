@@ -20,7 +20,6 @@
     "inflector": "0.0.1",
     "moment": "^2.12.0",
     "numeral": "^1.5.3",
-    "pikaday-time": "^1.4.0",
-    "underscore": "^1.8.3"
+    "pikaday-time": "^1.4.0"
   }
 }
