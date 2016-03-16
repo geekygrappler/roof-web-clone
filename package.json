@@ -1,0 +1,26 @@
+{
+  "name": "1roof",
+  "version": "1.0.0",
+  "description": "The easy way to manage your home improvement project",
+  "author": "Onur Uyar <onur@1roof.com>",
+  "license": "MIT",
+  "scripts": {
+    "watch": "$(npm bin)/webpack --watch --progress --profile --display-module",
+    "build": "$(npm bin)/webpack --profile --display-module --optimize-dedupe"
+  },
+  "devDependencies": {
+    "babel": "^4.7.12",
+    "babel-loader": "^4.1.0",
+    "riot": "^2.3.16",
+    "riotjs-loader": "^2.0.0",
+    "webpack": "^1.12.2"
+  },
+  "dependencies": {
+    "dot-object": "^1.4.1",
+    "inflector": "0.0.1",
+    "moment": "^2.12.0",
+    "numeral": "^1.5.3",
+    "pikaday-time": "^1.4.0",
+    "underscore": "^1.8.3"
+  }
+}
