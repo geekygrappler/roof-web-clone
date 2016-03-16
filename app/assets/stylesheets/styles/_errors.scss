@@ -1,0 +1,32 @@
+
+.inline-error {
+  transition: all 0.25s ease-out;  
+  display: block;
+  margin-top: -$space-2;
+  margin-bottom: $space-2;
+  background: $red;
+  padding: $space-1;
+  color: $white;
+}
+
+.inline-error.out {
+  transform: transform(0, -10px);
+  transform-origin: center top;
+  opacity: 0;
+  margin-bottom: 0;
+}
+
+#error_explanation {
+  border-radius: $border-radius;
+  background-color: $red;
+  color: darken($red, 30);
+  padding: $space-1 $space-2;
+  margin-bottom: $space-2;
+  h2 {
+    margin-top: 0;
+    font-size: $h3;
+  }
+  ul{
+    margin: 0;
+  }
+}

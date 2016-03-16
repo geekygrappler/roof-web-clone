@@ -1,0 +1,73 @@
+<section class="container center px2 py4">
+  <a name="benefits"></a>
+  <h1 class="h1-responsive mt0 mb4">How it helps</h1>
+  <div class="clearfix">
+    <%= render partial: 'pages/landing/components/benefit', locals: {
+      image: 'benefits/project_hub1_dk.png',
+      title: 'Save Time',
+      description: "We create the brief, chase quotes and manage payment so you don't have to"
+    } %>
+    <%= render partial: 'pages/landing/components/benefit', locals: {
+      image: 'benefits/quotes_dk.png',
+      title: 'Save Money',
+      description: 'We make sure costs are transparent and accurate so they don’t escalate'
+    } %>
+    <%= render partial: 'pages/landing/components/benefit', locals: {
+      image: 'benefits/payment_schedule_dk.png',
+      title: 'Save Stress',
+      description: 'We check guarantees, insurances and quality of work so you can sleep easy'
+    } %>
+  </div>
+</section>
+
+
+<section class="center bg-yellow">
+  <a name="recommendations"></a>
+  <h1 class="h1-responsive px2 py4">Happy People</h1>
+  <div class="clearfix">
+    <%= render partial: 'pages/landing/components/recommendation', locals: {
+      image: 'recommendations/1.jpg',
+      name: 'Nigel',
+      project_type: 'Redecoration',
+      comment: "I found Sam through 1ROOF who did a great job with my renovation. Everything went extremely smoothly."
+    }%>
+    <%= render partial: 'pages/landing/components/recommendation', locals: {
+      image: 'recommendations/2.jpg',
+      name: 'Zosia',
+      project_type: 'Kitchen Refurb',
+      comment: "Not having to worry about payment meant that everyone got on much better. I will always 1ROOF now!"
+    }%>
+    <%= render partial: 'pages/landing/components/recommendation', locals: {
+      image: 'recommendations/3.jpg',
+      name: 'Richard',
+      project_type: 'Loft conversion',
+      comment: "It was nice to have all the plans stored nice and neatly online so you always know what's going on."
+    }%>
+  </div>
+</section>
+
+<section class="container center px2 py4">
+  <a name="how-it-works"></a>
+  <h1 class="h1-responsive mt0 mb4">How it Works</h1>
+  <div class="clearfix mb2">
+    <%= render partial: 'pages/landing/components/how_it_works_step', locals: {
+      image: 'how_it_works/1roof-about-step1.png',
+      title: "1) We prepare the brief",
+      description: "We answer any questions you might have and help create a thorough plan.",
+      reverse: false
+    } %>
+    <%= render partial: 'pages/landing/components/how_it_works_step', locals: {
+      image: 'how_it_works/1roof-about-step3.png',
+      title: "2) We collect clear quotes",
+      description: "We create a tender document and invite appropriate professionals to quote.",
+      reverse: true
+    } %>
+    <%= render partial: 'pages/landing/components/how_it_works_step', locals: {
+      image: 'how_it_works/1roof-about-step5.png',
+      title: "3) We ensure safe terms",
+      description: "We set up the schedule of works, contract and staged payment.",
+      reverse: false
+    } %>
+  </div>
+  <a href="<%= brief_path %>" class="h4 btn btn-big bg-gray yellow">OK I'm ready. Let's get started!</a>
+</section>

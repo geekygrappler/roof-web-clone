@@ -1,0 +1,64 @@
+.ujsh-hint {
+  display: block;
+  padding: $space-1;
+  margin-top: -$space-2;
+  margin-bottom: $space-2;
+}
+.ujsh-hint__error {
+  background-color: $red;
+  color: $white;
+}
+.ujsh-list{
+  list-style: none;
+  padding: $space-1;
+  margin: 0;
+  margin-bottom: $space-2;
+}
+.ujsh-list__error {
+  border: 1px solid $red;
+  color: $red;
+}
+
+.ujsh-dialog--wrapper {
+  position:fixed;
+  z-index:10;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background-color: $darken-4;
+  text-align:center;
+  overflow: auto;
+}
+.ujsh-dialog--container {
+  position:relative;
+  margin:$space-4 auto;
+  @extend .sm-col-8;
+  background: white;
+  padding: 1rem;
+}
+.ujsh-dialog--header{
+  text-align:right;
+}
+.ujsh-dialog--button-close{
+  font-size: 2rem;
+  text-decoration: none;
+  cursor: pointer;
+  position:absolute;
+  margin-right:$space-1;
+  top:0;
+  right:0;
+  &:hover{
+    text-decoration:none;
+  }
+}
+.ujsh-dialog__success .ujsh-dialog--body{
+  color: $green;
+}
+.ujsh-dialog__error .ujsh-dialog--body{
+  color: $red;
+}
+.ujsh-dialog__error .ujsh-list__error{
+  border: 0;
+  margin: 0;
+}

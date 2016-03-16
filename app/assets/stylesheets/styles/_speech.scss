@@ -1,0 +1,92 @@
+.speech {
+  bottom: 5%;
+  left: 5%;
+  width: 90%;
+  margin: 0;
+}
+
+.speech::after {
+  content: "";
+  position: absolute;
+  bottom: -16px; // value = - border-top-width - border-bottom-width
+  left: 2rem; // controls horizontal position
+  border-width: 16px 16px 0; // vary these values to change the angle of the vertex
+  border-style: solid;
+  border-color: $yellow transparent;
+  // reduce the damage in FF3.0
+  display: block;
+  width: 0;
+}
+
+.speech-right::after {
+  top: 1rem; // controls vertical position
+  right: -16px; // value = - border-left-width - border-right-width
+  bottom: auto;
+  left: auto;
+  border-width: 10px 0 10px 16px;
+  border-color: transparent $yellow;
+}
+
+.speech-top::after {
+  top: -16px; // value = - border-top-width - border-bottom-width
+  right: 45%; // controls horizontal position
+  bottom: auto;
+  left: auto;
+  border-width: 0 16px 16px; // vary these values to change the angle of the vertex
+  border-color: $yellow transparent;
+}
+
+
+// ============================================================================================================================
+// == BUBBLE WITH A BORDER AND TRIANGLE
+// ============================================================================================================================ //
+// THE TRIANGLE
+//------------------------------------------------------------------------------------------------------------------------------- //
+
+.triangle-border:before {
+  content:"";
+  position:absolute;
+  bottom:-8px; /* value = - border-top-width - border-bottom-width */
+  left:$space-1; /* controls horizontal position */
+  border-width:8px 8px 0;
+  border-style:solid;
+  border-color:$silver transparent;
+  /* reduce the damage in FF3.0 */
+  display:block;
+  width:0;
+}
+
+/* creates the smaller  triangle */
+.triangle-border:after {
+  content:"";
+  position:absolute;
+  bottom:-8px; /* value = - border-top-width - border-bottom-width */
+  left:$space-1; /* value = (:before left) + (:before border-left) - (:after border-left) */
+  border-width:8px 8px 0;
+  border-style:solid;
+  border-color:$white transparent;
+  /* reduce the damage in FF3.0 */
+  display:block;
+  width:0;
+}
+
+/* Variant : top
+------------------------------------------ */
+
+/* creates the larger triangle */
+.triangle-border.top:before {
+  top:-8px; /* value = - border-top-width - border-bottom-width */
+  bottom:auto;
+  left:auto;
+  right:$space-1; /* controls horizontal position */
+  border-width:0 8px 8px;
+}
+
+/* creates the smaller  triangle */
+.triangle-border.top:after {
+  top:-7px; /* value = - border-top-width - border-bottom-width */
+  bottom:auto;
+  left:auto;
+  right:$space-1; /* value = (:before right) + (:before border-right) - (:after border-right) */
+  border-width:0 8px 8px;
+}

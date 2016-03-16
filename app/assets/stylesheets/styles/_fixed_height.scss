@@ -1,0 +1,17 @@
+.fixed-height {
+  height: 6rem;
+}
+
+@media #{$breakpoint-sm} {
+  .fixed-height {
+    height: 8rem;
+  }
+}
+
+.fixed-height-2 {
+  height: 24rem;
+}
+
+.max-height-2 {
+  max-height: 24rem;
+}

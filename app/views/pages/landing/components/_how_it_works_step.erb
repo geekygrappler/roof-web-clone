@@ -1,0 +1,11 @@
+<div class="col-12">
+  <div class="clearfix sm-flex flex-center">
+    <div class="sm-col sm-col-6 <%= 'sm-col-right' if reverse %> px2 flex-auto">
+      <h1><%= title %></h1>
+      <p><%= description %></p>
+    </div>
+    <div class="sm-col sm-col-6 px2 <%= reverse ? 'flex-last' : 'flex-first' %>">
+      <img src="<%= image_path image %>" class="max-height-2"/>
+    </div>
+  </div>
+</div>  

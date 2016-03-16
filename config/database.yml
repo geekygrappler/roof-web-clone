@@ -23,7 +23,7 @@ default: &default
 
 development:
   <<: *default
-  database: roof-web_development
+  database: roof-api_development
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.
@@ -57,7 +57,7 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: roof-web_test
+  database: roof-api_test
 
 # As with config/secrets.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -80,6 +80,6 @@ test:
 #
 production:
   <<: *default
-  database: roof-web_production
-  username: roof-web
+  database: roof-api_production
+  username: roof-api
   password: <%= ENV['ROOF-WEB_DATABASE_PASSWORD'] %>

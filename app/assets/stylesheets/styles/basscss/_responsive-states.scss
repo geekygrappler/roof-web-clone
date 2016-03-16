@@ -1,0 +1,52 @@
+// Basscss Utility Responsive States
+
+// scss-lint:disable ImportantRule
+.sm-show,
+.md-show,
+.lg-show {
+  display: none !important
+}
+
+@media #{$breakpoint-sm} {
+  // scss-lint:disable ImportantRule
+  .sm-show { display: block !important }
+  .sm-show.inline-block { display: inline-block !important }
+}
+
+@media #{$breakpoint-md} {
+  // scss-lint:disable ImportantRule
+  .md-show { display: block !important }
+}
+
+@media #{$breakpoint-lg} {
+  // scss-lint:disable ImportantRule
+  .lg-show { display: block !important }
+}
+
+
+@media #{$breakpoint-sm} {
+  // scss-lint:disable ImportantRule
+  .sm-hide { display: none !important }
+}
+
+@media #{$breakpoint-md} {
+  // scss-lint:disable ImportantRule
+  .md-hide { display: none !important }
+}
+
+@media #{$breakpoint-lg} {
+  // scss-lint:disable ImportantRule
+  .lg-hide { display: none !important }
+}
+
+// scss-lint:disable ImportantRule
+.display-none { display: none !important }
+
+// scss-lint:disable ImportantRule
+.hide {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+}

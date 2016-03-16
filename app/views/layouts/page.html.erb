@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <%= render partial: 'shared/head' %>
+  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'page', 'data-turbolinks-track' => true %>
+</head>
+<body class="bg-gray">
+  <div class="bg-white">
+    <%= render partial: header %>
+    <%= yield %>
+  </div>
+  <%= render partial: 'shared/footer' %>
+</body>
+</html>
