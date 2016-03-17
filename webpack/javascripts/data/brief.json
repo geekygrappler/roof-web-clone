@@ -1,0 +1,24 @@
+{
+  "kind": [
+    {"name": "renovation", "value": "renovation", "icon": "/images/project_types/renovation.png"},
+    {"name": "redecoration", "value": "redecoration", "icon": "/images/project_types/redecoration.png"},
+    {"name": "kitchen", "value": "kitchen", "icon": "/images/project_types/kitchen.png"},
+    {"name": "bathroom", "value": "bathroom", "icon": "/images/project_types/bathroom.png"},
+    {"name": "extension", "value": "extension", "icon": "/images/project_types/extension.png"},
+    {"name": "other", "value": "other", "icon": "/images/project_types/other.png"}
+  ],
+  "budget": [
+    null, "Don't know", "less than £10k", "£10-20k", "£20-30k", "£30-40k",
+    "£40-50k", "£50-60k", "£60-70k", "£70-80k", "£80-90k", "£90-100k",
+    "+100k", "+200k", "+300k"
+  ],
+  "preferredStart": [
+    null, "ASAP", "Weeks", "Months", "Just planning"
+  ],
+  "ownership": [
+    null,
+    "Owner/occupier",
+    "Owner",
+    "Not owned"
+  ]
+}

@@ -2647,17 +2647,21 @@
 	      url: "/api/" + api,
 	      data: _defineProperty({}, api.singular(), data)
 	    }).fail(function (xhr) {
-	      return apis[api].trigger("index.fail", xhr);
+	      apis[api].trigger("index.fail", xhr);
+	      return xhr;
 	    }).then(function (data) {
-	      return apis[api].trigger("index.success", data);
+	      apis[api].trigger("index.success", data);
+	      return data;
 	    });
 	  };
 	
 	  apis[api].show = function (id) {
 	    return request({ url: "/api/" + api + "/" + id }).fail(function (xhr) {
-	      return apis[api].trigger("show.fail", xhr);
+	      apis[api].trigger("show.fail", xhr);
+	      return xhr;
 	    }).then(function (data) {
-	      return apis[api].trigger("show.success", data);
+	      apis[api].trigger("show.success", data);
+	      return data;
 	    });
 	  };
 	
@@ -2667,9 +2671,11 @@
 	      type: "post",
 	      data: _defineProperty({}, api.singular(), data)
 	    }).fail(function (xhr) {
-	      return apis[api].trigger("create.fail", xhr);
+	      apis[api].trigger("create.fail", xhr);
+	      return xhr;
 	    }).then(function (data) {
-	      return apis[api].trigger("create.success", data);
+	      apis[api].trigger("create.success", data);
+	      return data;
 	    });
 	  };
 	
@@ -2679,17 +2685,21 @@
 	      type: "put",
 	      data: _defineProperty({}, api.singular(), data)
 	    }).fail(function (xhr) {
-	      return apis[api].trigger("update.fail", xhr);
-	    }).then(function (data) {
-	      return apis[api].trigger("update.success", id);
+	      apis[api].trigger("update.fail", xhr);
+	      return xhr;
+	    }).then(function () {
+	      apis[api].trigger("update.success", id);
+	      return id;
 	    });
 	  };
 	
 	  apis[api]["delete"] = function (id) {
 	    return request({ url: "/api/" + api + "/" + id, type: "delete" }).fail(function (xhr) {
-	      return apis[api].trigger("delete.fail", xhr);
-	    }).then(function (data) {
-	      return apis[api].trigger("delete.success", id);
+	      apis[api].trigger("delete.fail", xhr);
+	      return xhr;
+	    }).then(function () {
+	      apis[api].trigger("delete.success", id);
+	      return id;
 	    });
 	  };
 	});
@@ -2701,8 +2711,9 @@
 	  }).fail(function (xhr) {
 	    apis.sessions.trigger("check.fail", xhr);
 	  }).then(function (data) {
+	    $.csrfToken = null;
 	    apis.currentAccount = data;
-	    riot.route(apis.authenticatedRoot);
+	    //riot.route(apis.authenticatedRoot)
 	    apis.sessions.trigger("check.success", data);
 	  });
 	};
@@ -2714,8 +2725,9 @@
 	  }).fail(function (xhr) {
 	    return apis.sessions.trigger("signin.fail", xhr);
 	  }).then(function (data) {
+	    $.csrfToken = null;
 	    apis.currentAccount = data;
-	    riot.route(apis.authenticatedRoot);
+	    //riot.route(apis.authenticatedRoot)
 	    apis.sessions.trigger("signin.success", data);
 	  });
 	};
@@ -2727,6 +2739,7 @@
 	  }).fail(function (xhr) {
 	    return apis.sessions.trigger("signout.fail", xhr);
 	  }).then(function () {
+	    $.csrfToken = null;
 	    apis.currentAccount = null;
 	    delete apis.currentAccount;
 	    apis.sessions.trigger("signout.success");
@@ -2741,8 +2754,9 @@
 	  }).fail(function (xhr) {
 	    return apis.registrations.trigger("signup.fail", xhr);
 	  }).then(function (data) {
+	    $.csrfToken = null;
 	    apis.currentAccount = data;
-	    riot.route(apis.authenticatedRoot);
+	    //riot.route(apis.authenticatedRoot)
 	    apis.registrations.trigger("signup.success", data);
 	  });
 	};
@@ -2762,33 +2776,38 @@
 	  var _ref$data = _ref.data;
 	  var data = _ref$data === undefined ? null : _ref$data;
 	
-	  // return $.ajax({
-	  //   url: url,
-	  //   type: type,
-	  //   data: data ? type == 'get' ? data : JSON.stringify(data) : null,
-	  //   contentType: type == 'get' ? null : 'application/json',
-	  //   dataType: 'json',
-	  //   beforeSend: function(xhr) {
-	  //     xhr.setRequestHeader("X-Csrf-Token", $('[name=csrf-token]').attr('content'));
-	  //   }
-	  // })
-	  return $.getJSON("/api/accounts/csrf_token.json").then(function (d, x, r) {
-	    var token = r.getResponseHeader("X-CSRF-Token");
-	    if (token) {
-	      $("meta[name=csrf-token]").attr("content", token);
+	  if (!$.csrfToken) {
+	    return $.getJSON("/api/accounts/csrf_token.json").then(function (d, x, r) {
+	      var token = r.getResponseHeader("X-CSRF-Token");
+	      if (token) {
+	        $.csrfToken = token;
+	        $("meta[name=csrf-token]").attr("content", token);
 	
-	      return $.ajax({
-	        url: url,
-	        type: type,
-	        data: data ? type == "get" ? data : JSON.stringify(data) : null,
-	        contentType: type == "get" ? null : "application/json",
-	        dataType: "json",
-	        beforeSend: function beforeSend(xhr) {
-	          xhr.setRequestHeader("X-Csrf-Token", token);
-	        }
-	      });
-	    }
-	  });
+	        return $.ajax({
+	          url: url,
+	          type: type,
+	          data: data ? type == "get" ? data : JSON.stringify(data) : null,
+	          contentType: type == "get" ? null : "application/json",
+	          dataType: "json",
+	          beforeSend: function beforeSend(xhr) {
+	            xhr.setRequestHeader("X-Csrf-Token", $.csrfToken);
+	          }
+	        });
+	      }
+	    });
+	  } else {
+	    return $.ajax({
+	      url: url,
+	      type: type,
+	      data: data ? type == "get" ? data : JSON.stringify(data) : null,
+	      contentType: type == "get" ? null : "application/json",
+	      dataType: "json",
+	      beforeSend: function beforeSend(xhr) {
+	        // xhr.setRequestHeader("X-Csrf-Token", $('[name=csrf-token]').attr('content'));
+	        xhr.setRequestHeader("X-Csrf-Token", $.csrfToken);
+	      }
+	    });
+	  }
 	};
 
 /***/ },
@@ -2877,19 +2896,25 @@
 	
 	var request = _interopRequire(__webpack_require__(4));
 	
+	var dot = _interopRequire(__webpack_require__(20));
+	
 	riot.mixin({
 	  ERRORS: {
 	    0: "Hmm, something not right, you may try again later or contact with us.",
 	    401: "Hmm, are you sure given email and password are correct?",
 	    403: "Hmm, are you sure you are allowed to do that?",
 	    404: "Whops 404! Whatever you are looking for is not found!",
-	    500: "Ops!, something went wrong at our end, try again later." },
+	    500: "Ops!, something went wrong at our end, try again later.",
+	    ASSET_ASSIGNMENT: "We got your brief, but unfortunately your files lost on the way to us",
+	    BLANK: "cannot be blank"
+	  },
 	  initialize: function initialize() {
 	    if (this.parent && this.parent.opts.api) this.opts.api = this.parent.opts.api;
 	  },
 	  request: request,
+	  dot: new dot(".", true), // allow overrides!
 	  serializeForm: function serializeForm(form) {
-	    return $(form).serializeJSON();
+	    return $(form).serializeJSON({ parseAll: true });
 	  },
 	  errorHandler: function errorHandler(xhr) {
 	    this.update({ busy: false });
@@ -2924,9 +2949,107 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-header", "<header class=\"container\"> <div> <nav class=\"relative clearfix {opts.color || 'black'} h5\"> <div class=\"left\"> <a href=\"/\" class=\"btn py2\"><img riot-src=\"/images/logos/{opts.color || 'black'}.svg\" class=\"logo--small\"></a> </div> <div class=\"right py1 sm-show mr1\" if=\"{opts.api.currentAccount}\"> <a href=\"/app/projects/new\" class=\"btn py2\">Projects</a> <a href=\"/app/settings\" class=\"btn py2\">Settings</a> <a href=\"/app/signout\" class=\"btn py2\">Sign out</a> </div> <div class=\"right py1 sm-show mr1\" if=\"{!opts.api.currentAccount}\"> <a href=\"/pages/about\" class=\"btn py2\">About us</a> <a href=\"/#how-it-works\" class=\"btn py2\">How it works</a> <a href=\"/app/signin\" class=\"btn py2\">Sign in</a> </div> <div class=\"right sm-hide py1 mr1\"> <div class=\"inline-block\" data-disclosure> <div data-details class=\"fixed top-0 right-0 bottom-0 left-0\"></div> <a class=\"btn py2 m0\"> <span class=\"md-hide\"> <i class=\"fa fa-bars\"></i> </span> </a> <div data-details class=\"absolute left-0 right-0 nowrap bg-white black mt1\"> <ul class=\"h5 list-reset py1 mb0\" if=\"{opts.api.currentAccount}\"> <li><a href=\"/app/projects/new\" class=\"btn block\">Projects</a></li> <li><a href=\"/app/settings\" class=\"btn block\">Settings</a></li> <li><a href=\"/app/signout\" class=\"btn block\">Sign out</a></li> </ul> <ul class=\"h5 list-reset py1 mb0\" if=\"{!opts.api.currentAccount}\"> <li><a href=\"/pages/about\" class=\"btn block\">About us</a></li> <li><a href=\"/#how-it-works\" class=\"btn block\">How it works</a></li> <li><a href=\"/app/signin\" class=\"btn block\">Sign in</a></li> </ul> </div> </div> </div> </nav> </div> </header>", "", "", function (opts) {});
+	__webpack_require__(8);
 	
-	riot.tag2("r-projects", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <h1>Projects</h1>", "", "", function (opts) {});
+	__webpack_require__(12);
+	
+	__webpack_require__(13);
+	
+	__webpack_require__(17);
+	
+	__webpack_require__(16);
+	
+	__webpack_require__(18);
+	
+	riot.tag2("r-app", "<yield from=\"header\"></yield> <div name=\"content\"></div>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.opts.api.sessions.on("signin.success", this.update);
+	  this.opts.api.sessions.on("signout.success", this.update);
+	  this.opts.api.registrations.on("signup.success", this.update);
+	  riot.route("signout", function () {
+	    _this.opts.api.sessions.signout();
+	  });
+	  riot.route("signin", function () {
+	    if (opts.api.currentAccount) return riot.route(_this.authenticatedRoot);
+	    riot.mount("r-modal", {
+	      content: "r-auth",
+	      persisted: true, api: opts.api,
+	      contentOpts: { tab: "r-signin", api: opts.api }
+	    });
+	  });
+	  riot.route("signup", function () {
+	    if (opts.api.currentAccount) return riot.route(_this.authenticatedRoot);
+	    riot.mount("r-modal", {
+	      content: "r-auth",
+	      persisted: true,
+	      api: opts.api,
+	      contentOpts: { tab: "r-signup", api: opts.api }
+	    });
+	  });
+	  riot.route("projects", function () {
+	    riot.mount(_this.content, "r-projects-index", { api: opts.api });
+	  });
+	  riot.route("projects/new", function () {
+	    riot.mount(_this.content, "r-projects-brief", { api: opts.api });
+	  });
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-header", "<header class=\"container\"> <div> <nav class=\"relative clearfix black h5\"> <div class=\"left\"> <a href=\"/\" class=\"btn py2\" black><img src=\"/images/logos/black.svg\" class=\"logo--small\"></a> </div> <div class=\"right py1 sm-show mr1\" if=\"{opts.api.currentAccount}\"> <a href=\"/app/projects\" class=\"btn py2\">Projects</a> <a href=\"/app/settings\" class=\"btn py2\">Settings</a> <a href=\"/app/signout\" class=\"btn py2\">Sign out</a> </div> <div class=\"right py1 sm-show mr1\" if=\"{!opts.api.currentAccount}\"> <a href=\"/pages/about\" class=\"btn py2\">About us</a> <a href=\"/#how-it-works\" class=\"btn py2\">How it works</a> <a href=\"/app/signin\" class=\"btn py2\">Sign in</a> </div> <div class=\"right sm-hide py1 mr1\"> <div class=\"inline-block\" data-disclosure> <div data-details class=\"fixed top-0 right-0 bottom-0 left-0\"></div> <a class=\"btn py2 m0\"> <span class=\"md-hide\"> <i class=\"fa fa-bars\"></i> </span> </a> <div data-details class=\"absolute left-0 right-0 nowrap bg-white black mt1\"> <ul class=\"h5 list-reset py1 mb0\" if=\"{opts.api.currentAccount}\"> <li><a href=\"/app/projects\" class=\"btn block\">Projects</a></li> <li><a href=\"/app/settings\" class=\"btn block\">Settings</a></li> <li><a href=\"/app/signout\" class=\"btn block\">Sign out</a></li> </ul> <ul class=\"h5 list-reset py1 mb0\" if=\"{!opts.api.currentAccount}\"> <li><a href=\"/pages/about\" class=\"btn block\">About us</a></li> <li><a href=\"/#how-it-works\" class=\"btn block\">How it works</a></li> <li><a href=\"/app/signin\" class=\"btn block\">Sign in</a></li> </ul> </div> </div> </div> </nav> </div> </header>", "", "", function (opts) {});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 9 */,
+/* 10 */,
+/* 11 */,
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-tabs", "<div name=\"tab\"></div>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.navigate = function (e) {
+	    if (e) {
+	      e.preventDefault();
+	      _this.opts.tab = e.target.name;
+	      history.pushState(null, e.target.title, e.target.href);
+	    }
+	    riot.mount(_this.tab, _this.opts.tab, {
+	      navigate: _this.navigate,
+	      api: opts.api
+	    });
+	  };
+	  this.navigate();
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	__webpack_require__(14);
+	
+	__webpack_require__(15);
+	
+	riot.tag2("r-auth", "<r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\"></r-tabs>", "", "", function (opts) {});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	riot.tag2("r-signup", "<h2 class=\"center mt0 mb2\">Sign up</h2> <form name=\"form\" classes=\"sm-col-12 left-align\" action=\"/api/accounts\" onsubmit=\"{submit}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"user[profile][first_name]\">First Name *</label> <input class=\"block col-12 mb2 field\" autofocus=\"true\" type=\"text\" name=\"user[profile][first_name]\"> <span if=\"{errors['user.profile.first_name']}\" class=\"inline-error\">{errors['user.profile.first_name']}</span> </div> <div class=\"col col-6 px2\"> <label for=\"user[profile][last_name]\">Last Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"user[profile][last_name]\"> <span if=\"{errors['user.profile.last_name']}\" class=\"inline-error\">{errors['user.profile.last_name']}</span> </div> </div> <label for=\"user[profile][phone_number]\">Phone Number *</label> <input class=\"block col-12 mb2 field\" type=\"tel\" name=\"user[profile][phone_number]\"> <span if=\"{errors['user.profile.phone_number']}\" class=\"inline-error\">{errors['user.profile.phone_number']}</span> <h6 class=\"mb2 p1 green border-left border-right border-bottom\" style=\"margin-top:-1rem\">Your privacy is important. <br>We only share your number with selected contractors working on your project. </h6> <label for=\"email\">Email *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"email\"> <span if=\"{errors['email']}\" class=\"inline-error\">{errors['email']}</span> <label for=\"password\">Password *</label> <em class=\"h5\">(8 characters minimum)</em> <input class=\"block col-12 mb2 field\" autocomplete=\"off\" type=\"password\" name=\"password\"> <span if=\"{errors['password']}\" class=\"inline-error\">{errors['password']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary\">Sign up</button> <small class=\"h6 block center\">By signing up, you agree to the <a href=\"/pages/terms-conditions\">Terms of Service</a></small> </form> <div class=\"center\"><a name=\"r-signin\" href=\"/app/signin\" title=\"Sign in\" onclick=\"{opts.navigate}\">Sign in</a></div>", "", "", function (opts) {
 	  var _this = this;
@@ -2938,17 +3061,25 @@
 	    var data = _this.serializeForm(_this.form);
 	
 	    if (_.isEmpty(data)) {
-	      $(_this.form).animateCss(".shake");
+	      $(_this.form).animateCss("shake");
 	      return;
 	    }
 	
 	    _this.update({ busy: true });
 	
 	    _this.opts.api.registrations.signup(data).fail(_this.errorHandler).then(function (account) {
-	      return _this.update({ busy: false });
+	      _this.update({ busy: false });
+	      riot.route(opts.api.authenticatedRoot);
 	    });
 	  };
 	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	riot.tag2("r-signin", "<h2 class=\"center mt0 mb2\">Sign in</h2> <form name=\"form\" classes=\"sm-col-12 left-align\" action=\"/api/accounts/sign_in\" onsubmit=\"{submit}\"> <div if=\"{errors}\" id=\"error_explanation\"> {errors} </div> <label for=\"email\">Email</label> <input class=\"block col-12 mb2 field\" autofocus=\"true\" type=\"text\" name=\"email\"> <label for=\"email\">Password</label> <input class=\"block col-12 mb2 field\" autocomplete=\"off\" type=\"password\" name=\"password\"> <div> <label class=\"inline-block mb2\"> <input type=\"checkbox\" label=\"Remember me\" name=\"remember_me\"> Remember me </label> </div> <button name=\"submit\" type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\" __disabled=\"{busy}\">Sign in</button> <div class=\"center\"> <a name=\"r-reset-password\" href=\"/app/reset-password\" title=\"Reset Password\" onclick=\"{opts.navigate}\" class=\"block\">Forgot your password?</a> </div> </form> <div class=\"center\"><a name=\"r-signup\" href=\"/app/signup\" title=\"Sign up\" onclick=\"{opts.navigate}\">Sign up</a></div>", "", "", function (opts) {
 	  var _this = this;
@@ -2960,35 +3091,36 @@
 	    var creds = _this.serializeForm(_this.form);
 	
 	    if (_.isEmpty(creds)) {
-	      $(_this.form).animateCss(".shake");
+	      $(_this.form).animateCss("shake");
 	      return;
 	    }
 	
 	    _this.update({ busy: true });
 	    _this.opts.api.sessions.signin(creds).fail(_this.errorHandler).then(function (account) {
-	      return _this.update({ busy: false });
+	      _this.update({ busy: false });
+	      riot.route(opts.api.authenticatedRoot);
 	    });
 	  };
 	  this.showAuthModal = function () {
 	    _this.update({ errors: _this.ERRORS[401] });
 	  };
 	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-tabs", "<div name=\"tab\"></div>", "", "", function (opts) {
-	  var _this = this;
-	
-	  this.navigate = function (e) {
-	    if (e) {
-	      e.preventDefault();
-	      _this.opts.tab = e.target.name;
-	      history.pushState(null, e.target.title, e.target.href);
-	    }
-	    riot.mount(_this.tab, _this.opts.tab, { navigate: _this.navigate, api: opts.api });
-	  };
-	  this.navigate();
-	});
-	
-	riot.tag2("r-auth", "<r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\"></r-tabs>", "", "", function (opts) {});
+	riot.tag2("r-projects-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <h1>Projects</h1>", "", "", function (opts) {});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	riot.tag2("r-modal", "<div name=\"body\" class=\"black modal-body out\"> <div class=\"fixed left-0 top-0 right-0 bottom-0 z4 overflow-auto bg-darken-4\"> <div class=\"relative sm-col-6 sm-px3 px1 py3 mt4 mb4 mx-auto bg-white modal-container\"> <a if=\"{!opts.persisted}\" class=\"absolute btn btn-small right-0 top-0 mr1 mt1\" onclick=\"{close}\"> <i class=\"fa fa-times\"></i> </a> <div name=\"content\"></div> </div> </div> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -3021,29 +3153,768 @@
 	    $("body").removeClass("overflow-hidden");
 	  });
 	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-app", "<yield from=\"header\"></yield> <div name=\"content\"></div>", "", "", function (opts) {
+	var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
+	
+	var options = __webpack_require__(19);
+	
+	riot.tag2("r-files-input-with-preview", "<div class=\"relative\"> <r-file-input name=\"{opts.name}\" record=\"{opts.record}\" data-accept=\"{opts.data_accept}\" accept=\"{opts.accept}\"></r-file-input> <div class=\"border center dropzone\"> <i class=\"fa fa-plus fa-2x mt3\"></i> <p>Drag and drop your documents here or click to select</p> <div class=\"clearfix upload-previews\"> <div each=\"{asset, index in opts.record[opts.name]}\" class=\"sm-col sm-col-4 p1 rounded center thumb animated bounceIn\"> <div class=\"border p1 truncate overflow-hidden\"> <a class=\"cursor-zoom\" href=\"{asset.file.url}\" target=\"_blank\"> <img riot-src=\"{asset.content_type.indexOf('image') > -1 ? asset.file.thumb.url : asset.file.cover.url}\" class=\"fixed-height\"> </a> <br><a class=\"btn btn-small\" onclick=\"{destroy}\"><i class=\"fa fa-times\"></i></a> </div> </div> </div> </div> </div>", "", "", function (opts) {
 	  var _this = this;
 	
-	  this.opts.api.sessions.on("signin.success", this.update);
-	  this.opts.api.sessions.on("signout.success", this.update);
-	  this.opts.api.registrations.on("signup.success", this.update);
-	  riot.route("signout", function () {
-	    _this.opts.api.sessions.signout();
-	  });
-	  riot.route("signin", function () {
-	    if (opts.api.currentAccount) return riot.route(_this.authenticatedRoot);
-	    riot.mount("r-modal", { content: "r-auth", persisted: true, api: opts.api, contentOpts: { tab: "r-signin", api: opts.api } });
-	  });
-	  riot.route("signup", function () {
-	    if (opts.api.currentAccount) return riot.route(_this.authenticatedRoot);
-	    riot.mount("r-modal", { content: "r-auth", persisted: true, api: opts.api, contentOpts: { tab: "r-signup", api: opts.api } });
-	  });
-	  riot.route("projects", function () {
-	    riot.mount(_this.content, "r-projects", { api: opts.api });
+	  this.destroy = function (e) {
+	    var index = e.item.index;
+	    var assets = opts.record[opts.name];
+	    var id = assets[index].id;
+	
+	    _this.request({
+	      type: "delete",
+	      url: "/api/assets/" + id
+	    }).fail(function () {
+	      $(e.target).parents(".thumb").animateCss("shake");
+	    }).then(function () {
+	      $(e.target).parents(".thumb").one($.animationEnd, function (e) {
+	        assets.splice(index, 1);
+	        $(e.target).remove();
+	      }).animateCss("bounceOut");
+	    });
+	  };
+	  this.on("update", this.parent.update);
+	});
+	
+	riot.tag2("r-file-input", "<input type=\"file\" name=\"{opts.name}\" multiple class=\"absolute col-12 left-0 top-0 bottom-0 center transparent\" style=\"height:100%\" data-accept=\"{opts.data_accept}\" accept=\"{opts.accept}\" ondragover=\"{fileDragHover}\" ondragleave=\"{fileDragHover}\" ondrop=\"{fileSelectHandler}\">", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.index = 0;
+	
+	  this.fileDragHover = function (e) {
+	    e.stopPropagation();
+	    e.preventDefault();
+	    $(".dropzone", _this.parent.root).toggleClass("hover", e.type === "dragover");
+	  };
+	  this.fileSelectHandler = function (e) {
+	    // cancel event and hover styling
+	    _this.fileDragHover(e);
+	
+	    // // fetch FileList object
+	    var files = e.dataTransfer && e.dataTransfer.files.length > 0 ? e.dataTransfer.files : e.currentTarget.files;
+	    _this.uploader.fileupload("add", {
+	      files: files
+	    });
+	  };
+	  this.on("mount", function () {
+	
+	    _this.uploader = $("input[type=file]", _this.root).fileupload({
+	      paramName: "asset[file]",
+	      url: "/api/assets",
+	      dropZone: $(".dropzone", _this.parent.root),
+	      add: function (e, data) {
+	        // not a new project? then assign assets directly to it
+	        if (opts.record.id) data.formData = { "asset[project_id]": opts.record.id };
+	        data.submit().success(function (result, textStatus, jqXHR) {
+	          var files = opts.record[opts.name] || [];
+	          files.push(result);
+	          opts.record[opts.name] = files;
+	
+	          _this.parent.update();
+	        }).error(function (jqXHR, textStatus, errorThrown) {
+	          console.error("upload err", textStatus);
+	        });
+	      }
+	    });
 	  });
 	});
+	
+	riot.tag2("r-projects-brief", "<yield if=\"{!opts.api.currentAccount}\" to=\"header\"> <header class=\"container\"> <nav class=\"relative clearfix {step > 0 ? 'black' : 'white'} h5\"> <div class=\"left\"> <a href=\"/\" class=\"btn py2\"><img riot-src=\"/images/logos/{step > 0 ? 'black' : 'white'}.svg\" class=\"logo--small\"></a> </div> </nav> </header> </yield> <yield if=\"{opts.api.currentAccount}\" to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <section if=\"{!opts.api.currentAccount}\" class=\"absolute col-12 center px2 py2 white {out: step != 0}\" data-step=\"0\"> <div class=\"container\"> <h1 class=\"h1 h1-responsive sm-mt4 mb1\">Thanks for getting started!</h1> <p class=\"h3 sm-col-6 mx-auto mb2\">The next few questions will create your brief :)</p> <div><button class=\"btn btn-big btn-primary mb3\" onclick=\"{start}\">Ok, Got it</button></div> <p>Or <button class=\"h5 btn btn-narrow btn-outline white ml1 mr1\" onclick=\"{showArrangeCallbackModal}\">Arrange a callback</button> to speak with a human</p> </div> </section> <form name=\"form\" action=\"/api/projects\" onsubmit=\"{submit}\"> <section class=\"absolute col-12 center px2 py2 {out: step != 1}\" data-step=\"1\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Mission</h1> <div class=\"clearfix mxn2 border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === project.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === project.kind}\"> </a> </div> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 2}\" data-step=\"2\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Helpful details</h1> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" autofocus=\"true\" oninput=\"{setValue}\">{project.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === project.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === project.brief.preferred_start}\">{value}</option> </select> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb4\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb4\" onclick=\"{nextStep}\">Continue</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 3}\" data-step=\"3\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Documents and Photos</h1> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-12 px2 mb2\"> <p class=\"h2\">Upload plans, documents, site photos or any other files about your project</p> <r-files-input-with-preview name=\"assets\" record=\"{project}\"></r-files-input-with-preview> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb1\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb1\" onclick=\"{nextStep}\">Continue</a> </div> <div class=\"right-align mb4\"> <a onclick=\"{parent.nextStep}\">Skip for now</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 4}\" data-step=\"4\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Address</h1> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{project.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{project.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{project.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb1\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb1\" onclick=\"{nextStep}\">Continue</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 5}\" data-step=\"5\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Project Summary</h1> <div class=\"clearfix p3 border mb3\"> <p class=\"h3 mt0\"> You are planning a <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--project-type\">{project.kind}</span></strong> <span show=\"{!_.isEmpty(_.compact(_.values(project.address)))}\" class=\"summary--address-container\">at <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--address\"><span each=\"{name, add in project.address}\">{add}, </span></span></strong></span>. The basic overview of the brief is: <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--description\">{project.brief.description}</span></strong>. <br> <span show=\"{project.brief.budget}\" class=\"summary--budget-container\">You have a budget of <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--budget\">{project.brief.budget}</span></strong></span> <span show=\"{project.brief.preferred_start}\" class=\"summary--start-date-container\">and would like to start <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--start-date\">{project.brief.preferred_start}</span></strong>.</span> </p> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb4\" onclick=\"{prevStep}\">Back</a> <button class=\"btn btn-big btn-primary mb4\" type=\"submit\">Correct! Make it happen</button> </div> </div> </section> </form>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.step = opts.api.currentAccount ? 1 : 0;
+	  this.project = { brief: {}, address: {} };
+	  this.options = options;
+	  // listen signup/signin events if not logged in as we need to resubmit form
+	  // after user authorized herself
+	  if (!opts.api.currentAccount) {
+	    opts.api.sessions.one("signin.success", function () {
+	      return _this.submit();
+	    });
+	    opts.api.registrations.one("signup.success", function () {
+	      return _this.submit();
+	    });
+	  }
+	
+	  if (this.step === 0) {
+	    $("body").one("transitionend", function () {
+	      return $("body").removeClass("no-transition");
+	    }).addClass("no-transition bg-gray");
+	  }
+	
+	  this.start = function () {
+	    $("body").toggleClass("no-transition bg-gray");
+	    setTimeout(function () {
+	      return $(".logo--small").attr("src", $(".logo--small").attr("data-src-black"));
+	    }, 300);
+	    _this.update({ step: 1 });
+	  };
+	
+	  this.setProjectKind = function (e) {
+	    _this.project.kind = e.item.value;
+	    _this.update({ step: 2 });
+	  };
+	
+	  this.setValue = function (e) {
+	    _this.dot.str(e.target.id, e.target.value, _this.project);
+	  };
+	
+	  this.nextStep = function (e) {
+	    e.preventDefault();
+	    if (_this.validateStep()) _this.update({ step: _this.step + 1 });
+	  };
+	
+	  this.prevStep = function (e) {
+	    e.preventDefault();
+	    _this.update({ step: _this.step - 1 });
+	  };
+	
+	  this.validateStep = function () {
+	    var hasError = undefined,
+	        $requireds = $("[data-step=" + _this.step + "] [required]");
+	    if ($requireds.length > 0) {
+	      hasError = _.isEmpty(_.compact(_.map($requireds, function (el) {
+	        var empty = _.isEmpty(el.value);
+	        if (empty) {
+	          _this.update({ errors: _defineProperty({}, el.id, [_this.ERRORS.BLANK]) });
+	        }
+	        return empty ? null : true;
+	      })));
+	      return !hasError;
+	    } else {
+	      return true;
+	    }
+	  };
+	
+	  this.submit = function (e) {
+	    var project = undefined,
+	        assetsToAssign = undefined;
+	    if (e) e.preventDefault();
+	
+	    if (_this.step === 5) {
+	      project = _this.serializeForm(_this.form);
+	
+	      if (_.isEmpty(project)) {
+	        $(_this.form).animateCss("shake");
+	        return;
+	      }
+	
+	      _this.update({ busy: true });
+	
+	      // stash uploaded assets to be assigned to project
+	      assetsToAssign = _.pluck(_this.project.assets, "id");
+	
+	      _this.opts.api.projects.create(project).fail(_this.errorHandler).then(function (project) {
+	        _this.update({ busy: false });
+	
+	        // no assets? go to project page immediately
+	        if (_.isEmpty(assetsToAssign)) {
+	          riot.route("/projects/" + project.id);
+	        } else {
+	          _this.request({ url: "/api/projects/" + project.id + "/assets", type: "post", data: { ids: assetsToAssign } }).fail(function () {
+	            window.alert(_this.ERRORS.ASSET_ASSIGNMENT);
+	            riot.route("/projects/" + project.id);
+	          }).then(function () {
+	            console.log("assets uplaoded");
+	            riot.route("/projects/" + project.id);
+	          });
+	        }
+	      });
+	    } else {
+	      _this.update({ step: _this.step + 1 });
+	    }
+	  };
+	
+	  this.showAuthModal = function () {
+	    riot.mount("r-modal", {
+	      content: "r-auth",
+	      persisted: false,
+	      api: opts.api,
+	      contentOpts: { tab: "r-signup", api: opts.api }
+	    });
+	  };
+	
+	  this.showArrangeCallbackModal = function () {
+	    riot.mount("r-modal", {
+	      content: "r-arrange-callback",
+	      persisted: false,
+	      api: opts.api,
+	      contentOpts: { api: opts.api }
+	    });
+	  };
+	});
+	// got some uploads, let's assign them to project
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 19 */
+/***/ function(module, exports) {
+
+	module.exports = {
+		"kind": [
+			{
+				"name": "renovation",
+				"value": "renovation",
+				"icon": "/images/project_types/renovation.png"
+			},
+			{
+				"name": "redecoration",
+				"value": "redecoration",
+				"icon": "/images/project_types/redecoration.png"
+			},
+			{
+				"name": "kitchen",
+				"value": "kitchen",
+				"icon": "/images/project_types/kitchen.png"
+			},
+			{
+				"name": "bathroom",
+				"value": "bathroom",
+				"icon": "/images/project_types/bathroom.png"
+			},
+			{
+				"name": "extension",
+				"value": "extension",
+				"icon": "/images/project_types/extension.png"
+			},
+			{
+				"name": "other",
+				"value": "other",
+				"icon": "/images/project_types/other.png"
+			}
+		],
+		"budget": [
+			null,
+			"Don't know",
+			"less than £10k",
+			"£10-20k",
+			"£20-30k",
+			"£30-40k",
+			"£40-50k",
+			"£50-60k",
+			"£60-70k",
+			"£70-80k",
+			"£80-90k",
+			"£90-100k",
+			"+100k",
+			"+200k",
+			"+300k"
+		],
+		"preferredStart": [
+			null,
+			"ASAP",
+			"Weeks",
+			"Months",
+			"Just planning"
+		],
+		"ownership": [
+			null,
+			"Owner/occupier",
+			"Owner",
+			"Not owned"
+		]
+	};
+
+/***/ },
+/* 20 */
+/***/ function(module, exports) {
+
+	'use strict'
+	
+	function _process (v, mod) {
+	  var i
+	  var r
+	
+	  if (typeof mod === 'function') {
+	    r = mod(v)
+	    if (r !== undefined) {
+	      v = r
+	    }
+	  } else if (Array.isArray(mod)) {
+	    for (i = 0; i < mod.length; i++) {
+	      r = mod[i](v)
+	      if (r !== undefined) {
+	        v = r
+	      }
+	    }
+	  }
+	
+	  return v
+	}
+	
+	function parseKey (key, val) {
+	  // detect negative index notation
+	  if (key[0] === '-' && Array.isArray(val) && /^-\d+$/.test(key)) {
+	    return val.length + parseInt(key, 10)
+	  }
+	  return key
+	}
+	
+	function isIndex (k) {
+	  return /^\d+/.test(k)
+	}
+	
+	function parsePath (path, sep) {
+	  if (path.indexOf('[') >= 0) {
+	    path = path.replace(/\[/g, '.').replace(/]/g, '')
+	  }
+	  return path.split(sep)
+	}
+	
+	function DotObject (seperator, override, useArray) {
+	  if (!(this instanceof DotObject)) {
+	    return new DotObject(seperator, override, useArray)
+	  }
+	
+	  if (typeof seperator === 'undefined') seperator = '.'
+	  if (typeof override === 'undefined') override = false
+	  if (typeof useArray === 'undefined') useArray = true
+	  this.seperator = seperator
+	  this.override = override
+	  this.useArray = useArray
+	
+	  // contains touched arrays
+	  this.cleanup = []
+	}
+	
+	var dotDefault = new DotObject('.', false, true)
+	function wrap (method) {
+	  return function () {
+	    return dotDefault[method].apply(dotDefault, arguments)
+	  }
+	}
+	
+	DotObject.prototype._fill = function (a, obj, v, mod) {
+	  var k = a.shift()
+	
+	  if (a.length > 0) {
+	    obj[k] = obj[k] ||
+	      (this.useArray && isIndex(a[0]) ? [] : {})
+	
+	    if (obj[k] !== Object(obj[k])) {
+	      if (this.override) {
+	        obj[k] = {}
+	      } else {
+	        throw new Error(
+	          'Trying to redefine `' + k + '` which is a ' + typeof obj[k]
+	        )
+	      }
+	    }
+	
+	    this._fill(a, obj[k], v, mod)
+	  } else {
+	    if (!this.override &&
+	      obj[k] === Object(obj[k]) && Object.keys(obj[k]).length) {
+	      throw new Error("Trying to redefine non-empty obj['" + k + "']")
+	    }
+	
+	    obj[k] = _process(v, mod)
+	  }
+	}
+	
+	/**
+	 *
+	 * Converts an object with dotted-key/value pairs to it's expanded version
+	 *
+	 * Optionally transformed by a set of modifiers.
+	 *
+	 * Usage:
+	 *
+	 *   var row = {
+	 *     'nr': 200,
+	 *     'doc.name': '  My Document  '
+	 *   }
+	 *
+	 *   var mods = {
+	 *     'doc.name': [_s.trim, _s.underscored]
+	 *   }
+	 *
+	 *   dot.object(row, mods)
+	 *
+	 * @param {Object} obj
+	 * @param {Object} mods
+	 */
+	DotObject.prototype.object = function (obj, mods) {
+	  var self = this
+	
+	  Object.keys(obj).forEach(function (k) {
+	    var mod = mods === undefined ? null : mods[k]
+	    // normalize array notation.
+	    var ok = parsePath(k, self.seperator).join(self.seperator)
+	
+	    if (ok.indexOf(self.seperator) !== -1) {
+	      self._fill(ok.split(self.seperator), obj, obj[k], mod)
+	      delete obj[k]
+	    } else if (self.override) {
+	      obj[k] = _process(obj[k], mod)
+	    }
+	  })
+	
+	  return obj
+	}
+	
+	/**
+	 * @param {String} path dotted path
+	 * @param {String} v value to be set
+	 * @param {Object} obj object to be modified
+	 * @param {Function|Array} mod optional modifier
+	 */
+	DotObject.prototype.str = function (path, v, obj, mod) {
+	  if (path.indexOf(this.seperator) !== -1) {
+	    this._fill(path.split(this.seperator), obj, v, mod)
+	  } else if (this.override) {
+	    obj[path] = _process(v, mod)
+	  }
+	
+	  return obj
+	}
+	
+	/**
+	 *
+	 * Pick a value from an object using dot notation.
+	 *
+	 * Optionally remove the value
+	 *
+	 * @param {String} path
+	 * @param {Object} obj
+	 * @param {Boolean} remove
+	 */
+	DotObject.prototype.pick = function (path, obj, remove) {
+	  var i
+	  var keys
+	  var val
+	  var key
+	  var cp
+	
+	  keys = parsePath(path, this.seperator)
+	  for (i = 0; i < keys.length; i++) {
+	    key = parseKey(keys[i], obj)
+	    if (obj && typeof obj === 'object' && key in obj) {
+	      if (i === (keys.length - 1)) {
+	        if (remove) {
+	          val = obj[key]
+	          delete obj[key]
+	          if (Array.isArray(obj)) {
+	            cp = keys.slice(0, -1).join('.')
+	            if (this.cleanup.indexOf(cp) === -1) {
+	              this.cleanup.push(cp)
+	            }
+	          }
+	          return val
+	        } else {
+	          return obj[key]
+	        }
+	      } else {
+	        obj = obj[key]
+	      }
+	    } else {
+	      return undefined
+	    }
+	  }
+	  if (remove && Array.isArray(obj)) {
+	    obj = obj.filter(function (n) { return n !== undefined })
+	  }
+	  return obj
+	}
+	
+	/**
+	 *
+	 * Remove value from an object using dot notation.
+	 *
+	 * @param {String} path
+	 * @param {Object} obj
+	 * @return {Mixed} The removed value
+	 */
+	DotObject.prototype.remove = function (path, obj) {
+	  var i
+	
+	  this.cleanup = []
+	  if (Array.isArray(path)) {
+	    for (i = 0; i < path.length; i++) {
+	      this.pick(path[i], obj, true)
+	    }
+	    this._cleanup(obj)
+	    return obj
+	  } else {
+	    return this.pick(path, obj, true)
+	  }
+	}
+	
+	DotObject.prototype._cleanup = function (obj) {
+	  var ret
+	  var i
+	  var keys
+	  var root
+	  if (this.cleanup.length) {
+	    for (i = 0; i < this.cleanup.length; i++) {
+	      keys = this.cleanup[i].split('.')
+	      root = keys.splice(0, -1).join('.')
+	      ret = root ? this.pick(root, obj) : obj
+	      ret = ret[keys[0]].filter(function (v) { return v !== undefined })
+	      this.set(this.cleanup[i], ret, obj)
+	    }
+	    this.cleanup = []
+	  }
+	}
+	
+	// alias method
+	DotObject.prototype.del = DotObject.prototype.remove
+	
+	/**
+	 *
+	 * Move a property from one place to the other.
+	 *
+	 * If the source path does not exist (undefined)
+	 * the target property will not be set.
+	 *
+	 * @param {String} source
+	 * @param {String} target
+	 * @param {Object} obj
+	 * @param {Function|Array} mods
+	 * @param {Boolean} merge
+	 */
+	DotObject.prototype.move = function (source, target, obj, mods, merge) {
+	  if (typeof mods === 'function' || Array.isArray(mods)) {
+	    this.set(target, _process(this.pick(source, obj, true), mods), obj, merge)
+	  } else {
+	    merge = mods
+	    this.set(target, this.pick(source, obj, true), obj, merge)
+	  }
+	
+	  return obj
+	}
+	
+	/**
+	 *
+	 * Transfer a property from one object to another object.
+	 *
+	 * If the source path does not exist (undefined)
+	 * the property on the other object will not be set.
+	 *
+	 * @param {String} source
+	 * @param {String} target
+	 * @param {Object} obj1
+	 * @param {Object} obj2
+	 * @param {Function|Array} mods
+	 * @param {Boolean} merge
+	 */
+	DotObject.prototype.transfer = function (source, target, obj1, obj2, mods, merge) {
+	  if (typeof mods === 'function' || Array.isArray(mods)) {
+	    this.set(target,
+	      _process(
+	        this.pick(source, obj1, true),
+	        mods
+	      ), obj2, merge)
+	  } else {
+	    merge = mods
+	    this.set(target, this.pick(source, obj1, true), obj2, merge)
+	  }
+	
+	  return obj2
+	}
+	
+	/**
+	 *
+	 * Copy a property from one object to another object.
+	 *
+	 * If the source path does not exist (undefined)
+	 * the property on the other object will not be set.
+	 *
+	 * @param {String} source
+	 * @param {String} target
+	 * @param {Object} obj1
+	 * @param {Object} obj2
+	 * @param {Function|Array} mods
+	 * @param {Boolean} merge
+	 */
+	DotObject.prototype.copy = function (source, target, obj1, obj2, mods, merge) {
+	  if (typeof mods === 'function' || Array.isArray(mods)) {
+	    this.set(target,
+	      _process(
+	        // clone what is picked
+	        JSON.parse(
+	          JSON.stringify(
+	            this.pick(source, obj1, false)
+	          )
+	        ),
+	        mods
+	      ), obj2, merge)
+	  } else {
+	    merge = mods
+	    this.set(target, this.pick(source, obj1, false), obj2, merge)
+	  }
+	
+	  return obj2
+	}
+	
+	function isObject (val) {
+	  return Object.prototype.toString.call(val) === '[object Object]'
+	}
+	
+	/**
+	 *
+	 * Set a property on an object using dot notation.
+	 *
+	 * @param {String} path
+	 * @param {Mixed} val
+	 * @param {Object} obj
+	 * @param {Boolean} merge
+	 */
+	DotObject.prototype.set = function (path, val, obj, merge) {
+	  var i
+	  var k
+	  var keys
+	  var key
+	
+	  // Do not operate if the value is undefined.
+	  if (typeof val === 'undefined') {
+	    return obj
+	  }
+	  keys = parsePath(path, this.seperator)
+	
+	  for (i = 0; i < keys.length; i++) {
+	    key = keys[i]
+	    if (i === (keys.length - 1)) {
+	      if (merge && isObject(val) && isObject(obj[key])) {
+	        for (k in val) {
+	          if (val.hasOwnProperty(k)) {
+	            obj[key][k] = val[k]
+	          }
+	        }
+	      } else if (merge && Array.isArray(obj[key]) && Array.isArray(val)) {
+	        for (var j = 0; j < val.length; j++) {
+	          obj[keys[i]].push(val[j])
+	        }
+	      } else {
+	        obj[key] = val
+	      }
+	    } else if (
+	      // force the value to be an object
+	      !obj.hasOwnProperty(key) ||
+	      (!isObject(obj[key]) && !Array.isArray(obj[key]))
+	    ) {
+	      // initialize as array if next key is numeric
+	      if (/^\d+$/.test(keys[i + 1])) {
+	        obj[key] = []
+	      } else {
+	        obj[key] = {}
+	      }
+	    }
+	    obj = obj[key]
+	  }
+	  return obj
+	}
+	
+	/**
+	 *
+	 * Transform an object
+	 *
+	 * Usage:
+	 *
+	 *   var obj = {
+	 *     "id": 1,
+	  *    "some": {
+	  *      "thing": "else"
+	  *    }
+	 *   }
+	 *
+	 *   var transform = {
+	 *     "id": "nr",
+	  *    "some.thing": "name"
+	 *   }
+	 *
+	 *   var tgt = dot.transform(transform, obj)
+	 *
+	 * @param {Object} recipe Transform recipe
+	 * @param {Object} obj Object to be transformed
+	 * @param {Array} mods modifiers for the target
+	 */
+	DotObject.prototype.transform = function (recipe, obj, tgt) {
+	  obj = obj || {}
+	  tgt = tgt || {}
+	  Object.keys(recipe).forEach(function (key) {
+	    this.set(recipe[key], this.pick(key, obj), tgt)
+	  }.bind(this))
+	  return tgt
+	}
+	
+	/**
+	 *
+	 * Convert object to dotted-key/value pair
+	 *
+	 * Usage:
+	 *
+	 *   var tgt = dot.dot(obj)
+	 *
+	 *   or
+	 *
+	 *   var tgt = {}
+	 *   dot.dot(obj, tgt)
+	 *
+	 * @param {Object} obj source object
+	 * @param {Object} tgt target object
+	 * @param {Array} path path array (internal)
+	 */
+	DotObject.prototype.dot = function (obj, tgt, path) {
+	  tgt = tgt || {}
+	  path = path || []
+	  Object.keys(obj).forEach(function (key) {
+	    if (Object(obj[key]) === obj[key]) {
+	      return this.dot(obj[key], tgt, path.concat(key))
+	    } else {
+	      tgt[path.concat(key).join(this.seperator)] = obj[key]
+	    }
+	  }.bind(this))
+	  return tgt
+	}
+	
+	DotObject.pick = wrap('pick')
+	DotObject.move = wrap('move')
+	DotObject.transfer = wrap('transfer')
+	DotObject.transform = wrap('transform')
+	DotObject.copy = wrap('copy')
+	DotObject.object = wrap('object')
+	DotObject.str = wrap('str')
+	DotObject.set = wrap('set')
+	DotObject.del = DotObject.remove = wrap('remove')
+	DotObject.dot = wrap('dot')
+	
+	;['override', 'overwrite'].forEach(function (prop) {
+	  Object.defineProperty(DotObject, prop, {
+	    get: function () {
+	      return dotDefault.override
+	    },
+	    set: function (val) {
+	      dotDefault.override = !!val
+	    }
+	  })
+	})
+	
+	Object.defineProperty(DotObject, 'useArray', {
+	  get: function () {
+	    return dotDefault.useArray
+	  },
+	  set: function (val) {
+	    dotDefault.useArray = val
+	  }
+	})
+	
+	DotObject._process = _process
+	
+	module.exports = DotObject;
+
 
 /***/ }
 /******/ ]);

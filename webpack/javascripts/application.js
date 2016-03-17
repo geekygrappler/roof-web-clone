@@ -4,7 +4,6 @@ import 'inflector/lib/inflector'
 import './mixins/global'
 import './tags/app.tag'
 
-
 riot.route.base('/app/')
 let mount = () => {
   riot.mount('r-app', {api})

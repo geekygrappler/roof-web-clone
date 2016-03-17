@@ -11,6 +11,7 @@
   "devDependencies": {
     "babel": "^4.7.12",
     "babel-loader": "^4.1.0",
+    "json-loader": "^0.5.4",
     "riot": "^2.3.16",
     "riotjs-loader": "^2.0.0",
     "webpack": "^1.12.2"

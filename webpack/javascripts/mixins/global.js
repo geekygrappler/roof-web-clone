@@ -1,4 +1,5 @@
 import request from '../apis/request'
+import dot from 'dot-object'
 
 riot.mixin({
   ERRORS: {
@@ -7,13 +8,16 @@ riot.mixin({
     403: 'Hmm, are you sure you are allowed to do that?',
     404: 'Whops 404! Whatever you are looking for is not found!',
     500: 'Ops!, something went wrong at our end, try again later.',
+    'ASSET_ASSIGNMENT': 'We got your brief, but unfortunately your files lost on the way to us',
+    'BLANK': 'cannot be blank'
   },
   initialize: function () {
     if (this.parent && this.parent.opts.api) this.opts.api = this.parent.opts.api
   },
   request: request,
+  dot: new dot('.', true), // allow overrides!
   serializeForm: function (form) {
-    return $(form).serializeJSON()
+    return $(form).serializeJSON({parseAll: true})
   },
   errorHandler: function (xhr) {
     this.update({busy: false})

@@ -17,14 +17,26 @@ resources.forEach((api) =>{
       url: `/api/${api}`,
       data: {[api.singular()]: data}
     })
-    .fail((xhr) => apis[api].trigger('index.fail', xhr))
-    .then((data) => apis[api].trigger('index.success', data))
+    .fail((xhr) => {
+      apis[api].trigger('index.fail', xhr)
+      return xhr
+    })
+    .then((data) => {
+      apis[api].trigger('index.success', data)
+      return data
+    })
   }
 
   apis[api].show = function (id) {
     return request({url: `/api/${api}/${id}`})
-    .fail((xhr) => apis[api].trigger('show.fail', xhr))
-    .then((data) => apis[api].trigger('show.success', data))
+    .fail((xhr) => {
+      apis[api].trigger('show.fail', xhr)
+      return xhr
+    })
+    .then((data) => {
+      apis[api].trigger('show.success', data)
+      return data
+    })
   }
 
   apis[api].create = function (data) {
@@ -33,8 +45,14 @@ resources.forEach((api) =>{
       type: 'post',
       data: {[api.singular()]: data}
     })
-    .fail((xhr) => apis[api].trigger('create.fail', xhr))
-    .then((data) => apis[api].trigger('create.success', data))
+    .fail((xhr) => {
+      apis[api].trigger('create.fail', xhr)
+      return xhr
+    })
+    .then((data) => {
+      apis[api].trigger('create.success', data)
+      return data
+    })
   }
 
   apis[api].update = function (id, data) {
@@ -43,14 +61,26 @@ resources.forEach((api) =>{
       type: 'put',
       data: {[api.singular()]: data}
     })
-    .fail((xhr) => apis[api].trigger('update.fail', xhr))
-    .then((data) => apis[api].trigger('update.success', id))
+    .fail((xhr) => {
+      apis[api].trigger('update.fail', xhr)
+      return xhr
+    })
+    .then(() => {
+      apis[api].trigger('update.success', id)
+      return id
+    })
   }
 
   apis[api].delete = function (id) {
     return request({url: `/api/${api}/${id}`, type: 'delete'})
-    .fail((xhr) => apis[api].trigger('delete.fail', xhr))
-    .then((data) => apis[api].trigger('delete.success', id))
+    .fail((xhr) => {
+      apis[api].trigger('delete.fail', xhr)
+      return xhr
+    })
+    .then(() => {
+      apis[api].trigger('delete.success', id)
+      return id
+    })
   }
 })
 
@@ -63,8 +93,9 @@ apis.sessions.check = function () {
     apis.sessions.trigger('check.fail', xhr)
   })
   .then((data) => {
+    $.csrfToken = null
     apis.currentAccount = data
-    riot.route(apis.authenticatedRoot)
+    //riot.route(apis.authenticatedRoot)
     apis.sessions.trigger('check.success', data)
   })
 }
@@ -76,8 +107,9 @@ apis.sessions.signin = function (creds) {
   })
   .fail((xhr) => apis.sessions.trigger('signin.fail', xhr))
   .then((data) => {
+    $.csrfToken = null
     apis.currentAccount = data
-    riot.route(apis.authenticatedRoot)
+    //riot.route(apis.authenticatedRoot)
     apis.sessions.trigger('signin.success', data)
   })
 }
@@ -89,6 +121,7 @@ apis.sessions.signout = function (creds) {
   })
   .fail((xhr) => apis.sessions.trigger('signout.fail', xhr))
   .then(() => {
+    $.csrfToken = null
     apis.currentAccount = null
     delete apis.currentAccount
     apis.sessions.trigger('signout.success')
@@ -103,8 +136,9 @@ apis.registrations.signup = function (data) {
   })
   .fail((xhr) => apis.registrations.trigger('signup.fail', xhr))
   .then((data) => {
+    $.csrfToken = null
     apis.currentAccount = data
-    riot.route(apis.authenticatedRoot)
+    //riot.route(apis.authenticatedRoot)
     apis.registrations.trigger('signup.success', data)
   })
 }
