@@ -157,3 +157,50 @@ nav a:hover {
   color: $black;
 }
 .readonly r-tender-item-input {display: none}
+
+
+
+
+
+
+
+// .tender-item-action-group {
+//   list-style: none;
+//   position: relative;
+//   &::before{
+//     content: "|";
+//     position: absolute;
+//     margin-left: -2.2rem;
+//     margin-top: -.5rem;
+//   }
+// }
+//
+// .tender-item-list-group,{
+//   border-left: 1px dashed;
+//   //padding-left: 1rem;
+//   padding-top: 1rem;
+//   margin-left: -1rem;
+//   margin-top: -1rem;
+//   position: relative;
+// }
+// .tender-item-action{
+//   margin-left: -1rem;
+//   margin-bottom: 1rem;
+// }
+// .tender-item-action::before{
+//   content: "--";
+//   position: absolute;
+//   left: 0.5rem;
+// }
+// .tender-item{
+//   border-bottom: 1px dashed;
+// }
+
+
+
+r-tender-item-group .border-bottom {
+  border-bottom-style: dashed;
+}
+r-tender-item-group .border-left {
+  border-left-style: dashed;
+}

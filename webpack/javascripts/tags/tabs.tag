@@ -1,5 +1,5 @@
 <r-tabs>
-  <div name="tab"></div>
+  <div name="tab" class="px2 sm-p0"></div>
 
   <script>
   this.navigate = (e) => {

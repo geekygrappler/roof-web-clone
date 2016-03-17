@@ -5,6 +5,7 @@
   <p if="{_.isEmpty(project.tender) && _.isEmpty(quotes)}">
     Hmm, it seems we are still working on your tender and it will show up here when it's ready.
     You can speed up the process by creating a tender document and we will be notified about it.
+    <br>
     <a class="mt2 btn btn-primary" href="/app/projects/{opts.id}/tenders/new">Create a Tender Document</a>
   </p>
 
@@ -13,9 +14,9 @@
     Actual <strong>quotes</strong> from Professionals will appear here when they submit them.
   </p>
 
-  <ul class="list-reset">
+  <ul class="list-reset mxn1">
 
-    <li if="{project.tender}" class="inline-block p1 col-4 align-top">
+    <li if="{project.tender}" class="inline-block p1 sm-col-4 align-top">
       <div class="px2 border">
         <h2 class="inline-block">{ formatCurrency(project.tender.total_amount) }</h2>
         <span class="inline-block align-middle h6 mb1 px1 border pill">Tender</span>
@@ -26,7 +27,7 @@
       </div>
     </li>
 
-    <li each="{quotes}" class="inline-block p1 col-4 align-top">
+    <li each="{quotes}" class="inline-block p1 sm-col-4 align-top">
       <div class="px2 border">
         <h2 class="inline-block">{ formatCurrency(total_amount) }</h2>
         <span class="inline-block align-middle h6 mb1 px1 border pill">Quote</span>

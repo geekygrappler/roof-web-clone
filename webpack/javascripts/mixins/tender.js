@@ -32,23 +32,32 @@ riot.mixin('tenderMixin', {
     }
     this.removeSection = (e) => {
       e.preventDefault()
-      let index = _.findIndex(this.tender.document.sections, s => s.id == e.item.id)
-      this.tender.document.sections.splice(index, 1)
-      this.update()
+      if (window.confirm(this.ERRORS.CONFIRM_DELETE)) {
+        let index = _.findIndex(this.tender.document.sections, s => s.id == e.item.id)
+        this.tender.document.sections.splice(index, 1)
+        this.update()
+      }
+    }
+    this.sectionTotal = (section, formatted = false) => {
+      let itemTotal = _.reduce(section.tasks, (total, item) => {
+        return total + item.price * item.quantity
+      }, 0)
+      let materialTotal = _.reduce(section.materials, (total, item) => {
+        return total + (item.is_supplied ? item.price * item.quantity : 0)
+      }, 0)
+      if (formatted) {
+        return this.formatCurrency(itemTotal + (itemTotal * 20 / 100) + materialTotal)
+      } else {
+        return [itemTotal, materialTotal]
+      }
     }
     this.tenderTotal = () => {
-
-      return _.reduce(this.tender.document.sections, (total, section) => {
-
-        let itemTotal = _.reduce(section.tasks, (total, item) => {
-          return total + item.price * item.quantity
+      return this.formatCurrency(
+        _.reduce(this.tender.document.sections, (total, section) => {
+          let [itemTotal , materialTotal] = this.sectionTotal(section)
+          return (total + itemTotal + (itemTotal * 20 / 100) + materialTotal)
         }, 0)
-        let materialTotal = _.reduce(section.materials, (total, item) => {
-          return total + (item.is_supplied ? item.price * item.quantity : 0)
-        }, 0)
-
-        return this.formatCurrency(total + itemTotal + (itemTotal * 20 / 100) + materialTotal)
-      }, 0)
+      )
     }
   }
 })

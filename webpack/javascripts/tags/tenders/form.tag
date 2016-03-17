@@ -9,9 +9,9 @@ import from '../../mixins/tender.js'
       placeholder="Search and add {modelName}" autocomplete="off" />
     </form>
     <i class="fa fa-{ opts.icon } absolute right-0 top-0 p1"></i>
-    <ul name="list" if="{ data.length > 0}" class="col-12 list-reset absolute overflow-auto border bg-white z2" style="max-height:10rem">
+    <ul name="list" if="{ data.length > 0}" class="col-12 list-reset absolute overflow-scroll border bg-white z2" style="max-height:10rem">
       <li each="{ data }" class="border-bottom typeahead-item {'cursor': isCursor(this)}" onmouseover="{ moveCursor }">
-        <a class="cursor-pointer p2" onclick="{ selectItem }">{ name }</a>
+        <a class="cursor-pointer p2" onclick="{ selectItem }"><span class="bg-orange p1">{action}</span> { name }</a>
       </li>
     </ul>
   </div>
@@ -57,35 +57,35 @@ import from '../../mixins/tender.js'
 
 <r-tender-item>
   <li>
-  <div class="clearfix animate py1 border-bottom">
-    <div if="{ parent.headers.name }" class="sm-col sm-col-{ parent.headers.name } mb1 sm-mb0">
-      { name }
-      <hr class="sm-hide">
-    </div>
+    <div class="clearfix animate p1 border-bottom">
+      <div if="{ parent.headers.name }" class="sm-col sm-col-{ parent.headers.name } mb1 sm-mb0">
+        { name }
+        <hr class="sm-hide">
+      </div>
 
-    <div if="{ parent.headers.quantity }" class="col sm-col-{ parent.headers.quantity } col-3 center">
-      <input type="number" name="quantity" value="{ quantity }" min="0"
-      class="fit field inline-input center" oninput="{ input }" />
-    </div>
+      <div if="{ parent.headers.quantity }" class="col sm-col-{ parent.headers.quantity } col-3 center">
+        <input type="number" name="quantity" value="{ quantity }" min="0"
+        class="fit field inline-input center" oninput="{ input }" />
+      </div>
 
-    <div if="{ parent.headers.price }" class="col sm-col-{ parent.headers.price } col-{parent.opts.name == 'task' ? 3 : 2} center">
-      <input type="number" name="price" value="{ parent.opts.name == 'task' ? price : (supplied ? price : 0) }"
-      disabled="{ parent.opts.name == 'material' && !supplied }" min="0" class="fit field inline-input center" oninput="{ input }" />
-    </div>
+      <div if="{ parent.headers.price }" class="col sm-col-{ parent.headers.price } col-{parent.opts.name == 'task' ? 3 : 2} center">
+        <input type="number" name="price" value="{ parent.opts.name == 'task' ? price : (supplied ? price : 0) }"
+        disabled="{ parent.opts.name == 'material' && !supplied }" min="0" class="fit field inline-input center" oninput="{ input }" />
+      </div>
 
-    <div if="{ parent.headers.total_cost }" class="col sm-col-{ parent.headers.total_cost } col-3 center">
-      { this.formatCurrency(parent.opts.name == 'task' ? (price * quantity) : (supplied ? price * quantity : '0')) }
-    </div>
+      <div if="{ parent.headers.total_cost }" class="col sm-col-{ parent.headers.total_cost } col-3 center">
+        { this.formatCurrency(parent.opts.name == 'task' ? (price * quantity) : (supplied ? price * quantity : '0')) }
+      </div>
 
-    <div if="{ parent.headers.supplied }" class="col sm-col-{ parent.headers.supplied } col-1 center">
-      <input if="{ parent.opts.name == 'material'}" type="checkbox" name="supplied"
-      checked="{ supplied }" class="align-middle" onchange="{ input }" />
-    </div>
+      <div if="{ parent.headers.supplied }" class="col sm-col-{ parent.headers.supplied } col-1 center">
+        <input if="{ parent.opts.name == 'material'}" type="checkbox" name="supplied"
+        checked="{ supplied }" class="align-middle" onchange="{ input }" />
+      </div>
 
-    <div if="{ parent.headers.actions }" class="col sm-col-{ parent.headers.actions } col-2 center">
-      <a href="#" class="btn btn-small navy" onclick="{ removeItem }"><i class="fa fa-trash-o"></i></a>
+      <div if="{ parent.headers.actions }" class="col sm-col-{ parent.headers.actions } col-2 center">
+        <a href="#" class="btn btn-small navy" onclick="{ removeItem }"><i class="fa fa-trash-o"></i></a>
+      </div>
     </div>
-  </div>
   </li>
 
   <script>
@@ -100,9 +100,12 @@ import from '../../mixins/tender.js'
   }
 
   this.removeItem = (e) => {
+    e.preventDefault()
+    if (window.confirm(this.ERRORS.CONFIRM_DELETE)) {
     // $('.animate', this.root).one($.animationEnd, () => {
       this.parent.opts.onitemremoved(e, this.parent.opts.name)
     // } ).animateCss('bounceOut')
+    }
   }
   </script>
 </r-tender-item>
@@ -110,8 +113,8 @@ import from '../../mixins/tender.js'
 <r-tender-item-group>
   <ul class="list-reset ml2 mb3">
     <li>
-      <h4 class="mb1">{ group.humanize() }</h4>
-      <ul class="list-reset ml2">
+      <h4 class="inline-block mb0 mt1 py1 border-bottom ">{ group.humanize() }</h4>
+      <ul class="list-reset ml2 border-left">
         <li if="{drawHeader()}" class="sm-show">
           <div class="clearfix py1 border-bottom">
             <div each="{ name, width in headers }" class="sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate">
@@ -174,7 +177,9 @@ import from '../../mixins/tender.js'
           <r-tender-item-input name="material" api="{ parent.opts.api }" icon="shopping-basket" ></r-tender-item-input>
         </div>
       </div>
+
     </div>
+    <h4 class="right-align">Section total: { sectionTotal(section, true) }</h4>
   </div>
 
   <script>

@@ -17459,7 +17459,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-tabs", "<div name=\"tab\"></div>", "", "", function (opts) {
+	riot.tag2("r-tabs", "<div name=\"tab\" class=\"px2 sm-p0\"></div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.navigate = function (e) {
@@ -17599,7 +17599,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-projects-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <h1>Projects <a href=\"/app/projects/new\" class=\"ml1 h5 btn btn-primary\"><i class=\"fa fa-rocket mr1\"></i> New Project</a></h1> <ul class=\"list-reset\"> <li each=\"{projects}\" class=\"p2\"> <div class=\"border p2\"> <a href=\"/app/projects/{id}\" class=\"no-decoration\"> <h3>{name}</h3> </a> <div> <i class=\"fa fa-clock-o mr1\"></i> updated {fromNow(updated_at)} </div> <div if=\"{opts.api.currentAccount.user_type == 'Administrator'}\" class=\"mt2 table\"> <span class=\"table-cell mr2\"> <i class=\"fa fa-user mr1\"></i> customers: {_.pluck(_.pluck(customers,'profile'),'first_name')} </span> <span class=\"table-cell mr2\"> <i class=\"fa fa-user-md mr1\"></i> adminstrators: {_.pluck(_.pluck(administrators,'profile'),'first_name')} </span> <span class=\"table-cell mr2\"> <i class=\"fa fa-user mr1\"></i> professionals: {_.pluck(_.pluck(professionals,'profile'),'first_name')} </span> </div> </div> </li> </ul> </div>", "", "", function (opts) {
+	riot.tag2("r-projects-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <h1 class=\"px2\">Projects <a href=\"/app/projects/new\" class=\"ml1 h5 btn btn-primary\"><i class=\"fa fa-rocket mr1\"></i> New Project</a></h1> <ul class=\"list-reset\"> <li each=\"{projects}\" class=\"p2\"> <div class=\"border p2\"> <a href=\"/app/projects/{id}\" class=\"no-decoration\"> <h3>{name}</h3> </a> <div> <i class=\"fa fa-clock-o mr1\"></i> updated {fromNow(updated_at)} </div> <div if=\"{opts.api.currentAccount.user_type == 'Administrator'}\" class=\"mt2 table\"> <span class=\"table-cell mr2\"> <i class=\"fa fa-user mr1\"></i> customers: {_.pluck(_.pluck(customers,'profile'),'first_name')} </span> <span class=\"table-cell mr2\"> <i class=\"fa fa-user-md mr1\"></i> adminstrators: {_.pluck(_.pluck(administrators,'profile'),'first_name')} </span> <span class=\"table-cell mr2\"> <i class=\"fa fa-user mr1\"></i> professionals: {_.pluck(_.pluck(professionals,'profile'),'first_name')} </span> </div> </div> </li> </ul> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  opts.api.projects.on("index.success", function (projects) {
@@ -17885,7 +17885,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-files-input-with-preview", "<div class=\"relative\"> <r-file-input name=\"{opts.name}\" record=\"{opts.record}\" data-accept=\"{opts.data_accept}\" accept=\"{opts.accept}\"></r-file-input> <div class=\"border center dropzone\"> <i class=\"fa fa-plus fa-2x mt3\"></i> <p>Drag and drop your documents here or click to select</p> <div class=\"clearfix upload-previews\"> <div each=\"{asset, index in opts.record[opts.name]}\" class=\"sm-col sm-col-4 p1 rounded center thumb animated bounceIn\"> <div class=\"border p1 truncate overflow-hidden\"> <a class=\"cursor-zoom\" href=\"{asset.file.url}\" target=\"_blank\"> <img riot-src=\"{asset.content_type.indexOf('image') > -1 ? asset.file.thumb.url : asset.file.cover.url}\" class=\"fixed-height\"> </a> <br><a class=\"btn btn-small\" onclick=\"{destroy}\"><i class=\"fa fa-times\"></i></a> </div> </div> </div> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-files-input-with-preview", "<div class=\"relative\"> <r-file-input name=\"{opts.name}\" record=\"{opts.record}\" data-accept=\"{opts.data_accept}\" accept=\"{opts.accept}\"></r-file-input> <div class=\"border center dropzone\"> <i class=\"fa fa-plus fa-2x mt3\"></i> <p>Drag and drop your documents here or click to select</p> </div> <div class=\"clearfix upload-previews mxn1\"> <div each=\"{asset, index in opts.record[opts.name]}\" class=\"sm-col sm-col-4 p1 rounded center thumb animated bounceIn\"> <div class=\"border p1 truncate overflow-hidden\"> <a class=\"cursor-zoom\" href=\"{asset.file.url}\" target=\"_blank\"> <img riot-src=\"{asset.content_type.indexOf('image') > -1 ? asset.file.thumb.url : asset.file.cover.url}\" class=\"fixed-height\"> </a> <br><a class=\"btn btn-small\" onclick=\"{destroy}\"><i class=\"fa fa-times\"></i></a> </div> </div> </div> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.destroy = function (e) {
@@ -18086,7 +18086,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-project-team", "<h2 class=\"mt0\">Team</h2> <p>Here is the team of your project. You can arrange site visits with professionals here or invite other members such as family members or your own builders. </p> <ul class=\"list-reset\"> <li each=\"{project.customers}\" class=\"inline-block p1 col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{getName()}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Member</span> <p class=\"overflow-hidden\"> <i class=\"fa fa-phone\"></i> {profile.phone_number}<br> <i class=\"fa fa-envelope\"></i> {email}<br> </p> </div> </li> <li each=\"{project.professionals}\" class=\"inline-block p1 align-top col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{getName()}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Professional</span> <p class=\"overflow-hidden\"> <i class=\"fa fa-phone\"></i> {profile.phone_number}<br> <i class=\"fa fa-envelope\"></i> {email}<br> <div if=\"{profile.website}\"><i class=\"fa fa-world\"></i>{profile.website}<br></div> </p> </div> </li> <li each=\"{project.administrators}\" class=\"inline-block p1 col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{getName()}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Admin</span> <p class=\"overflow-hidden\"> <i class=\"fa fa-phone\"></i> {profile.phone_number}<br> <i class=\"fa fa-envelope\"></i> {email}<br> </p> </div> </li> </ul>", "", "", function (opts) {
+	riot.tag2("r-project-team", "<h2 class=\"mt0\">Team</h2> <p>Here is the team of your project. You can arrange site visits with professionals here or invite other members such as family members or your own builders. </p> <ul class=\"list-reset mxn1\"> <li each=\"{project.customers}\" class=\"inline-block p1 sm-col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{getName()}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Member</span> <p class=\"overflow-hidden\"> <i class=\"fa fa-phone\"></i> {profile.phone_number}<br> <i class=\"fa fa-envelope\"></i> {email}<br> </p> </div> </li> <li each=\"{project.professionals}\" class=\"inline-block p1 align-top sm-col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{getName()}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Professional</span> <p class=\"overflow-hidden\"> <i class=\"fa fa-phone\"></i> {profile.phone_number}<br> <i class=\"fa fa-envelope\"></i> {email}<br> <div if=\"{profile.website}\"><i class=\"fa fa-world\"></i>{profile.website}<br></div> </p> </div> </li> <li each=\"{project.administrators}\" class=\"inline-block p1 sm-col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{getName()}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Admin</span> <p class=\"overflow-hidden\"> <i class=\"fa fa-phone\"></i> {profile.phone_number}<br> <i class=\"fa fa-envelope\"></i> {email}<br> </p> </div> </li> </ul>", "", "", function (opts) {
 	  this.mixin("projectTab");
 	  this.getName = function () {
 	    return this.id !== this.opts.api.currentAccount.id ? this.fullName() : "You";
@@ -18103,7 +18103,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <p if=\"{_.isEmpty(project.tender) && _.isEmpty(quotes)}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <a class=\"mt2 btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </p> <p if=\"{_.isEmpty(project.tender) && !_.isEmpty(quotes)}\"> Here is the <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a> we've prepared for you. Actual <strong>quotes</strong> from Professionals will appear here when they submit them. </p> <ul class=\"list-reset\"> <li if=\"{project.tender}\" class=\"inline-block p1 col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Tender</span> <p class=\"overflow-hidden m0 mxn2 p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Show</a> <a class=\"btn btn-small bg-darken-2\" if=\"{opts.api.currentAccount.user_type == 'Professional'}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> <li each=\"{quotes}\" class=\"inline-block p1 col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Quote</span> <span if=\"{accepted_at}\" class=\"inline-block align-middle h6 mb1 px1 border pill\">Accepted</span> <span if=\"{!accepted_at && submitted_at}\" class=\"inline-block align-middle h6 mb1 px1 border pill\">Submitted</span> <p class=\"overflow-hidden m0 mxn2 p1 bg-yellow\"> <span if=\"{!accepted_at && submitted_at}\"><i class=\"fa fa-clock-o mr1\"></i>submitted at: {fromNow(submitted_at)}</i></span> <span if=\"{accepted_at}\"><i class=\"fa fa-clock-o mr1\"></i>accepted at: {fromNow(accepted_at)}</i></span> <br> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Show</a> <a class=\"btn btn-small bg-darken-2\" if=\"{opts.api.currentAccount.user_type == 'Professional' && !accepted_at}\" onclick=\"{delete}\">Delete</a> </p> </div> </li> </ul>", "", "", function (opts) {
+	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <p if=\"{_.isEmpty(project.tender) && _.isEmpty(quotes)}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <br> <a class=\"mt2 btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </p> <p if=\"{_.isEmpty(project.tender) && !_.isEmpty(quotes)}\"> Here is the <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a> we've prepared for you. Actual <strong>quotes</strong> from Professionals will appear here when they submit them. </p> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"inline-block p1 sm-col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Tender</span> <p class=\"overflow-hidden m0 mxn2 p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Show</a> <a class=\"btn btn-small bg-darken-2\" if=\"{opts.api.currentAccount.user_type == 'Professional'}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> <li each=\"{quotes}\" class=\"inline-block p1 sm-col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Quote</span> <span if=\"{accepted_at}\" class=\"inline-block align-middle h6 mb1 px1 border pill\">Accepted</span> <span if=\"{!accepted_at && submitted_at}\" class=\"inline-block align-middle h6 mb1 px1 border pill\">Submitted</span> <p class=\"overflow-hidden m0 mxn2 p1 bg-yellow\"> <span if=\"{!accepted_at && submitted_at}\"><i class=\"fa fa-clock-o mr1\"></i>submitted at: {fromNow(submitted_at)}</i></span> <span if=\"{accepted_at}\"><i class=\"fa fa-clock-o mr1\"></i>accepted at: {fromNow(accepted_at)}</i></span> <br> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Show</a> <a class=\"btn btn-small bg-darken-2\" if=\"{opts.api.currentAccount.user_type == 'Professional' && !accepted_at}\" onclick=\"{delete}\">Delete</a> </p> </div> </li> </ul>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.mixin("projectTab");
@@ -18147,7 +18147,7 @@
 	
 	__webpack_require__(135);
 	
-	riot.tag2("r-tender-item-input", "<div class=\"relative\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Search and add {modelName}\" autocomplete=\"off\"> </form> <i class=\"fa fa-{opts.icon} absolute right-0 top-0 p1\"></i> <ul name=\"list\" if=\"{data.length > 0}\" class=\"col-12 list-reset absolute overflow-auto border bg-white z2\" style=\"max-height:10rem\"> <li each=\"{data}\" class=\"border-bottom typeahead-item {'cursor': isCursor(this)}\" onmouseover=\"{moveCursor}\"> <a class=\"cursor-pointer p2\" onclick=\"{selectItem}\">{name}</a> </li> </ul> </div>", "", "", function (opts) {
+	riot.tag2("r-tender-item-input", "<div class=\"relative\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Search and add {modelName}\" autocomplete=\"off\"> </form> <i class=\"fa fa-{opts.icon} absolute right-0 top-0 p1\"></i> <ul name=\"list\" if=\"{data.length > 0}\" class=\"col-12 list-reset absolute overflow-scroll border bg-white z2\" style=\"max-height:10rem\"> <li each=\"{data}\" class=\"border-bottom typeahead-item {'cursor': isCursor(this)}\" onmouseover=\"{moveCursor}\"> <a class=\"cursor-pointer p2\" onclick=\"{selectItem}\"><span class=\"bg-orange p1\">{action}</span> {name}</a> </li> </ul> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.index = -1;
@@ -18189,7 +18189,7 @@
 	  }
 	});
 	
-	riot.tag2("r-tender-item", "<li> <div class=\"clearfix animate py1 border-bottom\"> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> {name} <hr class=\"sm-hide\"> </div> <div if=\"{parent.headers.quantity}\" class=\"col sm-col-{parent.headers.quantity} col-3 center\"> <input name=\"quantity\" value=\"{quantity}\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.price}\" class=\"col sm-col-{parent.headers.price} col-{parent.opts.name == 'task' ? 3 : 2} center\"> <input name=\"price\" value=\"{parent.opts.name == 'task' ? price : (supplied ? price : 0)}\" __disabled=\"{parent.opts.name == 'material' && !supplied}\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.total_cost}\" class=\"col sm-col-{parent.headers.total_cost} col-3 center\"> {this.formatCurrency(parent.opts.name == 'task' ? (price * quantity) : (supplied ? price * quantity : '0'))} </div> <div if=\"{parent.headers.supplied}\" class=\"col sm-col-{parent.headers.supplied} col-1 center\"> <input if=\"{parent.opts.name == 'material'}\" type=\"checkbox\" name=\"supplied\" __checked=\"{supplied}\" class=\"align-middle\" onchange=\"{input}\"> </div> <div if=\"{parent.headers.actions}\" class=\"col sm-col-{parent.headers.actions} col-2 center\"> <a href=\"#\" class=\"btn btn-small navy\" onclick=\"{removeItem}\"><i class=\"fa fa-trash-o\"></i></a> </div> </div> </li>", "", "", function (opts) {
+	riot.tag2("r-tender-item", "<li> <div class=\"clearfix animate p1 border-bottom\"> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> {name} <hr class=\"sm-hide\"> </div> <div if=\"{parent.headers.quantity}\" class=\"col sm-col-{parent.headers.quantity} col-3 center\"> <input name=\"quantity\" value=\"{quantity}\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.price}\" class=\"col sm-col-{parent.headers.price} col-{parent.opts.name == 'task' ? 3 : 2} center\"> <input name=\"price\" value=\"{parent.opts.name == 'task' ? price : (supplied ? price : 0)}\" __disabled=\"{parent.opts.name == 'material' && !supplied}\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.total_cost}\" class=\"col sm-col-{parent.headers.total_cost} col-3 center\"> {this.formatCurrency(parent.opts.name == 'task' ? (price * quantity) : (supplied ? price * quantity : '0'))} </div> <div if=\"{parent.headers.supplied}\" class=\"col sm-col-{parent.headers.supplied} col-1 center\"> <input if=\"{parent.opts.name == 'material'}\" type=\"checkbox\" name=\"supplied\" __checked=\"{supplied}\" class=\"align-middle\" onchange=\"{input}\"> </div> <div if=\"{parent.headers.actions}\" class=\"col sm-col-{parent.headers.actions} col-2 center\"> <a href=\"#\" class=\"btn btn-small navy\" onclick=\"{removeItem}\"><i class=\"fa fa-trash-o\"></i></a> </div> </div> </li>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.on("mount", function () {});
@@ -18201,12 +18201,15 @@
 	  };
 	
 	  this.removeItem = function (e) {
-	    // $('.animate', this.root).one($.animationEnd, () => {
-	    _this.parent.opts.onitemremoved(e, _this.parent.opts.name);
+	    e.preventDefault();
+	    if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
+	      // $('.animate', this.root).one($.animationEnd, () => {
+	      _this.parent.opts.onitemremoved(e, _this.parent.opts.name);
+	    }
 	  };
 	});
 	
-	riot.tag2("r-tender-item-group", "<ul class=\"list-reset ml2 mb3\"> <li> <h4 class=\"mb1\">{group.humanize()}</h4> <ul class=\"list-reset ml2\"> <li if=\"{drawHeader()}\" class=\"sm-show\"> <div class=\"clearfix py1 border-bottom\"> <div each=\"{name, width in headers}\" class=\"sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate\"> {name == 'name' ? '&nbsp;' : name.humanize()} </div> </div> </li> <r-tender-item each=\"{items}\"></r-tender-item> </ul> </li> </ul>", "", "", function (opts) {
+	riot.tag2("r-tender-item-group", "<ul class=\"list-reset ml2 mb3\"> <li> <h4 class=\"inline-block mb0 mt1 py1 border-bottom \">{group.humanize()}</h4> <ul class=\"list-reset ml2 border-left\"> <li if=\"{drawHeader()}\" class=\"sm-show\"> <div class=\"clearfix py1 border-bottom\"> <div each=\"{name, width in headers}\" class=\"sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate\"> {name == 'name' ? '&nbsp;' : name.humanize()} </div> </div> </li> <r-tender-item each=\"{items}\"></r-tender-item> </ul> </li> </ul>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.drawHeader = function () {
@@ -18222,7 +18225,7 @@
 	  this.headers = this.opts.headers;
 	});
 	
-	riot.tag2("r-tender-section", "<div data-disclosure> <h3 data-handle class=\"cursor-pointer inline-block\" onclick=\"{changeIcon}\"> <i class=\"fa fa-{icon} mr1\"></i>{section.name.humanize()} </h3> <a class=\"btn btn-small right mt2\" onclick=\"{removeSection}\"><i class=\"fa fa-trash-o\"></i></a> <div data-details> <r-tender-item-group name=\"task\" groupitems=\"{section.tasks_by_action}\" each=\"{group, items in section.tasks_by_action}\" headers=\"{parent.headers.task}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <r-tender-item-group name=\"material\" groupitems=\"{section.materials_by_group}\" if=\"{section.materials && section.materials_by_group.length > 0}\" each=\"{group, items in section.materials_by_group}\" headers=\"{parent.headers.material}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <div class=\"clearfix mxn1\"> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"task\" auto_focus=\"{true}\" api=\"{parent.opts.api}\" icon=\"tasks\"></r-tender-item-input> </div> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"material\" api=\"{parent.opts.api}\" icon=\"shopping-basket\"></r-tender-item-input> </div> </div> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-tender-section", "<div data-disclosure> <h3 data-handle class=\"cursor-pointer inline-block\" onclick=\"{changeIcon}\"> <i class=\"fa fa-{icon} mr1\"></i>{section.name.humanize()} </h3> <a class=\"btn btn-small right mt2\" onclick=\"{removeSection}\"><i class=\"fa fa-trash-o\"></i></a> <div data-details> <r-tender-item-group name=\"task\" groupitems=\"{section.tasks_by_action}\" each=\"{group, items in section.tasks_by_action}\" headers=\"{parent.headers.task}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <r-tender-item-group name=\"material\" groupitems=\"{section.materials_by_group}\" if=\"{section.materials && section.materials_by_group.length > 0}\" each=\"{group, items in section.materials_by_group}\" headers=\"{parent.headers.material}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <div class=\"clearfix mxn1\"> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"task\" auto_focus=\"{true}\" api=\"{parent.opts.api}\" icon=\"tasks\"></r-tender-item-input> </div> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"material\" api=\"{parent.opts.api}\" icon=\"shopping-basket\"></r-tender-item-input> </div> </div> </div> <h4 class=\"right-align\">Section total: {sectionTotal(section, true)}</h4> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.showDisclosures = true;
@@ -18418,6 +18421,8 @@
 	
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 	
+	var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
+	
 	var riot = _interopRequire(__webpack_require__(1));
 	
 	riot.mixin("tenderMixin", {
@@ -18453,25 +18458,40 @@
 	    };
 	    this.removeSection = function (e) {
 	      e.preventDefault();
-	      var index = _.findIndex(_this.tender.document.sections, function (s) {
-	        return s.id == e.item.id;
-	      });
-	      _this.tender.document.sections.splice(index, 1);
-	      _this.update();
+	      if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
+	        var index = _.findIndex(_this.tender.document.sections, function (s) {
+	          return s.id == e.item.id;
+	        });
+	        _this.tender.document.sections.splice(index, 1);
+	        _this.update();
+	      }
+	    };
+	    this.sectionTotal = function (section) {
+	      var formatted = arguments[1] === undefined ? false : arguments[1];
+	
+	      var itemTotal = _.reduce(section.tasks, function (total, item) {
+	        return total + item.price * item.quantity;
+	      }, 0);
+	      var materialTotal = _.reduce(section.materials, function (total, item) {
+	        return total + (item.is_supplied ? item.price * item.quantity : 0);
+	      }, 0);
+	      if (formatted) {
+	        return _this.formatCurrency(itemTotal + itemTotal * 20 / 100 + materialTotal);
+	      } else {
+	        return [itemTotal, materialTotal];
+	      }
 	    };
 	    this.tenderTotal = function () {
+	      return _this.formatCurrency(_.reduce(_this.tender.document.sections, function (total, section) {
+	        var _sectionTotal = _this.sectionTotal(section);
 	
-	      return _.reduce(_this.tender.document.sections, function (total, section) {
+	        var _sectionTotal2 = _slicedToArray(_sectionTotal, 2);
 	
-	        var itemTotal = _.reduce(section.tasks, function (total, item) {
-	          return total + item.price * item.quantity;
-	        }, 0);
-	        var materialTotal = _.reduce(section.materials, function (total, item) {
-	          return total + (item.is_supplied ? item.price * item.quantity : 0);
-	        }, 0);
+	        var itemTotal = _sectionTotal2[0];
+	        var materialTotal = _sectionTotal2[1];
 	
-	        return _this.formatCurrency(total + itemTotal + itemTotal * 20 / 100 + materialTotal);
-	      }, 0);
+	        return total + itemTotal + itemTotal * 20 / 100 + materialTotal;
+	      }, 0));
 	    };
 	  }
 	});

@@ -3,7 +3,7 @@
     <r-header api="{opts.api}"></r-header>
   </yield>
   <div class="container">
-    <h1>Projects <a href="/app/projects/new" class="ml1 h5 btn btn-primary"><i class="fa fa-rocket mr1"></i> New Project</a></h1>
+    <h1 class="px2">Projects <a href="/app/projects/new" class="ml1 h5 btn btn-primary"><i class="fa fa-rocket mr1"></i> New Project</a></h1>
     <ul class="list-reset">
       <li each="{projects}" class="p2">
         <div class="border p2">

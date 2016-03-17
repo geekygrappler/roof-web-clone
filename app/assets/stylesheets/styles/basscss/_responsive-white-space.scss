@@ -125,6 +125,7 @@
 
 @media #{$breakpoint-sm} {
 
+  .sm-p0  { padding: 0 }
   .sm-p1  { padding: $space-1 }
   .sm-py1 { padding-top: $space-1; padding-bottom: $space-1 }
   .sm-px1 { padding-left: $space-1; padding-right: $space-1 }

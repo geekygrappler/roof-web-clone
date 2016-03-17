@@ -6,19 +6,19 @@
     <div class="border center dropzone">
       <i class="fa fa-plus fa-2x mt3"></i>
       <p>Drag and drop your documents here or click to select</p>
-      <div class="clearfix upload-previews">
+    </div>
+    <div class="clearfix upload-previews mxn1">
 
-        <div each="{ asset, index in opts.record[opts.name] }"
-          class="sm-col sm-col-4 p1 rounded center thumb animated bounceIn">
-          <div class="border p1 truncate overflow-hidden">
-              <a class="cursor-zoom" href="{ asset.file.url }" target="_blank">
-              <img src="{ asset.content_type.indexOf('image') > -1 ? asset.file.thumb.url : asset.file.cover.url }" class="fixed-height"/>
-              </a>
-              <br><a class="btn btn-small" onclick="{ destroy }" ><i class="fa fa-times"></i></a>
-          </div>
+      <div each="{ asset, index in opts.record[opts.name] }"
+        class="sm-col sm-col-4 p1 rounded center thumb animated bounceIn">
+        <div class="border p1 truncate overflow-hidden">
+            <a class="cursor-zoom" href="{ asset.file.url }" target="_blank">
+            <img src="{ asset.content_type.indexOf('image') > -1 ? asset.file.thumb.url : asset.file.cover.url }" class="fixed-height"/>
+            </a>
+            <br><a class="btn btn-small" onclick="{ destroy }" ><i class="fa fa-times"></i></a>
         </div>
-
       </div>
+
     </div>
   </div>
 
