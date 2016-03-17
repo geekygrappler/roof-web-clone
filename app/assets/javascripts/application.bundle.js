@@ -17465,6 +17465,7 @@
 	  this.navigate = function (e) {
 	    if (e) {
 	      e.preventDefault();
+	      e.stopImmediatePropagation();
 	      _this.opts.tab = e.target.name;
 	      history.pushState(null, e.target.title, e.target.href);
 	    }

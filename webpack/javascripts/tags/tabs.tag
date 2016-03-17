@@ -5,6 +5,7 @@
   this.navigate = (e) => {
     if (e) {
       e.preventDefault()
+      e.stopImmediatePropagation()
       this.opts.tab = e.target.name
       history.pushState(null, e.target.title, e.target.href)
     }
