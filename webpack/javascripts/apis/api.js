@@ -143,5 +143,33 @@ apis.registrations.signup = function (data) {
     apis.registrations.trigger('signup.success', data)
   })
 }
+apis.quotes.submit = function (id) {
+  return request({
+    url: `/api/quotes/${id}/submit`,
+    type: 'put'
+  })
+  .fail((xhr) => {
+    apis.quotes.trigger('update.fail', xhr)
+    return xhr
+  })
+  .then(() => {
+    apis.quotes.trigger('update.success', id)
+    return id
+  })
+}
+apis.quotes.accept = function (id) {
+  return request({
+    url: `/api/quotes/${id}/accept`,
+    type: 'put'
+  })
+  .fail((xhr) => {
+    apis.quotes.trigger('update.fail', xhr)
+    return xhr
+  })
+  .then(() => {
+    apis.quotes.trigger('update.success', id)
+    return id
+  })
+}
 
 export default apis

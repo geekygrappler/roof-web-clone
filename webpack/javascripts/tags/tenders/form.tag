@@ -208,12 +208,12 @@ import from '../../mixins/tender.js'
     <r-header api="{opts.api}"></r-header>
   </yield>
 
-  <div class="container p2">
-    <h1>{ opts.id ? 'Editing Tender ' + opts.id : 'New Tender' }</h1>
+  <div class="container p2 {readonly: opts.readonly}">
+    <h1>{ opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Tender ' + opts.id : 'New Tender' }</h1>
 
     <r-tender-section each="{ section , i in tender.document.sections }" ></r-tender-section>
 
-    <form if="{ tender.document }" onsubmit="{ addSection }" class="mt3 py3 clearfix mxn1 border-top">
+    <form if="{ !opts.readonly && tender.document }" onsubmit="{ addSection }" class="mt3 py3 clearfix mxn1 border-top">
       <div class="col col-8 px1">
         <input type="text" name="sectionName" placeholder="Section name" class="block col-12 field" />
       </div>
@@ -237,8 +237,14 @@ import from '../../mixins/tender.js'
   </div>
   <script>
     this.headers = {
-      task: {name: 7, quantity: 3, actions: 2},
-      material: {name: 7, quantity: 3, actions: 2}
+      task: {name: 7, quantity: 3, actions: opts.readonly ? null : 2},
+      material: {name: 7, quantity: 3, actions: opts.readonly ? null : 2}
+    }
+    if(opts.api.currentAccount.user_type == 'Administrator') {
+      this.headers = {
+        task: {name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2},
+        material: {name: 5, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2}
+      }
     }
 
     if (opts.id) {

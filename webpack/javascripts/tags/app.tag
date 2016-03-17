@@ -7,6 +7,7 @@ import './projects/index.tag'
 import './projects/brief.tag'
 import './projects/show.tag'
 import './tenders/form.tag'
+import './quotes/form.tag'
 
 <r-app>
   <yield from="header" />
@@ -67,7 +68,23 @@ import './tenders/form.tag'
     riot.mount(this.content, 'r-tenders-form', {
       api: opts.api,
       project_id: project_id,
-      id: id
+      id: id,
+      readonly: (opts.api.currentAccount && opts.api.currentAccount.user_type == 'Professional')
+    })
+  })
+  riot.route('projects/*/quotes/new', (project_id) => {
+    riot.mount(this.content, 'r-quotes-form', {
+      api: opts.api,
+      project_id: project_id
+    })
+  })
+  riot.route('projects/*/quotes/*', (project_id, id) => {
+
+    riot.mount(this.content, 'r-quotes-form', {
+      api: opts.api,
+      project_id: project_id,
+      id: id,
+      readonly: (opts.api.currentAccount && opts.api.currentAccount.user_type == 'Customer')
     })
   })
 

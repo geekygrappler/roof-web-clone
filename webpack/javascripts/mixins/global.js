@@ -14,7 +14,8 @@ riot.mixin({
     404: 'Whops 404! Whatever you are looking for is not found!',
     500: 'Ops!, something went wrong at our end, try again later.',
     'ASSET_ASSIGNMENT': 'We got your brief, but unfortunately your files lost on the way to us',
-    'BLANK': 'cannot be blank'
+    'BLANK': 'cannot be blank',
+    'CONFIRM_DELETE': 'Are you sure to delete this file?'
   },
   init: function () {
     if (this.parent && this.parent.opts.api) this.opts.api = this.parent.opts.api
@@ -61,12 +62,13 @@ riot.mixin({
   },
   initDomPlugins: function () {
     $('[data-disclosure]', this.root).disclosure(this.showDisclosures)
-    $('a[href*="/app/"]').on('click', function (e) {
+    $('a[href*="/app/"]', this.root).on('click', function (e) {
       e.preventDefault()
-      riot.route($(e.currentTarget).attr('href').substr(5))
+      riot.route($(e.currentTarget).attr('href').substr(5), e.currentTarget.title, true)
     })
   },
   _showAuthModal: function () {
+    console.log('HOLAA')
     riot.mount('r-modal', {
       content: 'r-auth',
       persisted: false,

@@ -114,6 +114,7 @@ import './_option_group_input.tag'
   this.step = 5
   this.project = {brief: {}, address: {}}
   this.options = options
+
   this.setProjectKind = (e) => {
     this.project.kind = e.item.value
   }

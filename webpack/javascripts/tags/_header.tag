@@ -8,7 +8,7 @@
         <div class="right py1 sm-show mr1" if="{opts.api.currentAccount}">
           <a href="/app/projects" class="btn py2">Projects</a>
           <a href="/app/settings" class="btn py2">Settings</a>
-          <a href="/app/signout" class="btn py2">Sign out</a>
+          <a href="/app/signout" class="btn py2">[{opts.api.currentAccount.user_type}] Sign out</a>
         </div>
         <div class="right py1 sm-show mr1" if="{!opts.api.currentAccount}">
           <a href="/pages/about" class="btn py2">About us</a>
@@ -27,7 +27,7 @@
               <ul class="h5 list-reset py1 mb0" if="{opts.api.currentAccount}">
                 <li><a href="/app/projects" class="btn block">Projects</a></li>
                 <li><a href="/app/settings" class="btn block">Settings</a></li>
-                <li><a href="/app/signout" class="btn block">Sign out</a></li>
+                <li><a href="/app/signout" class="btn block">[{opts.api.currentAccount.user_type}] Sign out</a></li>
               </ul>
               <ul class="h5 list-reset py1 mb0" if="{!opts.api.currentAccount}">
                 <li><a href="/pages/about" class="btn block">About us</a></li>

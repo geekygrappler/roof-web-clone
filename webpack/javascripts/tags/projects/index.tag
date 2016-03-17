@@ -9,8 +9,23 @@
         <div class="border p2">
           <a href="/app/projects/{id}" class="no-decoration">
             <h3>{name}</h3>
-            <div><i class="fa fa-clock-o mr1"></i> updated {fromNow(updated_at)}</div>
           </a>
+          <div>
+            <i class="fa fa-clock-o mr1"></i> updated {fromNow(updated_at)}
+          </div>
+          <div if="{opts.api.currentAccount.user_type == 'Administrator'}" class="mt2 table">
+
+              <span class="table-cell mr2">
+                <i class="fa fa-user mr1"></i> customers: {_.pluck(_.pluck(customers,'profile'),'first_name')}
+              </span>
+              <span class="table-cell mr2">
+                <i class="fa fa-user-md mr1"></i> adminstrators: {_.pluck(_.pluck(administrators,'profile'),'first_name')}
+              </span>
+              <span class="table-cell mr2">
+                <i class="fa fa-user mr1"></i> professionals: {_.pluck(_.pluck(professionals,'profile'),'first_name')}
+              </span>
+
+          </div>
         </div>
       </li>
     </ul>

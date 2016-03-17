@@ -24,16 +24,18 @@
 
   <script>
   this.destroy = (e) => {
-    let index = e.item.index
-    let assets = opts.record[opts.name]
-    let id = assets[index].id
+    if (window.confirm(this.ERRORS.CONFIRM_DELETE)) {
 
-    this.request({
-      type:'delete',
-      url: `/api/assets/${id}`
-    })
-    .fail(() => { $(e.target).parents('.thumb').animateCss('shake') })
-    .then(() => {
+      let index = e.item.index
+      let assets = opts.record[opts.name]
+      let id = assets[index].id
+
+      this.request({
+        type:'delete',
+        url: `/api/assets/${id}`
+      })
+      .fail(() => { $(e.target).parents('.thumb').animateCss('shake') })
+      .then(() => {
         $(e.target)
         .parents('.thumb')
         .one($.animationEnd, (e) => {
@@ -42,6 +44,7 @@
         })
         .animateCss('bounceOut')
       })
+    }
   }
   this.on('update', this.parent.update)
   </script>

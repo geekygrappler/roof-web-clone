@@ -151,3 +151,9 @@ nav a:hover {
 .no-decoration {
   text-decoration: none
 }
+
+.readonly input{
+  pointer-events:none;
+  color: $black;
+}
+.readonly r-tender-item-input {display: none}

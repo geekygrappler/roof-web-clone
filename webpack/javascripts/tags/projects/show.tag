@@ -29,5 +29,13 @@ import './_quotes.tag'
     {href: `/app/projects/${opts.id}/team`, name: 'team', tag: 'r-project-team'},
     {href: `/app/projects/${opts.id}/quotes`, name: 'quotes', tag: 'r-project-quotes'}
   ]
+  if(opts.api.currentAccount.user_type == 'Professional') {
+    this.subnavLinks = [
+      {href: `/app/projects/${opts.id}/overview`, name: 'overview', tag: 'r-project-overview'},
+      {href: `/app/projects/${opts.id}/docs`, name: 'docs', tag: 'r-project-docs'},
+      {href: `/app/projects/${opts.id}/team`, name: 'team', tag: 'r-project-team'},
+      {href: `/app/projects/${opts.id}/quotes`, name: 'quotes', tag: 'r-project-quotes'}
+    ]
+  }
   </script>
 </r-projects-show>
