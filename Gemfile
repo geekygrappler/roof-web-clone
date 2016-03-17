@@ -14,6 +14,7 @@ gem 'font-awesome-rails'
 gem 'active_model_serializers', github: "rails-api/active_model_serializers"
 
 gem 'roof_api'
+gem 'carrierwave', git: 'https://github.com/carrierwaveuploader/carrierwave.git'
 gem "fog-aws"
 
 group :development, :test do
