@@ -18206,11 +18206,23 @@
 	  };
 	});
 	
-	riot.tag2("r-tender-item-group", "<ul class=\"list-reset ml2 mb3\"> <li> <h4 class=\"mb1\">{group.humanize()}</h4> <ul class=\"list-reset ml2\"> <li class=\"sm-show\"> <div class=\"clearfix py1 border-bottom\"> <div each=\"{name, width in headers}\" class=\"sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate\"> {name.humanize()} </div> </div> </li> <r-tender-item each=\"{items}\"></r-tender-item> </ul> </li> </ul>", "", "", function (opts) {
+	riot.tag2("r-tender-item-group", "<ul class=\"list-reset ml2 mb3\"> <li> <h4 class=\"mb1\">{group.humanize()}</h4> <ul class=\"list-reset ml2\"> <li if=\"{drawHeader()}\" class=\"sm-show\"> <div class=\"clearfix py1 border-bottom\"> <div each=\"{name, width in headers}\" class=\"sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate\"> {name.humanize()} </div> </div> </li> <r-tender-item each=\"{items}\"></r-tender-item> </ul> </li> </ul>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.drawHeader = function () {
+	    if (_this.isMounted) {
+	      return Object.keys(_this.opts.groupitems).indexOf(_this.group) == 0;
+	    }
+	    // return _.findIndex(this.opts.groupitems, (items, groupname) => {
+	    //   console.log(group, this.group, groupname == this.group)
+	    //   return false
+	    // }) == 0
+	  };
+	
 	  this.headers = this.opts.headers;
 	});
 	
-	riot.tag2("r-tender-section", "<div data-disclosure> <h3 data-handle class=\"cursor-pointer inline-block\" onclick=\"{changeIcon}\"> <i class=\"fa fa-{icon} mr1\"></i>{section.name.humanize()} </h3> <a class=\"btn btn-small right mt2\" onclick=\"{removeSection}\"><i class=\"fa fa-trash-o\"></i></a> <div data-details> <r-tender-item-group name=\"task\" each=\"{group, items in section.tasks_by_action}\" headers=\"{parent.headers.task}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <r-tender-item-group name=\"material\" if=\"{section.materials && section.materials.length > 0}\" each=\"{group, items in section.materials_by_group}\" headers=\"{parent.headers.material}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <div class=\"clearfix mxn1\"> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"task\" auto_focus=\"{true}\" api=\"{parent.opts.api}\" icon=\"tasks\"></r-tender-item-input> </div> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"material\" api=\"{parent.opts.api}\" icon=\"shopping-basket\"></r-tender-item-input> </div> </div> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-tender-section", "<div data-disclosure> <h3 data-handle class=\"cursor-pointer inline-block\" onclick=\"{changeIcon}\"> <i class=\"fa fa-{icon} mr1\"></i>{section.name.humanize()} </h3> <a class=\"btn btn-small right mt2\" onclick=\"{removeSection}\"><i class=\"fa fa-trash-o\"></i></a> <div data-details> <r-tender-item-group name=\"task\" groupitems=\"{section.tasks_by_action}\" each=\"{group, items in section.tasks_by_action}\" headers=\"{parent.headers.task}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <r-tender-item-group name=\"material\" groupitems=\"{section.materials_by_group}\" if=\"{section.materials && section.materials_by_group.length > 0}\" each=\"{group, items in section.materials_by_group}\" headers=\"{parent.headers.material}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <div class=\"clearfix mxn1\"> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"task\" auto_focus=\"{true}\" api=\"{parent.opts.api}\" icon=\"tasks\"></r-tender-item-input> </div> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"material\" api=\"{parent.opts.api}\" icon=\"shopping-basket\"></r-tender-item-input> </div> </div> </div> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.showDisclosures = true;
@@ -18244,7 +18256,9 @@
 	
 	  this.removeItem = function (e, name) {
 	    name = name.plural();
-	    var index = _.findIndex(_this.section[name], { id: e.item.id });
+	    var index = _.findIndex(_this.section[name], function (itm) {
+	      return _.isEqual(itm, e.item);
+	    });
 	    _this.section[name].splice(index, 1);
 	    _this.update();
 	    _this.opts.api.tenders.trigger("update");

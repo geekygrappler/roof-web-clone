@@ -112,7 +112,7 @@ import from '../../mixins/tender.js'
     <li>
       <h4 class="mb1">{ group.humanize() }</h4>
       <ul class="list-reset ml2">
-        <li class="sm-show">
+        <li if="{drawHeader()}" class="sm-show">
           <div class="clearfix py1 border-bottom">
             <div each="{ name, width in headers }" class="sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate">
               { name.humanize() }
@@ -126,6 +126,16 @@ import from '../../mixins/tender.js'
     </li>
   </ul>
   <script>
+  this.drawHeader = () => {
+    if (this.isMounted) {
+      return Object.keys(this.opts.groupitems).indexOf(this.group) == 0
+    }
+    // return _.findIndex(this.opts.groupitems, (items, groupname) => {
+    //   console.log(group, this.group, groupname == this.group)
+    //   return false
+    // }) == 0
+  }
+
   this.headers = this.opts.headers
   </script>
 </r-tender-item-group>
@@ -141,6 +151,7 @@ import from '../../mixins/tender.js'
 
       <r-tender-item-group
         name="task"
+        groupitems="{section.tasks_by_action}"
         each="{ group, items in section.tasks_by_action }"
         headers="{ parent.headers.task }"
         onitemremoved="{ removeItem }">
@@ -148,7 +159,8 @@ import from '../../mixins/tender.js'
 
       <r-tender-item-group
         name="material"
-        if="{ section.materials && section.materials.length > 0 }"
+        groupitems="{section.materials_by_group}"
+        if="{ section.materials && section.materials_by_group.length > 0 }"
         each="{ group, items in section.materials_by_group }"
         headers="{ parent.headers.material }"
         onitemremoved="{ removeItem }">
@@ -195,7 +207,7 @@ import from '../../mixins/tender.js'
 
   this.removeItem = (e, name) => {
     name = name.plural()
-    let index = _.findIndex(this.section[name], {id: e.item.id})
+    let index = _.findIndex(this.section[name], itm => _.isEqual(itm, e.item) )
     this.section[name].splice(index, 1)
     this.update()
     this.opts.api.tenders.trigger('update')
