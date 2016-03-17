@@ -8,7 +8,7 @@ let apis = {
   registrations: riot.observable(),
   passwords: riot.observable()
 }
-let resources = ['projects']
+let resources = ['projects', 'leads']
 resources.forEach((api) =>{
   apis[api] = riot.observable()
 

@@ -2638,7 +2638,7 @@
 	  registrations: riot.observable(),
 	  passwords: riot.observable()
 	};
-	var resources = ["projects"];
+	var resources = ["projects", "leads"];
 	resources.forEach(function (api) {
 	  apis[api] = riot.observable();
 	
@@ -2920,7 +2920,7 @@
 	    this.update({ busy: false });
 	    switch (xhr.status) {
 	      case 422:
-	        this.update({ errors: xhr.responseJSON.errors });
+	        this.update({ errors: xhr.responseJSON.errors || xhr.responseJSON.error || xhr.responseJSON });
 	        break;
 	      case 401:
 	        this.showAuthModal();
@@ -3165,71 +3165,11 @@
 	
 	var options = __webpack_require__(19);
 	
-	riot.tag2("r-files-input-with-preview", "<div class=\"relative\"> <r-file-input name=\"{opts.name}\" record=\"{opts.record}\" data-accept=\"{opts.data_accept}\" accept=\"{opts.accept}\"></r-file-input> <div class=\"border center dropzone\"> <i class=\"fa fa-plus fa-2x mt3\"></i> <p>Drag and drop your documents here or click to select</p> <div class=\"clearfix upload-previews\"> <div each=\"{asset, index in opts.record[opts.name]}\" class=\"sm-col sm-col-4 p1 rounded center thumb animated bounceIn\"> <div class=\"border p1 truncate overflow-hidden\"> <a class=\"cursor-zoom\" href=\"{asset.file.url}\" target=\"_blank\"> <img riot-src=\"{asset.content_type.indexOf('image') > -1 ? asset.file.thumb.url : asset.file.cover.url}\" class=\"fixed-height\"> </a> <br><a class=\"btn btn-small\" onclick=\"{destroy}\"><i class=\"fa fa-times\"></i></a> </div> </div> </div> </div> </div>", "", "", function (opts) {
-	  var _this = this;
+	__webpack_require__(22);
 	
-	  this.destroy = function (e) {
-	    var index = e.item.index;
-	    var assets = opts.record[opts.name];
-	    var id = assets[index].id;
+	__webpack_require__(23);
 	
-	    _this.request({
-	      type: "delete",
-	      url: "/api/assets/" + id
-	    }).fail(function () {
-	      $(e.target).parents(".thumb").animateCss("shake");
-	    }).then(function () {
-	      $(e.target).parents(".thumb").one($.animationEnd, function (e) {
-	        assets.splice(index, 1);
-	        $(e.target).remove();
-	      }).animateCss("bounceOut");
-	    });
-	  };
-	  this.on("update", this.parent.update);
-	});
-	
-	riot.tag2("r-file-input", "<input type=\"file\" name=\"{opts.name}\" multiple class=\"absolute col-12 left-0 top-0 bottom-0 center transparent\" style=\"height:100%\" data-accept=\"{opts.data_accept}\" accept=\"{opts.accept}\" ondragover=\"{fileDragHover}\" ondragleave=\"{fileDragHover}\" ondrop=\"{fileSelectHandler}\">", "", "", function (opts) {
-	  var _this = this;
-	
-	  this.index = 0;
-	
-	  this.fileDragHover = function (e) {
-	    e.stopPropagation();
-	    e.preventDefault();
-	    $(".dropzone", _this.parent.root).toggleClass("hover", e.type === "dragover");
-	  };
-	  this.fileSelectHandler = function (e) {
-	    // cancel event and hover styling
-	    _this.fileDragHover(e);
-	
-	    // // fetch FileList object
-	    var files = e.dataTransfer && e.dataTransfer.files.length > 0 ? e.dataTransfer.files : e.currentTarget.files;
-	    _this.uploader.fileupload("add", {
-	      files: files
-	    });
-	  };
-	  this.on("mount", function () {
-	
-	    _this.uploader = $("input[type=file]", _this.root).fileupload({
-	      paramName: "asset[file]",
-	      url: "/api/assets",
-	      dropZone: $(".dropzone", _this.parent.root),
-	      add: function (e, data) {
-	        // not a new project? then assign assets directly to it
-	        if (opts.record.id) data.formData = { "asset[project_id]": opts.record.id };
-	        data.submit().success(function (result, textStatus, jqXHR) {
-	          var files = opts.record[opts.name] || [];
-	          files.push(result);
-	          opts.record[opts.name] = files;
-	
-	          _this.parent.update();
-	        }).error(function (jqXHR, textStatus, errorThrown) {
-	          console.error("upload err", textStatus);
-	        });
-	      }
-	    });
-	  });
-	});
+	__webpack_require__(21);
 	
 	riot.tag2("r-projects-brief", "<yield if=\"{!opts.api.currentAccount}\" to=\"header\"> <header class=\"container\"> <nav class=\"relative clearfix {step > 0 ? 'black' : 'white'} h5\"> <div class=\"left\"> <a href=\"/\" class=\"btn py2\"><img riot-src=\"/images/logos/{step > 0 ? 'black' : 'white'}.svg\" class=\"logo--small\"></a> </div> </nav> </header> </yield> <yield if=\"{opts.api.currentAccount}\" to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <section if=\"{!opts.api.currentAccount}\" class=\"absolute col-12 center px2 py2 white {out: step != 0}\" data-step=\"0\"> <div class=\"container\"> <h1 class=\"h1 h1-responsive sm-mt4 mb1\">Thanks for getting started!</h1> <p class=\"h3 sm-col-6 mx-auto mb2\">The next few questions will create your brief :)</p> <div><button class=\"btn btn-big btn-primary mb3\" onclick=\"{start}\">Ok, Got it</button></div> <p>Or <button class=\"h5 btn btn-narrow btn-outline white ml1 mr1\" onclick=\"{showArrangeCallbackModal}\">Arrange a callback</button> to speak with a human</p> </div> </section> <form name=\"form\" action=\"/api/projects\" onsubmit=\"{submit}\"> <section class=\"absolute col-12 center px2 py2 {out: step != 1}\" data-step=\"1\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Mission</h1> <div class=\"clearfix mxn2 border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === project.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === project.kind}\"> </a> </div> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 2}\" data-step=\"2\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Helpful details</h1> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" autofocus=\"true\" oninput=\"{setValue}\">{project.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === project.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === project.brief.preferred_start}\">{value}</option> </select> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb4\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb4\" onclick=\"{nextStep}\">Continue</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 3}\" data-step=\"3\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Documents and Photos</h1> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-12 px2 mb2\"> <p class=\"h2\">Upload plans, documents, site photos or any other files about your project</p> <r-files-input-with-preview name=\"assets\" record=\"{project}\"></r-files-input-with-preview> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb1\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb1\" onclick=\"{nextStep}\">Continue</a> </div> <div class=\"right-align mb4\"> <a onclick=\"{parent.nextStep}\">Skip for now</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 4}\" data-step=\"4\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Address</h1> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{project.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{project.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{project.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb1\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb1\" onclick=\"{nextStep}\">Continue</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 5}\" data-step=\"5\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Project Summary</h1> <div class=\"clearfix p3 border mb3\"> <p class=\"h3 mt0\"> You are planning a <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--project-type\">{project.kind}</span></strong> <span show=\"{!_.isEmpty(_.compact(_.values(project.address)))}\" class=\"summary--address-container\">at <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--address\"><span each=\"{name, add in project.address}\">{add}, </span></span></strong></span>. The basic overview of the brief is: <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--description\">{project.brief.description}</span></strong>. <br> <span show=\"{project.brief.budget}\" class=\"summary--budget-container\">You have a budget of <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--budget\">{project.brief.budget}</span></strong></span> <span show=\"{project.brief.preferred_start}\" class=\"summary--start-date-container\">and would like to start <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--start-date\">{project.brief.preferred_start}</span></strong>.</span> </p> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb4\" onclick=\"{prevStep}\">Back</a> <button class=\"btn btn-big btn-primary mb4\" type=\"submit\">Correct! Make it happen</button> </div> </div> </section> </form>", "", "", function (opts) {
 	  var _this = this;
@@ -3915,6 +3855,104 @@
 	
 	module.exports = DotObject;
 
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-arrange-callback", "<div if=\"{lead}\" class=\"center\"> <h1 class=\"mt0\">Your callback has been successfully arranged.</h2> <p class=\"h3 sm-col-6 mx-auto mb2\">Thanks for your interest! We will get back to you very shortly.</p> <a href=\"/\" class=\"btn btn-primary gray\">Take me home</a> </div> <form if=\"{!lead}\" name=\"form\" classes=\"sm-col-12 left-align\" action=\"/api/leads\" onsubmit=\"{submit}\"> <h2 class=\"center mt0 mb2\">A 1Roof expert will get in touch soon to talk about your project and help you with any questions or concerns you may have. </h2> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"first_name\">First Name *</label> <input id=\"first_name\" class=\"block col-12 mb2 field\" type=\"text\" name=\"first_name\" autofocus=\"true\"> <span if=\"{errors.first_name}\" class=\"inline-error\">{errors.first_name}</span> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"last_name\">First Name *</label> <input id=\"last_name\" class=\"block col-12 mb2 field\" type=\"text\" name=\"last_name\"> <span if=\"{errors.last_name}\" class=\"inline-error\">{errors.last_name}</span> </div> </div> <label for=\"phone_number\">Phone Number *</label> <input id=\"phone_number\" class=\"block col-12 mb2 field\" type=\"tel\" name=\"phone_number\"> <span if=\"{errors.phone_number}\" class=\"inline-error\">{errors.phone_number}</span> <button class=\"block col-12 mb2 btn btn-big btn-primary\" type=\"submit\">Arrange a Callback</button> </form>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.submit = function (e) {
+	    var data = _this.serializeForm(_this.form);
+	    opts.api.leads.create(data).fail(_this.errorHandler).then(function (lead) {
+	      return _this.update({ lead: lead });
+	    });
+	  };
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-file-input", "<input type=\"file\" name=\"{opts.name}\" multiple class=\"absolute col-12 left-0 top-0 bottom-0 center transparent\" style=\"height:100%\" data-accept=\"{opts.data_accept}\" accept=\"{opts.accept}\" ondragover=\"{fileDragHover}\" ondragleave=\"{fileDragHover}\" ondrop=\"{fileSelectHandler}\">", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.index = 0;
+	
+	  this.fileDragHover = function (e) {
+	    e.stopPropagation();
+	    e.preventDefault();
+	    $(".dropzone", _this.parent.root).toggleClass("hover", e.type === "dragover");
+	  };
+	  this.fileSelectHandler = function (e) {
+	    // cancel event and hover styling
+	    _this.fileDragHover(e);
+	
+	    // // fetch FileList object
+	    var files = e.dataTransfer && e.dataTransfer.files.length > 0 ? e.dataTransfer.files : e.currentTarget.files;
+	    _this.uploader.fileupload("add", {
+	      files: files
+	    });
+	  };
+	  this.on("mount", function () {
+	
+	    _this.uploader = $("input[type=file]", _this.root).fileupload({
+	      paramName: "asset[file]",
+	      url: "/api/assets",
+	      dropZone: $(".dropzone", _this.parent.root),
+	      add: function (e, data) {
+	        // not a new project? then assign assets directly to it
+	        if (opts.record.id) data.formData = { "asset[project_id]": opts.record.id };
+	        data.submit().success(function (result, textStatus, jqXHR) {
+	          var files = opts.record[opts.name] || [];
+	          files.push(result);
+	          opts.record[opts.name] = files;
+	
+	          _this.parent.update();
+	        }).error(function (jqXHR, textStatus, errorThrown) {
+	          console.error("upload err", textStatus);
+	        });
+	      }
+	    });
+	  });
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-files-input-with-preview", "<div class=\"relative\"> <r-file-input name=\"{opts.name}\" record=\"{opts.record}\" data-accept=\"{opts.data_accept}\" accept=\"{opts.accept}\"></r-file-input> <div class=\"border center dropzone\"> <i class=\"fa fa-plus fa-2x mt3\"></i> <p>Drag and drop your documents here or click to select</p> <div class=\"clearfix upload-previews\"> <div each=\"{asset, index in opts.record[opts.name]}\" class=\"sm-col sm-col-4 p1 rounded center thumb animated bounceIn\"> <div class=\"border p1 truncate overflow-hidden\"> <a class=\"cursor-zoom\" href=\"{asset.file.url}\" target=\"_blank\"> <img riot-src=\"{asset.content_type.indexOf('image') > -1 ? asset.file.thumb.url : asset.file.cover.url}\" class=\"fixed-height\"> </a> <br><a class=\"btn btn-small\" onclick=\"{destroy}\"><i class=\"fa fa-times\"></i></a> </div> </div> </div> </div> </div>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.destroy = function (e) {
+	    var index = e.item.index;
+	    var assets = opts.record[opts.name];
+	    var id = assets[index].id;
+	
+	    _this.request({
+	      type: "delete",
+	      url: "/api/assets/" + id
+	    }).fail(function () {
+	      $(e.target).parents(".thumb").animateCss("shake");
+	    }).then(function () {
+	      $(e.target).parents(".thumb").one($.animationEnd, function (e) {
+	        assets.splice(index, 1);
+	        $(e.target).remove();
+	      }).animateCss("bounceOut");
+	    });
+	  };
+	  this.on("update", this.parent.update);
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }
 /******/ ]);

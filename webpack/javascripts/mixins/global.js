@@ -23,7 +23,7 @@ riot.mixin({
     this.update({busy: false})
     switch(xhr.status) {
     case 422:
-      this.update({errors: xhr.responseJSON.errors})
+      this.update({errors: (xhr.responseJSON.errors || xhr.responseJSON.error || xhr.responseJSON)})
       break;
     case 401:
       this.showAuthModal()
