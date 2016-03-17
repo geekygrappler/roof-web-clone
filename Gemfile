@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-
+source 'https://Urx7-1GrXUKKC-1LnfGi@gem.fury.io/onurroof/'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.5.1'
@@ -13,6 +13,8 @@ gem 'puma'
 gem 'font-awesome-rails'
 gem 'active_model_serializers', github: "rails-api/active_model_serializers"
 
+gem 'roof_api'
+
 group :development, :test do
   gem 'byebug'
 end
@@ -21,5 +23,5 @@ group :development do
   gem 'web-console', '~> 2.0'
   gem 'spring'
 
-  gem 'roof_api', path: '../roof-api'
+  #gem 'roof_api', path: '../roof-api'
 end
