@@ -2627,6 +2627,10 @@
 	
 	var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
 	
+	var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+	
 	var riot = _interopRequire(__webpack_require__(1));
 	
 	var request = _interopRequire(__webpack_require__(4));
@@ -2638,6 +2642,35 @@
 	  registrations: riot.observable(),
 	  passwords: riot.observable()
 	};
+	
+	var Account = (function () {
+	  function Account(account) {
+	    _classCallCheck(this, Account);
+	
+	    _.extend(this, account);
+	  }
+	
+	  _createClass(Account, {
+	    isCustomer: {
+	      get: function () {
+	        return this.user_type === "Customer";
+	      }
+	    },
+	    isProfessional: {
+	      get: function () {
+	        return this.user_type === "Professional";
+	      }
+	    },
+	    isAdministrator: {
+	      get: function () {
+	        return this.user_type === "Administrator";
+	      }
+	    }
+	  });
+	
+	  return Account;
+	})();
+	
 	var resources = ["projects", "leads", "tenders", "quotes", "appointments"];
 	resources.forEach(function (api) {
 	  apis[api] = riot.observable();
@@ -2713,7 +2746,7 @@
 	    apis.sessions.trigger("check.fail", xhr);
 	  }).then(function (data) {
 	    $.csrfToken = null;
-	    apis.currentAccount = data;
+	    apis.currentAccount = new Account(data);
 	    //riot.route(apis.authenticatedRoot)
 	    apis.sessions.trigger("check.success", data);
 	  });
@@ -2727,7 +2760,7 @@
 	    return apis.sessions.trigger("signin.fail", xhr);
 	  }).then(function (data) {
 	    $.csrfToken = null;
-	    apis.currentAccount = data;
+	    apis.currentAccount = new Account(data);
 	    //riot.route(apis.authenticatedRoot)
 	    apis.sessions.trigger("signin.success", data);
 	  });
@@ -2756,7 +2789,7 @@
 	    return apis.registrations.trigger("signup.fail", xhr);
 	  }).then(function (data) {
 	    $.csrfToken = null;
-	    apis.currentAccount = data;
+	    apis.currentAccount = new Account(data);
 	    //riot.route(apis.authenticatedRoot)
 	    apis.registrations.trigger("signup.success", data);
 	  });
@@ -17410,7 +17443,7 @@
 	      api: opts.api,
 	      project_id: project_id,
 	      id: id,
-	      readonly: opts.api.currentAccount && opts.api.currentAccount.user_type == "Professional"
+	      readonly: opts.api.currentAccount && opts.api.currentAccount.isProfessional
 	    });
 	  });
 	  riot.route("projects/*/quotes/new", function (project_id) {
@@ -17425,7 +17458,7 @@
 	      api: opts.api,
 	      project_id: project_id,
 	      id: id,
-	      readonly: opts.api.currentAccount && opts.api.currentAccount.user_type == "Customer"
+	      readonly: opts.api.currentAccount && opts.api.currentAccount.isCustomer
 	    });
 	  });
 	});
@@ -17599,7 +17632,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-projects-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <h1 class=\"px2\">Projects <a href=\"/app/projects/new\" class=\"ml1 h5 btn btn-primary\"><i class=\"fa fa-rocket mr1\"></i> New Project</a></h1> <ul class=\"list-reset\"> <li each=\"{projects}\" class=\"p2\"> <div class=\"border p2\"> <a href=\"/app/projects/{id}\" class=\"no-decoration\"> <h3>{name}</h3> </a> <div> <i class=\"fa fa-clock-o mr1\"></i> updated {fromNow(updated_at)} </div> <div if=\"{opts.api.currentAccount.user_type == 'Administrator'}\" class=\"mt2 table\"> <span class=\"table-cell mr2\"> <i class=\"fa fa-user mr1\"></i> customers: {_.pluck(_.pluck(customers,'profile'),'first_name')} </span> <span class=\"table-cell mr2\"> <i class=\"fa fa-user-md mr1\"></i> adminstrators: {_.pluck(_.pluck(administrators,'profile'),'first_name')} </span> <span class=\"table-cell mr2\"> <i class=\"fa fa-user mr1\"></i> professionals: {_.pluck(_.pluck(professionals,'profile'),'first_name')} </span> </div> </div> </li> </ul> </div>", "", "", function (opts) {
+	riot.tag2("r-projects-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <h1 class=\"px2\">Projects <a href=\"/app/projects/new\" class=\"ml1 h5 btn btn-primary\"><i class=\"fa fa-rocket mr1\"></i> New Project</a></h1> <ul class=\"list-reset\"> <li each=\"{projects}\" class=\"p2\"> <div class=\"border p2\"> <a href=\"/app/projects/{id}\" class=\"no-decoration\"> <h3>{name}</h3> </a> <div> <i class=\"fa fa-clock-o mr1\"></i> updated {fromNow(updated_at)} </div> <div if=\"{opts.api.currentAccount.isAdministrator}\" class=\"mt2 table\"> <span class=\"table-cell mr2\"> <i class=\"fa fa-user mr1\"></i> customers: {_.pluck(_.pluck(customers,'profile'),'first_name')} </span> <span class=\"table-cell mr2\"> <i class=\"fa fa-user-md mr1\"></i> adminstrators: {_.pluck(_.pluck(administrators,'profile'),'first_name')} </span> <span class=\"table-cell mr2\"> <i class=\"fa fa-user mr1\"></i> professionals: {_.pluck(_.pluck(professionals,'profile'),'first_name')} </span> </div> </div> </li> </ul> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  opts.api.projects.on("index.success", function (projects) {
@@ -17952,7 +17985,7 @@
 	
 	riot.tag2("r-projects-show", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <div class=\"py3 px2\"> <div class=\"clearfix mxn2\"> <r-subnav links=\"{subnavLinks}\" tab=\"{opts.tab}\"></r-subnav> <div class=\"sm-col sm-col-9 sm-px2\"> <r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\" content_opts=\"{opts.contentOpts}\"></r-tabs> </div> </div> </div> </div>", "", "", function (opts) {
 	  this.subnavLinks = [{ href: "/app/projects/" + opts.id + "/overview", name: "overview", tag: "r-project-overview" }, { href: "/app/projects/" + opts.id + "/brief", name: "brief", tag: "r-project-brief" }, { href: "/app/projects/" + opts.id + "/docs", name: "docs", tag: "r-project-docs" }, { href: "/app/projects/" + opts.id + "/team", name: "team", tag: "r-project-team" }, { href: "/app/projects/" + opts.id + "/quotes", name: "quotes", tag: "r-project-quotes" }];
-	  if (opts.api.currentAccount.user_type == "Professional") {
+	  if (opts.api.currentAccount.isProfessional) {
 	    this.subnavLinks = [{ href: "/app/projects/" + opts.id + "/overview", name: "overview", tag: "r-project-overview" }, { href: "/app/projects/" + opts.id + "/docs", name: "docs", tag: "r-project-docs" }, { href: "/app/projects/" + opts.id + "/team", name: "team", tag: "r-project-team" }, { href: "/app/projects/" + opts.id + "/quotes", name: "quotes", tag: "r-project-quotes" }];
 	  }
 	});
@@ -18002,7 +18035,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-project-overview", "<h2 class=\"mt0\">{project.name}</h2> <hr> <h3>Description</h3> <p>{project.brief.description}</p> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-6 px1\"> <h3>Budget</h3> <p if=\"{project.brief.budget}\">{project.brief.budget}</p> <p if=\"{!project.brief.budget && opts.api.currentAccount.user_type != 'Professional'}\">You have not set a project budget yet (<a href=\"/app/projects/{project.id}/brief\">add one</a>)</p> </div> <div class=\"sm-col sm-col-6 px1\"> <h3>Preferred Start date</h3> <p if=\"{project.brief.preferred_start}\">{project.brief.preferred_start}</p> <p if=\"{!project.brief.preferred_start && opts.api.currentAccount.user_type != 'Professional'}\">You have not defined a start date yet (<a href=\"/app/projects/{project.id}/brief\">set now</a>)</p> </div> </div> <h3>Address</h3> <address if=\"{hasAnyValue(project.address)}\" class=\"mb3\"> {project.address.street_address} {project.address.city}, {project.address.postcode} </address> <p if=\"{!hasAnyValue(project.address) && opts.api.currentAccount.user_type != 'Professional'}\">You have not defined the address yet (<a href=\"/app/projects/{project.id}/brief\">fix now</a>)</p> </div>", "", "", function (opts) {
+	riot.tag2("r-project-overview", "<h2 class=\"mt0\">{project.name}</h2> <hr> <h3>Description</h3> <p>{project.brief.description}</p> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-6 px1\"> <h3>Budget</h3> <p if=\"{project.brief.budget}\">{project.brief.budget}</p> <p if=\"{!project.brief.budget && !opts.api.currentAccount.isProfessional}\">You have not set a project budget yet (<a href=\"/app/projects/{project.id}/brief\">add one</a>)</p> </div> <div class=\"sm-col sm-col-6 px1\"> <h3>Preferred Start date</h3> <p if=\"{project.brief.preferred_start}\">{project.brief.preferred_start}</p> <p if=\"{!project.brief.preferred_start && !opts.api.currentAccount.isProfessional}\">You have not defined a start date yet (<a href=\"/app/projects/{project.id}/brief\">set now</a>)</p> </div> </div> <h3>Address</h3> <address if=\"{hasAnyValue(project.address)}\" class=\"mb3\"> {project.address.street_address} {project.address.city}, {project.address.postcode} </address> <p if=\"{!hasAnyValue(project.address) && !opts.api.currentAccount.isProfessional}\">You have not defined the address yet (<a href=\"/app/projects/{project.id}/brief\">fix now</a>)</p> </div>", "", "", function (opts) {
 	  this.mixin("projectTab");
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
@@ -18103,7 +18136,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <p if=\"{_.isEmpty(project.tender) && _.isEmpty(quotes)}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <br> <a class=\"mt2 btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </p> <p if=\"{_.isEmpty(project.tender) && !_.isEmpty(quotes)}\"> Here is the <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a> we've prepared for you. Actual <strong>quotes</strong> from Professionals will appear here when they submit them. </p> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"inline-block p1 sm-col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Tender</span> <p class=\"overflow-hidden m0 mxn2 p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Show</a> <a class=\"btn btn-small bg-darken-2\" if=\"{opts.api.currentAccount.user_type == 'Professional'}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> <li each=\"{quotes}\" class=\"inline-block p1 sm-col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Quote</span> <span if=\"{accepted_at}\" class=\"inline-block align-middle h6 mb1 px1 border pill\">Accepted</span> <span if=\"{!accepted_at && submitted_at}\" class=\"inline-block align-middle h6 mb1 px1 border pill\">Submitted</span> <p class=\"overflow-hidden m0 mxn2 p1 bg-yellow\"> <span if=\"{!accepted_at && submitted_at}\"><i class=\"fa fa-clock-o mr1\"></i>submitted at: {fromNow(submitted_at)}</i></span> <span if=\"{accepted_at}\"><i class=\"fa fa-clock-o mr1\"></i>accepted at: {fromNow(accepted_at)}</i></span> <br> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Show</a> <a class=\"btn btn-small bg-darken-2\" if=\"{opts.api.currentAccount.user_type == 'Professional' && !accepted_at}\" onclick=\"{delete}\">Delete</a> </p> </div> </li> </ul>", "", "", function (opts) {
+	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <p if=\"{_.isEmpty(project.tender) && _.isEmpty(quotes)}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <br> <a class=\"mt2 btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </p> <p if=\"{_.isEmpty(project.tender) && !_.isEmpty(quotes)}\"> Here is the <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a> we've prepared for you. Actual <strong>quotes</strong> from Professionals will appear here when they submit them. </p> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"inline-block p1 sm-col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Tender</span> <p class=\"overflow-hidden m0 mxn2 p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Show</a> <a class=\"btn btn-small bg-darken-2\" if=\"{opts.api.currentAccount.isProfessional}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> <li each=\"{quotes}\" class=\"inline-block p1 sm-col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Quote</span> <span if=\"{accepted_at}\" class=\"inline-block align-middle h6 mb1 px1 border pill\">Accepted</span> <span if=\"{!accepted_at && submitted_at}\" class=\"inline-block align-middle h6 mb1 px1 border pill\">Submitted</span> <p class=\"overflow-hidden m0 mxn2 p1 bg-yellow\"> <span if=\"{!accepted_at && submitted_at}\"><i class=\"fa fa-clock-o mr1\"></i>submitted at: {fromNow(submitted_at)}</i></span> <span if=\"{accepted_at}\"><i class=\"fa fa-clock-o mr1\"></i>accepted at: {fromNow(accepted_at)}</i></span> <br> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Show</a> <a class=\"btn btn-small bg-darken-2\" if=\"{opts.api.currentAccount.isProfessional && !accepted_at}\" onclick=\"{delete}\">Delete</a> </p> </div> </li> </ul>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.mixin("projectTab");
@@ -18275,7 +18308,7 @@
 	    task: { name: 7, quantity: 3, actions: opts.readonly ? null : 2 },
 	    material: { name: 7, quantity: 3, actions: opts.readonly ? null : 2 }
 	  };
-	  if (opts.api.currentAccount.user_type == "Administrator") {
+	  if (opts.api.currentAccount.isAdministrator) {
 	    this.headers = {
 	      task: { name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2 },
 	      material: { name: 5, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2 }
@@ -18507,7 +18540,7 @@
 	
 	__webpack_require__(135);
 	
-	riot.tag2("r-quotes-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1>{opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Quote ' + opts.id : 'New Quote'}</h1> <r-tender-section each=\"{section , i in tender.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && tender.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{opts.id && (opts.api.currentAccount && opts.api.currentAccount.user_type == 'Customer')}\" class=\"btn btn-primary btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{tender.accepted_at}\">{tender.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{tender.accepted_at}\">{fromNow(tender.accepted_at)}</span></button> <virtual if=\"{opts.api.currentAccount && opts.api.currentAccount.user_type != 'Customer'}\"> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{opts.id}\" class=\"btn btn-primary btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> </virtual> </form> </div>", "", "", function (opts) {
+	riot.tag2("r-quotes-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1>{opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Quote ' + opts.id : 'New Quote'}</h1> <r-tender-section each=\"{section , i in tender.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && tender.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{opts.id && (opts.api.currentAccount && opts.api.currentAccount.isCustomer)}\" class=\"btn btn-primary btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{tender.accepted_at}\">{tender.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{tender.accepted_at}\">{fromNow(tender.accepted_at)}</span></button> <virtual if=\"{opts.api.currentAccount && opts.api.currentAccount.isCustomer}\"> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{opts.id}\" class=\"btn btn-primary btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> </virtual> </form> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.headers = {

@@ -13,7 +13,7 @@
           <div>
             <i class="fa fa-clock-o mr1"></i> updated {fromNow(updated_at)}
           </div>
-          <div if="{opts.api.currentAccount.user_type == 'Administrator'}" class="mt2 table">
+          <div if="{opts.api.currentAccount.isAdministrator}" class="mt2 table">
 
               <span class="table-cell mr2">
                 <i class="fa fa-user mr1"></i> customers: {_.pluck(_.pluck(customers,'profile'),'first_name')}

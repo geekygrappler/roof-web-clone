@@ -22,7 +22,7 @@
         <span class="inline-block align-middle h6 mb1 px1 border pill">Tender</span>
         <p class="overflow-hidden m0 mxn2 p1 bg-yellow">
           <a class="btn btn-small bg-darken-2" href="/app/projects/{opts.id}/tenders/{project.tender.id}">Show</a>
-          <a class="btn btn-small bg-darken-2" if="{opts.api.currentAccount.user_type == 'Professional'}" onclick="{clone}">Clone</a>
+          <a class="btn btn-small bg-darken-2" if="{opts.api.currentAccount.isProfessional}" onclick="{clone}">Clone</a>
         </p>
       </div>
     </li>
@@ -38,7 +38,7 @@
           <span if="{accepted_at}"><i class="fa fa-clock-o mr1"></i>accepted at: {fromNow(accepted_at)}</i></span>
           <br>
           <a class="btn btn-small bg-darken-2" href="/app/projects/{parent.opts.id}/quotes/{id}">Show</a>
-          <a class="btn btn-small bg-darken-2" if="{opts.api.currentAccount.user_type == 'Professional' && !accepted_at}" onclick="{delete}">Delete</a>
+          <a class="btn btn-small bg-darken-2" if="{opts.api.currentAccount.isProfessional && !accepted_at}" onclick="{delete}">Delete</a>
         </p>
       </div>
     </li>

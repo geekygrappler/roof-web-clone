@@ -8,6 +8,21 @@ let apis = {
   registrations: riot.observable(),
   passwords: riot.observable()
 }
+class Account {
+  constructor(account) {
+    _.extend(this, account)
+  }
+
+  get isCustomer() {
+    return this.user_type === 'Customer'
+  }
+  get isProfessional() {
+    return this.user_type === 'Professional'
+  }
+  get isAdministrator() {
+    return this.user_type === 'Administrator'
+  }
+}
 let resources = ['projects', 'leads', 'tenders', 'quotes', 'appointments']
 resources.forEach((api) =>{
   apis[api] = riot.observable()
@@ -95,7 +110,7 @@ apis.sessions.check = function () {
   })
   .then((data) => {
     $.csrfToken = null
-    apis.currentAccount = data
+    apis.currentAccount = new Account(data)
     //riot.route(apis.authenticatedRoot)
     apis.sessions.trigger('check.success', data)
   })
@@ -109,7 +124,7 @@ apis.sessions.signin = function (creds) {
   .fail((xhr) => apis.sessions.trigger('signin.fail', xhr))
   .then((data) => {
     $.csrfToken = null
-    apis.currentAccount = data
+    apis.currentAccount = new Account(data)
     //riot.route(apis.authenticatedRoot)
     apis.sessions.trigger('signin.success', data)
   })
@@ -138,7 +153,7 @@ apis.registrations.signup = function (data) {
   .fail((xhr) => apis.registrations.trigger('signup.fail', xhr))
   .then((data) => {
     $.csrfToken = null
-    apis.currentAccount = data
+    apis.currentAccount = new Account(data)
     //riot.route(apis.authenticatedRoot)
     apis.registrations.trigger('signup.success', data)
   })

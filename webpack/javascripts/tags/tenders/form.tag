@@ -259,7 +259,7 @@ import from '../../mixins/tender.js'
       task: {name: 7, quantity: 3, actions: opts.readonly ? null : 2},
       material: {name: 7, quantity: 3, actions: opts.readonly ? null : 2}
     }
-    if(opts.api.currentAccount.user_type == 'Administrator') {
+    if(opts.api.currentAccount.isAdministrator) {
       this.headers = {
         task: {name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2},
         material: {name: 5, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2}

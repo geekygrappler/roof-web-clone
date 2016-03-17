@@ -69,7 +69,7 @@ import './quotes/form.tag'
       api: opts.api,
       project_id: project_id,
       id: id,
-      readonly: (opts.api.currentAccount && opts.api.currentAccount.user_type == 'Professional')
+      readonly: (opts.api.currentAccount && opts.api.currentAccount.isProfessional)
     })
   })
   riot.route('projects/*/quotes/new', (project_id) => {
@@ -84,7 +84,7 @@ import './quotes/form.tag'
       api: opts.api,
       project_id: project_id,
       id: id,
-      readonly: (opts.api.currentAccount && opts.api.currentAccount.user_type == 'Customer')
+      readonly: (opts.api.currentAccount && opts.api.currentAccount.isCustomer)
     })
   })
 

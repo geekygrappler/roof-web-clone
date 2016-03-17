@@ -32,10 +32,10 @@ import from '../../mixins/tender.js'
       </div>
 
 
-      <button if="{opts.id && (opts.api.currentAccount && opts.api.currentAccount.user_type == 'Customer')}"
+      <button if="{opts.id && (opts.api.currentAccount && opts.api.currentAccount.isCustomer)}"
       class="btn btn-primary btn-big {busy: busy}" onclick="{acceptQuote}" disabled="{tender.accepted_at}">{tender.accepted_at ? 'Accepted' : 'Accept'} <span if="{tender.accepted_at}">{fromNow(tender.accepted_at)}</span></button>
 
-      <virtual if="{opts.api.currentAccount && opts.api.currentAccount.user_type != 'Customer'}">
+      <virtual if="{opts.api.currentAccount && opts.api.currentAccount.isCustomer}">
         <button type="submit" class="btn btn-primary btn-big {busy: busy}">Save</button>
         <a if="{opts.id}" class="btn btn-primary btn-big {busy: busy}" onclick="{submitQuote}">Submit</a>
       </virtual>
