@@ -29,6 +29,9 @@ body.no-transition{
 nav a:hover {
   color: $yellow
 }
+.bg-yellow a:hover {
+  color: $white
+}
 
 .transparent {
   opacity: 0;

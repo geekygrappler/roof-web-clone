@@ -1,0 +1,34 @@
+{
+  "Administrator": [
+    {"href": "/app/settings", "title": "Settings"},
+    {"href": "/app/signout", "title": "Sign out"}
+  ],
+  "Customer": [
+    {"href": "/app/projects", "title": "Projects"},
+    {"href": "/app/settings", "title": "Settings"},
+    {"href": "/app/signout", "title": "Sign out"}
+  ],
+  "Professional": [
+    {"href": "/app/projects", "title": "Projects"},
+    {"href": "/app/settings", "title": "Settings"},
+    {"href": "/app/signout", "title": "Sign out"}
+  ],
+  "Guest": [
+    {"href": "/pages/about", "title": "About us"},
+    {"href": "/#how-it-works", "title": "How it works"},
+    {"href": "/app/signin", "title": "Sign in"}
+  ],
+  "AdministratorLinks": [
+    {"href": "/app/leads", "title": "Leads"},
+    {"href": "/app/accounts", "title": "Accounts"},
+    {"href": "/app/projects", "title": "Projects"},
+    {"href": "/app/projects", "title": "Payments"},
+    {"href": "/app/quotes", "title": "Quotes"},
+    {"href": "/app/tenders", "title": "Tenders"},
+    {"href": "/app/tender_templates", "title": "Tender Templates"},
+    {"href": "/app/materials", "title": "Materials"},
+    {"href": "/app/tasks", "title": "Tasks"},
+    {"href": "/app/appointments", "title": "Appointments"},
+    {"href": "/app/assets", "title": "Assets"}
+  ]
+}

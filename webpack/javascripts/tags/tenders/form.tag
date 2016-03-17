@@ -34,11 +34,11 @@ import Handlebars from 'handlebars'
       source: source,
       display: 'name',
       templates: {
-        empty: [
-          '<div class="empty-message border-bottom typeahead-item">',
-            'unable to find any Task that match the current query, hit enter to add in Other category',
-          '</div>'
-        ].join('\n'),
+        empty:`
+        <div class="empty-message border-bottom typeahead-item p1">
+          unable to find any ${opts.name} that match the current query, hit enter to add in Other category
+        </div>`
+        ,
         suggestion: Handlebars.compile(`
           <div class="border-bottom typeahead-item">
             <a class="cursor-pointer p2"><span class="bg-orange p1">{{action}}</span> {{name}}</a>
