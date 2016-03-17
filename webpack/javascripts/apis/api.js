@@ -8,14 +8,15 @@ let apis = {
   registrations: riot.observable(),
   passwords: riot.observable()
 }
-let resources = ['projects', 'leads']
+let resources = ['projects', 'leads', 'tenders', 'quotes', 'appointments']
 resources.forEach((api) =>{
   apis[api] = riot.observable()
+  apis[api].cache = {}
 
   apis[api].index = function (data) {
     return request({
       url: `/api/${api}`,
-      data: {[api.singular()]: data}
+      data: data
     })
     .fail((xhr) => {
       apis[api].trigger('index.fail', xhr)

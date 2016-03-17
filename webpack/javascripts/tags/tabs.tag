@@ -8,10 +8,11 @@
       this.opts.tab = e.target.name
       history.pushState(null, e.target.title, e.target.href)
     }
-    riot.mount(this.tab, this.opts.tab, {
+    let options = _.extend(opts.content_opts || opts.contentOpts || {}, {
       navigate: this.navigate,
       api: opts.api
     })
+    riot.mount(this.tab, opts.tab, options)
   }
   this.navigate()
 

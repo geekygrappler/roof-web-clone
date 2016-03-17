@@ -145,7 +145,7 @@ import '../arrange_callback.tag'
       </div>
       <div class="right-align">
         <a class="btn btn-big mb4" onclick="{ prevStep }">Back</a>
-        <button class="btn btn-big btn-primary mb4" type="submit">Correct! Make it happen</button>
+        <button class="btn btn-big btn-primary mb4 {busy: busy}" type="submit">Correct! Make it happen</button>
       </div>
     </div>
   </section>
@@ -229,21 +229,22 @@ import '../arrange_callback.tag'
       this.opts.api.projects.create(project)
       .fail(this.errorHandler)
       .then(project => {
-        this.update({busy:false})
 
         // no assets? go to project page immediately
         if( _.isEmpty(assetsToAssign) ) {
+          this.update({busy:false})
           riot.route(`/projects/${project.id}`)
 
         // got some uploads, let's assign them to project
         } else {
           this.request({url: `/api/projects/${project.id}/assets`, type: 'post', data: {ids: assetsToAssign}})
           .fail(() => {
+            this.update({busy:false})
             window.alert(this.ERRORS.ASSET_ASSIGNMENT)
             riot.route(`/projects/${project.id}`)
           })
           .then(() => {
-            console.log('assets uplaoded')
+            this.update({busy:false})
             riot.route(`/projects/${project.id}`)
           })
         }
@@ -253,14 +254,14 @@ import '../arrange_callback.tag'
     }
   }
 
-  this.showAuthModal = () => {
-    riot.mount('r-modal', {
-      content: 'r-auth',
-      persisted: false,
-      api: opts.api,
-      contentOpts: {tab: 'r-signup', api: opts.api}
-    })
-  }
+  // this.showAuthModal = () => {
+  //   riot.mount('r-modal', {
+  //     content: 'r-auth',
+  //     persisted: false,
+  //     api: opts.api,
+  //     contentOpts: {tab: 'r-signup', api: opts.api}
+  //   })
+  // }
 
   this.showArrangeCallbackModal = () => {
     riot.mount('r-modal', {

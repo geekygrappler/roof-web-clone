@@ -20,5 +20,6 @@
     "Owner/occupier",
     "Owner",
     "Not owned"
-  ]
+  ],
+  "yesNo": ["Yes", "No", "Not needed"]
 }

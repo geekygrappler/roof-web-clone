@@ -33,7 +33,7 @@
     type="tel" name="phone_number" />
     <span if="{errors.phone_number}" class="inline-error">{errors.phone_number}</span>
 
-    <button class="block col-12 mb2 btn btn-big btn-primary" type="submit">Arrange a Callback</button>
+    <button class="block col-12 mb2 btn btn-big btn-primary {busy: busy}" type="submit">Arrange a Callback</button>
   </form>
 
   <script>

@@ -1,5 +1,10 @@
 import request from '../apis/request'
 import dot from 'dot-object'
+import moment from 'moment'
+import numeral from 'numeral/numeral'
+import language from 'numeral/languages/en-gb'
+numeral.language('en-gb', language)
+numeral.language('en-gb')
 
 riot.mixin({
   ERRORS: {
@@ -11,8 +16,10 @@ riot.mixin({
     'ASSET_ASSIGNMENT': 'We got your brief, but unfortunately your files lost on the way to us',
     'BLANK': 'cannot be blank'
   },
-  initialize: function () {
+  init: function () {
     if (this.parent && this.parent.opts.api) this.opts.api = this.parent.opts.api
+    this.on('mount', this.initDomPlugins)
+    this.showAuthModal = this.showAuthModal || this._showAuthModal
   },
   request: request,
   dot: new dot('.', true), // allow overrides!
@@ -42,5 +49,30 @@ riot.mixin({
       break;
     }
     return xhr
-  }
+  },
+  formatCurrency: function (number) {
+    return numeral(number).format('$0,0.00');
+  },
+  formatTime: function(time) {
+    return moment(time).format('MM Do YY')
+  },
+  fromNow: function (time) {
+    return moment(time).fromNow()
+  },
+  initDomPlugins: function () {
+    $('[data-disclosure]', this.root).disclosure(this.showDisclosures)
+    $('a[href*="/app/"]').on('click', function (e) {
+      e.preventDefault()
+      riot.route($(e.currentTarget).attr('href').substr(5))
+    })
+  },
+  _showAuthModal: function () {
+    riot.mount('r-modal', {
+      content: 'r-auth',
+      persisted: false,
+      api: this.opts.api,
+      contentOpts: {tab: 'r-signup', api: this.opts.api}
+    })
+  },
+  preventSubmit: function (e) { e.preventDefault() }
 })

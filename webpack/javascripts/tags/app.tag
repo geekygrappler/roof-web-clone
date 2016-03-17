@@ -1,9 +1,12 @@
 import './_header.tag'
+import './_subnav.tag'
 import './tabs.tag'
 import './auth.tag'
 import './modal.tag'
 import './projects/index.tag'
 import './projects/brief.tag'
+import './projects/show.tag'
+import './tenders/form.tag'
 
 <r-app>
   <yield from="header" />
@@ -41,5 +44,32 @@ import './projects/brief.tag'
   riot.route('projects/new', () => {
     riot.mount(this.content, 'r-projects-brief', {api: opts.api})
   })
+  riot.route('projects/*', (id) => {
+    riot.route(`/projects/${id}/overview`, 'Overview', true)
+  })
+  riot.route('projects/*/*', (id, tab) => {
+    riot.mount(this.content, 'r-projects-show', {
+      api: opts.api,
+      id: id,
+      tab: `r-project-${tab}`,
+      contentOpts: {
+        id: id
+      }
+    })
+  })
+  riot.route('projects/*/tenders/new', (project_id) => {
+    riot.mount(this.content, 'r-tenders-form', {
+      api: opts.api,
+      project_id: project_id
+    })
+  })
+  riot.route('projects/*/tenders/*', (project_id, id) => {
+    riot.mount(this.content, 'r-tenders-form', {
+      api: opts.api,
+      project_id: project_id,
+      id: id
+    })
+  })
+
   </script>
 </r-app>

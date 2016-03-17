@@ -3,7 +3,7 @@
     <div>
       <nav class="relative clearfix black h5">
         <div class="left">
-          <a href="/" class="btn py2"black><img src="/images/logos/black.svg" class="logo--small" /></a>
+          <a href="/app/projects" class="btn py2"black><img src="/images/logos/black.svg" class="logo--small" /></a>
         </div>
         <div class="right py1 sm-show mr1" if="{opts.api.currentAccount}">
           <a href="/app/projects" class="btn py2">Projects</a>

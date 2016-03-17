@@ -25,6 +25,7 @@ $.fn.disclosure =  function (show) {
     if (!show) {
       $element.hide();
     } else {
+      $element.show();
       $element.isActive = true;
     }
   });

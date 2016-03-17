@@ -38,7 +38,7 @@
       type="password" name="password" />
       <span if="{errors['password']}" class="inline-error">{errors['password']}</span>
 
-      <button type="submit" class="block col-12 mb2 btn btn-big btn-primary">Sign up</button>
+      <button type="submit" class="block col-12 mb2 btn btn-big btn-primary {busy: busy}">Sign up</button>
 
       <small class="h6 block center">By signing up, you agree to the <a href="/pages/terms-conditions">Terms of Service</a></small>
 
