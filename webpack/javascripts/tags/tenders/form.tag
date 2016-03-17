@@ -63,7 +63,7 @@ import from '../../mixins/tender.js'
       <hr class="sm-hide">
     </div>
 
-    <div if="{ parent.headers.quantity }" class="col sm-col-{ parent.headers.quantity } col-3">
+    <div if="{ parent.headers.quantity }" class="col sm-col-{ parent.headers.quantity } col-3 center">
       <input type="number" name="quantity" value="{ quantity }" min="0"
       class="fit field inline-input center" oninput="{ input }" />
     </div>
@@ -115,7 +115,7 @@ import from '../../mixins/tender.js'
         <li if="{drawHeader()}" class="sm-show">
           <div class="clearfix py1 border-bottom">
             <div each="{ name, width in headers }" class="sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate">
-              { name.humanize() }
+              { name == 'name' ? '&nbsp;' : name.humanize() }
             </div>
           </div>
         </li>
