@@ -7,4 +7,5 @@
 //= require jquery.iframe-transport
 //= require jquery.fileupload
 //= require jquery.animatecss
+//= require typeahead.bundle
 //= require application.bundle

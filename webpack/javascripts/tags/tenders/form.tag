@@ -1,5 +1,5 @@
-import from '../../mixins/typeahead.js'
 import from '../../mixins/tender.js'
+import Handlebars from 'handlebars'
 
 <r-tender-item-input>
   <div class="relative">
@@ -9,19 +9,49 @@ import from '../../mixins/tender.js'
       placeholder="Search and add {modelName}" autocomplete="off" />
     </form>
     <i class="fa fa-{ opts.icon } absolute right-0 top-0 p1"></i>
-    <ul name="list" if="{ data.length > 0}" class="col-12 list-reset absolute overflow-scroll border bg-white z2" style="max-height:10rem">
-      <li each="{ data }" class="border-bottom typeahead-item {'cursor': isCursor(this)}" onmouseover="{ moveCursor }">
-        <a class="cursor-pointer p2" onclick="{ selectItem }"><span class="bg-orange p1">{action}</span> { name }</a>
-      </li>
-    </ul>
   </div>
-
   <script>
-  this.index = -1
-  this.identifier = 'id'
-  this.apiMethod = 'post'
-  this.apiPath = `/api/${this.opts.name.plural()}/search`
-  this.modelName = this.opts.name
+
+  this.request({url: `/api/${this.opts.name.plural()}`}).then((data) => {
+
+    let source = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      local: data
+    })
+
+    $(this.query)
+    .on('typeahead:notfound', (e) => {
+      this.selectItem(
+        this.getDefaultItem($(this.query).typeahead('val'))
+      )
+    })
+    .on('typeahead:select', (e, suggestion) => {
+      this.selectItem(suggestion)
+    })
+    .typeahead(null, {
+      name: this.opts.name.plural(),
+      source: source,
+      display: 'name',
+      templates: {
+        empty: [
+          '<div class="empty-message border-bottom typeahead-item">',
+            'unable to find any Task that match the current query, hit enter to add in Other category',
+          '</div>'
+        ].join('\n'),
+        suggestion: Handlebars.compile(`
+          <div class="border-bottom typeahead-item">
+            <a class="cursor-pointer p2"><span class="bg-orange p1">{{action}}</span> {{name}}</a>
+          </div>
+        `)
+      }
+    });
+  })
+
+  this.selectItem =  (item) => {
+    $(this.query).typeahead('val', null)
+    this.trigger('itemselected', item)
+  }
 
   this.getDefaultItem = (name) => {
     let item
@@ -44,8 +74,6 @@ import from '../../mixins/tender.js'
     }
     return item
   }
-
-  this.mixin('typeaheadMixin')
 
   if (this.opts.auto_focus) {
     this.on('mount', () => {
@@ -163,7 +191,7 @@ import from '../../mixins/tender.js'
       <r-tender-item-group
         name="material"
         groupitems="{section.materials_by_group}"
-        if="{ section.materials && section.materials_by_group.length > 0 }"
+        if="{ section.materials && section.materials.length > 0 }"
         each="{ group, items in section.materials_by_group }"
         headers="{ parent.headers.material }"
         onitemremoved="{ removeItem }">

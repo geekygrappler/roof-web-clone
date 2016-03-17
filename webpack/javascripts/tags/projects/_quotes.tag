@@ -1,3 +1,4 @@
+
 <r-project-quotes>
 
   <h2 class="mt0">Quotes</h2>
@@ -61,7 +62,11 @@
   opts.api.quotes.index({project_id: opts.id})
   this.clone = (e) => {
     e.preventDefault()
-    opts.api.quotes.create({project_id: opts.id, tender_id: this.project.tender.id, professional_id: this.opts.api.currentAccount.user_id})
+    opts.api.quotes.create({
+      project_id: opts.id,
+      tender_id: this.project.tender.id,
+      professional_id: this.opts.api.currentAccount.user_id
+    })
   }
   this.delete = (e) => {
     e.preventDefault()

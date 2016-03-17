@@ -1,4 +1,3 @@
-import from '../../mixins/typeahead.js'
 import from '../../mixins/tender.js'
 
 <r-quotes-form>

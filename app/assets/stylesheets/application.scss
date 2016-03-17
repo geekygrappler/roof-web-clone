@@ -156,51 +156,25 @@ nav a:hover {
   pointer-events:none;
   color: $black;
 }
-.readonly r-tender-item-input {display: none}
-
-
-
-
-
-
-
-// .tender-item-action-group {
-//   list-style: none;
-//   position: relative;
-//   &::before{
-//     content: "|";
-//     position: absolute;
-//     margin-left: -2.2rem;
-//     margin-top: -.5rem;
-//   }
-// }
-//
-// .tender-item-list-group,{
-//   border-left: 1px dashed;
-//   //padding-left: 1rem;
-//   padding-top: 1rem;
-//   margin-left: -1rem;
-//   margin-top: -1rem;
-//   position: relative;
-// }
-// .tender-item-action{
-//   margin-left: -1rem;
-//   margin-bottom: 1rem;
-// }
-// .tender-item-action::before{
-//   content: "--";
-//   position: absolute;
-//   left: 0.5rem;
-// }
-// .tender-item{
-//   border-bottom: 1px dashed;
-// }
-
-
+.readonly r-tender-item-input {
+  display: none
+}
 
 r-tender-item-group .border-bottom {
   border-bottom-style: dashed;
 }
 r-tender-item-group .border-left {
   border-left-style: dashed;
+}
+
+.twitter-typeahead {
+  display: block !important;
+}
+.tt-menu{
+  width:100%;
+  border: 1px solid $border-color;
+  background-color: $white;
+}
+.tt-cursor {
+  background-color: $yellow;
 }
