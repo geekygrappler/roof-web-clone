@@ -16,7 +16,9 @@ riot.mixin('tenderMixin', {
     }
     this.addSection = (e) => {
       e.preventDefault()
-
+      if (_.isEmpty(this.sectionName.value)) {
+        return $(e.currentTarget).animateCss('shake')
+      }
       let section = {
         id: this.tender.document.sections.length + 1,
         name: this.sectionName.value,
@@ -27,6 +29,12 @@ riot.mixin('tenderMixin', {
       this.sectionName.value = null
       this.update()
       // $('[name=searchable_names]').last()[0].focus()
+    }
+    this.removeSection = (e) => {
+      e.preventDefault()
+      let index = _.findIndex(this.tender.document.sections, s => s.id == e.item.id)
+      this.tender.document.sections.splice(index, 1)
+      this.update()
     }
     this.tenderTotal = () => {
 

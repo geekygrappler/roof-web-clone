@@ -18192,9 +18192,7 @@
 	riot.tag2("r-tender-item", "<li> <div class=\"clearfix animate py1 border-bottom\"> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> {name} <hr class=\"sm-hide\"> </div> <div if=\"{parent.headers.quantity}\" class=\"col sm-col-{parent.headers.quantity} col-3\"> <input name=\"quantity\" value=\"{quantity}\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.price}\" class=\"col sm-col-{parent.headers.price} col-{parent.opts.name == 'task' ? 3 : 2} center\"> <input name=\"price\" value=\"{parent.opts.name == 'task' ? price : (supplied ? price : 0)}\" __disabled=\"{parent.opts.name == 'material' && !supplied}\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.total_cost}\" class=\"col sm-col-{parent.headers.total_cost} col-3 center\"> {this.formatCurrency(parent.opts.name == 'task' ? (price * quantity) : (supplied ? price * quantity : '0'))} </div> <div if=\"{parent.headers.supplied}\" class=\"col sm-col-{parent.headers.supplied} col-1 center\"> <input if=\"{parent.opts.name == 'material'}\" type=\"checkbox\" name=\"supplied\" __checked=\"{supplied}\" class=\"align-middle\" onchange=\"{input}\"> </div> <div if=\"{parent.headers.actions}\" class=\"col sm-col-{parent.headers.actions} col-2 center\"> <a href=\"#\" class=\"btn btn-small navy\" onclick=\"{removeItem}\"><i class=\"fa fa-trash-o\"></i></a> </div> </div> </li>", "", "", function (opts) {
 	  var _this = this;
 	
-	  this.on("mount", function () {
-	    $(".animate", _this.root).animateCss("bounceIn");
-	  });
+	  this.on("mount", function () {});
 	
 	  this.input = function (e) {
 	    e.item[e.target.name] = e.target.type === "checkbox" ? e.target.checked : parseInt(e.target.value);
@@ -18203,9 +18201,8 @@
 	  };
 	
 	  this.removeItem = function (e) {
-	    $(".animate", _this.root).one($.animationEnd, function () {
-	      _this.parent.opts.onitemremoved(e, _this.parent.opts.name);
-	    }).animateCss("bounceOut");
+	    // $('.animate', this.root).one($.animationEnd, () => {
+	    _this.parent.opts.onitemremoved(e, _this.parent.opts.name);
 	  };
 	});
 	
@@ -18213,7 +18210,7 @@
 	  this.headers = this.opts.headers;
 	});
 	
-	riot.tag2("r-tender-section", "<div data-disclosure> <h3 data-handle class=\"cursor-pointer inline-block\" onclick=\"{changeIcon}\"> <i class=\"fa fa-{icon} mr1\"></i>{section.name.humanize()}</h3> <div data-details> <r-tender-item-group name=\"task\" each=\"{group, items in section.tasks_by_action}\" headers=\"{parent.headers.task}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <r-tender-item-group name=\"material\" if=\"{section.materials && section.materials.length > 0}\" each=\"{group, items in section.materials_by_group}\" headers=\"{parent.headers.material}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <div class=\"clearfix mxn1\"> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"task\" auto_focus=\"{true}\" api=\"{parent.opts.api}\" icon=\"tasks\"></r-tender-item-input> </div> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"material\" api=\"{parent.opts.api}\" icon=\"shopping-basket\"></r-tender-item-input> </div> </div> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-tender-section", "<div data-disclosure> <h3 data-handle class=\"cursor-pointer inline-block\" onclick=\"{changeIcon}\"> <i class=\"fa fa-{icon} mr1\"></i>{section.name.humanize()} </h3> <a class=\"btn btn-small right mt2\" onclick=\"{removeSection}\"><i class=\"fa fa-trash-o\"></i></a> <div data-details> <r-tender-item-group name=\"task\" each=\"{group, items in section.tasks_by_action}\" headers=\"{parent.headers.task}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <r-tender-item-group name=\"material\" if=\"{section.materials && section.materials.length > 0}\" each=\"{group, items in section.materials_by_group}\" headers=\"{parent.headers.material}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <div class=\"clearfix mxn1\"> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"task\" auto_focus=\"{true}\" api=\"{parent.opts.api}\" icon=\"tasks\"></r-tender-item-input> </div> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"material\" api=\"{parent.opts.api}\" icon=\"shopping-basket\"></r-tender-item-input> </div> </div> </div> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.showDisclosures = true;
@@ -18300,6 +18297,9 @@
 	  this.mixin("tenderMixin");
 	  this.mixin("projectTab");
 	});
+	
+	// $('.animate', this.root).animateCss('bounceIn')
+	// } ).animateCss('bounceOut')
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
@@ -18424,7 +18424,9 @@
 	    };
 	    this.addSection = function (e) {
 	      e.preventDefault();
-	
+	      if (_.isEmpty(_this.sectionName.value)) {
+	        return $(e.currentTarget).animateCss("shake");
+	      }
 	      var section = {
 	        id: _this.tender.document.sections.length + 1,
 	        name: _this.sectionName.value,
@@ -18433,6 +18435,14 @@
 	      };
 	      _this.tender.document.sections.push(section);
 	      _this.sectionName.value = null;
+	      _this.update();
+	    };
+	    this.removeSection = function (e) {
+	      e.preventDefault();
+	      var index = _.findIndex(_this.tender.document.sections, function (s) {
+	        return s.id == e.item.id;
+	      });
+	      _this.tender.document.sections.splice(index, 1);
 	      _this.update();
 	    };
 	    this.tenderTotal = function () {

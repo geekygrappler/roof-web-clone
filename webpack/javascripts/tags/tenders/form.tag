@@ -90,7 +90,7 @@ import from '../../mixins/tender.js'
 
   <script>
   this.on('mount', () => {
-    $('.animate', this.root).animateCss('bounceIn')
+    // $('.animate', this.root).animateCss('bounceIn')
   })
 
   this.input = (e) => {
@@ -100,9 +100,9 @@ import from '../../mixins/tender.js'
   }
 
   this.removeItem = (e) => {
-    $('.animate', this.root).one($.animationEnd, () => {
+    // $('.animate', this.root).one($.animationEnd, () => {
       this.parent.opts.onitemremoved(e, this.parent.opts.name)
-    } ).animateCss('bounceOut')
+    // } ).animateCss('bounceOut')
   }
   </script>
 </r-tender-item>
@@ -134,7 +134,9 @@ import from '../../mixins/tender.js'
 <r-tender-section>
   <div data-disclosure>
     <h3 data-handle class="cursor-pointer inline-block" onclick="{ changeIcon }">
-      <i class="fa fa-{ icon } mr1"></i>{ section.name.humanize() }</h3>
+      <i class="fa fa-{ icon } mr1"></i>{ section.name.humanize() }
+    </h3>
+    <a class="btn btn-small right mt2" onclick="{removeSection}"><i class="fa fa-trash-o"></i></a>
     <div data-details>
 
       <r-tender-item-group
