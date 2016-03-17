@@ -13,7 +13,7 @@ gem 'puma'
 gem 'font-awesome-rails'
 gem 'active_model_serializers', github: "rails-api/active_model_serializers"
 
-gem 'roof_api', '~> 0.0.2'
+gem 'roof_api', '~> 0.0.3'
 gem 'carrierwave', git: 'https://github.com/carrierwaveuploader/carrierwave.git'
 gem 'fog-aws'
 
@@ -25,5 +25,5 @@ group :development do
   gem 'web-console', '~> 2.0'
   gem 'spring'
 
-  #gem 'roof_api', path: '../roof-api'
+  # gem 'roof_api', path: '../roof-api'
 end
