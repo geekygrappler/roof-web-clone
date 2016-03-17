@@ -26,5 +26,6 @@ module RoofWeb
     # config.middleware.use ActionDispatch::Cookies
     # config.middleware.use ActionDispatch::Session::CookieStore
     # config.middleware.use Rack::Session::Cookie
+    config.assets.initialize_on_precompile = false
   end
 end
