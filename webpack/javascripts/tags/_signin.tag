@@ -44,7 +44,8 @@
       return
     }
 
-    this.update({busy: true})
+    this.update({busy: true, errors: null})
+
     this.opts.api.sessions.signin(creds)
     .fail(this.errorHandler)
     .then(account => {

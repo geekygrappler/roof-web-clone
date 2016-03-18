@@ -221,7 +221,7 @@ import '../arrange_callback.tag'
         return
       }
 
-      this.update({busy: true})
+      this.update({busy: true, errors: null})
 
       // stash uploaded assets to be assigned to project
       assetsToAssign = _.pluck(this.project.assets, 'id')

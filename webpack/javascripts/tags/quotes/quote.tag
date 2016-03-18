@@ -31,28 +31,41 @@ import from '../../mixins/tender.js'
       </div>
 
 
-      <button if="{opts.id && (opts.api.currentAccount && opts.api.currentAccount.isCustomer)}"
-      class="btn btn-primary btn-big {busy: busy}" onclick="{acceptQuote}" disabled="{tender.accepted_at}">{tender.accepted_at ? 'Accepted' : 'Accept'} <span if="{tender.accepted_at}">{fromNow(tender.accepted_at)}</span></button>
+      <button if="{opts.id && !currentAccount.isProfessional}"
+      class="btn btn-primary btn-big {busy: busy}" onclick="{acceptQuote}" disabled="{tender.accepted_at}">
+      {tender.accepted_at ? 'Accepted' : 'Accept'} <span if="{tender.accepted_at}">{fromNow(tender.accepted_at)}</span>
+      </button>
 
-      <virtual if="{opts.api.currentAccount && opts.api.currentAccount.isCustomer}">
+      <virtual if="{!opts.readonly && !currentAccount.isCustomer}">
         <button type="submit" class="btn btn-primary btn-big {busy: busy}">Save</button>
-        <a if="{opts.id}" class="btn btn-primary btn-big {busy: busy}" onclick="{submitQuote}">Submit</a>
+        <a if="{opts.id}" class="btn bg-green white btn-big {busy: busy}" onclick="{submitQuote}">Submit</a>
       </virtual>
     </form>
   </div>
   <script>
 
     this.headers = {
-      task: {name: 6, quantity: 1, price: 1, total_cost: 2, actions: opts.readonly ? null : 2},
-      material: {name: 5, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: opts.readonly ? null : 2}
+      task: {name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2},
+      material: {name: 5, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2}
+    }
+
+    if(opts.readonly){
+      delete this.headers.task.actions
+      this.headers.task.name = 8
+      delete this.headers.material.actions
+      this.headers.material.name = 7
     }
 
     if (opts.id) {
-      opts.api.quotes.on('show.fail', this.errorHandler)
-      opts.api.quotes.on('show.success', tender => {
-        this.update({tender: tender})
+      this.on('mount', () => {
+        opts.api.quotes.on('show.fail', this.errorHandler)
+        opts.api.quotes.on('show.success', this.updateQuote)
+        opts.api.quotes.show(opts.id)
       })
-      opts.api.quotes.show(opts.id)
+      this.on('unmount', () => {
+        opts.api.quotes.off('show.fail', this.errorHandler)
+        opts.api.quotes.off('show.success', this.updateQuote)
+      })
     } else {
       this.tender = {project_id: this.opts.project_id, document: {sections: []}}
     }
@@ -60,7 +73,7 @@ import from '../../mixins/tender.js'
     this.submit = (e) => {
       if (e) e.preventDefault()
 
-      this.update({busy: true})
+      this.update({busy: true, errors: null})
 
       if (this.opts.id) {
         this.opts.api.quotes.update(opts.id, this.tender)
@@ -75,6 +88,11 @@ import from '../../mixins/tender.js'
           history.pushState(null, null, `/app/projects/${tender.project_id}/quotes/${tender.id}`)
         })
       }
+    }
+
+    this.updateQuote = (tender) => {
+      this.opts.readonly = !!tender.accepted_at
+      this.update({tender: tender})
     }
 
     this.submitQuote = (e) => {

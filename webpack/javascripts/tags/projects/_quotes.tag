@@ -3,11 +3,19 @@
 
   <h2 class="mt0">Quotes</h2>
 
-  <p if="{_.isEmpty(project.tender) && _.isEmpty(quotes)}">
+  <p if="{hasNothing()}">
     Hmm, it seems we are still working on your tender and it will show up here when it's ready.
     You can speed up the process by creating a tender document and we will be notified about it.
-    <br>
-    <a class="mt2 btn btn-primary" href="/app/projects/{opts.id}/tenders/new">Create a Tender Document</a>
+    <div if="{hasNothing() && opts.api.currentAccount.isProfessional}" class="mt2">
+      <a class="btn btn-primary" href="/app/projects/{opts.id}/quotes/new">Create a Quote</a>
+    </div>
+    <div if="{hasNothing() && opts.api.currentAccount.isCustomer}" class="mt2">
+      <a class="btn btn-primary" href="/app/projects/{opts.id}/tenders/new">Create a Tender Document</a>
+    </div>
+    <div if="{hasNothing() && opts.api.currentAccount.isAdministrator}" class="mt2">
+      <a class="btn btn-primary mr1" href="/app/projects/{opts.id}/tenders/new">Create a Tender Document</a>
+      <a class="btn btn-primary" href="/app/projects/{opts.id}/quotes/new">Create a Quote</a>
+    </div>
   </p>
 
   <p if="{_.isEmpty(project.tender) && !_.isEmpty(quotes)}">
@@ -46,20 +54,41 @@
   </ul>
 
   <script>
-  this.mixin('projectTab')
-  opts.api.quotes.on('index.fail', this.errorHandler)
-  opts.api.quotes.on('index.success', quotes => this.update({quotes}))
-  opts.api.quotes.on('create.success', quote => {
+
+  this.hasNothing = () => {
+    return _.isEmpty(this.project.tender) && _.isEmpty(this.quotes)
+  }
+
+  this.on('mount', () => {
+    opts.api.quotes.on('index.fail', this.errorHandler)
+    opts.api.quotes.on('index.success', this.updateQuote)
+    opts.api.quotes.on('create.success', this.addQuote)
+    opts.api.quotes.on('delete.success', this.removeQuote)
+    opts.api.quotes.index({project_id: opts.id})
+  })
+  this.on('unmount', () => {
+    opts.api.quotes.off('index.fail', this.errorHandler)
+    opts.api.quotes.off('index.success', this.updateQuote)
+    opts.api.quotes.off('create.success', this.addQuote)
+    opts.api.quotes.off('delete.success', this.removeQuote)
+  })
+
+  this.updateQuote = (quotes) => this.update({quotes})
+
+  this.addQuote = (quote) => {
     this.quotes = this.quotes || []
-    this.quotes.push(quote)
+    if (!_.findWhere(this.quotes, {id: quote.id})) {
+      this.quotes.push(quote)
+    }
     this.update()
-  })
-  opts.api.quotes.on('delete.success', id => {
-    let id = _.findIndex(this.quotes, q => q.id == id)
-    this.quotes.splice(id, 1)
+  }
+
+  this.removeQuote = (id) => {
+    let _id = _.findIndex(this.quotes, q => q.id === id)
+    if (_id > -1) this.quotes.splice(_id, 1)
     this.update()
-  })
-  opts.api.quotes.index({project_id: opts.id})
+  }
+
   this.clone = (e) => {
     e.preventDefault()
     opts.api.quotes.create({
@@ -68,11 +97,14 @@
       professional_id: this.opts.api.currentAccount.user_id
     })
   }
+
   this.delete = (e) => {
     e.preventDefault()
     if (window.confirm(this.ERRORS.CONFIRM_DELETE)) {
       opts.api.quotes.delete(e.item.id)
     }
   }
+
+  this.mixin('projectTab')
   </script>
 </r-project-quotes>

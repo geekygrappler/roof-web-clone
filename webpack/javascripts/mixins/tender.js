@@ -43,7 +43,7 @@ riot.mixin('tenderMixin', {
         return total + item.price * item.quantity
       }, 0)
       let materialTotal = _.reduce(section.materials, (total, item) => {
-        return total + (item.is_supplied ? item.price * item.quantity : 0)
+        return total + (item.supplied ? item.price * item.quantity : 0)
       }, 0)
       if (formatted) {
         return this.formatCurrency(itemTotal + (itemTotal * 20 / 100) + materialTotal)

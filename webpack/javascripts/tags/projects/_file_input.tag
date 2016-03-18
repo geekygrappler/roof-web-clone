@@ -16,14 +16,16 @@
   this.fileDragHover = (e) => {
     e.stopPropagation();
     e.preventDefault();
-    $('.dropzone', this.parent.root).toggleClass("hover", (e.type === "dragover"));
+    $('.dropzone', this.parent.root)
+    .toggleClass("hover", (e.type === "dragover"))
   }
+
   this.fileSelectHandler = (e) => {
     // cancel event and hover styling
     this.fileDragHover(e);
 
     // // fetch FileList object
-    var files = e.dataTransfer && e.dataTransfer.files.length > 0 ? e.dataTransfer.files : e.currentTarget.files;
+    var files = e.dataTransfer && e.dataTransfer.files.length > 0 ? e.dataTransfer.files : e.currentTarget.files
     this.uploader.fileupload('add', {
       files: files
     })

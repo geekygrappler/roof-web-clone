@@ -19,6 +19,7 @@ riot.mixin({
   },
   init: function () {
     if (this.parent && this.parent.opts.api) this.opts.api = this.parent.opts.api
+    if (this.opts.api) this.currentAccount = this.opts.api.currentAccount
     this.on('mount', this.initDomPlugins)
     this.showAuthModal = this.showAuthModal || this._showAuthModal
   },
@@ -68,7 +69,6 @@ riot.mixin({
     })
   },
   _showAuthModal: function () {
-    console.log('HOLAA')
     riot.mount('r-modal', {
       content: 'r-auth',
       persisted: false,
@@ -76,5 +76,8 @@ riot.mixin({
       contentOpts: {tab: 'r-signup', api: this.opts.api}
     })
   },
-  preventSubmit: function (e) { e.preventDefault() }
+  preventSubmit: function (e) { e.preventDefault() },
+  isAllValuesEmpty: function (data) {
+    return _.isEmpty(_.compact(_.values(data)))
+  }
 })

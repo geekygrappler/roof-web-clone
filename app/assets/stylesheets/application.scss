@@ -136,6 +136,9 @@ nav a:hover {
     top: 1px;
     position:relative;
   }
+  &.align-left{
+    text-align: left;
+  }
 }
 
 .btn.busy {
@@ -147,7 +150,7 @@ nav a:hover {
   cursor: default;
 }
 
-[type=file].hover {
+.dropzone.hover {
   background-color: $yellow;
 }
 
@@ -163,7 +166,7 @@ nav a:hover {
   display: none
 }
 
-r-tender-item-group .border-bottom {
+r-tender-item-group .border-bottom, r-tender-section .border-bottom {
   border-bottom-style: dashed;
 }
 r-tender-item-group .border-left {
@@ -180,4 +183,13 @@ r-tender-item-group .border-left {
 }
 .tt-cursor {
   background-color: $yellow;
+}
+
+.border-cleaner {
+  border-left: 1rem solid white;
+  height: 100%;
+  left: -1.5rem;
+}
+.cursor-default{
+  cursor: default;
 }

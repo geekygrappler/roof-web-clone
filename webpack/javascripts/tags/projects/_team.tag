@@ -43,13 +43,60 @@
 
   </ul>
 
+
+
+  <form name="form" class="sm-col-8 p2 border" onsubmit="{submit}">
+    <input type="hidden" name="inviter_id" value="{opts.api.currentAccount.id}">
+    <input type="hidden" name="project_id" value="{opts.id}">
+    <h3 class="mt0">Invite a new member</h3>
+    <div class="clearfix">
+      <label class="inline-block col col-6 mb2">
+        <input type="radio" name="invitee_attributes[user_type]" value="Customer">Customer
+      </label>
+      <label class="inline-block col col-6 mb2">
+        <input type="radio" name="invitee_attributes[user_type]" value="Professional">Professional
+      </label>
+    </div>
+    <span class="inline-error block" if="{errors['invitee_attributes.user_type']}">{errors['invitee_attributes.user_type']}</span>
+    <input type="email" name="invitee_attributes[email]" class="col-12 mb2 field" placeholder="Email"/>
+    <span class="inline-error" if="{errors['invitee_attributes.email']}">{errors['invitee_attributes.email']}</span>
+    <div class="right-align">
+      <button type="submit" class="btn btn-primary {busy: busy}">Invite</button>
+    </div>
+  </form>
+
+
+
   <script>
   this.mixin('projectTab')
+
   this.getName = function () {
-    return this.id !== this.opts.api.currentAccount.id ? this.fullName() : 'You'
+    return this.id !== this.currentAccount.id ? this.fullName() : 'You'
   }
   this.fullName = function () {
     return `${this.profile.first_name} ${this.profile.last_name}`
+  }
+
+  this.submit = (e) => {
+
+    e.preventDefault()
+
+    let data = this.serializeForm(this.form)
+
+    if (_.isEmpty(data)) {
+      $(this.form).animateCss('shake')
+      return
+    }
+
+    this.update({busy: true, errors: null})
+
+    this.opts.api.invitations.invite(data)
+    .fail(this.errorHandler)
+    .then(invitation => {
+      this.update({busy:false})
+      this.form.reset()
+    })
+
   }
   </script>
 </r-project-team>

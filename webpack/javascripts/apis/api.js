@@ -6,7 +6,8 @@ let apis = {
   authenticatedRoot: '/projects',
   sessions: riot.observable(),
   registrations: riot.observable(),
-  passwords: riot.observable()
+  passwords: riot.observable(),
+  invitations: riot.observable()
 }
 class Account {
   constructor(account) {
@@ -113,6 +114,7 @@ apis.sessions.check = function () {
     apis.currentAccount = new Account(data)
     //riot.route(apis.authenticatedRoot)
     apis.sessions.trigger('check.success', data)
+    return data
   })
 }
 apis.sessions.signin = function (creds) {
@@ -127,6 +129,7 @@ apis.sessions.signin = function (creds) {
     apis.currentAccount = new Account(data)
     //riot.route(apis.authenticatedRoot)
     apis.sessions.trigger('signin.success', data)
+    return data
   })
 }
 apis.sessions.signout = function (creds) {
@@ -156,6 +159,7 @@ apis.registrations.signup = function (data) {
     apis.currentAccount = new Account(data)
     //riot.route(apis.authenticatedRoot)
     apis.registrations.trigger('signup.success', data)
+    return data
   })
 }
 apis.quotes.submit = function (id) {
@@ -186,5 +190,40 @@ apis.quotes.accept = function (id) {
     return id
   })
 }
+
+apis.invitations.invite = function (data) {
+  return request({
+    url: `/api/invitations/invite`,
+    type: 'post',
+    data: {invitation: data}
+  })
+  .fail((xhr) => {
+    apis.invitations.trigger('invite.fail', xhr)
+    return xhr
+  })
+  .then((data) => {
+    apis.invitations.trigger('invite.success', data)
+    return data
+  })
+}
+apis.invitations.accept = function (data) {
+  return request({
+    url: `/api/invitations/accept`,
+    type: 'post',
+    data: {invitation: data}
+  })
+  .fail((xhr) => {
+    apis.invitations.trigger('accept.fail', xhr)
+    return xhr
+  })
+  .then((data) => {
+    $.csrfToken = null
+    apis.currentAccount = new Account(data.invitee)
+    apis.invitations.trigger('accept.success', data)
+    apis.registrations.trigger('signup.success', data.invitee)
+    return data
+  })
+}
+
 
 export default apis

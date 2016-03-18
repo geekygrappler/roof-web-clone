@@ -31,11 +31,19 @@
     </ul>
   </div>
   <script>
-  opts.api.projects.on('index.success', projects => {
+  this.updateProjects = (projects) => {
     opts.api.projects.cache.index = projects
     this.update({projects})
+  }
+  this.on('mount', () => {
+    opts.api.projects.on('index.success', this.updateProjects)
+    opts.api.projects.on('index.fail', this.errorHandler)
+    opts.api.projects.index()
   })
-  opts.api.projects.on('index.fail', this.errorHandler)
-  opts.api.projects.index()
+  this.on('unmount', () => {
+    opts.api.projects.off('index.success', this.updateProjects)
+    opts.api.projects.off('index.fail', this.errorHandler)
+  })
+
   </script>
 </r-projects-index>

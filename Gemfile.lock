@@ -16,6 +16,21 @@ GIT
       activesupport (>= 4.0.0)
       mime-types (>= 1.16)
 
+PATH
+  remote: ../roof-api
+  specs:
+    roof_api (0.0.3)
+      cancancan (~> 1.10)
+      carrierwave
+      devise
+      json-schema
+      mini_magick
+      pg
+      puma
+      rails (= 4.2.5.1)
+      rails-api
+      stripe
+
 GEM
   remote: https://rubygems.org/
   remote: https://Urx7-1GrXUKKC-1LnfGi@gem.fury.io/onurroof/
@@ -118,6 +133,10 @@ GEM
     json (1.8.3)
     json-schema (2.6.1)
       addressable (~> 2.3.8)
+    launchy (2.4.3)
+      addressable (~> 2.3)
+    letter_opener (1.4.1)
+      launchy (~> 2.2)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
     mail (2.6.3)
@@ -161,11 +180,6 @@ GEM
       rails-deprecated_sanitizer (>= 1.0.1)
     rails-html-sanitizer (1.0.3)
       loofah (~> 2.0)
-    rails_12factor (0.0.3)
-      rails_serve_static_assets
-      rails_stdout_logging
-    rails_serve_static_assets (0.0.5)
-    rails_stdout_logging (0.0.4)
     railties (4.2.5.1)
       actionpack (= 4.2.5.1)
       activesupport (= 4.2.5.1)
@@ -180,18 +194,6 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
-    roof_api (0.0.3)
-      cancancan (~> 1.10)
-      carrierwave
-      devise
-      json-schema
-      mini_magick
-      pg
-      puma
-      rails (= 4.2.5.1)
-      rails-api
-      rails_12factor
-      stripe
     sass (3.4.21)
     sass-rails (5.0.4)
       railties (>= 4.0.0, < 5.0)
@@ -243,10 +245,11 @@ DEPENDENCIES
   fog-aws
   font-awesome-rails
   jquery-rails
+  letter_opener
   pg (~> 0.15)
   puma
   rails (= 4.2.5.1)
-  roof_api (~> 0.0.3)
+  roof_api!
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)
   spring

@@ -24,6 +24,7 @@ let links = require("json!../data/header.json")
         </div>
         <div class="right py1 sm-show mr1">
           <r-admin-menu if="{opts.api.currentAccount.isAdministrator}"></r-admin-menu>
+          <span class="btn py2 silver cursor-default">{currentAccount.user_type[0]}</span>
           <a each="{items}" href="{href}" class="btn py2">{title}</a>
         </div>
         <div class="right sm-hide py1 mr1">

@@ -39,9 +39,15 @@
   <script>
   this.submit = (e) => {
     let data = this.serializeForm(this.form)
+
+    this.update({busy: true, errors: null})
+    
     opts.api.leads.create(data)
     .fail(this.errorHandler)
-    .then(lead => this.update({lead}))
+    .then(lead => {
+      this.update({busy: false})
+      this.update({lead})
+    })
   }
   </script>
 </r-arrange-callback>

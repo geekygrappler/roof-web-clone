@@ -110,7 +110,7 @@ import './_option_group_input.tag'
     </section>
   </form>
   <script>
-  this.mixin('projectTab')
+
   this.step = 5
   this.project = {brief: {}, address: {}}
   this.options = options
@@ -132,11 +132,13 @@ import './_option_group_input.tag'
         return
       }
 
-      this.update({busy: true})
+      this.update({busy: true, errors: null})
 
       this.opts.api.projects.update(opts.id, project)
       .fail(this.errorHandler)
       .then(id => this.update({busy:false}))
   }
+
+  this.mixin('projectTab')
   </script>
 </r-project-brief>

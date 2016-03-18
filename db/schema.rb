@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160317144064) do
+ActiveRecord::Schema.define(version: 20160317232839) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -63,6 +63,19 @@ ActiveRecord::Schema.define(version: 20160317144064) do
 
   add_index "assets", ["content_type"], name: "index_assets_on_content_type", using: :btree
   add_index "assets", ["project_id"], name: "index_assets_on_project_id", using: :btree
+
+  create_table "invitations", force: :cascade do |t|
+    t.integer  "project_id"
+    t.integer  "inviter_id"
+    t.integer  "invitee_id"
+    t.jsonb    "data",       default: {}
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
+
+  add_index "invitations", ["invitee_id"], name: "index_invitations_on_invitee_id", using: :btree
+  add_index "invitations", ["inviter_id"], name: "index_invitations_on_inviter_id", using: :btree
+  add_index "invitations", ["project_id"], name: "index_invitations_on_project_id", using: :btree
 
   create_table "leads", force: :cascade do |t|
     t.jsonb    "data"
@@ -149,6 +162,7 @@ ActiveRecord::Schema.define(version: 20160317144064) do
 
   add_foreign_key "appointments", "projects"
   add_foreign_key "assets", "projects"
+  add_foreign_key "invitations", "projects"
   add_foreign_key "payments", "projects"
   add_foreign_key "payments", "quotes"
   add_foreign_key "projects", "accounts"
