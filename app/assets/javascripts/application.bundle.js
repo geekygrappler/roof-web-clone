@@ -23850,7 +23850,7 @@
 	      _this.opts.api[opts.resource].create(_this.record).fail(_this.errorHandler).then(function (record) {
 	        _this.update({ busy: false });
 	        _this.opts.id = record.id;
-	        history.pushState(null, null, "/app/admin/" + _this.resource + "/" + record.id + "/edit");
+	        history.pushState(null, null, "/app/admin/" + opts.resource + "/" + record.id + "/edit");
 	      });
 	    }
 	  };
@@ -23936,7 +23936,7 @@
 	      _this.opts.api[opts.resource].create(_this.record).fail(_this.errorHandler).then(function (record) {
 	        _this.update({ busy: false });
 	        _this.opts.id = record.id;
-	        history.pushState(null, null, "/app/admin/" + _this.resource + "/" + record.id + "/edit");
+	        history.pushState(null, null, "/app/admin/" + opts.resource + "/" + record.id + "/edit");
 	      });
 	    }
 	  };
@@ -24017,7 +24017,7 @@
 	      _this.opts.api[opts.resource].create(_this.record).fail(_this.errorHandler).then(function (record) {
 	        _this.update({ busy: false });
 	        _this.opts.id = record.id;
-	        history.pushState(null, null, "/app/admin/" + _this.resource + "/" + record.id + "/edit");
+	        history.pushState(null, null, "/app/admin/" + opts.resource + "/" + record.id + "/edit");
 	      });
 	    }
 	  };

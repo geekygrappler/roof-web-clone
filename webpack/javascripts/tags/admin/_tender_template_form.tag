@@ -91,7 +91,7 @@ import from '../../mixins/tender.js'
         .then(record => {
           this.update({busy:false})
           this.opts.id = record.id
-          history.pushState(null, null, `/app/admin/${this.resource}/${record.id}/edit`)
+          history.pushState(null, null, `/app/admin/${opts.resource}/${record.id}/edit`)
         })
       }
     }
