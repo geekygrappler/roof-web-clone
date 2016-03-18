@@ -15,11 +15,11 @@ import Handlebars from 'handlebars/dist/handlebars'
 
     let source = new Bloodhound({
       datumTokenizer:  function (d) {
-        return Bloodhound.tokenizers.whitespace(`${d.action} ${d.group} ${d.name} ${d.tags.join(' ')}`) 
+        return Bloodhound.tokenizers.whitespace(`${d.action} ${d.group} ${d.name} ${d.tags.join(' ')}`)
       },
       queryTokenizer: Bloodhound.tokenizers.whitespace,
       local: data,
-      sufficient: 50,
+      sufficient: 10,
       remote: {
         url: `/api/${this.opts.name.plural()}?query=%QUERY`,
         wildcard: '%QUERY'
@@ -39,6 +39,7 @@ import Handlebars from 'handlebars/dist/handlebars'
       name: this.opts.name.plural(),
       source: source,
       display: 'name',
+      limit: 10,
       templates: {
         empty:`
         <div class="empty-message border-bottom typeahead-item p1">

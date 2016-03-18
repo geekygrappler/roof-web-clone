@@ -18735,7 +18735,7 @@
 	      },
 	      queryTokenizer: Bloodhound.tokenizers.whitespace,
 	      local: data,
-	      sufficient: 50,
+	      sufficient: 10,
 	      remote: {
 	        url: "/api/" + _this.opts.name.plural() + "?query=%QUERY",
 	        wildcard: "%QUERY"
@@ -18750,6 +18750,7 @@
 	      name: _this.opts.name.plural(),
 	      source: source,
 	      display: "name",
+	      limit: 10,
 	      templates: {
 	        empty: "\n        <div class=\"empty-message border-bottom typeahead-item p1\">\n          unable to find any " + opts.name + " that match the current query, hit enter to add in Other category\n        </div>",
 	
