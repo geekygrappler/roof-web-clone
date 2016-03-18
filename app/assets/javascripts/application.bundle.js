@@ -18730,10 +18730,12 @@
 	  this.request({ url: "/api/" + this.opts.name.plural() }).then(function (data) {
 	
 	    var source = new Bloodhound({
-	      datumTokenizer: Bloodhound.tokenizers.obj.whitespace("tags"),
+	      datumTokenizer: function datumTokenizer(d) {
+	        return Bloodhound.tokenizers.whitespace("" + d.action + " " + d.group + " " + d.name + " " + d.tags.join(" "));
+	      },
 	      queryTokenizer: Bloodhound.tokenizers.whitespace,
 	      local: data,
-	      sufficient: 10,
+	      sufficient: 50,
 	      remote: {
 	        url: "/api/" + _this.opts.name.plural() + "?query=%QUERY",
 	        wildcard: "%QUERY"

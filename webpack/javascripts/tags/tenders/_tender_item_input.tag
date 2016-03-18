@@ -14,10 +14,12 @@ import Handlebars from 'handlebars/dist/handlebars'
   this.request({url: `/api/${this.opts.name.plural()}`}).then((data) => {
 
     let source = new Bloodhound({
-      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('tags'),
+      datumTokenizer:  function (d) {
+        return Bloodhound.tokenizers.whitespace(`${d.action} ${d.group} ${d.name} ${d.tags.join(' ')}`) 
+      },
       queryTokenizer: Bloodhound.tokenizers.whitespace,
       local: data,
-      sufficient: 10,
+      sufficient: 50,
       remote: {
         url: `/api/${this.opts.name.plural()}?query=%QUERY`,
         wildcard: '%QUERY'
