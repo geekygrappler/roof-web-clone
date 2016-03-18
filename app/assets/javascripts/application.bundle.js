@@ -17794,7 +17794,10 @@
 	  this.on("mount", function () {
 	    return $("r-app").addClass("display-none");
 	  });
-	  this.on("unmount", function () {
+	  opts.api.sessions.on("signin.success", function () {
+	    return $("r-app").removeClass("display-none");
+	  });
+	  opts.api.sessions.on("signup.success", function () {
 	    return $("r-app").removeClass("display-none");
 	  });
 	});
