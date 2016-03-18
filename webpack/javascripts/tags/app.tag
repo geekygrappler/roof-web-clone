@@ -14,6 +14,8 @@ import './projects/show.tag'
 import './tenders/tender.tag'
 import './quotes/quote.tag'
 
+import './settings.tag'
+
 <r-app>
   <yield from="header" />
 
@@ -108,6 +110,16 @@ import './quotes/quote.tag'
       persisted: true,
       api: opts.api,
       contentOpts: {tab: 'r-invitation-accept', api: opts.api}
+    })
+  })
+
+  riot.route('settings', () => {
+    riot.route(`/settings/profile`, 'Profile', true)
+  })
+  riot.route('settings/*', (tab) => {
+    riot.mount(this.content, 'r-settings', {
+      api: opts.api,
+      tab: `r-settings-${tab}`
     })
   })
 

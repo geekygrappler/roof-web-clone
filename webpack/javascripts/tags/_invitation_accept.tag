@@ -1,7 +1,7 @@
 <r-invitation-accept>
 
   <h2 class="center mt0 mb2">Sign up</h2>
-    <form name="form" classes="sm-col-12 left-align" action="/api/invitations/accept" onsubmit="{submit}">
+    <form name="form" class="sm-col-12 left-align" action="/api/invitations/accept" onsubmit="{submit}">
 
       <div if="{errors.token}" id="error_explanation">{errors.token}</div>
 

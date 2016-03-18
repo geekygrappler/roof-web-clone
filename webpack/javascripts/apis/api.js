@@ -24,7 +24,10 @@ class Account {
     return this.user_type === 'Administrator'
   }
 }
-let resources = ['projects', 'leads', 'tenders', 'quotes', 'appointments']
+let resources = [
+  'projects', 'leads', 'tenders', 'quotes', 'appointments',
+  'customers', 'professionals', 'administrators'
+]
 resources.forEach((api) =>{
   apis[api] = riot.observable()
   apis[api].cache = {}
@@ -160,6 +163,19 @@ apis.registrations.signup = function (data) {
     //riot.route(apis.authenticatedRoot)
     apis.registrations.trigger('signup.success', data)
     return data
+  })
+}
+apis.registrations.update = function (id, data) {
+  return request({
+    type: 'put',
+    url: '/api/accounts',
+    data: {account: data}
+  })
+  .fail((xhr) => apis.registrations.trigger('update.fail', xhr))
+  .then((id) => {
+    //riot.route(apis.authenticatedRoot)
+    apis.registrations.trigger('update.success', apis.currentAccount.id)
+    return apis.currentAccount
   })
 }
 apis.quotes.submit = function (id) {

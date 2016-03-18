@@ -16,6 +16,7 @@ gem 'active_model_serializers', github: "rails-api/active_model_serializers"
 # gem 'roof_api', '~> 0.0.3'
 gem 'carrierwave', git: 'https://github.com/carrierwaveuploader/carrierwave.git'
 gem 'fog-aws'
+gem 'rails_12factor'
 
 group :development, :test do
   gem 'byebug'

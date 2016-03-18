@@ -1,7 +1,7 @@
 <r-signup>
 
   <h2 class="center mt0 mb2">Sign up</h2>
-    <form name="form" classes="sm-col-12 left-align" action="/api/accounts" onsubmit="{submit}">
+    <form name="form" class="sm-col-12 left-align" action="/api/accounts" onsubmit="{submit}">
 
       <div class="clearfix mxn2">
         <div class="col col-6 px2">

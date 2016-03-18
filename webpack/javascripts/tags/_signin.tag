@@ -1,7 +1,7 @@
 <r-signin>
 
   <h2 class="center mt0 mb2">Sign in</h2>
-  <form name="form" classes="sm-col-12 left-align" action="/api/accounts/sign_in" onsubmit="{submit}">
+  <form name="form" class="sm-col-12 left-align" action="/api/accounts/sign_in" onsubmit="{submit}">
 
     <div if="{errors}" id="error_explanation">
       {errors}

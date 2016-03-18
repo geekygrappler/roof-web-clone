@@ -6,7 +6,7 @@
     <a href="/" class="btn btn-primary gray">Take me home</a>
   </div>
 
-  <form if="{!lead}" name="form" classes="sm-col-12 left-align" action="/api/leads" onsubmit="{submit}">
+  <form if="{!lead}" name="form" class="sm-col-12 left-align" action="/api/leads" onsubmit="{submit}">
 
     <h2 class="center mt0 mb2">A 1Roof expert will get in touch soon to talk about your project
       and help you with any questions or concerns you may have.
@@ -41,7 +41,7 @@
     let data = this.serializeForm(this.form)
 
     this.update({busy: true, errors: null})
-    
+
     opts.api.leads.create(data)
     .fail(this.errorHandler)
     .then(lead => {

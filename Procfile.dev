@@ -1,2 +1,2 @@
-web: bundle exec rails s Puma -p 3000
+web: bundle exec rails s Puma -p 5000
 webpack: npm run watch
