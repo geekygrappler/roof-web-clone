@@ -11,7 +11,8 @@ import './_quote_form.tag'
     <div each="{attr, i in attributes}">
       <div if="{attr != 'id'}">
       <label for="{resource.singular()}[{attr}]">{attr.humanize()}</label>
-      <input class="block col-12 mb2 field"
+      <textarea if="{_.isObject(record[attr])}" class="block col-12 mb2 field fixed-height">{JSON.stringify(record[attr], null, 2)}</textarea>
+      <input  if="{!_.isObject(record[attr])}" class="block col-12 mb2 field"
       type="text" name="{resource.singular()}[{attr}]" value="{record[attr]}"/>
       <span if="{errors[attr]}" class="inline-error">{errors[attr]}</span>
       </div>

@@ -10,10 +10,10 @@
     <div class="clearfix upload-previews mxn1">
 
       <div each="{ asset, index in opts.record[opts.name] }"
-        class="sm-col sm-col-4 p1 rounded center thumb animated bounceIn">
+        class="sm-col col-6 sm-col-4 p1 rounded center thumb animated bounceIn">
         <div class="border p1 truncate overflow-hidden">
             <a class="cursor-zoom" href="{ asset.file.url }" target="_blank">
-            <img src="{ asset.content_type.indexOf('image') > -1 ? asset.file.thumb.url : asset.file.cover.url }" class="fixed-height"/>
+            <img src="{ asset.content_type.indexOf('image') > -1 ? asset.file.thumb.url : asset.file.cover.url }"/>
             </a>
             <br><a class="btn btn-small" onclick="{ destroy }" ><i class="fa fa-times"></i></a>
         </div>

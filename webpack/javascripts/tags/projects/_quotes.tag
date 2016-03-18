@@ -32,10 +32,10 @@
     <li if="{project.tender}" class="block p1 sm-col-12 align-top">
       <div class="px2 border">
         <h2 class="inline-block">{ formatCurrency(project.tender.total_amount) }</h2>
-        <span class="inline-block align-middle h6 mb1 px1 border pill">Tender</span>
-        <p class="overflow-hidden m0 mxn2 p1 bg-yellow">
-          <a class="btn btn-small bg-darken-2" href="/app/projects/{opts.id}/tenders/{project.tender.id}">Show</a>
-          <a class="btn btn-small bg-darken-2" if="{currentAccount.isProfessional}" onclick="{clone}">Clone</a>
+        <span class="inline-block align-middle h6 mb1 px1 border pill right mt2">Tender</span>
+        <p class="overflow-hidden m0 mxn2 p1 border-top">
+          <a class="btn btn-small" href="/app/projects/{opts.id}/tenders/{project.tender.id}">Open</a>
+          <a class="btn btn-small btn-primary" if="{currentAccount.isProfessional}" onclick="{clone}">Clone</a>
         </p>
       </div>
     </li>
@@ -43,17 +43,18 @@
     <li each="{quotes}" class="block p1 sm-col-12 align-top">
       <div class="px2 border clearfix">
         <h2 class="inline-block">{ formatCurrency(total_amount) }</h2>
-        <span class="inline-block align-middle h6 mb1 px1 border pill">Quote</span>
-        <span if="{accepted_at}" class="inline-block align-middle h6 mb1 px1 border pill">Accepted</span>
-        <span if="{!accepted_at && submitted_at}" class="inline-block align-middle h6 mb1 px1 border pill">Submitted</span>
-        <span class="right mt3">by { professional.profile.first_name } {professional.profile.last_name }</span>
-        <p class="clearfix overflow-hidden m0 mxn2 p1 bg-{green: accepted_at, blue: (submitted_at && !accepted_at), gray: (!submitted_at && !accepted_at)} white">
+        <span if="{accepted_at}" class="inline-block align-middle h6 mb1 px1 border bg-lime navy pill right mt2">Accepted</span>
+        <span if="{!accepted_at && submitted_at}" class="inline-block align-middle h6 mb1 px1 border pill mr1">Submitted</span>
+        <span class="inline-block align-middle h6 mb1 px1 border pill right mt2 mr1">Quote</span>
+        <span class="italic mt2 mr1">by { professional.profile.first_name } {professional.profile.last_name }</span>
+        <div class="clearfix overflow-hidden m0 mxn2 p1 {'bg-lime': accepted_at, 'bg-yellow': (submitted_at && !accepted_at), 'bg-gray white': (!submitted_at && !accepted_at)}">
           <span if="{!accepted_at && submitted_at}"><i class="fa fa-clock-o mr1"></i>submitted at: {fromNow(submitted_at)}</i></span>
           <span if="{accepted_at}"><i class="fa fa-clock-o mr1"></i>accepted at: {fromNow(accepted_at)}</i></span>
-          <br>
-          <a class="btn btn-small bg-darken-2" href="/app/projects/{parent.opts.id}/quotes/{id}">Show</a>
-          <a class="btn btn-small bg-darken-2" if="{currentAccount.isProfessional && !accepted_at}" onclick="{delete}">Delete</a>
-        </p>
+          <div class="mt1">
+            <a class="btn btn-small bg-darken-2" href="/app/projects/{parent.opts.id}/quotes/{id}">Open</a>
+            <a class="btn btn-small bg-darken-2" if="{currentAccount.isProfessional && !accepted_at}" onclick="{delete}">Delete</a>
+          </div>
+        </div>
       </div>
     </li>
   </ul>
