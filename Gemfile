@@ -17,6 +17,7 @@ gem 'roof_api', '~> 0.0.4'
 gem 'carrierwave', git: 'https://github.com/carrierwaveuploader/carrierwave.git'
 gem 'fog-aws'
 gem 'rails_12factor'
+gem 'delayed_job_active_record'
 
 group :development, :test do
   gem 'byebug'

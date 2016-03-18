@@ -1,1 +1,2 @@
-web: bundle exec rails s Puma -p $PORT
+web: bundle exec rails s puma -p ${PORT:-5000} -e ${RACK_ENV:-development}
+job: bundle exec rake jobs:work

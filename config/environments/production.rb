@@ -76,6 +76,6 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
-  config.action_mailer.default_url_options = { :host => 'refactoring-1roof.herokuapp.com' }
-  config.action_mailer.asset_host = 'http://refactoring-1roof.herokuapp.com'
+  config.action_mailer.default_url_options = { :host => 'refactor-1roof.herokuapp.com' }
+  config.action_mailer.asset_host = 'http://refactor-1roof.herokuapp.com'
 end
