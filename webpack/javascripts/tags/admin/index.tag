@@ -9,10 +9,12 @@ import './_quote_form.tag'
   <form name="form" class="sm-col-12 left-align" onsubmit="{ submit }" >
 
     <div each="{attr, i in attributes}">
+      <div if="{attr != 'id'}">
       <label for="{resource.singular()}[{attr}]">{attr.humanize()}</label>
       <input class="block col-12 mb2 field"
-      type="text" name="resource.singular()}[{attr}]" value="{record[attr]}"/>
+      type="text" name="{resource.singular()}[{attr}]" value="{record[attr]}"/>
       <span if="{errors[attr]}" class="inline-error">{errors[attr]}</span>
+      </div>
     </div>
 
     <button type="submit" class="block col-12 mb2 btn btn-big btn-primary {busy: busy}">Save</button>
@@ -21,6 +23,9 @@ import './_quote_form.tag'
 
   <script>
   this.on('mount', () => {
+    this.opts.api[opts.resource].on('new.fail', this.errorHandler)
+    this.opts.api[opts.resource].on('show.fail', this.errorHandler)
+    this.opts.api[opts.resource].on('update.fail', this.errorHandler)
     this.opts.api[opts.resource].on('new.success', this.updateRecord)
     this.opts.api[opts.resource].on('show.success', this.updateRecord)
     this.opts.api[opts.resource].on('update.success', this.update)
@@ -34,6 +39,9 @@ import './_quote_form.tag'
   })
 
   this.on('unmount', () => {
+    this.opts.api[opts.resource].off('new.fail', this.errorHandler)
+    this.opts.api[opts.resource].off('show.fail', this.errorHandler)
+    this.opts.api[opts.resource].off('update.fail', this.errorHandler)
     this.opts.api[opts.resource].off('new.success', this.updateRecord)
     this.opts.api[opts.resource].off('show.success', this.updateRecord)
     this.opts.api[opts.resource].off('update.success', this.update)
@@ -113,12 +121,14 @@ import './_quote_form.tag'
   this.headers = []
   this.records = []
   this.on('mount', () => {
+    this.opts.api[opts.resource].on('index.fail', this.errorHandler)
     this.opts.api[opts.resource].on('index.success', this.updateRecords)
     this.opts.api[opts.resource].on('delete.success', this.removeRecord)
     this.opts.api[opts.resource].index()
   })
 
   this.on('unmount', () => {
+    this.opts.api[opts.resource].off('index.fail', this.errorHandler)
     this.opts.api[opts.resource].off('index.success', this.updateRecords)
     this.opts.api[opts.resource].off('delete.success', this.removeRecord)
   })

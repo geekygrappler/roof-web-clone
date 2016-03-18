@@ -15,7 +15,7 @@ import Handlebars from 'handlebars/dist/handlebars'
 
     let source = new Bloodhound({
       datumTokenizer:  function (d) {
-        return Bloodhound.tokenizers.whitespace(`${d.action} ${d.group} ${d.name} ${d.tags.join(' ')}`)
+        return Bloodhound.tokenizers.whitespace(`${d.action} ${d.group} ${d.name} ${d.tags && d.tags.join(' ')}`)
       },
       queryTokenizer: Bloodhound.tokenizers.whitespace,
       local: data,

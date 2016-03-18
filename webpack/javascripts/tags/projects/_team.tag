@@ -14,6 +14,11 @@
           <i class="fa fa-phone"></i> { profile.phone_number }<br>
           <i class="fa fa-envelope"></i> { email }<br>
         </p>
+        <p class="overflow-hidden m0 mxn2 p2 bg-yellow">
+          <a class="h5 btn btn-small bg-darken-2" onclick="{openAppointments}">
+            <i class="fa fa-calendar-o"></i> Appointments
+          </a>
+        </p>
       </div>
     </li>
 

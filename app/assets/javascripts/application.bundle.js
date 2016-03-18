@@ -18449,7 +18449,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-project-team", "<h2 class=\"mt0\">Team</h2> <p>Here is the team of your project. You can arrange site visits with professionals here or invite other members such as family members or your own builders. </p> <ul class=\"list-reset mxn1\"> <li each=\"{project.customers}\" class=\"inline-block p1 sm-col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{getName()}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Member</span> <p class=\"overflow-hidden\"> <i class=\"fa fa-phone\"></i> {profile.phone_number}<br> <i class=\"fa fa-envelope\"></i> {email}<br> </p> </div> </li> <li each=\"{project.professionals}\" class=\"inline-block p1 align-top sm-col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{getName()}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Professional</span> <p class=\"overflow-hidden\"> <i class=\"fa fa-phone\"></i> {profile.phone_number}<br> <i class=\"fa fa-envelope\"></i> {email}<br> <div if=\"{profile.website}\"><i class=\"fa fa-world\"></i>{profile.website}<br></div> </p> </div> </li> <li each=\"{project.administrators}\" class=\"inline-block p1 sm-col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{getName()}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Admin</span> <p class=\"overflow-hidden\"> <i class=\"fa fa-phone\"></i> {profile.phone_number}<br> <i class=\"fa fa-envelope\"></i> {email}<br> </p> </div> </li> </ul> <form name=\"form\" class=\"sm-col-8 p2 border\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"inviter_id\" value=\"{opts.api.currentAccount.id}\"> <input type=\"hidden\" name=\"project_id\" value=\"{opts.id}\"> <h3 class=\"mt0\">Invite a new member</h3> <div class=\"clearfix\"> <label class=\"inline-block col col-6 mb2\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Customer\">Customer </label> <label class=\"inline-block col col-6 mb2\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Professional\">Professional </label> </div> <span class=\"inline-error block\" if=\"{errors['invitee_attributes.user_type']}\">{errors['invitee_attributes.user_type']}</span> <input name=\"invitee_attributes[email]\" class=\"col-12 mb2 field\" placeholder=\"Email\" type=\"email\"> <span class=\"inline-error\" if=\"{errors['invitee_attributes.email']}\">{errors['invitee_attributes.email']}</span> <div class=\"right-align\"> <button type=\"submit\" class=\"btn btn-primary {busy: busy}\">Invite</button> </div> </form>", "", "", function (opts) {
+	riot.tag2("r-project-team", "<h2 class=\"mt0\">Team</h2> <p>Here is the team of your project. You can arrange site visits with professionals here or invite other members such as family members or your own builders. </p> <ul class=\"list-reset mxn1\"> <li each=\"{project.customers}\" class=\"inline-block p1 sm-col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{getName()}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Member</span> <p class=\"overflow-hidden\"> <i class=\"fa fa-phone\"></i> {profile.phone_number}<br> <i class=\"fa fa-envelope\"></i> {email}<br> </p> <p class=\"overflow-hidden m0 mxn2 p2 bg-yellow\"> <a class=\"h5 btn btn-small bg-darken-2\" onclick=\"{openAppointments}\"> <i class=\"fa fa-calendar-o\"></i> Appointments </a> </p> </div> </li> <li each=\"{project.professionals}\" class=\"inline-block p1 align-top sm-col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{getName()}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Professional</span> <p class=\"overflow-hidden\"> <i class=\"fa fa-phone\"></i> {profile.phone_number}<br> <i class=\"fa fa-envelope\"></i> {email}<br> <div if=\"{profile.website}\"><i class=\"fa fa-world\"></i>{profile.website}<br></div> </p> </div> </li> <li each=\"{project.administrators}\" class=\"inline-block p1 sm-col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{getName()}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Admin</span> <p class=\"overflow-hidden\"> <i class=\"fa fa-phone\"></i> {profile.phone_number}<br> <i class=\"fa fa-envelope\"></i> {email}<br> </p> </div> </li> </ul> <form name=\"form\" class=\"sm-col-8 p2 border\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"inviter_id\" value=\"{opts.api.currentAccount.id}\"> <input type=\"hidden\" name=\"project_id\" value=\"{opts.id}\"> <h3 class=\"mt0\">Invite a new member</h3> <div class=\"clearfix\"> <label class=\"inline-block col col-6 mb2\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Customer\">Customer </label> <label class=\"inline-block col col-6 mb2\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Professional\">Professional </label> </div> <span class=\"inline-error block\" if=\"{errors['invitee_attributes.user_type']}\">{errors['invitee_attributes.user_type']}</span> <input name=\"invitee_attributes[email]\" class=\"col-12 mb2 field\" placeholder=\"Email\" type=\"email\"> <span class=\"inline-error\" if=\"{errors['invitee_attributes.email']}\">{errors['invitee_attributes.email']}</span> <div class=\"right-align\"> <button type=\"submit\" class=\"btn btn-primary {busy: busy}\">Invite</button> </div> </form>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.mixin("projectTab");
@@ -18731,7 +18731,7 @@
 	
 	    var source = new Bloodhound({
 	      datumTokenizer: function datumTokenizer(d) {
-	        return Bloodhound.tokenizers.whitespace("" + d.action + " " + d.group + " " + d.name + " " + d.tags.join(" "));
+	        return Bloodhound.tokenizers.whitespace("" + d.action + " " + d.group + " " + d.name + " " + (d.tags && d.tags.join(" ")));
 	      },
 	      queryTokenizer: Bloodhound.tokenizers.whitespace,
 	      local: data,
@@ -23692,10 +23692,13 @@
 	
 	__webpack_require__(146);
 	
-	riot.tag2("r-admin-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in attributes}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"resource.singular()}[{attr}]\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
+	riot.tag2("r-admin-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in attributes}\"> <div if=\"{attr != 'id'}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"{resource.singular()}[{attr}]\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.on("mount", function () {
+	    _this.opts.api[opts.resource].on("new.fail", _this.errorHandler);
+	    _this.opts.api[opts.resource].on("show.fail", _this.errorHandler);
+	    _this.opts.api[opts.resource].on("update.fail", _this.errorHandler);
 	    _this.opts.api[opts.resource].on("new.success", _this.updateRecord);
 	    _this.opts.api[opts.resource].on("show.success", _this.updateRecord);
 	    _this.opts.api[opts.resource].on("update.success", _this.update);
@@ -23709,6 +23712,9 @@
 	  });
 	
 	  this.on("unmount", function () {
+	    _this.opts.api[opts.resource].off("new.fail", _this.errorHandler);
+	    _this.opts.api[opts.resource].off("show.fail", _this.errorHandler);
+	    _this.opts.api[opts.resource].off("update.fail", _this.errorHandler);
 	    _this.opts.api[opts.resource].off("new.success", _this.updateRecord);
 	    _this.opts.api[opts.resource].off("show.success", _this.updateRecord);
 	    _this.opts.api[opts.resource].off("update.success", _this.update);
@@ -23750,12 +23756,14 @@
 	  this.headers = [];
 	  this.records = [];
 	  this.on("mount", function () {
+	    _this.opts.api[opts.resource].on("index.fail", _this.errorHandler);
 	    _this.opts.api[opts.resource].on("index.success", _this.updateRecords);
 	    _this.opts.api[opts.resource].on("delete.success", _this.removeRecord);
 	    _this.opts.api[opts.resource].index();
 	  });
 	
 	  this.on("unmount", function () {
+	    _this.opts.api[opts.resource].off("index.fail", _this.errorHandler);
 	    _this.opts.api[opts.resource].off("index.success", _this.updateRecords);
 	    _this.opts.api[opts.resource].off("delete.success", _this.removeRecord);
 	  });
