@@ -1,18 +1,41 @@
 import riot from 'riot'
 
 riot.mixin('tenderMixin', {
+  warnUnsavedChanges: function () {
+    if (!this.saved) return this.ERRORS.CONFIRM_UNSAVED_CHANGES
+  },
   init: function () {
     this.on('mount', () => {
+      this.saved = true
       this.opts.api.tenders.on('update', this.updateTenderTotal)
+      window.onbeforeunload = this.warnUnsavedChanges
+      $('a[href*="/app/"]', this.root).off('click').on('click',  (e) => {
+        e.preventDefault()
+        if( this.saved || (!this.saved && window.confirm(this.ERRORS.CONFIRM_UNSAVED_CHANGES)) ) {
+          riot.route($(e.currentTarget).attr('href').substr(5), e.currentTarget.title, true)
+        }
+      })
+      // window.onpopstate = () => {
+      //   if (!this.saved && !window.confirm(this.ERRORS.CONFIRM_UNSAVED_CHANGES)) {
+      //     history.forward()
+      //   }
+      // }
+      this.submit = _.wrap(this.submit, (_submit, e) => {
+        this.saved = true
+        _submit(e)
+      })
     })
 
     this.on('unmount', () => {
       this.opts.api.tenders.off('update', this.updateTenderTotal)
+      window.onbeforeunload = null
+      window.onpopstate = null
     })
 
     this.updateTenderTotal = () => {
-        this.tenderTotal()
-        this.update()
+      this.saved = false
+      this.tenderTotal()
+      this.update()
     }
     this.addSection = (e) => {
       e.preventDefault()

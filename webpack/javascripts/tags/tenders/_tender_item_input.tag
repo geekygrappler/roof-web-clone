@@ -5,9 +5,9 @@ import Handlebars from 'handlebars/dist/handlebars'
     <form onsubmit="{ preventSubmit }">
       <input name="query" type="text" class="block col-12 field"
       oninput="{ search }" onkeyup="{ onKey }"
-      placeholder="Search and add {modelName}" autocomplete="off" />
+      placeholder="Strart typing to add {modelName}" autocomplete="off" />
     </form>
-    <i class="fa fa-{ opts.icon } absolute right-0 top-0 p1"></i>
+    <i class="fa fa-plus absolute right-0 top-0 p1"></i>
   </div>
   <script>
 

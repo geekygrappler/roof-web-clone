@@ -3032,7 +3032,8 @@
 	    500: "Ops!, something went wrong at our end, try again later.",
 	    ASSET_ASSIGNMENT: "We got your brief, but unfortunately your files lost on the way to us",
 	    BLANK: "cannot be blank",
-	    CONFIRM_DELETE: "Are you sure to delete this file?"
+	    CONFIRM_DELETE: "Are you sure to delete this file?",
+	    CONFIRM_UNSAVED_CHANGES: "You have unsaved changes!"
 	  },
 	  init: function init() {
 	    if (this.parent && this.parent.opts.api) this.opts.api = this.parent.opts.api;
@@ -18643,18 +18644,43 @@
 	var riot = _interopRequire(__webpack_require__(1));
 	
 	riot.mixin("tenderMixin", {
+	  warnUnsavedChanges: function warnUnsavedChanges() {
+	    if (!this.saved) {
+	      return this.ERRORS.CONFIRM_UNSAVED_CHANGES;
+	    }
+	  },
 	  init: function init() {
 	    var _this = this;
 	
 	    this.on("mount", function () {
+	      _this.saved = true;
 	      _this.opts.api.tenders.on("update", _this.updateTenderTotal);
+	      window.onbeforeunload = _this.warnUnsavedChanges;
+	      $("a[href*=\"/app/\"]", _this.root).off("click").on("click", function (e) {
+	        e.preventDefault();
+	        if (_this.saved || !_this.saved && window.confirm(_this.ERRORS.CONFIRM_UNSAVED_CHANGES)) {
+	          riot.route($(e.currentTarget).attr("href").substr(5), e.currentTarget.title, true);
+	        }
+	      });
+	      // window.onpopstate = () => {
+	      //   if (!this.saved && !window.confirm(this.ERRORS.CONFIRM_UNSAVED_CHANGES)) {
+	      //     history.forward()
+	      //   }
+	      // }
+	      _this.submit = _.wrap(_this.submit, function (_submit, e) {
+	        _this.saved = true;
+	        _submit(e);
+	      });
 	    });
 	
 	    this.on("unmount", function () {
 	      _this.opts.api.tenders.off("update", _this.updateTenderTotal);
+	      window.onbeforeunload = null;
+	      window.onpopstate = null;
 	    });
 	
 	    this.updateTenderTotal = function () {
+	      _this.saved = false;
 	      _this.tenderTotal();
 	      _this.update();
 	    };
@@ -18724,7 +18750,7 @@
 	
 	var Handlebars = _interopRequire(__webpack_require__(137));
 	
-	riot.tag2("r-tender-item-input", "<div class=\"relative\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Search and add {modelName}\" autocomplete=\"off\"> </form> <i class=\"fa fa-{opts.icon} absolute right-0 top-0 p1\"></i> </div>", "", "", function (opts) {
+	riot.tag2("r-tender-item-input", "<div class=\"relative\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Strart typing to add {modelName}\" autocomplete=\"off\"> </form> <i class=\"fa fa-plus absolute right-0 top-0 p1\"></i> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.request({ url: "/api/" + this.opts.name.plural() }).then(function (data) {
