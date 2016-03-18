@@ -1,5 +1,5 @@
 <r-tender-item-group>
-  <ul class="list-reset ml2 border-left mb0 relative">
+  <ul class="list-reset ml2 -border-left mb0 relative">
     <li>
       <h4 class="inline-block mb0 mt1 p1 border-bottom ">
         <select if="{group.toLowerCase() == 'other'}" onchange="{changeTaskAction}">

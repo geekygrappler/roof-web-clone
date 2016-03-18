@@ -13,9 +13,9 @@ import './_tender_section.tag'
   <div class="container p2 {readonly: opts.readonly}">
     <h1>{ opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Tender ' + opts.id : 'New Tender' }</h1>
 
-    <r-tender-section each="{ section , i in tender.document.sections }" ></r-tender-section>
+    <r-tender-section each="{ section , i in record.document.sections }" ></r-tender-section>
 
-    <form if="{ !opts.readonly && tender.document }" onsubmit="{ addSection }" class="mt3 py3 clearfix mxn1 border-top">
+    <form if="{ !opts.readonly && record.document }" onsubmit="{ addSection }" class="mt3 py3 clearfix mxn1 border-top">
       <div class="col col-8 px1">
         <input type="text" name="sectionName" placeholder="Section name" class="block col-12 field" />
       </div>
@@ -64,10 +64,10 @@ import './_tender_section.tag'
       })
       this.on('unmount', () => {
         opts.api.projects.off('show.success', this.updateTenderFromProject)
-        opts.api.tenders.off('show.success', this.updateTender)
+        opts.api.tenders.off('show.success', this.updateRecord)
       })
     } else {
-      this.tender = {project_id: this.opts.project_id, document: {sections: []}}
+      this.record = {project_id: this.opts.project_id, document: {sections: []}}
     }
 
     this.submit = (e) => {
@@ -76,25 +76,25 @@ import './_tender_section.tag'
       this.update({busy: true, errors: null})
 
       if (this.opts.id) {
-        this.opts.api.tenders.update(opts.id, this.tender)
+        this.opts.api.tenders.update(opts.id, this.record)
         .fail(this.errorHandler)
         .then(id => this.update({busy:false}))
       }else{
-        this.opts.api.tenders.create(this.tender)
+        this.opts.api.tenders.create(this.record)
         .fail(this.errorHandler)
-        .then(tender => {
+        .then(record => {
           this.update({busy:false})
-          this.opts.id = tender.id
-          history.pushState(null, null, `/app/projects/${tender.project_id}/tenders/${tender.id}`)
+          this.opts.id = record.id
+          history.pushState(null, null, `/app/projects/${record.project_id}/tenders/${record.id}`)
         })
       }
     }
 
     this.updateTenderFromProject = (project) => {
-      this.update({tender: project.tender})
+      this.update({record: project.tender})
     }
-    this.updateTender = (tender) => {
-      this.update({tender: tender})
+    this.updateRecord = (record) => {
+      this.update({record: record})
     }
 
     this.mixin('tenderMixin')

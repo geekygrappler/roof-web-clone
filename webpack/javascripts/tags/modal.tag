@@ -2,7 +2,7 @@
 
   <div name="body" class="black modal-body out">
     <div class="fixed left-0 top-0 right-0 bottom-0 z4 overflow-auto bg-darken-4">
-      <div class="relative sm-col-6 sm-px3 px1 py3 mt4 mb4 mx-auto bg-white modal-container">
+      <div class="relative {opts.classes || 'sm-col-6 sm-px3 px1 py3 mt4 mb4'} mx-auto bg-white modal-container">
         <a if="{!opts.persisted}" class="absolute btn btn-small right-0 top-0 mr1 mt1" onclick="{close}">
           <i class="fa fa-times"></i>
         </a>

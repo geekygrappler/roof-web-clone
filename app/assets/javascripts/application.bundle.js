@@ -2672,10 +2672,21 @@
 	  return Account;
 	})();
 	
-	var resources = ["projects", "leads", "tenders", "quotes", "appointments", "customers", "professionals", "administrators"];
+	var resources = ["customers", "professionals", "administrators", "leads", "accounts", "projects", "payments", "quotes", "tenders", "tender_templates", "materials", "tasks", "appointments", "assets"];
 	resources.forEach(function (api) {
 	  apis[api] = riot.observable();
 	  apis[api].cache = {};
+	
+	  apis[api]["new"] = function () {
+	    return request({
+	      url: "/api/" + api + "/new" }).fail(function (xhr) {
+	      apis[api].trigger("new.fail", xhr);
+	      return xhr;
+	    }).then(function (data) {
+	      apis[api].trigger("new.success", data);
+	      return data;
+	    });
+	  };
 	
 	  apis[api].index = function (data) {
 	    return request({
@@ -3087,6 +3098,36 @@
 	  },
 	  isAllValuesEmpty: function isAllValuesEmpty(data) {
 	    return _.isEmpty(_.compact(_.values(data)));
+	  },
+	  openForm: function openForm(formTag, e, resource) {
+	    return riot.mount("r-modal", {
+	      content: formTag,
+	      persisted: false,
+	      api: this.opts.api,
+	      classes: "sm-col-12 sm-px3 px1",
+	      contentOpts: {
+	        resource: this.opts.resource || resource,
+	        id: e.item && (e.item.id || e.item.record && e.item.record.id),
+	        api: this.opts.api,
+	        attributes: []
+	      }
+	    });
+	  },
+	  loadResources: function loadResources(resource) {
+	    var _this = this;
+	
+	    if (this.opts.api[resource].cache.index) {
+	      this[resource] = this.opts.api[resource].cache.index;
+	      this.update();
+	    } else {
+	      this.opts.api[resource].index().then(function (data) {
+	        _this[resource] = _this.opts.api[resource].cache.index = data;
+	        _this.update();
+	      });
+	    }
+	  },
+	  updateReset: function updateReset() {
+	    this.update({ busy: false, errors: null });
 	  }
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
@@ -17445,6 +17486,8 @@
 	
 	__webpack_require__(142);
 	
+	__webpack_require__(143);
+	
 	riot.tag2("r-app", "<yield from=\"header\"></yield> <div name=\"content\"></div>", "", "", function (opts) {
 	  var _this = this;
 	
@@ -17547,6 +17590,45 @@
 	      tab: "r-settings-" + tab
 	    });
 	  });
+	
+	  if (this.currentAccount && this.currentAccount.isAdministrator) {
+	
+	    riot.route("admin/*", function (resource) {
+	      riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api });
+	    });
+	    riot.route("admin/*/new", function (resource) {
+	      riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api });
+	      // riot.mount('r-modal', {
+	      //   content: 'r-admin-form',
+	      //   persisted: false,
+	      //   api: opts.api,
+	      //   classes: 'sm-col-12 sm-px3 px1',
+	      //   contentOpts: {resource: resource, api: opts.api, attributes: []}
+	      // })
+	      var tags = _this.openForm("r-admin-" + resource.replace(/_/g, "-").singular() + "-form", {}, resource);
+	
+	      if (!tags[0].content._tag) {
+	        _this.openForm("r-admin-form", {}, resource);
+	      }
+	    });
+	    riot.route("admin/*/*/edit", function (resource, id) {
+	      riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api });
+	      var tags = _this.openForm("r-admin-" + resource.replace(/_/g, "-").singular() + "-form", { item: { id: id } }, resource);
+	      if (!tags[0].content._tag) {
+	        _this.openForm("r-admin-form", { item: { id: id } }, resource);
+	      }
+	      // riot.mount('r-modal', {
+	      //   content: 'r-admin-form',
+	      //   persisted: false,
+	      //   api: opts.api,
+	      //   classes: 'sm-col-12 sm-px3 px1',
+	      //   contentOpts: {resource: resource, api: opts.api, id: id, attributes: []}
+	      // })
+	    });
+	    riot.route("admin/*/*", function (resource, id) {
+	      riot.mount(_this.content, "r-admin-show", { resource: resource, api: opts.api, id: id });
+	    });
+	  }
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
@@ -17558,7 +17640,7 @@
 	
 	var links = __webpack_require__(112);
 	
-	riot.tag2("r-admin-menu", "<div class=\"relative inline-block\" data-disclosure> <button type=\"button\" class=\"btn btn-primary\"> Menu &#9662; </button> <div data-details class=\"fixed top-0 right-0 bottom-0 left-0\"></div> <div data-details class=\"absolute left-0 mt1 nowrap black bg-yellow rounded\"> <a each=\"{items}\" href=\"{href}\" class=\"btn block\">{title}</a> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-menu", "<div class=\"relative inline-block\" data-disclosure> <button type=\"button\" class=\"btn btn-primary\"> Menu &#9662; </button> <div data-details class=\"fixed top-0 right-0 bottom-0 left-0\"></div> <div data-details class=\"absolute left-0 mt1 nowrap black bg-yellow rounded z4\"> <a each=\"{items}\" href=\"{href}\" class=\"btn block\">{title}</a> </div> </div>", "", "", function (opts) {
 	  this.items = links.AdministratorLinks;
 	});
 	
@@ -17626,47 +17708,47 @@
 		],
 		"AdministratorLinks": [
 			{
-				"href": "/app/leads",
+				"href": "/app/admin/leads",
 				"title": "Leads"
 			},
 			{
-				"href": "/app/accounts",
+				"href": "/app/admin/accounts",
 				"title": "Accounts"
 			},
 			{
-				"href": "/app/projects",
+				"href": "/app/admin/projects",
 				"title": "Projects"
 			},
 			{
-				"href": "/app/projects",
+				"href": "/app/admin/payments",
 				"title": "Payments"
 			},
 			{
-				"href": "/app/quotes",
+				"href": "/app/admin/quotes",
 				"title": "Quotes"
 			},
 			{
-				"href": "/app/tenders",
+				"href": "/app/admin/tenders",
 				"title": "Tenders"
 			},
 			{
-				"href": "/app/tender_templates",
+				"href": "/app/admin/tender_templates",
 				"title": "Tender Templates"
 			},
 			{
-				"href": "/app/materials",
+				"href": "/app/admin/materials",
 				"title": "Materials"
 			},
 			{
-				"href": "/app/tasks",
+				"href": "/app/admin/tasks",
 				"title": "Tasks"
 			},
 			{
-				"href": "/app/appointments",
+				"href": "/app/admin/appointments",
 				"title": "Appointments"
 			},
 			{
-				"href": "/app/assets",
+				"href": "/app/admin/assets",
 				"title": "Assets"
 			}
 		]
@@ -17825,7 +17907,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-modal", "<div name=\"body\" class=\"black modal-body out\"> <div class=\"fixed left-0 top-0 right-0 bottom-0 z4 overflow-auto bg-darken-4\"> <div class=\"relative sm-col-6 sm-px3 px1 py3 mt4 mb4 mx-auto bg-white modal-container\"> <a if=\"{!opts.persisted}\" class=\"absolute btn btn-small right-0 top-0 mr1 mt1\" onclick=\"{close}\"> <i class=\"fa fa-times\"></i> </a> <div name=\"content\"></div> </div> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-modal", "<div name=\"body\" class=\"black modal-body out\"> <div class=\"fixed left-0 top-0 right-0 bottom-0 z4 overflow-auto bg-darken-4\"> <div class=\"relative {opts.classes || 'sm-col-6 sm-px3 px1 py3 mt4 mb4'} mx-auto bg-white modal-container\"> <a if=\"{!opts.persisted}\" class=\"absolute btn btn-small right-0 top-0 mr1 mt1\" onclick=\"{close}\"> <i class=\"fa fa-times\"></i> </a> <div name=\"content\"></div> </div> </div> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  riot.mount(this.content, this.opts.content, this.opts.contentOpts);
@@ -18409,7 +18491,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <p if=\"{hasNothing()}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <div if=\"{hasNothing() && opts.api.currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{hasNothing() && opts.api.currentAccount.isCustomer}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> <div if=\"{hasNothing() && opts.api.currentAccount.isAdministrator}\" class=\"mt2\"> <a class=\"btn btn-primary mr1\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> </p> <p if=\"{_.isEmpty(project.tender) && !_.isEmpty(quotes)}\"> Here is the <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a> we've prepared for you. Actual <strong>quotes</strong> from Professionals will appear here when they submit them. </p> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"inline-block p1 sm-col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Tender</span> <p class=\"overflow-hidden m0 mxn2 p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Show</a> <a class=\"btn btn-small bg-darken-2\" if=\"{opts.api.currentAccount.isProfessional}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> <li each=\"{quotes}\" class=\"inline-block p1 sm-col-4 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Quote</span> <span if=\"{accepted_at}\" class=\"inline-block align-middle h6 mb1 px1 border pill\">Accepted</span> <span if=\"{!accepted_at && submitted_at}\" class=\"inline-block align-middle h6 mb1 px1 border pill\">Submitted</span> <p class=\"overflow-hidden m0 mxn2 p1 bg-yellow\"> <span if=\"{!accepted_at && submitted_at}\"><i class=\"fa fa-clock-o mr1\"></i>submitted at: {fromNow(submitted_at)}</i></span> <span if=\"{accepted_at}\"><i class=\"fa fa-clock-o mr1\"></i>accepted at: {fromNow(accepted_at)}</i></span> <br> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Show</a> <a class=\"btn btn-small bg-darken-2\" if=\"{opts.api.currentAccount.isProfessional && !accepted_at}\" onclick=\"{delete}\">Delete</a> </p> </div> </li> </ul>", "", "", function (opts) {
+	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <p if=\"{hasNothing()}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <div if=\"{hasNothing() && currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{hasNothing() && currentAccount.isCustomer}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> <div if=\"{hasNothing() && currentAccount.isAdministrator}\" class=\"mt2\"> <a class=\"btn btn-primary mr1\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isCustomer}\"> Here is your <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Actual <strong>quotes</strong> from Professionals will appear here when they submit them. </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isProfessional}\"> Here is the the <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Click <strong>Clone</strong> button to get your copy and work on it. </p> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Tender</span> <p class=\"overflow-hidden m0 mxn2 p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Show</a> <a class=\"btn btn-small bg-darken-2\" if=\"{currentAccount.isProfessional}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill\">Quote</span> <span if=\"{accepted_at}\" class=\"inline-block align-middle h6 mb1 px1 border pill\">Accepted</span> <span if=\"{!accepted_at && submitted_at}\" class=\"inline-block align-middle h6 mb1 px1 border pill\">Submitted</span> <span class=\"right mt3\">by {professional.profile.first_name} {professional.profile.last_name}</span> <p class=\"clearfix overflow-hidden m0 mxn2 p1 bg-{green: accepted_at, blue: (submitted_at && !accepted_at), gray: (!submitted_at && !accepted_at)} white\"> <span if=\"{!accepted_at && submitted_at}\"><i class=\"fa fa-clock-o mr1\"></i>submitted at: {fromNow(submitted_at)}</i></span> <span if=\"{accepted_at}\"><i class=\"fa fa-clock-o mr1\"></i>accepted at: {fromNow(accepted_at)}</i></span> <br> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Show</a> <a class=\"btn btn-small bg-darken-2\" if=\"{currentAccount.isProfessional && !accepted_at}\" onclick=\"{delete}\">Delete</a> </p> </div> </li> </ul>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.hasNothing = function () {
@@ -18455,7 +18537,7 @@
 	    opts.api.quotes.create({
 	      project_id: opts.id,
 	      tender_id: _this.project.tender.id,
-	      professional_id: _this.opts.api.currentAccount.user_id
+	      professional_id: _this.currentAccount.user_id
 	    });
 	  };
 	
@@ -18486,7 +18568,7 @@
 	
 	__webpack_require__(140);
 	
-	riot.tag2("r-tenders-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1>{opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Tender ' + opts.id : 'New Tender'}</h1> <r-tender-section each=\"{section , i in tender.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && tender.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{!currentAccount.isProfessional}\" type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> </div>", "", "", function (opts) {
+	riot.tag2("r-tenders-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1>{opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Tender ' + opts.id : 'New Tender'}</h1> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{!currentAccount.isProfessional}\" type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.headers = {
@@ -18515,10 +18597,10 @@
 	    });
 	    this.on("unmount", function () {
 	      opts.api.projects.off("show.success", _this.updateTenderFromProject);
-	      opts.api.tenders.off("show.success", _this.updateTender);
+	      opts.api.tenders.off("show.success", _this.updateRecord);
 	    });
 	  } else {
-	    this.tender = { project_id: this.opts.project_id, document: { sections: [] } };
+	    this.record = { project_id: this.opts.project_id, document: { sections: [] } };
 	  }
 	
 	  this.submit = function (e) {
@@ -18527,23 +18609,23 @@
 	    _this.update({ busy: true, errors: null });
 	
 	    if (_this.opts.id) {
-	      _this.opts.api.tenders.update(opts.id, _this.tender).fail(_this.errorHandler).then(function (id) {
+	      _this.opts.api.tenders.update(opts.id, _this.record).fail(_this.errorHandler).then(function (id) {
 	        return _this.update({ busy: false });
 	      });
 	    } else {
-	      _this.opts.api.tenders.create(_this.tender).fail(_this.errorHandler).then(function (tender) {
+	      _this.opts.api.tenders.create(_this.record).fail(_this.errorHandler).then(function (record) {
 	        _this.update({ busy: false });
-	        _this.opts.id = tender.id;
-	        history.pushState(null, null, "/app/projects/" + tender.project_id + "/tenders/" + tender.id);
+	        _this.opts.id = record.id;
+	        history.pushState(null, null, "/app/projects/" + record.project_id + "/tenders/" + record.id);
 	      });
 	    }
 	  };
 	
 	  this.updateTenderFromProject = function (project) {
-	    _this.update({ tender: project.tender });
+	    _this.update({ record: project.tender });
 	  };
-	  this.updateTender = function (tender) {
-	    _this.update({ tender: tender });
+	  this.updateRecord = function (record) {
+	    _this.update({ record: record });
 	  };
 	
 	  this.mixin("tenderMixin");
@@ -18585,22 +18667,22 @@
 	        return $(e.currentTarget).animateCss("shake");
 	      }
 	      var section = {
-	        id: _this.tender.document.sections.length + 1,
+	        id: _this.record.document.sections.length + 1,
 	        name: _this.sectionName.value,
 	        tasks: [],
 	        materials: []
 	      };
-	      _this.tender.document.sections.push(section);
+	      _this.record.document.sections.push(section);
 	      _this.sectionName.value = null;
 	      _this.update();
 	    };
 	    this.removeSection = function (e) {
 	      e.preventDefault();
 	      if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
-	        var index = _.findIndex(_this.tender.document.sections, function (s) {
+	        var index = _.findIndex(_this.record.document.sections, function (s) {
 	          return s.id == e.item.id;
 	        });
-	        _this.tender.document.sections.splice(index, 1);
+	        _this.record.document.sections.splice(index, 1);
 	        _this.update();
 	      }
 	    };
@@ -18620,7 +18702,7 @@
 	      }
 	    };
 	    this.tenderTotal = function () {
-	      return _this.formatCurrency(_.reduce(_this.tender.document.sections, function (total, section) {
+	      return _this.formatCurrency(_.reduce(_this.record.document.sections, function (total, section) {
 	        var _sectionTotal = _this.sectionTotal(section);
 	
 	        var _sectionTotal2 = _slicedToArray(_sectionTotal, 2);
@@ -23363,7 +23445,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-tender-item-group", "<ul class=\"list-reset ml2 border-left mb0 relative\"> <li> <h4 class=\"inline-block mb0 mt1 p1 border-bottom \"> <select if=\"{group.toLowerCase() == 'other'}\" onchange=\"{changeTaskAction}\"> <option each=\"{val, name in taskActions}\" value=\"{val}\" __selected=\"{val == 'Other'}\">{name}</option> </select> <span if=\"{group.toLowerCase() != 'other'}\">{group.humanize()}</span> </h4> <ul class=\"list-reset ml2 border-left mb0\"> <li if=\"{drawHeader()}\" class=\"sm-show relative\"> <div class=\"clearfix p1 border-bottom\"> <div each=\"{name, width in headers}\" class=\"sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate\"> {name == 'name' ? '&nbsp;' : name.humanize()} </div> </div> </li> <r-tender-item each=\"{items}\" border_cleaner=\"{drawBorderCleaner()}\"></r-tender-item> </ul> </li> </ul> <h5 class=\"right-align\">Group total: {formatCurrency(total())}<h5>", "", "", function (opts) {
+	riot.tag2("r-tender-item-group", "<ul class=\"list-reset ml2 -border-left mb0 relative\"> <li> <h4 class=\"inline-block mb0 mt1 p1 border-bottom \"> <select if=\"{group.toLowerCase() == 'other'}\" onchange=\"{changeTaskAction}\"> <option each=\"{val, name in taskActions}\" value=\"{val}\" __selected=\"{val == 'Other'}\">{name}</option> </select> <span if=\"{group.toLowerCase() != 'other'}\">{group.humanize()}</span> </h4> <ul class=\"list-reset ml2 border-left mb0\"> <li if=\"{drawHeader()}\" class=\"sm-show relative\"> <div class=\"clearfix p1 border-bottom\"> <div each=\"{name, width in headers}\" class=\"sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate\"> {name == 'name' ? '&nbsp;' : name.humanize()} </div> </div> </li> <r-tender-item each=\"{items}\" border_cleaner=\"{drawBorderCleaner()}\"></r-tender-item> </ul> </li> </ul> <h5 class=\"right-align\">Group total: {formatCurrency(total())}<h5>", "", "", function (opts) {
 	  var _this = this;
 	
 	  var itemKeys = undefined;
@@ -23480,7 +23562,7 @@
 	
 	__webpack_require__(135);
 	
-	riot.tag2("r-quotes-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1>{opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Quote ' + opts.id : 'New Quote'}</h1> <r-tender-section each=\"{section , i in tender.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && tender.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{opts.id && !currentAccount.isProfessional}\" class=\"btn btn-primary btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{tender.accepted_at}\"> {tender.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{tender.accepted_at}\">{fromNow(tender.accepted_at)}</span> </button> <virtual if=\"{!opts.readonly && !currentAccount.isCustomer}\"> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{opts.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> </virtual> </form> </div>", "", "", function (opts) {
+	riot.tag2("r-quotes-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1>{opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Quote ' + opts.id : 'New Quote'}</h1> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{opts.id && !currentAccount.isProfessional}\" class=\"btn btn-primary btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </button> <virtual if=\"{!opts.readonly && !currentAccount.isCustomer}\"> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{opts.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> </virtual> </form> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.headers = {
@@ -23506,7 +23588,7 @@
 	      opts.api.quotes.off("show.success", _this.updateQuote);
 	    });
 	  } else {
-	    this.tender = { project_id: this.opts.project_id, document: { sections: [] } };
+	    this.record = { project_id: this.opts.project_id, document: { sections: [] } };
 	  }
 	
 	  this.submit = function (e) {
@@ -23515,21 +23597,21 @@
 	    _this.update({ busy: true, errors: null });
 	
 	    if (_this.opts.id) {
-	      _this.opts.api.quotes.update(opts.id, _this.tender).fail(_this.errorHandler).then(function (id) {
+	      _this.opts.api.quotes.update(opts.id, _this.record).fail(_this.errorHandler).then(function (id) {
 	        return _this.update({ busy: false });
 	      });
 	    } else {
-	      _this.opts.api.quotes.create(_this.tender).fail(_this.errorHandler).then(function (tender) {
+	      _this.opts.api.quotes.create(_this.record).fail(_this.errorHandler).then(function (record) {
 	        _this.update({ busy: false });
-	        _this.opts.id = tender.id;
-	        history.pushState(null, null, "/app/projects/" + tender.project_id + "/quotes/" + tender.id);
+	        _this.opts.id = record.id;
+	        history.pushState(null, null, "/app/projects/" + record.project_id + "/quotes/" + record.id);
 	      });
 	    }
 	  };
 	
-	  this.updateQuote = function (tender) {
-	    _this.opts.readonly = !!tender.accepted_at;
-	    _this.update({ tender: tender });
+	  this.updateQuote = function (record) {
+	    _this.opts.readonly = !!record.accepted_at;
+	    _this.update({ record: record });
 	  };
 	
 	  this.submitQuote = function (e) {
@@ -23590,6 +23672,372 @@
 	  if (opts.api.currentAccount.isProfessional) {
 	    this.subnavLinks = [{ href: "/app/settings/profile", name: "profile", tag: "r-settings-profile" }, { href: "/app/settings/notifications", name: "notifications", tag: "r-settings-notifications" }, { href: "/app/settings/account", name: "account", tag: "r-settings-account" }];
 	  }
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 143 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	__webpack_require__(144);
+	
+	__webpack_require__(145);
+	
+	__webpack_require__(146);
+	
+	riot.tag2("r-admin-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in attributes}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"resource.singular()}[{attr}]\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.on("mount", function () {
+	    _this.opts.api[opts.resource].on("new.success", _this.updateRecord);
+	    _this.opts.api[opts.resource].on("show.success", _this.updateRecord);
+	    _this.opts.api[opts.resource].on("update.success", _this.update);
+	    if (opts.id) {
+	      _this.opts.api[opts.resource].show(opts.id);
+	      history.pushState(null, null, "/app/admin/" + opts.resource + "/" + opts.id + "/edit");
+	    } else {
+	      _this.opts.api[opts.resource]["new"]();
+	      history.pushState(null, null, "/app/admin/" + opts.resource + "/new");
+	    }
+	  });
+	
+	  this.on("unmount", function () {
+	    _this.opts.api[opts.resource].off("new.success", _this.updateRecord);
+	    _this.opts.api[opts.resource].off("show.success", _this.updateRecord);
+	    _this.opts.api[opts.resource].off("update.success", _this.update);
+	  });
+	
+	  this.updateRecord = function (record) {
+	    _this.update({ record: record, attributes: _.keys(record) });
+	  };
+	
+	  this.submit = function (e) {
+	    if (e) e.preventDefault();
+	
+	    var data = _this.serializeForm(_this.form);
+	
+	    if (_.isEmpty(data)) {
+	      $(_this.form).animateCss("shake");
+	      return;
+	    }
+	
+	    _this.update({ busy: true, errors: null });
+	
+	    if (_this.opts.id) {
+	      _this.opts.api[opts.resource].update(opts.id, data).fail(_this.errorHandler).then(function (id) {
+	        return _this.update({ busy: false });
+	      });
+	    } else {
+	      _this.opts.api[opts.resource].create(data).fail(_this.errorHandler).then(function (record) {
+	        _this.update({ record: record, busy: false });
+	        _this.opts.id = record.id;
+	        history.pushState(null, null, "/app/admin/" + opts.resource + "/" + record.id + "/edit");
+	      });
+	    }
+	  };
+	});
+	
+	riot.tag2("r-admin-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form submit=\"{search}\"> <input type=\"text\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table class=\"table-light overflow-hidden bg-white border rounded\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td each=\"{attr, value in record}\">{value}</td> <td> <button class=\"btn btn-small\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small\" onclick=\"{destroy}\"> <i class=\"fa fa-trash\"></i> </button> </td> </tr> <tbody> </table> </div> </div>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.headers = [];
+	  this.records = [];
+	  this.on("mount", function () {
+	    _this.opts.api[opts.resource].on("index.success", _this.updateRecords);
+	    _this.opts.api[opts.resource].on("delete.success", _this.removeRecord);
+	    _this.opts.api[opts.resource].index();
+	  });
+	
+	  this.on("unmount", function () {
+	    _this.opts.api[opts.resource].off("index.success", _this.updateRecords);
+	    _this.opts.api[opts.resource].off("delete.success", _this.removeRecord);
+	  });
+	
+	  this.updateRecords = function (records) {
+	    _this.update({ records: records, headers: _.keys(records[0]) });
+	  };
+	  this.removeRecord = function (id) {
+	    var _id = _.findIndex(_this.records, function (r) {
+	      return r.id === id;
+	    });
+	    if (_id > -1) {
+	      _this.records.splice(_id, 1);
+	      _this.update();
+	    }
+	  };
+	  this.open = function (e) {
+	    var tags = _this.openForm("r-admin-" + opts.resource.replace(/_/g, "-").singular() + "-form", e);
+	    if (!tags[0].content._tag) {
+	      _this.openForm("r-admin-form", e);
+	    }
+	  };
+	  this.destroy = function (e) {
+	    if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
+	      _this.opts.api[opts.resource]["delete"](e.item.id);
+	    }
+	  };
+	  this.search = function () {
+	    _this.opts.api[opts.resource].index();
+	  };
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 144 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	__webpack_require__(135);
+	
+	riot.tag2("r-admin-tender-template-form", "<div class=\"container p2\"> <h1><input type=\"text\" name=\"name\" value=\"{record.name}\" class=\"block col-12 field\" placeholder=\"Name\" oninput=\"{setInputValue}\"></h1> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>When you apply a template to a project, if there isn't Tender on the project it clones itself to project, if Tender exists it apply changes to project's tender </p> <div class=\"sm-col sm-col-9\"> <select name=\"project_ids[]\" id=\"project_ids\" multiple class=\"block col-12 mb2 field\"> <option each=\"{projects}\" value=\"{id}\">#{id} | {name} | {customers[0].profile.first_name} {customers[0].profile.last_name}</option> </select> </div> <div class=\"sm-col sm-col-3 center px1 right-align\"> <a class=\"block center white btn bg-blue {busy: busy}\" onclick=\"{addToProject}\">Apply to Project(s)</a> </div> </div> </div>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.record = { name: null, document: { sections: [] } };
+	
+	  this.headers = {
+	    task: { name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2 },
+	    material: { name: 5, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2 }
+	  };
+	
+	  this.on("mount", function () {
+	    _this.opts.api[opts.resource].on("show.fail", _this.errorHandler);
+	    _this.opts.api[opts.resource].on("show.success", _this.updateRecord);
+	    opts.api.tenders.on("create.fail", _this.errorHandler);
+	    opts.api.tenders.on("create.success", _this.updateReset);
+	  });
+	  this.on("unmount", function () {
+	    _this.opts.api[opts.resource].off("show.fail", _this.errorHandler);
+	    _this.opts.api[opts.resource].off("show.success", _this.updateRecord);
+	    opts.api.tenders.off("create.fail", _this.errorHandler);
+	    opts.api.tenders.off("create.success", _this.updateReset);
+	  });
+	
+	  if (opts.id) {
+	    this.opts.api[opts.resource].show(opts.id);
+	    this.loadResources("projects");
+	    history.pushState(null, null, "/app/admin/" + opts.resource + "/" + opts.id + "/edit");
+	  } else {
+	    history.pushState(null, null, "/app/admin/" + opts.resource + "/new");
+	  }
+	
+	  this.submit = function (e) {
+	    if (e) e.preventDefault();
+	
+	    _this.update({ busy: true, errors: null });
+	    _this.record.name = _this.name.value;
+	
+	    if (_this.opts.id) {
+	      _this.opts.api[opts.resource].update(opts.id, _this.record).fail(_this.errorHandler).then(function (id) {
+	        return _this.update({ busy: false });
+	      });
+	    } else {
+	      _this.opts.api[opts.resource].create(_this.record).fail(_this.errorHandler).then(function (record) {
+	        _this.update({ busy: false });
+	        _this.opts.id = record.id;
+	        history.pushState(null, null, "/app/admin/" + _this.resource + "/" + record.id + "/edit");
+	      });
+	    }
+	  };
+	
+	  this.updateRecord = function (record) {
+	    _this.update({ record: record });
+	  };
+	
+	  this.addToProject = function (e) {
+	    e.preventDefault();
+	
+	    var ids = $(_this.project_ids).serializeJSON({ parseAll: true }).project_ids;
+	    _.each(ids, function (id) {
+	      opts.api.tenders.create({
+	        project_id: id, tender_template_id: _this.record.id
+	      });
+	    });
+	    _this.update({ busy: true });
+	  };
+	
+	  this.setInputValue = function (e) {
+	    _this.record[e.target.name] = e.target.value;
+	  };
+	
+	  this.mixin("tenderMixin");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 145 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	__webpack_require__(135);
+	
+	riot.tag2("r-admin-tender-form", "<div class=\"container p2\"> <label for=\"project_id\">Project</label> <select name=\"project_id\" class=\"block col-12 mb2 field\" onchange=\"{setInputValue}\"> <option></option> <option each=\"{projects}\" value=\"{id}\" __selected=\"{record.project_id == id}\">#{id} | {name} | {customers[0].profile.first_name} {customers[0].profile.last_name}</option> </select> <span if=\"{errors.project_id}\" class=\"inline-error\">{errors.project_id}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>Add a Professional to this Project by creating a Quote from this tender. Choosen pro will be shortlisted.</p> <div class=\"sm-col sm-col-9\"> <select name=\"professional_ids[]\" id=\"professional_ids\" multiple class=\"block col-12 mb2 field\"> <option each=\"{professionals}\" value=\"{id}\">#{id} | {profile.first_name} | {profile.last_name}</option> </select> </div> <div class=\"sm-col sm-col-3 px1 center white\"> <a class=\"btn bg-blue {busy: busy}\" onclick=\"{createQuote}\">Create Quote!</a> </div> </div> </div>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.record = { project_id: null, document: { sections: [] } };
+	  this.projects = [];
+	  this.professionals = [];
+	
+	  this.headers = {
+	    task: { name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2 },
+	    material: { name: 5, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2 }
+	  };
+	
+	  this.on("mount", function () {
+	    _this.opts.api[opts.resource].on("show.fail", _this.errorHandler);
+	    _this.opts.api[opts.resource].on("show.success", _this.updateRecord);
+	    opts.api.quotes.on("create.fail", _this.errorHandler);
+	    opts.api.quotes.on("create.success", _this.updateReset);
+	  });
+	  this.on("unmount", function () {
+	    _this.opts.api[opts.resource].off("show.fail", _this.errorHandler);
+	    _this.opts.api[opts.resource].off("show.success", _this.updateRecord);
+	    opts.api.quotes.off("create.fail", _this.errorHandler);
+	    opts.api.quotes.off("create.success", _this.updateReset);
+	  });
+	
+	  if (opts.id) {
+	    this.opts.api[opts.resource].show(opts.id);
+	    this.loadResources("professionals");
+	    history.pushState(null, null, "/app/admin/" + opts.resource + "/" + opts.id + "/edit");
+	  } else {
+	    history.pushState(null, null, "/app/admin/" + opts.resource + "/new");
+	  }
+	  this.loadResources("projects");
+	
+	  this.submit = function (e) {
+	    if (e) e.preventDefault();
+	
+	    _this.record.project_id = _this.project_id.value;
+	
+	    _this.update({ busy: true, errors: null });
+	
+	    if (_this.opts.id) {
+	      _this.opts.api[opts.resource].update(opts.id, _this.record).fail(_this.errorHandler).then(function (id) {
+	        return _this.update({ busy: false });
+	      });
+	    } else {
+	      _this.opts.api[opts.resource].create(_this.record).fail(_this.errorHandler).then(function (record) {
+	        _this.update({ busy: false });
+	        _this.opts.id = record.id;
+	        history.pushState(null, null, "/app/admin/" + _this.resource + "/" + record.id + "/edit");
+	      });
+	    }
+	  };
+	
+	  this.updateRecord = function (record) {
+	    _this.update({ record: record });
+	  };
+	
+	  this.createQuote = function (e) {
+	    e.preventDefault();
+	
+	    var ids = $(_this.professional_ids).serializeJSON({ parseAll: true }).professional_ids;
+	
+	    _.each(ids, function (id) {
+	      opts.api.quotes.create({
+	        project_id: _this.record.project_id,
+	        tender_id: _this.record.id,
+	        professional_id: id
+	      });
+	    });
+	    _this.update({ busy: true });
+	  };
+	
+	  this.setInputValue = function (e) {
+	    _this.record[e.target.name] = e.target.value;
+	  };
+	
+	  this.mixin("tenderMixin");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 146 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	__webpack_require__(135);
+	
+	riot.tag2("r-admin-quote-form", "<div class=\"container p2\"> <label for=\"project\">Project</label> <select name=\"project_id\" class=\"block col-12 mb2 field\" onchange=\"{setInputValue}\"> <option></option> <option each=\"{projects}\" value=\"{id}\" __selected=\"{record.project_id == id}\">#{id} | {name} | {customers[0].profile.first_name} {customers[0].profile.last_name}</option> </select> <span if=\"{errors.project}\" class=\"inline-error\">{errors.project}</span> <label for=\"project_id\">Professional</label> <select name=\"professional_id\" class=\"block col-12 mb2 field\" onchange=\"{setInputValue}\"> <option></option> <option each=\"{professionals}\" value=\"{id}\" __selected=\"{record.professional_id == id}\">#{id} | {profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"tender_id\">Tender</label> <select name=\"tender_id\" class=\"block col-12 mb2 field\" onchange=\"{setInputValue}\"> <option></option> <option each=\"{tenders}\" value=\"{id}\" __selected=\"{record.tender_id == id}\">#{id}</option> </select> <span if=\"{errors.tender_id}\" class=\"inline-error\">{errors.project}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{record.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> <a if=\"{record.id}\" class=\"btn bg-red btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </a> </form> </div>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.headers = {
+	    task: { name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2 },
+	    material: { name: 5, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2 }
+	  };
+	
+	  this.on("mount", function () {
+	    _this.opts.api[opts.resource].on("show.fail", _this.errorHandler);
+	    _this.opts.api[opts.resource].on("show.success", _this.updateRecord);
+	  });
+	  this.on("unmount", function () {
+	    _this.opts.api[opts.resource].off("show.fail", _this.errorHandler);
+	    _this.opts.api[opts.resource].off("show.success", _this.updateRecord);
+	  });
+	  this.loadResources("projects");
+	  this.loadResources("professionals");
+	  this.loadResources("tenders");
+	
+	  this.record = { name: null, document: { sections: [] } };
+	  if (opts.id) {
+	    this.opts.api[opts.resource].show(opts.id);
+	    history.pushState(null, null, "/app/admin/" + opts.resource + "/" + opts.id + "/edit");
+	  } else {
+	    history.pushState(null, null, "/app/admin/" + opts.resource + "/new");
+	  }
+	
+	  this.submit = function (e) {
+	    if (e) e.preventDefault();
+	
+	    _this.update({ busy: true, errors: null });
+	
+	    if (_this.opts.id) {
+	      _this.opts.api[opts.resource].update(opts.id, _this.record).fail(_this.errorHandler).then(function (id) {
+	        return _this.update({ busy: false });
+	      });
+	    } else {
+	      _this.opts.api[opts.resource].create(_this.record).fail(_this.errorHandler).then(function (record) {
+	        _this.update({ busy: false });
+	        _this.opts.id = record.id;
+	        history.pushState(null, null, "/app/admin/" + _this.resource + "/" + record.id + "/edit");
+	      });
+	    }
+	  };
+	
+	  this.updateRecord = function (record) {
+	    _this.update({ record: record });
+	  };
+	
+	  this.submitQuote = function (e) {
+	    if (_this.opts.id) {
+	      if (e) e.preventDefault();
+	      _this.update({ busy: true });
+	      _this.opts.api.quotes.submit(_this.opts.id).fail(_this.errorHandler).then(function (id) {
+	        return _this.update({ busy: false });
+	      });
+	    }
+	  };
+	
+	  this.acceptQuote = function (e) {
+	    if (_this.opts.id) {
+	      if (e) e.preventDefault();
+	      _this.update({ busy: true });
+	      _this.opts.api.quotes.accept(_this.opts.id).fail(_this.errorHandler).then(function (id) {
+	        return _this.update({ busy: false });
+	      });
+	    }
+	  };
+	
+	  this.setInputValue = function (e) {
+	    _this.record[e.target.name] = e.target.value;
+	  };
+	
+	  this.mixin("tenderMixin");
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 

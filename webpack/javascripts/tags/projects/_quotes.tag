@@ -6,48 +6,53 @@
   <p if="{hasNothing()}">
     Hmm, it seems we are still working on your tender and it will show up here when it's ready.
     You can speed up the process by creating a tender document and we will be notified about it.
-    <div if="{hasNothing() && opts.api.currentAccount.isProfessional}" class="mt2">
+    <div if="{hasNothing() && currentAccount.isProfessional}" class="mt2">
       <a class="btn btn-primary" href="/app/projects/{opts.id}/quotes/new">Create a Quote</a>
     </div>
-    <div if="{hasNothing() && opts.api.currentAccount.isCustomer}" class="mt2">
+    <div if="{hasNothing() && currentAccount.isCustomer}" class="mt2">
       <a class="btn btn-primary" href="/app/projects/{opts.id}/tenders/new">Create a Tender Document</a>
     </div>
-    <div if="{hasNothing() && opts.api.currentAccount.isAdministrator}" class="mt2">
+    <div if="{hasNothing() && currentAccount.isAdministrator}" class="mt2">
       <a class="btn btn-primary mr1" href="/app/projects/{opts.id}/tenders/new">Create a Tender Document</a>
       <a class="btn btn-primary" href="/app/projects/{opts.id}/quotes/new">Create a Quote</a>
     </div>
   </p>
 
-  <p if="{_.isEmpty(project.tender) && !_.isEmpty(quotes)}">
-    Here is the <a href="/app/projects/{opts.id}/tenders/${project.tender.id}">Tender Document</a> we've prepared for you.
+  <p if="{ !_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isCustomer}">
+    Here is your <a href="/app/projects/{opts.id}/tenders/${project.tender.id}">Tender Document</a>.
     Actual <strong>quotes</strong> from Professionals will appear here when they submit them.
+  </p>
+  <p if="{ !_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isProfessional}">
+    Here is the the <a href="/app/projects/{opts.id}/tenders/${project.tender.id}">Tender Document</a>.
+    Click <strong>Clone</strong> button to get your copy and work on it.
   </p>
 
   <ul class="list-reset mxn1">
 
-    <li if="{project.tender}" class="inline-block p1 sm-col-4 align-top">
+    <li if="{project.tender}" class="block p1 sm-col-12 align-top">
       <div class="px2 border">
         <h2 class="inline-block">{ formatCurrency(project.tender.total_amount) }</h2>
         <span class="inline-block align-middle h6 mb1 px1 border pill">Tender</span>
         <p class="overflow-hidden m0 mxn2 p1 bg-yellow">
           <a class="btn btn-small bg-darken-2" href="/app/projects/{opts.id}/tenders/{project.tender.id}">Show</a>
-          <a class="btn btn-small bg-darken-2" if="{opts.api.currentAccount.isProfessional}" onclick="{clone}">Clone</a>
+          <a class="btn btn-small bg-darken-2" if="{currentAccount.isProfessional}" onclick="{clone}">Clone</a>
         </p>
       </div>
     </li>
 
-    <li each="{quotes}" class="inline-block p1 sm-col-4 align-top">
-      <div class="px2 border">
+    <li each="{quotes}" class="block p1 sm-col-12 align-top">
+      <div class="px2 border clearfix">
         <h2 class="inline-block">{ formatCurrency(total_amount) }</h2>
         <span class="inline-block align-middle h6 mb1 px1 border pill">Quote</span>
         <span if="{accepted_at}" class="inline-block align-middle h6 mb1 px1 border pill">Accepted</span>
         <span if="{!accepted_at && submitted_at}" class="inline-block align-middle h6 mb1 px1 border pill">Submitted</span>
-        <p class="overflow-hidden m0 mxn2 p1 bg-yellow">
+        <span class="right mt3">by { professional.profile.first_name } {professional.profile.last_name }</span>
+        <p class="clearfix overflow-hidden m0 mxn2 p1 bg-{green: accepted_at, blue: (submitted_at && !accepted_at), gray: (!submitted_at && !accepted_at)} white">
           <span if="{!accepted_at && submitted_at}"><i class="fa fa-clock-o mr1"></i>submitted at: {fromNow(submitted_at)}</i></span>
           <span if="{accepted_at}"><i class="fa fa-clock-o mr1"></i>accepted at: {fromNow(accepted_at)}</i></span>
           <br>
           <a class="btn btn-small bg-darken-2" href="/app/projects/{parent.opts.id}/quotes/{id}">Show</a>
-          <a class="btn btn-small bg-darken-2" if="{opts.api.currentAccount.isProfessional && !accepted_at}" onclick="{delete}">Delete</a>
+          <a class="btn btn-small bg-darken-2" if="{currentAccount.isProfessional && !accepted_at}" onclick="{delete}">Delete</a>
         </p>
       </div>
     </li>
@@ -94,7 +99,7 @@
     opts.api.quotes.create({
       project_id: opts.id,
       tender_id: this.project.tender.id,
-      professional_id: this.opts.api.currentAccount.user_id
+      professional_id: this.currentAccount.user_id
     })
   }
 

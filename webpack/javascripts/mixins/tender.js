@@ -20,12 +20,12 @@ riot.mixin('tenderMixin', {
         return $(e.currentTarget).animateCss('shake')
       }
       let section = {
-        id: this.tender.document.sections.length + 1,
+        id: this.record.document.sections.length + 1,
         name: this.sectionName.value,
         tasks: [],
         materials: []
       }
-      this.tender.document.sections.push(section)
+      this.record.document.sections.push(section)
       this.sectionName.value = null
       this.update()
       // $('[name=searchable_names]').last()[0].focus()
@@ -33,8 +33,8 @@ riot.mixin('tenderMixin', {
     this.removeSection = (e) => {
       e.preventDefault()
       if (window.confirm(this.ERRORS.CONFIRM_DELETE)) {
-        let index = _.findIndex(this.tender.document.sections, s => s.id == e.item.id)
-        this.tender.document.sections.splice(index, 1)
+        let index = _.findIndex(this.record.document.sections, s => s.id == e.item.id)
+        this.record.document.sections.splice(index, 1)
         this.update()
       }
     }
@@ -53,7 +53,7 @@ riot.mixin('tenderMixin', {
     }
     this.tenderTotal = () => {
       return this.formatCurrency(
-        _.reduce(this.tender.document.sections, (total, section) => {
+        _.reduce(this.record.document.sections, (total, section) => {
           let [itemTotal , materialTotal] = this.sectionTotal(section)
           return (total + itemTotal + (itemTotal * 20 / 100) + materialTotal)
         }, 0)

@@ -79,5 +79,33 @@ riot.mixin({
   preventSubmit: function (e) { e.preventDefault() },
   isAllValuesEmpty: function (data) {
     return _.isEmpty(_.compact(_.values(data)))
+  },
+  openForm: function (formTag, e, resource) {
+    return riot.mount('r-modal', {
+      content: formTag,
+      persisted: false,
+      api: this.opts.api,
+      classes: 'sm-col-12 sm-px3 px1',
+      contentOpts: {
+        resource: this.opts.resource || resource,
+        id: e.item && (e.item.id || e.item.record && e.item.record.id),
+        api: this.opts.api,
+        attributes: []
+      }
+    })
+  },
+  loadResources: function(resource) {
+    if (this.opts.api[resource].cache.index) {
+      this[resource] = this.opts.api[resource].cache.index
+      this.update()
+    } else {
+      this.opts.api[resource].index().then(data => {
+        this[resource] = this.opts.api[resource].cache.index = data
+        this.update()
+      })
+    }
+  },
+  updateReset: function () {
+    this.update({busy: false, errors: null})
   }
 })

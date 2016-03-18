@@ -16,6 +16,8 @@ import './quotes/quote.tag'
 
 import './settings.tag'
 
+import './admin/index.tag'
+
 <r-app>
   <yield from="header" />
 
@@ -122,6 +124,47 @@ import './settings.tag'
       tab: `r-settings-${tab}`
     })
   })
+
+  if (this.currentAccount && this.currentAccount.isAdministrator) {
+
+      riot.route(`admin/*`, (resource) => {
+        riot.mount(this.content, 'r-admin-index', {resource: resource, api: opts.api})
+      })
+      riot.route(`admin/*/new`, (resource) => {
+        riot.mount(this.content, 'r-admin-index', {resource: resource, api: opts.api})
+        // riot.mount('r-modal', {
+        //   content: 'r-admin-form',
+        //   persisted: false,
+        //   api: opts.api,
+        //   classes: 'sm-col-12 sm-px3 px1',
+        //   contentOpts: {resource: resource, api: opts.api, attributes: []}
+        // })
+        let tags = this.openForm(`r-admin-${resource.replace(/_/g,'-').singular()}-form`, {}, resource)
+
+        if(!tags[0].content._tag) {
+          this.openForm(`r-admin-form`, {}, resource)
+        }
+      })
+      riot.route(`admin/*/*/edit`, (resource, id) => {
+        riot.mount(this.content, 'r-admin-index', {resource: resource, api: opts.api})
+        let tags = this.openForm(`r-admin-${resource.replace(/_/g,'-').singular()}-form`, {item: {id: id}}, resource)
+        if(!tags[0].content._tag) {
+          this.openForm(`r-admin-form`, {item: {id: id}}, resource)
+        }
+        // riot.mount('r-modal', {
+        //   content: 'r-admin-form',
+        //   persisted: false,
+        //   api: opts.api,
+        //   classes: 'sm-col-12 sm-px3 px1',
+        //   contentOpts: {resource: resource, api: opts.api, id: id, attributes: []}
+        // })
+
+      })
+      riot.route(`admin/*/*`, (resource, id) => {
+        riot.mount(this.content, 'r-admin-show', {resource: resource, api: opts.api, id: id})
+      })
+
+  }
 
   </script>
 </r-app>

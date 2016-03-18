@@ -22,3 +22,6 @@ CSV.foreach("#{Rails.root}/db/tasks.csv", {headers: true}) do |row|
     puts task.errors.as_json
   end
 end
+
+
+Account.create(email: 'admin@1roof.com', password: 'password', user_attributes: {type: 'Administrator', profile: {first_name: 'Admin', last_name: 'One', phone_number: '08999'}})

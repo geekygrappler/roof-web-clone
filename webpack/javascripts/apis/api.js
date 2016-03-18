@@ -25,12 +25,37 @@ class Account {
   }
 }
 let resources = [
-  'projects', 'leads', 'tenders', 'quotes', 'appointments',
-  'customers', 'professionals', 'administrators'
+  'customers', 'professionals', 'administrators',
+
+  'leads',
+  'accounts',
+  'projects',
+  'payments',
+  'quotes',
+  'tenders',
+  'tender_templates',
+  'materials',
+  'tasks',
+  'appointments',
+  'assets'
 ]
 resources.forEach((api) =>{
   apis[api] = riot.observable()
   apis[api].cache = {}
+
+  apis[api].new = function () {
+    return request({
+      url: `/api/${api}/new`,
+    })
+    .fail((xhr) => {
+      apis[api].trigger('new.fail', xhr)
+      return xhr
+    })
+    .then((data) => {
+      apis[api].trigger('new.success', data)
+      return data
+    })
+  }
 
   apis[api].index = function (data) {
     return request({

@@ -9,9 +9,9 @@ import from '../../mixins/tender.js'
   <div class="container p2 {readonly: opts.readonly}">
     <h1>{ opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Quote ' + opts.id : 'New Quote' }</h1>
 
-    <r-tender-section each="{ section , i in tender.document.sections }" ></r-tender-section>
+    <r-tender-section each="{ section , i in record.document.sections }" ></r-tender-section>
 
-    <form if="{ !opts.readonly && tender.document }" onsubmit="{ addSection }" class="mt3 py3 clearfix mxn1 border-top">
+    <form if="{ !opts.readonly && record.document }" onsubmit="{ addSection }" class="mt3 py3 clearfix mxn1 border-top">
       <div class="col col-8 px1">
         <input type="text" name="sectionName" placeholder="Section name" class="block col-12 field" />
       </div>
@@ -32,8 +32,8 @@ import from '../../mixins/tender.js'
 
 
       <button if="{opts.id && !currentAccount.isProfessional}"
-      class="btn btn-primary btn-big {busy: busy}" onclick="{acceptQuote}" disabled="{tender.accepted_at}">
-      {tender.accepted_at ? 'Accepted' : 'Accept'} <span if="{tender.accepted_at}">{fromNow(tender.accepted_at)}</span>
+      class="btn btn-primary btn-big {busy: busy}" onclick="{acceptQuote}" disabled="{record.accepted_at}">
+      {record.accepted_at ? 'Accepted' : 'Accept'} <span if="{record.accepted_at}">{fromNow(record.accepted_at)}</span>
       </button>
 
       <virtual if="{!opts.readonly && !currentAccount.isCustomer}">
@@ -67,7 +67,7 @@ import from '../../mixins/tender.js'
         opts.api.quotes.off('show.success', this.updateQuote)
       })
     } else {
-      this.tender = {project_id: this.opts.project_id, document: {sections: []}}
+      this.record = {project_id: this.opts.project_id, document: {sections: []}}
     }
 
     this.submit = (e) => {
@@ -76,23 +76,23 @@ import from '../../mixins/tender.js'
       this.update({busy: true, errors: null})
 
       if (this.opts.id) {
-        this.opts.api.quotes.update(opts.id, this.tender)
+        this.opts.api.quotes.update(opts.id, this.record)
         .fail(this.errorHandler)
         .then(id => this.update({busy:false}))
       }else{
-        this.opts.api.quotes.create(this.tender)
+        this.opts.api.quotes.create(this.record)
         .fail(this.errorHandler)
-        .then(tender => {
+        .then(record => {
           this.update({busy:false})
-          this.opts.id = tender.id
-          history.pushState(null, null, `/app/projects/${tender.project_id}/quotes/${tender.id}`)
+          this.opts.id = record.id
+          history.pushState(null, null, `/app/projects/${record.project_id}/quotes/${record.id}`)
         })
       }
     }
 
-    this.updateQuote = (tender) => {
-      this.opts.readonly = !!tender.accepted_at
-      this.update({tender: tender})
+    this.updateQuote = (record) => {
+      this.opts.readonly = !!record.accepted_at
+      this.update({record: record})
     }
 
     this.submitQuote = (e) => {

@@ -19,16 +19,16 @@
     {"href": "/app/signin", "title": "Sign in"}
   ],
   "AdministratorLinks": [
-    {"href": "/app/leads", "title": "Leads"},
-    {"href": "/app/accounts", "title": "Accounts"},
-    {"href": "/app/projects", "title": "Projects"},
-    {"href": "/app/projects", "title": "Payments"},
-    {"href": "/app/quotes", "title": "Quotes"},
-    {"href": "/app/tenders", "title": "Tenders"},
-    {"href": "/app/tender_templates", "title": "Tender Templates"},
-    {"href": "/app/materials", "title": "Materials"},
-    {"href": "/app/tasks", "title": "Tasks"},
-    {"href": "/app/appointments", "title": "Appointments"},
-    {"href": "/app/assets", "title": "Assets"}
+    {"href": "/app/admin/leads", "title": "Leads"},
+    {"href": "/app/admin/accounts", "title": "Accounts"},
+    {"href": "/app/admin/projects", "title": "Projects"},
+    {"href": "/app/admin/payments", "title": "Payments"},
+    {"href": "/app/admin/quotes", "title": "Quotes"},
+    {"href": "/app/admin/tenders", "title": "Tenders"},
+    {"href": "/app/admin/tender_templates", "title": "Tender Templates"},
+    {"href": "/app/admin/materials", "title": "Materials"},
+    {"href": "/app/admin/tasks", "title": "Tasks"},
+    {"href": "/app/admin/appointments", "title": "Appointments"},
+    {"href": "/app/admin/assets", "title": "Assets"}
   ]
 }
