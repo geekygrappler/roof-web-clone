@@ -3088,7 +3088,7 @@
 	  _showAuthModal: function _showAuthModal() {
 	    riot.mount("r-modal", {
 	      content: "r-auth",
-	      persisted: false,
+	      persisted: true,
 	      api: this.opts.api,
 	      contentOpts: { tab: "r-signup", api: this.opts.api }
 	    });
@@ -17598,13 +17598,7 @@
 	    });
 	    riot.route("admin/*/new", function (resource) {
 	      riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api });
-	      // riot.mount('r-modal', {
-	      //   content: 'r-admin-form',
-	      //   persisted: false,
-	      //   api: opts.api,
-	      //   classes: 'sm-col-12 sm-px3 px1',
-	      //   contentOpts: {resource: resource, api: opts.api, attributes: []}
-	      // })
+	
 	      var tags = _this.openForm("r-admin-" + resource.replace(/_/g, "-").singular() + "-form", {}, resource);
 	
 	      if (!tags[0].content._tag) {
@@ -17617,13 +17611,6 @@
 	      if (!tags[0].content._tag) {
 	        _this.openForm("r-admin-form", { item: { id: id } }, resource);
 	      }
-	      // riot.mount('r-modal', {
-	      //   content: 'r-admin-form',
-	      //   persisted: false,
-	      //   api: opts.api,
-	      //   classes: 'sm-col-12 sm-px3 px1',
-	      //   contentOpts: {resource: resource, api: opts.api, id: id, attributes: []}
-	      // })
 	    });
 	    riot.route("admin/*/*", function (resource, id) {
 	      riot.mount(_this.content, "r-admin-show", { resource: resource, api: opts.api, id: id });
@@ -17644,7 +17631,7 @@
 	  this.items = links.AdministratorLinks;
 	});
 	
-	riot.tag2("r-header", "<header class=\"container\"> <div> <nav class=\"relative clearfix black h5\"> <div class=\"left\"> <a href=\"/app/projects\" class=\"btn py2\" black><img src=\"/images/logos/black.svg\" class=\"logo--small\"></a> </div> <div class=\"right py1 sm-show mr1\"> <r-admin-menu if=\"{opts.api.currentAccount.isAdministrator}\"></r-admin-menu> <span class=\"btn py2 silver cursor-default\">{currentAccount.user_type[0]}</span> <a each=\"{items}\" href=\"{href}\" class=\"btn py2\">{title}</a> </div> <div class=\"right sm-hide py1 mr1\"> <div class=\"inline-block\" data-disclosure> <div data-details class=\"fixed top-0 right-0 bottom-0 left-0\"></div> <a class=\"btn py2 m0\"> <span class=\"md-hide\"> <i class=\"fa fa-bars\"></i> </span> </a> <div data-details class=\"absolute left-0 right-0 nowrap bg-white black mt1\"> <ul class=\"h5 list-reset py1 mb0\"> <li each=\"{items}\"><a href=\"{href}\" class=\"btn block\">{title}</a></li> </ul> </div> </div> </div> </nav> </div> </header>", "", "", function (opts) {
+	riot.tag2("r-header", "<header class=\"container\"> <div> <nav class=\"relative clearfix black h5\"> <div class=\"left\"> <a href=\"/app/projects\" class=\"btn py2\" black><img src=\"/images/logos/black.svg\" class=\"logo--small\"></a> </div> <div class=\"right py1 sm-show mr1\"> <r-admin-menu if=\"{currentAccount.isAdministrator}\"></r-admin-menu> <span class=\"btn py2 silver cursor-default\">{currentAccount.user_type[0]}</span> <a each=\"{items}\" href=\"{href}\" class=\"btn py2\">{title}</a> </div> <div class=\"right sm-hide py1 mr1\"> <div class=\"inline-block\" data-disclosure> <div data-details class=\"fixed top-0 right-0 bottom-0 left-0\"></div> <a class=\"btn py2 m0\"> <span class=\"md-hide\"> <i class=\"fa fa-bars\"></i> </span> </a> <div data-details class=\"absolute left-0 right-0 nowrap bg-white black mt1\"> <ul class=\"h5 list-reset py1 mb0\"> <li each=\"{items}\"><a href=\"{href}\" class=\"btn block\">{title}</a></li> </ul> </div> </div> </div> </nav> </div> </header>", "", "", function (opts) {
 	  this.items = links[opts.api.currentAccount ? opts.api.currentAccount.user_type : "Guest"];
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
@@ -17803,7 +17790,14 @@
 	
 	__webpack_require__(117);
 	
-	riot.tag2("r-auth", "<r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\"></r-tabs>", "", "", function (opts) {});
+	riot.tag2("r-auth", "<r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\"></r-tabs>", "", "", function (opts) {
+	  this.on("mount", function () {
+	    return $("r-app").addClass("display-none");
+	  });
+	  this.on("unmount", function () {
+	    return $("r-app").removeClass("display-none");
+	  });
+	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
@@ -18311,7 +18305,7 @@
 	
 	riot.tag2("r-projects-show", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <div class=\"py3 px2\"> <div class=\"clearfix mxn2\"> <r-subnav links=\"{subnavLinks}\" tab=\"{opts.tab}\"></r-subnav> <div class=\"sm-col sm-col-9 sm-px2\"> <r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\" content_opts=\"{opts.contentOpts}\"></r-tabs> </div> </div> </div> </div>", "", "", function (opts) {
 	  this.subnavLinks = [{ href: "/app/projects/" + opts.id + "/overview", name: "overview", tag: "r-project-overview" }, { href: "/app/projects/" + opts.id + "/brief", name: "brief", tag: "r-project-brief" }, { href: "/app/projects/" + opts.id + "/docs", name: "docs", tag: "r-project-docs" }, { href: "/app/projects/" + opts.id + "/team", name: "team", tag: "r-project-team" }, { href: "/app/projects/" + opts.id + "/quotes", name: "quotes", tag: "r-project-quotes" }];
-	  if (opts.api.currentAccount.isProfessional) {
+	  if (this.currentAccount && this.currentAccount.isProfessional) {
 	    this.subnavLinks = [{ href: "/app/projects/" + opts.id + "/overview", name: "overview", tag: "r-project-overview" }, { href: "/app/projects/" + opts.id + "/docs", name: "docs", tag: "r-project-docs" }, { href: "/app/projects/" + opts.id + "/team", name: "team", tag: "r-project-team" }, { href: "/app/projects/" + opts.id + "/quotes", name: "quotes", tag: "r-project-quotes" }];
 	  }
 	});
@@ -18733,9 +18727,14 @@
 	  this.request({ url: "/api/" + this.opts.name.plural() }).then(function (data) {
 	
 	    var source = new Bloodhound({
-	      datumTokenizer: Bloodhound.tokenizers.obj.whitespace("name"),
+	      datumTokenizer: Bloodhound.tokenizers.obj.whitespace("tags"),
 	      queryTokenizer: Bloodhound.tokenizers.whitespace,
-	      local: data
+	      local: data,
+	      sufficient: 10,
+	      remote: {
+	        url: "/api/" + _this.opts.name.plural() + "?query=%QUERY",
+	        wildcard: "%QUERY"
+	      }
 	    });
 	
 	    $(_this.query).on("typeahead:notfound", function (e) {

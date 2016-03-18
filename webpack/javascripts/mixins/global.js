@@ -71,7 +71,7 @@ riot.mixin({
   _showAuthModal: function () {
     riot.mount('r-modal', {
       content: 'r-auth',
-      persisted: false,
+      persisted: true,
       api: this.opts.api,
       contentOpts: {tab: 'r-signup', api: this.opts.api}
     })

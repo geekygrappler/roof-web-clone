@@ -132,13 +132,7 @@ import './admin/index.tag'
       })
       riot.route(`admin/*/new`, (resource) => {
         riot.mount(this.content, 'r-admin-index', {resource: resource, api: opts.api})
-        // riot.mount('r-modal', {
-        //   content: 'r-admin-form',
-        //   persisted: false,
-        //   api: opts.api,
-        //   classes: 'sm-col-12 sm-px3 px1',
-        //   contentOpts: {resource: resource, api: opts.api, attributes: []}
-        // })
+
         let tags = this.openForm(`r-admin-${resource.replace(/_/g,'-').singular()}-form`, {}, resource)
 
         if(!tags[0].content._tag) {
@@ -151,13 +145,6 @@ import './admin/index.tag'
         if(!tags[0].content._tag) {
           this.openForm(`r-admin-form`, {item: {id: id}}, resource)
         }
-        // riot.mount('r-modal', {
-        //   content: 'r-admin-form',
-        //   persisted: false,
-        //   api: opts.api,
-        //   classes: 'sm-col-12 sm-px3 px1',
-        //   contentOpts: {resource: resource, api: opts.api, id: id, attributes: []}
-        // })
 
       })
       riot.route(`admin/*/*`, (resource, id) => {

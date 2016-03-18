@@ -14,9 +14,14 @@ import Handlebars from 'handlebars/dist/handlebars'
   this.request({url: `/api/${this.opts.name.plural()}`}).then((data) => {
 
     let source = new Bloodhound({
-      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('tags'),
       queryTokenizer: Bloodhound.tokenizers.whitespace,
-      local: data
+      local: data,
+      sufficient: 10,
+      remote: {
+        url: `/api/${this.opts.name.plural()}?query=%QUERY`,
+        wildcard: '%QUERY'
+      }
     })
 
     $(this.query)

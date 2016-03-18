@@ -23,7 +23,7 @@ let links = require("json!../data/header.json")
           <a href="/app/projects" class="btn py2"black><img src="/images/logos/black.svg" class="logo--small" /></a>
         </div>
         <div class="right py1 sm-show mr1">
-          <r-admin-menu if="{opts.api.currentAccount.isAdministrator}"></r-admin-menu>
+          <r-admin-menu if="{currentAccount.isAdministrator}"></r-admin-menu>
           <span class="btn py2 silver cursor-default">{currentAccount.user_type[0]}</span>
           <a each="{items}" href="{href}" class="btn py2">{title}</a>
         </div>
