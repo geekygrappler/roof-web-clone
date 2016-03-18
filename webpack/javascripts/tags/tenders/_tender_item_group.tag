@@ -3,7 +3,7 @@
     <li>
       <h4 class="inline-block mb0 mt1 p1 border-bottom ">
         <select if="{group.toLowerCase() == 'other'}" onchange="{changeTaskAction}">
-          <option each="{val, name in taskActions}" value="{val}" selected="{val == 'Other'}">{name}</option>
+          <option each="{val, name in opts.task_actions}" value="{val}" selected="{val == 'Other'}">{name}</option>
         </select>
         <span if="{group.toLowerCase() != 'other'}">{ group.humanize() }</span>
       </h4>
@@ -26,19 +26,7 @@
   <script>
   let itemKeys
 
-  this.taskActions = {
-   "Strip out": "Strip out",
-   "Wire and connect": "Electrics",
-   "Plumb": "Plumbing",
-   "Build": "Building",
-   "Install": "Carpentery",
-   "Tile": "Tiling",
-   "Lay": "Flooring",
-   "Prepare": "Preparation",
-   "Plaster": "Plastering",
-   "Decorate": "Decorating",
-   "Other": "Other"
- }
+  this.taskActions = opts.task_actions
 
 
   this.total = () => {

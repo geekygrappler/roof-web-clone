@@ -12,6 +12,7 @@
 
       <r-tender-item-group
         name="task"
+        task_actions="{taskActions}"
         groupitems="{section.tasks_by_action}"
         each="{ group, items in section.tasks_by_action }"
         headers="{ parent.headers.task }"
@@ -20,6 +21,7 @@
 
       <r-tender-item-group
         name="material"
+        task_actions="{taskActions}"
         groupitems="{section.materials_by_group}"
         if="{ section.materials && section.materials.length > 0 }"
         each="{ group, items in section.materials_by_group }"
@@ -41,6 +43,19 @@
   </div>
 
   <script>
+  this.taskActions = {
+   "Strip out": "Strip out",
+   "Wire and connect": "Electrics",
+   "Plumb": "Plumbing",
+   "Build": "Building",
+   "Install": "Carpentery",
+   "Tile": "Tiling",
+   "Lay": "Flooring",
+   "Prepare": "Preparation",
+   "Plaster": "Plastering",
+   "Decorate": "Decorating",
+   "Other": "Other"
+  }
   this.showDisclosures = true
   this.icon = 'folder-open-o'
 
@@ -50,7 +65,10 @@
 
   this.on('update', () => {
     if (this.section) {
-      this.section.tasks_by_action = _.groupBy(this.section.tasks, (item) => item.action)
+      var grouped = _.groupBy(this.section.tasks, (item) => item.action)
+      this.section.tasks_by_action = _.groupBy(_.flatten(_.sortBy(grouped, (list, group) => {
+        return _.indexOf(_.keys(this.taskActions), group)
+      })),(item) => item.action)
       this.section.materials_by_group = {materials: this.section.materials}
       this.opts.api.tenders.trigger('update')
     }

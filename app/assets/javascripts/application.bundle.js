@@ -23450,24 +23450,12 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-tender-item-group", "<ul class=\"list-reset ml2 -border-left mb0 relative\"> <li> <h4 class=\"inline-block mb0 mt1 p1 border-bottom \"> <select if=\"{group.toLowerCase() == 'other'}\" onchange=\"{changeTaskAction}\"> <option each=\"{val, name in taskActions}\" value=\"{val}\" __selected=\"{val == 'Other'}\">{name}</option> </select> <span if=\"{group.toLowerCase() != 'other'}\">{group.humanize()}</span> </h4> <ul class=\"list-reset ml2 border-left mb0\"> <li if=\"{drawHeader()}\" class=\"sm-show relative\"> <div class=\"clearfix p1 border-bottom\"> <div each=\"{name, width in headers}\" class=\"sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate\"> {name == 'name' ? '&nbsp;' : name.humanize()} </div> </div> </li> <r-tender-item each=\"{items}\" border_cleaner=\"{drawBorderCleaner()}\"></r-tender-item> </ul> </li> </ul> <h5 class=\"right-align\">Group total: {formatCurrency(total())}<h5>", "", "", function (opts) {
+	riot.tag2("r-tender-item-group", "<ul class=\"list-reset ml2 -border-left mb0 relative\"> <li> <h4 class=\"inline-block mb0 mt1 p1 border-bottom \"> <select if=\"{group.toLowerCase() == 'other'}\" onchange=\"{changeTaskAction}\"> <option each=\"{val, name in opts.task_actions}\" value=\"{val}\" __selected=\"{val == 'Other'}\">{name}</option> </select> <span if=\"{group.toLowerCase() != 'other'}\">{group.humanize()}</span> </h4> <ul class=\"list-reset ml2 border-left mb0\"> <li if=\"{drawHeader()}\" class=\"sm-show relative\"> <div class=\"clearfix p1 border-bottom\"> <div each=\"{name, width in headers}\" class=\"sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate\"> {name == 'name' ? '&nbsp;' : name.humanize()} </div> </div> </li> <r-tender-item each=\"{items}\" border_cleaner=\"{drawBorderCleaner()}\"></r-tender-item> </ul> </li> </ul> <h5 class=\"right-align\">Group total: {formatCurrency(total())}<h5>", "", "", function (opts) {
 	  var _this = this;
 	
 	  var itemKeys = undefined;
 	
-	  this.taskActions = {
-	    "Strip out": "Strip out",
-	    "Wire and connect": "Electrics",
-	    Plumb: "Plumbing",
-	    Build: "Building",
-	    Install: "Carpentery",
-	    Tile: "Tiling",
-	    Lay: "Flooring",
-	    Prepare: "Preparation",
-	    Plaster: "Plastering",
-	    Decorate: "Decorating",
-	    Other: "Other"
-	  };
+	  this.taskActions = opts.task_actions;
 	
 	  this.total = function () {
 	    return _.reduce(_this.items, function (total, item) {
@@ -23511,9 +23499,22 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-tender-section", "<div data-disclosure> <div class=\"border-bottom mt2\"> <h3 class=\"inline-block mb0\"> <i data-handle class=\"cursor-pointer fa fa-{icon} mr1\" onclick=\"{changeIcon}\"></i> <input type=\"text\" class=\"field border-none\" value=\"{section.name.humanize()}\" oninput=\"{renameSection}\"> </h3> <a class=\"btn btn-small right mt2\" onclick=\"{removeSection}\"><i class=\"fa fa-trash-o\"></i></a> </div> <div data-details> <r-tender-item-group name=\"task\" groupitems=\"{section.tasks_by_action}\" each=\"{group, items in section.tasks_by_action}\" headers=\"{parent.headers.task}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <r-tender-item-group name=\"material\" groupitems=\"{section.materials_by_group}\" if=\"{section.materials && section.materials.length > 0}\" each=\"{group, items in section.materials_by_group}\" headers=\"{parent.headers.material}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <div class=\"clearfix mxn1 mt2\"> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"task\" auto_focus=\"{true}\" api=\"{parent.opts.api}\" icon=\"tasks\"></r-tender-item-input> </div> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"material\" api=\"{parent.opts.api}\" icon=\"shopping-basket\"></r-tender-item-input> </div> </div> </div> <h4 class=\"right-align\">Section total: {sectionTotal(section, true)}</h4> </div>", "", "", function (opts) {
+	riot.tag2("r-tender-section", "<div data-disclosure> <div class=\"border-bottom mt2\"> <h3 class=\"inline-block mb0\"> <i data-handle class=\"cursor-pointer fa fa-{icon} mr1\" onclick=\"{changeIcon}\"></i> <input type=\"text\" class=\"field border-none\" value=\"{section.name.humanize()}\" oninput=\"{renameSection}\"> </h3> <a class=\"btn btn-small right mt2\" onclick=\"{removeSection}\"><i class=\"fa fa-trash-o\"></i></a> </div> <div data-details> <r-tender-item-group name=\"task\" task_actions=\"{taskActions}\" groupitems=\"{section.tasks_by_action}\" each=\"{group, items in section.tasks_by_action}\" headers=\"{parent.headers.task}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <r-tender-item-group name=\"material\" task_actions=\"{taskActions}\" groupitems=\"{section.materials_by_group}\" if=\"{section.materials && section.materials.length > 0}\" each=\"{group, items in section.materials_by_group}\" headers=\"{parent.headers.material}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <div class=\"clearfix mxn1 mt2\"> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"task\" auto_focus=\"{true}\" api=\"{parent.opts.api}\" icon=\"tasks\"></r-tender-item-input> </div> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"material\" api=\"{parent.opts.api}\" icon=\"shopping-basket\"></r-tender-item-input> </div> </div> </div> <h4 class=\"right-align\">Section total: {sectionTotal(section, true)}</h4> </div>", "", "", function (opts) {
 	  var _this = this;
 	
+	  this.taskActions = {
+	    "Strip out": "Strip out",
+	    "Wire and connect": "Electrics",
+	    Plumb: "Plumbing",
+	    Build: "Building",
+	    Install: "Carpentery",
+	    Tile: "Tiling",
+	    Lay: "Flooring",
+	    Prepare: "Preparation",
+	    Plaster: "Plastering",
+	    Decorate: "Decorating",
+	    Other: "Other"
+	  };
 	  this.showDisclosures = true;
 	  this.icon = "folder-open-o";
 	
@@ -23523,7 +23524,12 @@
 	
 	  this.on("update", function () {
 	    if (_this.section) {
-	      _this.section.tasks_by_action = _.groupBy(_this.section.tasks, function (item) {
+	      var grouped = _.groupBy(_this.section.tasks, function (item) {
+	        return item.action;
+	      });
+	      _this.section.tasks_by_action = _.groupBy(_.flatten(_.sortBy(grouped, function (list, group) {
+	        return _.indexOf(_.keys(_this.taskActions), group);
+	      })), function (item) {
 	        return item.action;
 	      });
 	      _this.section.materials_by_group = { materials: _this.section.materials };
