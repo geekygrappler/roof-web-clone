@@ -7,7 +7,7 @@ import from '../../mixins/tender.js'
   </yield>
 
   <div class="container p2 {readonly: opts.readonly}">
-    <h1>{ opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Quote ' + opts.id : 'New Quote' }</h1>
+    <h1><a class="btn btn-small h6 btn-outline orange" href="/app/projects/{record.project_id}"><i class="fa fa-chevron-left"></i> Back to Project</a> { opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Quote ' + opts.id : 'New Quote' }</h1>
 
     <r-tender-section each="{ section , i in record.document.sections }" ></r-tender-section>
 
