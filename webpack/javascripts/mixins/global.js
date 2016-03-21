@@ -95,13 +95,14 @@ riot.mixin({
       }
     })
   },
-  loadResources: function(resource) {
-    if (this.opts.api[resource].cache.index) {
-      this[resource] = this.opts.api[resource].cache.index
+  loadResources: function(resource, options = {}) {
+    let key = `index.${resource}:${JSON.stringify(options)}`
+    if (this.opts.api[resource].cache[key]) {
+      this[resource] = this.opts.api[resource].cache[key]
       this.update()
     } else {
-      this.opts.api[resource].index().then(data => {
-        this[resource] = this.opts.api[resource].cache.index = data
+      this.opts.api[resource].index(options).then(data => {
+        this[resource] = this.opts.api[resource].cache[key] = data
         this.update()
       })
     }

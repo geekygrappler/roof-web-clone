@@ -1,3 +1,95 @@
+import Pikaday from 'pikaday-time/pikaday'
+
+<r-appointment-form>
+  <h2 class="center mt0 mb2">Arrange an Appointment</h2>
+  <form name="form" class="sm-col-12 left-align" action="/api/appointments" onsubmit="{submit}">
+
+    <input type="hidden" name="project_id" value="{record.project_id}" />
+    <input type="hidden" name="host_id" value="{record.host_id}" />
+    <input type="hidden" name="host_type" value="{record.host_type}" />
+    <input type="hidden" name="attendant_id" value="{record.attendant_id}" />
+    <input type="hidden" name="attendant_type" value="{record.attendant_type}" />
+    <input class="block col-12 mb2 field"
+    type="text" name="time" value="{record.time}" placeholder="Time"/>
+    <span if="{errors['time']}" class="inline-error">{errors['time']}</span>
+    <textarea class="block col-12 mb2 field"
+    type="text" name="description" placeholder="Description" >{record.description}</textarea>
+    <span if="{errors['description']}" class="inline-error">{errors['description']}</span>
+
+    <virtual if="{currentAccount.isAdministrator}">
+      <label for="host_id">Host</label>
+      <select class="block col-12 mb2 field" onchange="{setHost}">
+        <option></option>
+        <option each="{opts.project.customers}" value="{user_id}:{user_type}" selected="{record.host_id == user_id && record.host_type == user_type}">{profile.first_name} {profile.last_name}</option>
+      </select>
+      <span if="{errors['host']}" class="inline-error">{errors['host']}</span>
+      <span if="{errors['host_id']}" class="inline-error">{errors['host_id']}</span>
+      <span if="{errors['host_type']}" class="inline-error">{errors['host_type']}</span>
+    </virtual>
+
+    <label for="host_id">Attendand</label>
+    <select class="block col-12 mb2 field" onchange="{setAttendant}">
+      <option></option>
+      <option each="{opts.project.professionals}" value="{user_id}:{user_type}" selected="{record.attendant_id == user_id && record.attendant_type == user_type}">{profile.first_name} {profile.last_name}</option>
+    </select>
+    <span if="{errors['attendant']}" class="inline-error">{errors['attendant']}</span>
+    <span if="{errors['attendant_id']}" class="inline-error">{errors['attendant_id']}</span>
+    <span if="{errors['attendant_type']}" class="inline-error">{errors['attendant_type']}</span>
+
+    <button type="submit" class="block col-12 mb2 btn btn-big btn-primary {busy: busy}">Sign up</button>
+
+  </form>
+
+  <script>
+  this.on('mount', () => {
+    let picker = new Pikaday({
+      field: this.time,
+      onSelect:  (date) => {
+        this.record.time = picker.toString()
+        this.update()
+      }
+    })
+  })
+  this.record = {
+    project_id: opts.project.id,
+    host_id: this.currentAccount.user_id,
+    host_type: this.currentAccount.user_type,
+  }
+  this.setHost = (e) => {
+    let [id, type] = e.target.value.split(':')
+    this.record.host_id = id
+    this.record.host_type = type
+    this.update()
+  }
+  this.setAttendant = (e) => {
+    let [id, type] = e.target.value.split(':')
+    this.record.attendant_id = id
+    this.record.attendant_type = type
+    this.update()
+  }
+  this.submit = (e) => {
+    e.preventDefault()
+
+    let data = this.serializeForm(this.form)
+
+    if (_.isEmpty(data) || _.isEmpty(data.time)) {
+      $(this.form).animateCss('shake')
+      return
+    }
+
+    this.update({busy: true, errors: null})
+
+    this.opts.api.appointments.create(data)
+    .fail(this.errorHandler)
+    .then(record => {
+      this.update({record: record, busy:false})
+      $(this.form).html(`You appoingment has been scheduled`)
+    })
+  }
+  </script>
+
+</r-appointment-form>
+
 <r-project-team>
 
   <h2 class="mt0">Team</h2>
@@ -14,8 +106,6 @@
         <p class="overflow-hidden">
           <div><i class="fa fa-phone"></i> { profile.phone_number }</div>
           <div><i class="fa fa-envelope"></i> { email }</div>
-          <a if="{currentAccount.id != id && currentAccount.user_type != user_type}"
-          class="h6 btn btn-small btn-primary mt1" onclick="{openAppointmentModal}"><i class="fa fa-calendar-check-o"></i> Arrange Appointment</a>
         </p>
       </div>
     </li>
@@ -28,8 +118,6 @@
           <div><i class="fa fa-phone"></i> { profile.phone_number }</div>
           <div><i class="fa fa-envelope"></i> { email }</div>
           <div if="{profile.website}"><i  class="fa fa-world"></i>{ profile.website }</div>
-          <a if="{currentAccount.id != id && currentAccount.user_type != user_type}"
-          class="h6 btn btn-small btn-primary mt1" onclick="{openAppointmentModal}"><i class="fa fa-calendar-check-o"></i> Arrange Appointment</a>
         </p>
       </div>
     </li>
@@ -76,28 +164,20 @@
       <div class="sm-col-12 px2 border">
         <h3><i class="fa fa-calendar-o"></i> Appointments</h3>
 
-          <dl>
-            <dt class="left">
-              <i class="fa fa-hand-o-right"></i>
-            </dt>
-            <dd>
-              <h4>At 02 May 2016</h4>
-              <div><strong>Host:</strong> John Berger</div>
-              <div><strong>Attendant:</strong> Dennis Bishofberger</div>
-              <a class="btn btn-small h6 bg-maroon white mt1"><i class="fa fa-ban"></i> Cancel</a>
-            </dd>
-          </dl>
 
-          <dl class="gray">
-            <dt class="left">
-              <i class="fa fa-thumbs-o-up"></i>
-            </dt>
-            <dd>
-              <h4>Was 02 May 2013</h4>
-              <div><strong>Host:</strong> John Berger</div>
-              <div><strong>Attendant:</strong> Dennis Bishofberger</div>
-            </dd>
-          </dl>
+        <a class="h6 btn btn-small btn-primary mb2" onclick="{openAppointmentModal}"><i class="fa fa-calendar-check-o"></i> Arrange Appointment</a>
+
+        <dl each="{appointments}" class="{gray: new Date(time) < new Date()}">
+          <dt class="left">
+            <i class="fa fa-{'thumbs-o-up': new Date(time) < new Date(), 'hand-o-right': new Date(time) >= new Date()}"></i>
+          </dt>
+          <dd>
+            <h4>At {formatTime(time)}</h4>
+            <div><strong>Host:</strong> {host.profile.first_name} {host.profile.last_name}</div>
+            <div><strong>Attendant:</strong> {attendant.profile.first_name} {attendant.profile.last_name}</div>
+            <a if="{new Date(time) >= new Date()}" class="btn btn-small h6 bg-maroon white mt1" onclick="{cancelAppointment}"><i class="fa fa-ban"></i> Cancel</a>
+          </dd>
+        </dl>
 
       </div>
     </div>
@@ -106,6 +186,21 @@
 
   <script>
   this.mixin('projectTab')
+
+  this.on('mount', () => {
+    opts.api.appointments.on('create.success', this.addAppointment)
+    opts.api.appointments.on('delete.success', this.removeAppointment)
+  })
+  this.on('unmount', () => {
+    opts.api.appointments.off('create.success', this.addAppointment)
+    opts.api.appointments.off('delete.success', this.removeAppointment)
+  })
+
+  this.on('update', () => {
+    if(this.project) {
+      this.loadResources('appointments', {project_id: this.project.id})
+    }
+  })
 
   this.getName = function () {
     return this.id !== this.currentAccount.id ? this.fullName() : 'You'
@@ -135,14 +230,35 @@
     })
 
   }
+
   this.openAppointmentModal = (e) => {
     e.preventDefault()
     riot.mount('r-modal', {
       content: 'r-appointment-form',
       persisted: false,
       api: opts.api,
-      contentOpts: {api: opts.api}
+      contentOpts: {api: opts.api, project: this.project}
     })
+  }
+  this.cancelAppointment = (e) => {
+    e.preventDefault()
+    opts.api.appointments.delete(e.item.id)
+    .fail(this.errorHandler)
+  }
+  this.addAppointment = (record) => {
+    let _id = _.findIndex(this.appointments, {id: record.id})
+    if (_id === -1) {
+      this.appointments.push(record)
+      this.update()
+    }
+
+  }
+  this.removeAppointment = (id) => {
+    let _id = _.findIndex(this.appointments, {id: id})
+    if(_id > -1) {
+      this.appointments.splice(_id, 1)
+      this.update()
+    }
   }
   </script>
 </r-project-team>
