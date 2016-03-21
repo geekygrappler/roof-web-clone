@@ -3053,7 +3053,9 @@
 	  request: request,
 	  dot: new dot(".", true), // allow overrides!
 	  serializeForm: function serializeForm(form) {
-	    return $(form).serializeJSON({ parseAll: true });
+	    var options = arguments[1] === undefined ? { parseAll: true } : arguments[1];
+	
+	    return $(form).serializeJSON(options);
 	  },
 	  errorHandler: function errorHandler(xhr) {
 	    this.update({ busy: false });
@@ -17493,13 +17495,13 @@
 	
 	__webpack_require__(126);
 	
-	__webpack_require__(134);
-	
-	__webpack_require__(141);
+	__webpack_require__(135);
 	
 	__webpack_require__(142);
 	
 	__webpack_require__(143);
+	
+	__webpack_require__(144);
 	
 	riot.tag2("r-app", "<yield from=\"header\"></yield> <div name=\"content\"></div>", "", "", function (opts) {
 	  var _this = this;
@@ -18307,7 +18309,7 @@
 	
 	__webpack_require__(132);
 	
-	__webpack_require__(133);
+	__webpack_require__(134);
 	
 	riot.tag2("r-projects-show", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <div class=\"py3 px2\"> <div class=\"clearfix mxn2\"> <r-subnav links=\"{subnavLinks}\" tab=\"{opts.tab}\"></r-subnav> <div class=\"sm-col sm-col-9 sm-px2\"> <r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\" content_opts=\"{opts.contentOpts}\"></r-tabs> </div> </div> </div> </div>", "", "", function (opts) {
 	  this.subnavLinks = [{ href: "/app/projects/" + opts.id + "/overview", name: "overview", tag: "r-project-overview" }, { href: "/app/projects/" + opts.id + "/brief", name: "brief", tag: "r-project-brief" }, { href: "/app/projects/" + opts.id + "/docs", name: "docs", tag: "r-project-docs" }, { href: "/app/projects/" + opts.id + "/team", name: "team", tag: "r-project-team" }, { href: "/app/projects/" + opts.id + "/quotes", name: "quotes", tag: "r-project-quotes" }];
@@ -18456,7 +18458,7 @@
 	
 	var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
 	
-	var Pikaday = _interopRequire(__webpack_require__(147));
+	var Pikaday = _interopRequire(__webpack_require__(133));
 	
 	riot.tag2("r-appointment-form", "<h2 class=\"center mt0 mb2\">Arrange an Appointment</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/appointments\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <input type=\"hidden\" name=\"host_id\" value=\"{record.host_id}\"> <input type=\"hidden\" name=\"host_type\" value=\"{record.host_type}\"> <input type=\"hidden\" name=\"attendant_id\" value=\"{record.attendant_id}\"> <input type=\"hidden\" name=\"attendant_type\" value=\"{record.attendant_type}\"> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"time\" value=\"{record.time}\" placeholder=\"Time\"> <span if=\"{errors['time']}\" class=\"inline-error\">{errors['time']}</span> <textarea class=\"block col-12 mb2 field\" type=\"text\" name=\"description\" placeholder=\"Description\">{record.description}</textarea> <span if=\"{errors['description']}\" class=\"inline-error\">{errors['description']}</span> <virtual if=\"{currentAccount.isAdministrator}\"> <label for=\"host_id\">Host</label> <select class=\"block col-12 mb2 field\" onchange=\"{setHost}\"> <option></option> <option each=\"{opts.project.customers}\" value=\"{user_id}:{user_type}\" __selected=\"{record.host_id == user_id && record.host_type == user_type}\">{profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors['host']}\" class=\"inline-error\">{errors['host']}</span> <span if=\"{errors['host_id']}\" class=\"inline-error\">{errors['host_id']}</span> <span if=\"{errors['host_type']}\" class=\"inline-error\">{errors['host_type']}</span> </virtual> <label for=\"host_id\">Attendand</label> <select class=\"block col-12 mb2 field\" onchange=\"{setAttendant}\"> <option></option> <option each=\"{opts.project.professionals}\" value=\"{user_id}:{user_type}\" __selected=\"{record.attendant_id == user_id && record.attendant_type == user_type}\">{profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors['attendant']}\" class=\"inline-error\">{errors['attendant']}</span> <span if=\"{errors['attendant_id']}\" class=\"inline-error\">{errors['attendant_id']}</span> <span if=\"{errors['attendant_type']}\" class=\"inline-error\">{errors['attendant_type']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Sign up</button> </form>", "", "", function (opts) {
 	  var _this = this;
@@ -18597,6 +18599,1275 @@
 /* 133 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/*!
+	 * Pikaday
+	 *
+	 * Copyright © 2014 David Bushell | BSD & MIT license | https://github.com/dbushell/Pikaday
+	 */
+	
+	(function (root, factory)
+	{
+	    'use strict';
+	
+	    var moment;
+	    if (true) {
+	        // CommonJS module
+	        // Load moment.js as an optional dependency
+	        try { moment = __webpack_require__(8); } catch (e) {}
+	        module.exports = factory(moment);
+	    } else if (typeof define === 'function' && define.amd) {
+	        // AMD. Register as an anonymous module.
+	        define(function (req)
+	        {
+	            // Load moment.js as an optional dependency
+	            var id = 'moment';
+	            try { moment = req(id); } catch (e) {}
+	            return factory(moment);
+	        });
+	    } else {
+	        root.Pikaday = factory(root.moment);
+	    }
+	}(this, function (moment)
+	{
+	    'use strict';
+	
+	    /**
+	     * feature detection and helper functions
+	     */
+	    var hasMoment = typeof moment === 'function',
+	
+	    hasEventListeners = !!window.addEventListener,
+	
+	    document = window.document,
+	
+	    sto = window.setTimeout,
+	
+	    addEvent = function(el, e, callback, capture)
+	    {
+	        if (hasEventListeners) {
+	            el.addEventListener(e, callback, !!capture);
+	        } else {
+	            el.attachEvent('on' + e, callback);
+	        }
+	    },
+	
+	    removeEvent = function(el, e, callback, capture)
+	    {
+	        if (hasEventListeners) {
+	            el.removeEventListener(e, callback, !!capture);
+	        } else {
+	            el.detachEvent('on' + e, callback);
+	        }
+	    },
+	
+	    fireEvent = function(el, eventName, data)
+	    {
+	        var ev;
+	
+	        if (document.createEvent) {
+	            ev = document.createEvent('HTMLEvents');
+	            ev.initEvent(eventName, true, false);
+	            ev = extend(ev, data);
+	            el.dispatchEvent(ev);
+	        } else if (document.createEventObject) {
+	            ev = document.createEventObject();
+	            ev = extend(ev, data);
+	            el.fireEvent('on' + eventName, ev);
+	        }
+	    },
+	
+	    trim = function(str)
+	    {
+	        return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g,'');
+	    },
+	
+	    hasClass = function(el, cn)
+	    {
+	        return (' ' + el.className + ' ').indexOf(' ' + cn + ' ') !== -1;
+	    },
+	
+	    addClass = function(el, cn)
+	    {
+	        if (!hasClass(el, cn)) {
+	            el.className = (el.className === '') ? cn : el.className + ' ' + cn;
+	        }
+	    },
+	
+	    removeClass = function(el, cn)
+	    {
+	        el.className = trim((' ' + el.className + ' ').replace(' ' + cn + ' ', ' '));
+	    },
+	
+	    isArray = function(obj)
+	    {
+	        return (/Array/).test(Object.prototype.toString.call(obj));
+	    },
+	
+	    isDate = function(obj)
+	    {
+	        return (/Date/).test(Object.prototype.toString.call(obj)) && !isNaN(obj.getTime());
+	    },
+	
+	    isWeekend = function(date)
+	    {
+	        var day = date.getDay();
+	        return day === 0 || day === 6;
+	    },
+	
+	    isLeapYear = function(year)
+	    {
+	        // solution by Matti Virkkunen: http://stackoverflow.com/a/4881951
+	        return year % 4 === 0 && year % 100 !== 0 || year % 400 === 0;
+	    },
+	
+	    getDaysInMonth = function(year, month)
+	    {
+	        return [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+	    },
+	
+	    setToStartOfDay = function(date)
+	    {
+	        if (isDate(date)) date.setHours(0,0,0,0);
+	    },
+	
+	    compareDates = function(a,b)
+	    {
+	        // Copy so we don't change the dates being passed in
+	        var _a = new Date(a.getTime());
+	        var _b = new Date(b.getTime());
+	        setToStartOfDay(_a);
+	        setToStartOfDay(_b);
+	        return _a.getTime() === _b.getTime();
+	    },
+	
+	    extend = function(to, from, overwrite)
+	    {
+	        var prop, hasProp;
+	        for (prop in from) {
+	            hasProp = to[prop] !== undefined;
+	            if (hasProp && typeof from[prop] === 'object' && from[prop] !== null && from[prop].nodeName === undefined) {
+	                if (isDate(from[prop])) {
+	                    if (overwrite) {
+	                        to[prop] = new Date(from[prop].getTime());
+	                    }
+	                }
+	                else if (isArray(from[prop])) {
+	                    if (overwrite) {
+	                        to[prop] = from[prop].slice(0);
+	                    }
+	                } else {
+	                    to[prop] = extend({}, from[prop], overwrite);
+	                }
+	            } else if (overwrite || !hasProp) {
+	                to[prop] = from[prop];
+	            }
+	        }
+	        return to;
+	    },
+	
+	    adjustCalendar = function(calendar) {
+	        if (calendar.month < 0) {
+	            calendar.year -= Math.ceil(Math.abs(calendar.month)/12);
+	            calendar.month += 12;
+	        }
+	        if (calendar.month > 11) {
+	            calendar.year += Math.floor(Math.abs(calendar.month)/12);
+	            calendar.month -= 12;
+	        }
+	        return calendar;
+	    },
+	
+	    /**
+	     * defaults and localisation
+	     */
+	    defaults = {
+	
+	        // bind the picker to a form field
+	        field: null,
+	
+	        // automatically show/hide the picker on `field` focus (default `true` if `field` is set)
+	        bound: undefined,
+	
+	        // position of the datepicker, relative to the field (default to bottom & left)
+	        // ('bottom' & 'left' keywords are not used, 'top' & 'right' are modifier on the bottom/left position)
+	        position: 'bottom left',
+	
+	        // automatically fit in the viewport even if it means repositioning from the position option
+	        reposition: true,
+	
+	        // the default output format for `.toString()` and `field` value
+	        // set in `config` based on if showTime is set
+	        format: null,
+	
+	        // an array giving the allowable input format(s).  As with moment,
+	        // the input formats may be either a single string or an array of strings.
+	        // Usually set in `config`
+	        inputFormats: null,
+	
+	        // the initial date to view when first opened
+	        defaultDate: null,
+	
+	        // make the `defaultDate` the initial selected value
+	        setDefaultDate: false,
+	
+	        // first day of week (0: Sunday, 1: Monday etc)
+	        firstDay: 0,
+	
+	        // the default flag for moment's strict date parsing
+	        formatStrict: false,
+	
+	        // the minimum/earliest date that can be selected
+	        minDate: null,
+	        // the maximum/latest date that can be selected
+	        maxDate: null,
+	
+	        // number of years either side, or array of upper/lower range
+	        yearRange: 10,
+	
+	        // show week numbers at head of row
+	        showWeekNumber: false,
+	
+	        // used internally (don't config outside)
+	        minYear: 0,
+	        maxYear: 9999,
+	        minMonth: undefined,
+	        maxMonth: undefined,
+	
+	        startRange: null,
+	        endRange: null,
+	
+	        isRTL: false,
+	
+	        // Additional text to append to the year in the calendar title
+	        yearSuffix: '',
+	
+	        // Render the month after year in the calendar title
+	        showMonthAfterYear: false,
+	
+	        // Render days of the calendar grid that fall in the next or previous month
+	        showDaysInNextAndPreviousMonths: false,
+	
+	        // how many months are visible
+	        numberOfMonths: 1,
+	
+	        // time
+	        showTime: true,
+	        showSeconds: false,
+	        use24hour: false,
+	        incrementHourBy: 1,
+	        incrementMinuteBy: 1,
+	        incrementSecondBy: 1,
+	
+	        // option to prevent calendar from auto-closing after date is selected
+	        autoClose: true,
+	
+	        // when numberOfMonths is used, this will help you to choose where the main calendar will be (default `left`, can be set to `right`)
+	        // only used for the first display or when a selected date is not visible
+	        mainCalendar: 'left',
+	
+	        // Specify a DOM element to render the calendar in
+	        container: undefined,
+	
+	        // internationalization
+	        i18n: {
+	            previousMonth : 'Previous Month',
+	            nextMonth     : 'Next Month',
+	            months        : ['January','February','March','April','May','June','July','August','September','October','November','December'],
+	            weekdays      : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+	            weekdaysShort : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+	            midnight      : 'Midnight',
+	            noon          : 'Noon'
+	        },
+	
+	        // Theme Classname
+	        theme: null,
+	
+	        // callback function
+	        onSelect: null,
+	        onOpen: null,
+	        onClose: null,
+	        onDraw: null
+	    },
+	
+	
+	    /**
+	     * templating functions to abstract HTML rendering
+	     */
+	    renderDayName = function(opts, day, abbr)
+	    {
+	        day += opts.firstDay;
+	        while (day >= 7) {
+	            day -= 7;
+	        }
+	        return abbr ? opts.i18n.weekdaysShort[day] : opts.i18n.weekdays[day];
+	    },
+	
+	    renderDay = function(opts)
+	    {
+	        var arr = [];
+	        if (opts.isEmpty) {
+	            if (opts.showDaysInNextAndPreviousMonths) {
+	                arr.push('is-outside-current-month');
+	            } else {
+	                return '<td class="is-empty"></td>';
+	            }
+	        }
+	        if (opts.isDisabled) {
+	            arr.push('is-disabled');
+	        }
+	        if (opts.isToday) {
+	            arr.push('is-today');
+	        }
+	        if (opts.isSelected) {
+	            arr.push('is-selected');
+	        }
+	        if (opts.isInRange) {
+	            arr.push('is-inrange');
+	        }
+	        if (opts.isStartRange) {
+	            arr.push('is-startrange');
+	        }
+	        if (opts.isEndRange) {
+	            arr.push('is-endrange');
+	        }
+	        return '<td data-day="' + opts.day + '" class="' + arr.join(' ') + '">' +
+	                 '<button class="pika-button pika-day" type="button" ' +
+	                    'data-pika-year="' + opts.year + '" data-pika-month="' + opts.month + '" data-pika-day="' + opts.day + '">' +
+	                        opts.day +
+	                 '</button>' +
+	               '</td>';
+	    },
+	
+	    renderWeek = function (d, m, y) {
+	        // Lifted from http://javascript.about.com/library/blweekyear.htm, lightly modified.
+	        var onejan = new Date(y, 0, 1),
+	            weekNum = Math.ceil((((new Date(y, m, d) - onejan) / 86400000) + onejan.getDay()+1)/7);
+	        return '<td class="pika-week">' + weekNum + '</td>';
+	    },
+	
+	    renderRow = function(days, isRTL)
+	    {
+	        return '<tr>' + (isRTL ? days.reverse() : days).join('') + '</tr>';
+	    },
+	
+	    renderBody = function(rows)
+	    {
+	        return '<tbody>' + rows.join('') + '</tbody>';
+	    },
+	
+	    renderHead = function(opts)
+	    {
+	        var i, arr = [];
+	        if (opts.showWeekNumber) {
+	            arr.push('<th></th>');
+	        }
+	        for (i = 0; i < 7; i++) {
+	            arr.push('<th scope="col"><abbr title="' + renderDayName(opts, i) + '">' + renderDayName(opts, i, true) + '</abbr></th>');
+	        }
+	        return '<thead>' + (opts.isRTL ? arr.reverse() : arr).join('') + '</thead>';
+	    },
+	
+	    renderTitle = function(instance, c, year, month, refYear)
+	    {
+	        var i, j, arr,
+	            opts = instance._o,
+	            isMinYear = year === opts.minYear,
+	            isMaxYear = year === opts.maxYear,
+	            html = '<div class="pika-title">',
+	            monthHtml,
+	            yearHtml,
+	            prev = true,
+	            next = true;
+	
+	        for (arr = [], i = 0; i < 12; i++) {
+	            arr.push('<option value="' + (year === refYear ? i - c : 12 + i - c) + '"' +
+	                (i === month ? ' selected': '') +
+	                ((isMinYear && i < opts.minMonth) || (isMaxYear && i > opts.maxMonth) ? 'disabled' : '') + '>' +
+	                opts.i18n.months[i] + '</option>');
+	        }
+	        monthHtml = '<div class="pika-label">' + opts.i18n.months[month] + '<select class="pika-select pika-select-month" tabindex="-1">' + arr.join('') + '</select></div>';
+	
+	        if (isArray(opts.yearRange)) {
+	            i = opts.yearRange[0];
+	            j = opts.yearRange[1] + 1;
+	        } else {
+	            i = year - opts.yearRange;
+	            j = 1 + year + opts.yearRange;
+	        }
+	
+	        for (arr = []; i < j && i <= opts.maxYear; i++) {
+	            if (i >= opts.minYear) {
+	                arr.push('<option value="' + i + '"' + (i === year ? ' selected': '') + '>' + (i) + '</option>');
+	            }
+	        }
+	        yearHtml = '<div class="pika-label">' + year + opts.yearSuffix + '<select class="pika-select pika-select-year" tabindex="-1">' + arr.join('') + '</select></div>';
+	
+	        if (opts.showMonthAfterYear) {
+	            html += yearHtml + monthHtml;
+	        } else {
+	            html += monthHtml + yearHtml;
+	        }
+	
+	        if (isMinYear && (month === 0 || opts.minMonth >= month)) {
+	            prev = false;
+	        }
+	
+	        if (isMaxYear && (month === 11 || opts.maxMonth <= month)) {
+	            next = false;
+	        }
+	
+	        if (c === 0) {
+	            html += '<button class="pika-prev' + (prev ? '' : ' is-disabled') + '" type="button">' + opts.i18n.previousMonth + '</button>';
+	        }
+	        if (c === (instance._o.numberOfMonths - 1) ) {
+	            html += '<button class="pika-next' + (next ? '' : ' is-disabled') + '" type="button">' + opts.i18n.nextMonth + '</button>';
+	        }
+	
+	        return html += '</div>';
+	    },
+	
+	    renderTable = function(opts, data)
+	    {
+	        return '<table cellpadding="0" cellspacing="0" class="pika-table">' + renderHead(opts) + renderBody(data) + '</table>';
+	    },
+	
+	    renderTimePicker = function(num_options, selected_val, select_class, display_func, increment_by) {
+	        increment_by = increment_by || 1;
+	        var to_return = '<td><select class="pika-select '+select_class+'">';
+	        for (var i = 0; i < num_options; i += increment_by) {
+	            to_return += '<option value="'+i+'" '+(i==selected_val ? 'selected' : '')+'>'+display_func(i)+'</option>'
+	        }
+	        to_return += '</select></td>';
+	        return to_return;
+	    },
+	
+	    renderTime = function(hh, mm, ss, opts)
+	    {
+	        var to_return = '<table cellpadding="0" cellspacing="0" class="pika-time"><tbody><tr>' +
+	            renderTimePicker(24, hh, 'pika-select-hour', function(i) {
+	                if (opts.use24hour) {
+	                    return i;
+	                } else {
+	                    var to_return = (i%12) + (i<12 ? ' AM' : ' PM');
+	                    if (to_return == '0 AM') {
+	                        return opts.i18n.midnight;
+	                    } else if (to_return == '0 PM') {
+	                        return opts.i18n.noon;
+	                    } else {
+	                        return to_return;
+	                    }
+	                }
+	            },
+	            opts.incrementHourBy) +
+	            '<td>:</td>' +
+	            renderTimePicker(60, mm, 'pika-select-minute', function(i) { if (i < 10) return "0" + i; return i }, opts.incrementMinuteBy);
+	
+	        if (opts.showSeconds) {
+	            to_return += '<td>:</td>' +
+	                renderTimePicker(60, ss, 'pika-select-second', function(i) { if (i < 10) return "0" + i; return i }, opts.incrementSecondBy);
+	        }
+	        return to_return + '</tr></tbody></table>';
+	    },
+	
+	
+	
+	    /**
+	     * Pikaday constructor
+	     */
+	    Pikaday = function(options)
+	    {
+	        var self = this,
+	            opts = self.config(options);
+	
+	        self._onMouseDown = function(e)
+	        {
+	            if (!self._v) {
+	                return;
+	            }
+	            e = e || window.event;
+	            var target = e.target || e.srcElement;
+	            if (!target) {
+	                return;
+	            }
+	
+	            if (!hasClass(target, 'is-disabled')) {
+	                if (hasClass(target, 'pika-button') && !hasClass(target, 'is-empty')) {
+	                    var newDate = new Date(
+	                            target.getAttribute('data-pika-year'),
+	                            target.getAttribute('data-pika-month'),
+	                            target.getAttribute('data-pika-day')
+	                        );
+	                    // Preserve time selection when date changed
+	                    if (self._d && opts.showTime) {
+	                        newDate.setHours(self._d.getHours());
+	                        newDate.setMinutes(self._d.getMinutes());
+	                        if (opts.showSeconds) {
+	                            newDate.setSeconds(self._d.getSeconds());
+	                        }
+	                    }
+	                    self.setDate(newDate);
+	                    if (opts.bound) {
+	                        sto(function() {
+	                            if (opts.autoClose) {
+	                                self.hide();
+	                            }
+	                            if (opts.field) {
+	                                opts.field.blur();
+	                            }
+	                        }, 100);
+	                    }
+	                }
+	                else if (hasClass(target, 'pika-prev')) {
+	                    self.prevMonth();
+	                }
+	                else if (hasClass(target, 'pika-next')) {
+	                    self.nextMonth();
+	                }
+	            }
+	            if (!hasClass(target, 'pika-select')) {
+	                // if this is touch event prevent mouse events emulation
+	                if (e.preventDefault) {
+	                    e.preventDefault();
+	                } else {
+	                    e.returnValue = false;
+	                    return false;
+	                }
+	            } else {
+	                self._c = true;
+	            }
+	        };
+	
+	        self._onChange = function(e)
+	        {
+	            e = e || window.event;
+	            var target = e.target || e.srcElement;
+	            if (!target) {
+	                return;
+	            }
+	            if (hasClass(target, 'pika-select-month')) {
+	                self.gotoMonth(target.value);
+	            }
+	            else if (hasClass(target, 'pika-select-year')) {
+	                self.gotoYear(target.value);
+	            }
+	            else if (hasClass(target, 'pika-select-hour')) {
+	                self.setTime(target.value);
+	            }
+	            else if (hasClass(target, 'pika-select-minute')) {
+	                self.setTime(null, target.value);
+	            }
+	            else if (hasClass(target, 'pika-select-second')) {
+	                self.setTime(null, null, target.value);
+	            }
+	        };
+	
+	        self._onInputChange = function(e)
+	        {
+	            var date;
+	
+	            if (e.firedBy === self) {
+	                return;
+	            }
+	            if (hasMoment) {
+	                date = moment(opts.field.value, opts.inputFormats, opts.formatStrict);
+	                date = (date && date.isValid()) ? date.toDate() : null;
+	            }
+	            else {
+	                date = new Date(Date.parse(opts.field.value));
+	            }
+	            if (isDate(date)) {
+	              self.setDate(date);
+	            }
+	            if (!self._v) {
+	                self.show();
+	            }
+	        };
+	
+	        self._onInputFocus = function()
+	        {
+	            self.show();
+	        };
+	
+	        self._onInputClick = function()
+	        {
+	            self.show();
+	        };
+	
+	        self._onInputBlur = function()
+	        {
+	            // IE allows pika div to gain focus; catch blur the input field
+	            var pEl = document.activeElement;
+	            do {
+	                if (hasClass(pEl, 'pika-single')) {
+	                    return;
+	                }
+	            }
+	            while ((pEl = pEl.parentNode));
+	
+	            if (opts.autoClose && !self._c) {
+	                self._b = sto(function() {
+	                    self.hide();
+	                }, 50);
+	            }
+	            self._c = false;
+	        };
+	
+	        self._onClick = function(e)
+	        {
+	            e = e || window.event;
+	            var target = e.target || e.srcElement,
+	                pEl = target;
+	            if (!target) {
+	                return;
+	            }
+	            if (!hasEventListeners && hasClass(target, 'pika-select')) {
+	                if (!target.onchange) {
+	                    target.setAttribute('onchange', 'return;');
+	                    addEvent(target, 'change', self._onChange);
+	                }
+	            }
+	            do {
+	                if (hasClass(pEl, 'pika-single') ||
+	                    pEl === opts.trigger ||
+	                    (opts.showTime && hasClass(pEl, 'pika-time-container'))) {
+	                    return;
+	                }
+	            }
+	            while ((pEl = pEl.parentNode));
+	            if (self._v && target !== opts.trigger && pEl !== opts.trigger) {
+	                self.hide();
+	            }
+	        };
+	
+	        self.el = document.createElement('div');
+	        self.el.className = 'pika-single' + (opts.isRTL ? ' is-rtl' : '') + (opts.theme ? ' ' + opts.theme : '');
+	
+	        addEvent(self.el, 'mousedown', self._onMouseDown, true);
+	        addEvent(self.el, 'touchend', self._onMouseDown, true);
+	        addEvent(self.el, 'change', self._onChange);
+	
+	        if (opts.field) {
+	            if (opts.container) {
+	                opts.container.appendChild(self.el);
+	            } else if (opts.bound) {
+	                document.body.appendChild(self.el);
+	            } else {
+	                opts.field.parentNode.insertBefore(self.el, opts.field.nextSibling);
+	            }
+	            addEvent(opts.field, 'change', self._onInputChange);
+	
+	            if (!opts.defaultDate) {
+	                if (hasMoment && opts.field.value) {
+	                    opts.defaultDate = moment(opts.field.value, opts.inputFormats).toDate();
+	                } else {
+	                    opts.defaultDate = new Date(Date.parse(opts.field.value));
+	                }
+	                opts.setDefaultDate = true;
+	            }
+	        }
+	
+	        var defDate = opts.defaultDate;
+	
+	        if (isDate(defDate)) {
+	            if (opts.setDefaultDate) {
+	                self.setDate(defDate, true);
+	            } else {
+	                self.gotoDate(defDate);
+	            }
+	        } else {
+	            self.gotoDate(new Date());
+	        }
+	
+	        if (opts.bound) {
+	            this.hide();
+	            self.el.className += ' is-bound';
+	            addEvent(opts.trigger, 'click', self._onInputClick);
+	            addEvent(opts.trigger, 'focus', self._onInputFocus);
+	            addEvent(opts.trigger, 'blur', self._onInputBlur);
+	        } else {
+	            this.show();
+	        }
+	    };
+	
+	
+	    /**
+	     * public Pikaday API
+	     */
+	    Pikaday.prototype = {
+	
+	
+	        /**
+	         * configure functionality
+	         */
+	        config: function(options)
+	        {
+	            if (!this._o) {
+	                this._o = extend({}, defaults, true);
+	            }
+	
+	            var opts = extend(this._o, options, true);
+	
+	            opts.isRTL = !!opts.isRTL;
+	
+	            opts.autoClose = !!opts.autoClose;
+	
+	            opts.field = (opts.field && opts.field.nodeName) ? opts.field : null;
+	
+	            opts.theme = (typeof opts.theme) === 'string' && opts.theme ? opts.theme : null;
+	
+	            opts.bound = !!(opts.bound !== undefined ? opts.field && opts.bound : opts.field);
+	
+	            opts.trigger = (opts.trigger && opts.trigger.nodeName) ? opts.trigger : opts.field;
+	
+	            opts.disableWeekends = !!opts.disableWeekends;
+	
+	            opts.disableDayFn = (typeof opts.disableDayFn) === 'function' ? opts.disableDayFn : null;
+	
+	            var nom = parseInt(opts.numberOfMonths, 10) || 1;
+	            opts.numberOfMonths = nom > 4 ? 4 : nom;
+	
+	            if (!isDate(opts.minDate)) {
+	                opts.minDate = false;
+	            }
+	            if (!isDate(opts.maxDate)) {
+	                opts.maxDate = false;
+	            }
+	            if ((opts.minDate && opts.maxDate) && opts.maxDate < opts.minDate) {
+	                opts.maxDate = opts.minDate = false;
+	            }
+	            if (opts.minDate) {
+	               this.setMinDate(opts.minDate);
+	            }
+	            if (opts.maxDate) {
+	                this.setMaxDate(opts.maxDate);
+	            }
+	
+	            if (isArray(opts.yearRange)) {
+	                var fallback = new Date().getFullYear() - 10;
+	                opts.yearRange[0] = parseInt(opts.yearRange[0], 10) || fallback;
+	                opts.yearRange[1] = parseInt(opts.yearRange[1], 10) || fallback;
+	            } else {
+	                opts.yearRange = Math.abs(parseInt(opts.yearRange, 10)) || defaults.yearRange;
+	                if (opts.yearRange > 100) {
+	                    opts.yearRange = 100;
+	                }
+	            }
+	
+	            // If no format is given, set based on showTime
+	            if (opts.format === null) {
+	                opts.format = 'YYYY-MM-DD';
+	                if (opts.showTime) {
+	                    opts.format += ' HH:mm:ss';
+	                }
+	            }
+	
+	            if(!opts.inputFormats) {
+	                opts.inputFormats = opts.format;
+	            }
+	
+	            return opts;
+	        },
+	
+	        /**
+	         * return a formatted string of the current selection (using Moment.js if available)
+	         */
+	        toString: function(format)
+	        {
+	            return !isDate(this._d) ? '' : hasMoment ? moment(this._d).format(format || this._o.format) : this._o.showTime ? this._d.toString() : this._d.toDateString();
+	        },
+	
+	        /**
+	         * return a Moment.js object of the current selection (if available)
+	         */
+	        getMoment: function()
+	        {
+	            return hasMoment ? moment(this._d) : null;
+	        },
+	
+	        /**
+	         * set the current selection from a Moment.js object (if available)
+	         */
+	        setMoment: function(date, preventOnSelect)
+	        {
+	            if (hasMoment && moment.isMoment(date)) {
+	                this.setDate(date.toDate(), preventOnSelect);
+	            }
+	        },
+	
+	        /**
+	         * return a Date object of the current selection
+	         */
+	        getDate: function()
+	        {
+	            return isDate(this._d) ? new Date(this._d.getTime()) : null;
+	        },
+	
+	        /**
+	         * set time components
+	         * Currently defaulting to setting date to today if not set
+	         */
+	        setTime: function(hours, minutes, seconds) {
+	            if (!this._d) {
+	                this._d = new Date();
+	                this._d.setHours(0,0,0,0);
+	            }
+	            if (hours) {
+	                this._d.setHours(hours);
+	            }
+	            if (minutes) {
+	                this._d.setMinutes(minutes);
+	            }
+	            if (seconds) {
+	                this._d.setSeconds(seconds);
+	            }
+	            this.setDate(this._d);
+	        },
+	
+	        /**
+	         * set the current selection
+	         */
+	        setDate: function(date, preventOnSelect)
+	        {
+	            if (!date) {
+	                this._d = null;
+	
+	                if (this._o.field) {
+	                    this._o.field.value = '';
+	                    fireEvent(this._o.field, 'change', { firedBy: this });
+	                }
+	
+	                return this.draw();
+	            }
+	            if (typeof date === 'string') {
+	                date = new Date(Date.parse(date));
+	            }
+	            if (!isDate(date)) {
+	                return;
+	            }
+	
+	            var min = this._o.minDate,
+	                max = this._o.maxDate;
+	
+	            if (isDate(min) && date < min) {
+	                date = min;
+	            } else if (isDate(max) && date > max) {
+	                date = max;
+	            }
+	
+	            this._d = new Date(date.getTime());
+	
+	            if (this._o.showTime && !this._o.showSeconds) {
+	                this._d.setSeconds(0);
+	            } else if (!this._o.showTime) {
+	                setToStartOfDay(this._d);
+	            }
+	
+	            this.gotoDate(this._d);
+	
+	            if (this._o.field) {
+	                this._o.field.value = this.toString();
+	                fireEvent(this._o.field, 'change', { firedBy: this });
+	            }
+	            if (!preventOnSelect && typeof this._o.onSelect === 'function') {
+	                this._o.onSelect.call(this, this.getDate());
+	            }
+	        },
+	
+	        /**
+	         * change view to a specific date
+	         */
+	        gotoDate: function(date)
+	        {
+	            var newCalendar = true;
+	
+	            if (!isDate(date)) {
+	                return;
+	            }
+	
+	            if (this.calendars) {
+	                var firstVisibleDate = new Date(this.calendars[0].year, this.calendars[0].month, 1),
+	                    lastVisibleDate = new Date(this.calendars[this.calendars.length-1].year, this.calendars[this.calendars.length-1].month, 1),
+	                    visibleDate = date.getTime();
+	                // get the end of the month
+	                lastVisibleDate.setMonth(lastVisibleDate.getMonth()+1);
+	                lastVisibleDate.setDate(lastVisibleDate.getDate()-1);
+	                newCalendar = (visibleDate < firstVisibleDate.getTime() || lastVisibleDate.getTime() < visibleDate);
+	            }
+	
+	            if (newCalendar) {
+	                this.calendars = [{
+	                    month: date.getMonth(),
+	                    year: date.getFullYear(),
+	                    hour: date.getHours(),
+	                    minute: date.getMinutes(),
+	                    second: date.getSeconds()
+	                }];
+	                if (this._o.mainCalendar === 'right') {
+	                    this.calendars[0].month += 1 - this._o.numberOfMonths;
+	                }
+	            }
+	
+	            this.adjustCalendars();
+	        },
+	
+	        adjustCalendars: function() {
+	            this.calendars[0] = adjustCalendar(this.calendars[0]);
+	            for (var c = 1; c < this._o.numberOfMonths; c++) {
+	                this.calendars[c] = adjustCalendar({
+	                    month: this.calendars[0].month + c,
+	                    year: this.calendars[0].year
+	                });
+	            }
+	            this.draw();
+	        },
+	
+	        gotoToday: function()
+	        {
+	            this.gotoDate(new Date());
+	        },
+	
+	        /**
+	         * change view to a specific month (zero-index, e.g. 0: January)
+	         */
+	        gotoMonth: function(month)
+	        {
+	            if (!isNaN(month)) {
+	                this.calendars[0].month = parseInt(month, 10);
+	                this.adjustCalendars();
+	            }
+	        },
+	
+	        nextMonth: function()
+	        {
+	            this.calendars[0].month++;
+	            this.adjustCalendars();
+	        },
+	
+	        prevMonth: function()
+	        {
+	            this.calendars[0].month--;
+	            this.adjustCalendars();
+	        },
+	
+	        /**
+	         * change view to a specific full year (e.g. "2012")
+	         */
+	        gotoYear: function(year)
+	        {
+	            if (!isNaN(year)) {
+	                this.calendars[0].year = parseInt(year, 10);
+	                this.adjustCalendars();
+	            }
+	        },
+	
+	        /**
+	         * change the minDate
+	         */
+	        setMinDate: function(value)
+	        {
+	            if (!this._o.showTime) setToStartOfDay(value);
+	            this._o.minDate = value;
+	            this._o.minYear  = value.getFullYear();
+	            this._o.minMonth = value.getMonth();
+	            this.draw();
+	        },
+	
+	        /**
+	         * change the maxDate
+	         */
+	        setMaxDate: function(value)
+	        {
+	            setToStartOfDay(value);
+	            this._o.maxDate = value;
+	            this._o.maxYear = value.getFullYear();
+	            this._o.maxMonth = value.getMonth();
+	            this.draw();
+	        },
+	
+	        setStartRange: function(value)
+	        {
+	            this._o.startRange = value;
+	        },
+	
+	        setEndRange: function(value)
+	        {
+	            this._o.endRange = value;
+	        },
+	
+	        /**
+	         * refresh the HTML
+	         */
+	        draw: function(force)
+	        {
+	            if (!this._v && !force) {
+	                return;
+	            }
+	            var opts = this._o,
+	                minYear = opts.minYear,
+	                maxYear = opts.maxYear,
+	                minMonth = opts.minMonth,
+	                maxMonth = opts.maxMonth,
+	                html = '';
+	
+	            if (this._y <= minYear) {
+	                this._y = minYear;
+	                if (!isNaN(minMonth) && this._m < minMonth) {
+	                    this._m = minMonth;
+	                }
+	            }
+	            if (this._y >= maxYear) {
+	                this._y = maxYear;
+	                if (!isNaN(maxMonth) && this._m > maxMonth) {
+	                    this._m = maxMonth;
+	                }
+	            }
+	
+	            for (var c = 0; c < opts.numberOfMonths; c++) {
+	                html += '<div class="pika-lendar">' + renderTitle(this, c, this.calendars[c].year, this.calendars[c].month, this.calendars[0].year) + this.render(this.calendars[c].year, this.calendars[c].month) + '</div>';
+	            }
+	
+	            if (opts.showTime) {
+	                html += '<div class="pika-time-container">' +
+	                        renderTime(
+	                            this._d ? this._d.getHours() : 0,
+	                            this._d ? this._d.getMinutes() : 0,
+	                            this._d ? this._d.getSeconds() : 0,
+	                            opts)
+	                    + '</div>';
+	            }
+	
+	            this.el.innerHTML = html;
+	
+	            if (opts.bound) {
+	                if(opts.field.type !== 'hidden') {
+	                    sto(function() {
+	                        opts.trigger.focus();
+	                    }, 1);
+	                }
+	            }
+	
+	            if (typeof this._o.onDraw === 'function') {
+	                var self = this;
+	                sto(function() {
+	                    self._o.onDraw.call(self);
+	                }, 0);
+	            }
+	        },
+	
+	        adjustPosition: function()
+	        {
+	            var field, pEl, width, height, viewportWidth, viewportHeight, scrollTop, left, top, clientRect;
+	
+	            if (this._o.container) return;
+	
+	            this.el.style.position = 'absolute';
+	
+	            field = this._o.trigger;
+	            pEl = field;
+	            width = this.el.offsetWidth;
+	            height = this.el.offsetHeight;
+	            viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+	            viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+	            scrollTop = window.pageYOffset || document.body.scrollTop || document.documentElement.scrollTop;
+	
+	            if (typeof field.getBoundingClientRect === 'function') {
+	                clientRect = field.getBoundingClientRect();
+	                left = clientRect.left + window.pageXOffset;
+	                top = clientRect.bottom + window.pageYOffset;
+	            } else {
+	                left = pEl.offsetLeft;
+	                top  = pEl.offsetTop + pEl.offsetHeight;
+	                while((pEl = pEl.offsetParent)) {
+	                    left += pEl.offsetLeft;
+	                    top  += pEl.offsetTop;
+	                }
+	            }
+	
+	            // default position is bottom & left
+	            if ((this._o.reposition && left + width > viewportWidth) ||
+	                (
+	                    this._o.position.indexOf('right') > -1 &&
+	                    left - width + field.offsetWidth > 0
+	                )
+	            ) {
+	                left = left - width + field.offsetWidth;
+	            }
+	            if ((this._o.reposition && top + height > viewportHeight + scrollTop) ||
+	                (
+	                    this._o.position.indexOf('top') > -1 &&
+	                    top - height - field.offsetHeight > 0
+	                )
+	            ) {
+	                top = top - height - field.offsetHeight;
+	            }
+	
+	            this.el.style.left = left + 'px';
+	            this.el.style.top = top + 'px';
+	        },
+	
+	        /**
+	         * render HTML for a particular month
+	         */
+	        render: function(year, month)
+	        {
+	            var opts   = this._o,
+	                now    = new Date(),
+	                days   = getDaysInMonth(year, month),
+	                before = new Date(year, month, 1).getDay(),
+	                data   = [],
+	                row    = [];
+	            if (!opts.showTime) setToStartOfDay(now);
+	            if (opts.firstDay > 0) {
+	                before -= opts.firstDay;
+	                if (before < 0) {
+	                    before += 7;
+	                }
+	            }
+	            var previousMonth = month === 0 ? 11 : month - 1,
+	                nextMonth = month === 11 ? 0 : month + 1,
+	                yearOfPreviousMonth = month === 0 ? year - 1 : year,
+	                yearOfNextMonth = month === 11 ? year + 1 : year,
+	                daysInPreviousMonth = getDaysInMonth(yearOfPreviousMonth, previousMonth);
+	            var cells = days + before,
+	                after = cells;
+	            while(after > 7) {
+	                after -= 7;
+	            }
+	            cells += 7 - after;
+	
+	            // Ensure we only compare date portion when deciding to show a date in picker
+	            var minDate_date = opts.minDate ? new Date(opts.minDate.getFullYear(), opts.minDate.getMonth(), opts.minDate.getDate()) : null;
+	            var maxDate_date = opts.maxDate ? new Date(opts.maxDate.getFullYear(), opts.maxDate.getMonth(), opts.maxDate.getDate()) : null;
+	
+	            for (var i = 0, r = 0; i < cells; i++)
+	            {
+	                var day = new Date(year, month, 1 + (i - before)),
+	                    isSelected = isDate(this._d) ? compareDates(day, this._d) : false,
+	                    isToday = compareDates(day, now),
+	                    isEmpty = i < before || i >= (days + before),
+	                    dayNumber = 1 + (i - before),
+	                    monthNumber = month,
+	                    yearNumber = year,
+	                    isStartRange = opts.startRange && compareDates(opts.startRange, day),
+	                    isEndRange = opts.endRange && compareDates(opts.endRange, day),
+	                    isInRange = opts.startRange && opts.endRange && opts.startRange < day && day < opts.endRange,
+	                    isDisabled = (opts.minDate && day < opts.minDate) ||
+	                                 (opts.maxDate && day > opts.maxDate) ||
+	                                 (opts.disableWeekends && isWeekend(day)) ||
+	                                 (opts.disableDayFn && opts.disableDayFn(day));
+	
+	                if (isEmpty) {
+	                    if (i < before) {
+	                        dayNumber = daysInPreviousMonth + dayNumber;
+	                        monthNumber = previousMonth;
+	                        yearNumber = yearOfPreviousMonth;
+	                    } else {
+	                        dayNumber = dayNumber - days;
+	                        monthNumber = nextMonth;
+	                        yearNumber = yearOfNextMonth;
+	                    }
+	                }
+	
+	                var dayConfig = {
+	                        day: dayNumber,
+	                        month: monthNumber,
+	                        year: yearNumber,
+	                        isSelected: isSelected,
+	                        isToday: isToday,
+	                        isDisabled: isDisabled,
+	                        isEmpty: isEmpty,
+	                        isStartRange: isStartRange,
+	                        isEndRange: isEndRange,
+	                        isInRange: isInRange,
+	                        showDaysInNextAndPreviousMonths: opts.showDaysInNextAndPreviousMonths
+	                    };
+	
+	                row.push(renderDay(dayConfig));
+	
+	                if (++r === 7) {
+	                    if (opts.showWeekNumber) {
+	                        row.unshift(renderWeek(i - before, month, year));
+	                    }
+	                    data.push(renderRow(row, opts.isRTL));
+	                    row = [];
+	                    r = 0;
+	                }
+	            }
+	            return renderTable(opts, data);
+	        },
+	
+	        isVisible: function()
+	        {
+	            return this._v;
+	        },
+	
+	        show: function()
+	        {
+	            if (!this._v) {
+	                removeClass(this.el, 'is-hidden');
+	                this._v = true;
+	                this.draw();
+	                if (this._o.bound) {
+	                    addEvent(document, 'click', this._onClick);
+	                    this.adjustPosition();
+	                }
+	                if (typeof this._o.onOpen === 'function') {
+	                    this._o.onOpen.call(this);
+	                }
+	            }
+	        },
+	
+	        hide: function()
+	        {
+	            var v = this._v;
+	            if (v !== false) {
+	                if (this._o.bound) {
+	                    removeEvent(document, 'click', this._onClick);
+	                }
+	                this.el.style.position = 'static'; // reset
+	                this.el.style.left = 'auto';
+	                this.el.style.top = 'auto';
+	                addClass(this.el, 'is-hidden');
+	                this._v = false;
+	                if (v !== undefined && typeof this._o.onClose === 'function') {
+	                    this._o.onClose.call(this);
+	                }
+	            }
+	        },
+	
+	        /**
+	         * GAME OVER
+	         */
+	        destroy: function()
+	        {
+	            this.hide();
+	            removeEvent(this.el, 'mousedown', this._onMouseDown, true);
+	            removeEvent(this.el, 'touchend', this._onMouseDown, true);
+	            removeEvent(this.el, 'change', this._onChange);
+	            if (this._o.field) {
+	                removeEvent(this._o.field, 'change', this._onInputChange);
+	                if (this._o.bound) {
+	                    removeEvent(this._o.trigger, 'click', this._onInputClick);
+	                    removeEvent(this._o.trigger, 'focus', this._onInputFocus);
+	                    removeEvent(this._o.trigger, 'blur', this._onInputBlur);
+	                }
+	            }
+	            if (this.el.parentNode) {
+	                this.el.parentNode.removeChild(this.el);
+	            }
+	        }
+	
+	    };
+	
+	    return Pikaday;
+	
+	}));
+
+
+/***/ },
+/* 134 */
+/***/ function(module, exports, __webpack_require__) {
+
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <p if=\"{hasNothing()}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <div if=\"{hasNothing() && currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{hasNothing() && currentAccount.isCustomer}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> <div if=\"{hasNothing() && currentAccount.isAdministrator}\" class=\"mt2\"> <a class=\"btn btn-primary mr1\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isCustomer}\"> Here is your <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Actual <strong>quotes</strong> from Professionals will appear here when they submit them. </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isProfessional}\"> Here is the the <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Click <strong>Clone</strong> button to get your copy and work on it. </p> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Tender</span> <p class=\"overflow-hidden m0 mxn2 p1 border-top\"> <a class=\"btn btn-small\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Open</a> <a class=\"btn btn-small btn-primary\" if=\"{currentAccount.isProfessional}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span if=\"{accepted_at}\" class=\"inline-block align-middle h6 mb1 px1 border bg-lime navy pill right mt2\">Accepted</span> <span if=\"{!accepted_at && submitted_at}\" class=\"inline-block align-middle h6 mb1 px1 border pill mr1\">Submitted</span> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2 mr1\">Quote</span> <span class=\"italic mt2 mr1\">by {professional.profile.first_name} {professional.profile.last_name}</span> <div class=\"clearfix overflow-hidden m0 mxn2 p1 {'bg-lime': accepted_at, 'bg-yellow': (submitted_at && !accepted_at), 'bg-gray white': (!submitted_at && !accepted_at)}\"> <span if=\"{!accepted_at && submitted_at}\"><i class=\"fa fa-clock-o mr1\"></i>submitted at: {fromNow(submitted_at)}</i></span> <span if=\"{accepted_at}\"><i class=\"fa fa-clock-o mr1\"></i>accepted at: {fromNow(accepted_at)}</i></span> <div class=\"mt1\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Open</a> <a class=\"btn btn-small bg-darken-2\" if=\"{currentAccount.isProfessional && !accepted_at}\" onclick=\"{delete}\">Delete</a> </div> </div> </div> </li> </ul>", "", "", function (opts) {
@@ -18661,20 +19932,20 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 134 */
+/* 135 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(135);
-	
 	__webpack_require__(136);
 	
-	__webpack_require__(138);
+	__webpack_require__(137);
 	
 	__webpack_require__(139);
 	
 	__webpack_require__(140);
+	
+	__webpack_require__(141);
 	
 	riot.tag2("r-tenders-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1><a class=\"btn btn-small h6 btn-outline orange\" href=\"/app/projects/{project.id}\"><i class=\"fa fa-chevron-left\"></i> Back to Project</a> {opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Tender ' + opts.id : 'New Tender'}</h1> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{!currentAccount.isProfessional}\" type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -18742,7 +20013,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 135 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18851,14 +20122,14 @@
 	// $('[name=searchable_names]').last()[0].focus()
 
 /***/ },
-/* 136 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 	
-	var Handlebars = _interopRequire(__webpack_require__(137));
+	var Handlebars = _interopRequire(__webpack_require__(138));
 	
 	riot.tag2("r-tender-item-input", "<div class=\"relative\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Strart typing to add {modelName}\" autocomplete=\"off\"> </form> <i class=\"fa fa-plus absolute right-0 top-0 p1\"></i> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -18933,7 +20204,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 137 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*!
@@ -23546,7 +24817,7 @@
 	;
 
 /***/ },
-/* 138 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -23581,7 +24852,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 139 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -23630,7 +24901,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 140 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -23702,12 +24973,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 141 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(135);
+	__webpack_require__(136);
 	
 	riot.tag2("r-quotes-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1><a class=\"btn btn-small h6 btn-outline orange\" href=\"/app/projects/{record.project_id}\"><i class=\"fa fa-chevron-left\"></i> Back to Project</a> {opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Quote ' + opts.id : 'New Quote'}</h1> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{opts.id && !currentAccount.isProfessional}\" class=\"btn btn-primary btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </button> <virtual if=\"{!opts.readonly && !currentAccount.isCustomer}\"> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{opts.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> </virtual> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -23786,12 +25057,65 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 142 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-settings-profile", "<h2 class=\"mt0\">Profile</h2> <form name=\"{currentAccount.user_type.plural()}\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"profile[first_name]\">First Name *</label> <input class=\"block col-12 mb2 field\" autofocus=\"true\" type=\"text\" name=\"profile[first_name]\" value=\"{currentAccount.profile.first_name}\"> <span if=\"{errors['profile.first_name']}\" class=\"inline-error\">{errors['profile.first_name']}</span> </div> <div class=\"col col-6 px2\"> <label for=\"profile[last_name]\">Last Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"profile[last_name]\" value=\"{currentAccount.profile.last_name}\"> <span if=\"{errors['profile.last_name']}\" class=\"inline-error\">{errors['profile.last_name']}</span> </div> </div> <label for=\"profile[phone_number]\">Phone Number *</label> <input class=\"block col-12 mb2 field\" type=\"tel\" name=\"profile[phone_number]\" value=\"{currentAccount.profile.phone_number}\"> <span if=\"{errors['profile.phone_number']}\" class=\"inline-error\">{errors['profile.phone_number']}</span> <div if=\"{currentAccount.isProfessional}\"> <label for=\"profile[info]\">Info</label> <textarea class=\"block col-12 mb2 field\" name=\"profile[info]\" value=\"{currentAccount.profile.info}\"></textarea> <span if=\"{errors['profile.info']}\" class=\"inline-error\">{errors['profile.info']}</span> <label for=\"profile[dob]\">Date of birth</label> <input class=\"block col-12 mb2 field\" name=\"profile[dob]\" value=\"{currentAccount.profile.dob}\" type=\"{'date'}\"> <span if=\"{errors['profile.dob']}\" class=\"inline-error\">{errors['profile.dob']}</span> <div each=\"{field, i in proFields}\"> <label for=\"profile[{field}]\">{field.humanize()}</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"profile[{field}]\" value=\"{currentAccount.profile[field]}\"> <span if=\"{errors['profile.' + field]}\" class=\"inline-error\">{errors['profile.'+field]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form> <form name=\"registrations\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <label for=\"email\">Email *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"email\" value=\"{currentAccount.email}\"> <span if=\"{errors['email']}\" class=\"inline-error\">{errors['email']}</span> <label for=\"password\">Password</label> <em class=\"h5\">(8 characters minimum, leave empty if you don't want to change it)</em> <input class=\"block col-12 mb2 field\" autocomplete=\"off\" type=\"password\" name=\"password\"> <span if=\"{errors['password']}\" class=\"inline-error\">{errors['password']}</span> <label for=\"password\">Current Password *</label> <em class=\"h5\">(8 characters minimum)</em> <input class=\"block col-12 mb2 field\" autocomplete=\"off\" type=\"password\" name=\"current_password\"> <span if=\"{errors['current_password']}\" class=\"inline-error\">{errors['current_password']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+	
+	var Pikaday = _interopRequire(__webpack_require__(133));
+	
+	riot.tag2("r-settings-notifications", "<h2 class=\"mt0\">Notifications</h2>", "", "", function (opts) {});
+	
+	riot.tag2("r-settings-account", "<h2 class=\"mt0\">Account</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <virtual if=\"{needsLegalEntity()}\"> <h3>Legal Entity</h3> <label>Date of birth *</label> <div class=\"clearfix\"> <div class=\"sm-col sm-col-4\"> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][legal_entity][dob][day]\" value=\"{record.stripe_account.object.legal_entity.dob.day}\" placeholder=\"Day\"> <span if=\"{errors['stripe_account.updates.legal_entity.dob.day']}\" class=\"inline-error\"> {errors['stripe_account.updates.legal_entity.dob.day']} </span> </div> <div class=\"sm-col sm-col-4\"> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][legal_entity][dob][month]\" value=\"{record.stripe_account.object.legal_entity.dob.month}\" placeholder=\"Month\"> <span if=\"{errors['stripe_account.updates.legal_entity.dob.month']}\" class=\"inline-error\"> {errors['stripe_account.updates.legal_entity.dob.month']} </span> </div> <div class=\"sm-col sm-col-4\"> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][legal_entity][dob][year]\" value=\"{record.stripe_account.object.legal_entity.dob.year}\" placeholder=\"Year\"> <span if=\"{errors['stripe_account.updates.legal_entity.dob.year']}\" class=\"inline-error\"> {errors['stripe_account.updates.legal_entity.dob.year']} </span> </div> </div> <label>Type *</label> <select class=\"block col-12 mb2 field\" name=\"stripe_account[updates][legal_entity][type]\"> <option></option> <option value=\"individual\" __selected=\"{this.dot.pick('legal_entity.type', record.stripe_account.object) == 'individual'}\">Individual</option> <option value=\"company\" __selected=\"{this.dot.pick('legal_entity.type', record.stripe_account.object) == 'company'}\">Company</option> </select> <label>First Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][legal_entity][first_name]\" value=\"{record.stripe_account.object.legal_entity.first_name}\"> <label>Last Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][legal_entity][last_name]\" value=\"{record.stripe_account.object.legal_entity.last_name}\"> </virtual> <virtual if=\"{needsBankAccount()}\"> <h3>Bank Account</h3> <input type=\"hidden\" name=\"stripe_account[updates][external_account][object]\" value=\"bank_account\"> <input type=\"hidden\" name=\"stripe_account[updates][external_account][country]\" value=\"GB\"> <input type=\"hidden\" name=\"stripe_account[updates][external_account][currency]\" value=\"gbp\"> <label>Account Number *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][external_account][account_number]\" value=\"{record.stripe_account.object.external_account.account_number}\"> <label>Sort Code *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][external_account][routing_number]\" value=\"{record.stripe_account.object.external_account.routing_number}\"> <label>Account Holder Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][external_account][account_holder_name]\" value=\"{record.stripe_account.object.external_account.account_holder_name}\"> <label>Account Holder Type</label> <select class=\"block col-12 mb2 field\" name=\"stripe_account[updates][external_account][account_holder_type]\"> <option></option> <option value=\"individual\" __selected=\"{this.dot.pick('external_account.account_holder_type', record.stripe_account.object) == 'individual'}\">Individual</option> <option value=\"company\" __selected=\"{this.dot.pick('external_account.account_holder_type', record.stripe_account.object) == 'company'}\">Company</option> </select> </virtual> <virtual if=\"{needsIdDocument()}\"> <label>Clear photo or scan of your ID *</label> <input type=\"file\" name=\"stripe_account[updates][legal_entity][verification][document]\"> </virtual> <div if=\"{!_.isEmpty(errors)}\" id=\"error_explanation\"> <ul> <li each=\"{field, messages in errors}\">{field.humanize()} {messages.join(', ')}</li> </ul> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.needsLegalEntity = function () {
+	    return !_.isEmpty(_.filter(_this.dot.pick("verification.fields_needed", _this.record.stripe_account.object), function (er) {
+	      return er.indexOf("legal_entity") > -1;
+	    }));
+	  };
+	  this.needsBankAccount = function () {
+	    return !_.isEmpty(_this.dot.pick("verification.fields_needed.bank", _this.record.stripe_account.object));
+	  };
+	  this.needsIdDocument = function () {
+	    return !_.isEmpty(_this.dot.pick("verification.fields_needed.document", _this.record.stripe_account.object));
+	  };
+	  this.on("mount", function () {
+	    opts.api.professionals.on("show.success", _this.show);
+	    opts.api.professionals.on("show.fail", _this.errorHandler);
+	    opts.api.professionals.on("update.success", _this.updateReset);
+	    opts.api.professionals.on("update.fail", _this.errorHandler);
+	    opts.api.professionals.show(_this.currentAccount.user_id);
+	  });
+	  this.on("unmount", function () {
+	    opts.api.professionals.off("show.success", _this.update);
+	    opts.api.professionals.off("show.fail", _this.errorHandler);
+	    opts.api.professionals.off("update.success", _this.updateReset);
+	    opts.api.professionals.off("update.fail", _this.errorHandler);
+	  });
+	  this.show = function (record) {
+	    _this.update({ record: record });
+	  };
+	  this.submit = function (e) {
+	
+	    e.preventDefault();
+	
+	    var data = _this.serializeForm(e.target, {});
+	
+	    if (_.isEmpty(data)) {
+	      $(e.target).animateCss("shake");
+	      return;
+	    }
+	
+	    _this.update({ busy: true, errors: null });
+	
+	    _this.opts.api.professionals.update(_this.currentAccount.user_id, data);
+	  };
+	});
+	
+	riot.tag2("r-settings-profile", "<h2 class=\"mt0\">Profile</h2> <form name=\"{currentAccount.user_type.plural()}\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"profile[first_name]\">First Name *</label> <input class=\"block col-12 mb2 field\" autofocus=\"true\" type=\"text\" name=\"profile[first_name]\" value=\"{currentAccount.profile.first_name}\"> <span if=\"{errors['profile.first_name']}\" class=\"inline-error\">{errors['profile.first_name']}</span> </div> <div class=\"col col-6 px2\"> <label for=\"profile[last_name]\">Last Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"profile[last_name]\" value=\"{currentAccount.profile.last_name}\"> <span if=\"{errors['profile.last_name']}\" class=\"inline-error\">{errors['profile.last_name']}</span> </div> </div> <label for=\"profile[phone_number]\">Phone Number *</label> <input class=\"block col-12 mb2 field\" type=\"tel\" name=\"profile[phone_number]\" value=\"{currentAccount.profile.phone_number}\"> <span if=\"{errors['profile.phone_number']}\" class=\"inline-error\">{errors['profile.phone_number']}</span> <div if=\"{currentAccount.isProfessional}\"> <label for=\"profile[info]\">Info</label> <textarea class=\"block col-12 mb2 field\" name=\"profile[info]\" value=\"{currentAccount.profile.info}\"></textarea> <span if=\"{errors['profile.info']}\" class=\"inline-error\">{errors['profile.info']}</span> <label for=\"profile[dob]\">Date of birth</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"profile[dob]\" value=\"{currentAccount.profile.dob}\"> <span if=\"{errors['profile.dob']}\" class=\"inline-error\">{errors['profile.dob']}</span> <div each=\"{field, i in proFields}\"> <label for=\"profile[{field}]\">{field.humanize()}</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"profile[{field}]\" value=\"{currentAccount.profile[field]}\"> <span if=\"{errors['profile.' + field]}\" class=\"inline-error\">{errors['profile.'+field]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form> <form name=\"registrations\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <label for=\"email\">Email *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"email\" value=\"{currentAccount.email}\"> <span if=\"{errors['email']}\" class=\"inline-error\">{errors['email']}</span> <label for=\"password\">Password</label> <em class=\"h5\">(8 characters minimum, leave empty if you don't want to change it)</em> <input class=\"block col-12 mb2 field\" autocomplete=\"off\" type=\"password\" name=\"password\"> <span if=\"{errors['password']}\" class=\"inline-error\">{errors['password']}</span> <label for=\"password\">Current Password *</label> <em class=\"h5\">(8 characters minimum)</em> <input class=\"block col-12 mb2 field\" autocomplete=\"off\" type=\"password\" name=\"current_password\"> <span if=\"{errors['current_password']}\" class=\"inline-error\">{errors['current_password']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.submit = function (e) {
@@ -23812,27 +25136,39 @@
 	    });
 	  };
 	  this.proFields = ["website", "company_name", "company_info", "company_registration_number", "company_vat_number", "insurance_number", "insurance_amount", "guarantee_duration"];
+	  if (this.currentAccount.isProfessional) {
+	    this.on("mount", function () {
+	      var picker = new Pikaday({
+	        showTime: false,
+	        field: _this["profile[dob]"],
+	        onSelect: function (date) {
+	          _this.currentAccount.profile.dob = picker.toString();
+	          _this.update();
+	        }
+	      });
+	    });
+	  }
 	});
 	
 	riot.tag2("r-settings", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <div class=\"py3 px2\"> <div class=\"clearfix mxn2\"> <r-subnav links=\"{subnavLinks}\" tab=\"{opts.tab}\"></r-subnav> <div class=\"sm-col sm-col-9 sm-px2\"> <r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\" content_opts=\"{opts.contentOpts}\"></r-tabs> </div> </div> </div> </div>", "", "", function (opts) {
 	  this.subnavLinks = [{ href: "/app/settings/profile", name: "profile", tag: "r-settings-profile" }, { href: "/app/settings/notifications", name: "notifications", tag: "r-settings-notifications" }];
-	  if (opts.api.currentAccount.isProfessional) {
+	  if (this.currentAccount.isProfessional) {
 	    this.subnavLinks = [{ href: "/app/settings/profile", name: "profile", tag: "r-settings-profile" }, { href: "/app/settings/notifications", name: "notifications", tag: "r-settings-notifications" }, { href: "/app/settings/account", name: "account", tag: "r-settings-account" }];
 	  }
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 143 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(144);
-	
 	__webpack_require__(145);
 	
 	__webpack_require__(146);
+	
+	__webpack_require__(147);
 	
 	riot.tag2("r-admin-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in attributes}\"> <div if=\"{attr != 'id'}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <textarea if=\"{_.isObject(record[attr])}\" class=\"block col-12 mb2 field fixed-height\">{JSON.stringify(record[attr], null, 2)}</textarea> <input if=\"{!_.isObject(record[attr])}\" class=\"block col-12 mb2 field\" type=\"text\" name=\"{resource.singular()}[{attr}]\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
 	  var _this = this;
@@ -23940,12 +25276,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 144 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(135);
+	__webpack_require__(136);
 	
 	riot.tag2("r-admin-tender-template-form", "<div class=\"container p2\"> <h1><input type=\"text\" name=\"name\" value=\"{record.name}\" class=\"block col-12 field\" placeholder=\"Name\" oninput=\"{setInputValue}\"></h1> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>When you apply a template to a project, if there isn't Tender on the project it clones itself to project, if Tender exists it apply changes to project's tender </p> <div class=\"sm-col sm-col-9\"> <select name=\"project_ids[]\" id=\"project_ids\" multiple class=\"block col-12 mb2 field\"> <option each=\"{projects}\" value=\"{id}\">#{id} | {name} | {customers[0].profile.first_name} {customers[0].profile.last_name}</option> </select> </div> <div class=\"sm-col sm-col-3 center px1 right-align\"> <a class=\"block center white btn bg-blue {busy: busy}\" onclick=\"{addToProject}\">Apply to Project(s)</a> </div> </div> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -24022,12 +25358,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 145 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(135);
+	__webpack_require__(136);
 	
 	riot.tag2("r-admin-tender-form", "<div class=\"container p2\"> <label for=\"project_id\">Project</label> <select name=\"project_id\" class=\"block col-12 mb2 field\" onchange=\"{setInputValue}\"> <option></option> <option each=\"{projects}\" value=\"{id}\" __selected=\"{record.project_id == id}\">#{id} | {name} | {customers[0].profile.first_name} {customers[0].profile.last_name}</option> </select> <span if=\"{errors.project_id}\" class=\"inline-error\">{errors.project_id}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>Add a Professional to this Project by creating a Quote from this tender. Choosen pro will be shortlisted.</p> <div class=\"sm-col sm-col-9\"> <select name=\"professional_ids[]\" id=\"professional_ids\" multiple class=\"block col-12 mb2 field\"> <option each=\"{professionals}\" value=\"{id}\">#{id} | {profile.first_name} | {profile.last_name}</option> </select> </div> <div class=\"sm-col sm-col-3 px1 center white\"> <a class=\"btn bg-blue {busy: busy}\" onclick=\"{createQuote}\">Create Quote!</a> </div> </div> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -24111,12 +25447,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 146 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(135);
+	__webpack_require__(136);
 	
 	riot.tag2("r-admin-quote-form", "<div class=\"container p2\"> <label for=\"project\">Project</label> <select name=\"project_id\" class=\"block col-12 mb2 field\" onchange=\"{setInputValue}\"> <option></option> <option each=\"{projects}\" value=\"{id}\" __selected=\"{record.project_id == id}\">#{id} | {name} | {customers[0].profile.first_name} {customers[0].profile.last_name}</option> </select> <span if=\"{errors.project}\" class=\"inline-error\">{errors.project}</span> <label for=\"project_id\">Professional</label> <select name=\"professional_id\" class=\"block col-12 mb2 field\" onchange=\"{setInputValue}\"> <option></option> <option each=\"{professionals}\" value=\"{id}\" __selected=\"{record.professional_id == id}\">#{id} | {profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"tender_id\">Tender</label> <select name=\"tender_id\" class=\"block col-12 mb2 field\" onchange=\"{setInputValue}\"> <option></option> <option each=\"{tenders}\" value=\"{id}\" __selected=\"{record.tender_id == id}\">#{id}</option> </select> <span if=\"{errors.tender_id}\" class=\"inline-error\">{errors.project}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{record.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> <a if=\"{record.id}\" class=\"btn bg-red btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </a> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -24195,1275 +25531,6 @@
 	  this.mixin("tenderMixin");
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ },
-/* 147 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/*!
-	 * Pikaday
-	 *
-	 * Copyright © 2014 David Bushell | BSD & MIT license | https://github.com/dbushell/Pikaday
-	 */
-	
-	(function (root, factory)
-	{
-	    'use strict';
-	
-	    var moment;
-	    if (true) {
-	        // CommonJS module
-	        // Load moment.js as an optional dependency
-	        try { moment = __webpack_require__(8); } catch (e) {}
-	        module.exports = factory(moment);
-	    } else if (typeof define === 'function' && define.amd) {
-	        // AMD. Register as an anonymous module.
-	        define(function (req)
-	        {
-	            // Load moment.js as an optional dependency
-	            var id = 'moment';
-	            try { moment = req(id); } catch (e) {}
-	            return factory(moment);
-	        });
-	    } else {
-	        root.Pikaday = factory(root.moment);
-	    }
-	}(this, function (moment)
-	{
-	    'use strict';
-	
-	    /**
-	     * feature detection and helper functions
-	     */
-	    var hasMoment = typeof moment === 'function',
-	
-	    hasEventListeners = !!window.addEventListener,
-	
-	    document = window.document,
-	
-	    sto = window.setTimeout,
-	
-	    addEvent = function(el, e, callback, capture)
-	    {
-	        if (hasEventListeners) {
-	            el.addEventListener(e, callback, !!capture);
-	        } else {
-	            el.attachEvent('on' + e, callback);
-	        }
-	    },
-	
-	    removeEvent = function(el, e, callback, capture)
-	    {
-	        if (hasEventListeners) {
-	            el.removeEventListener(e, callback, !!capture);
-	        } else {
-	            el.detachEvent('on' + e, callback);
-	        }
-	    },
-	
-	    fireEvent = function(el, eventName, data)
-	    {
-	        var ev;
-	
-	        if (document.createEvent) {
-	            ev = document.createEvent('HTMLEvents');
-	            ev.initEvent(eventName, true, false);
-	            ev = extend(ev, data);
-	            el.dispatchEvent(ev);
-	        } else if (document.createEventObject) {
-	            ev = document.createEventObject();
-	            ev = extend(ev, data);
-	            el.fireEvent('on' + eventName, ev);
-	        }
-	    },
-	
-	    trim = function(str)
-	    {
-	        return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g,'');
-	    },
-	
-	    hasClass = function(el, cn)
-	    {
-	        return (' ' + el.className + ' ').indexOf(' ' + cn + ' ') !== -1;
-	    },
-	
-	    addClass = function(el, cn)
-	    {
-	        if (!hasClass(el, cn)) {
-	            el.className = (el.className === '') ? cn : el.className + ' ' + cn;
-	        }
-	    },
-	
-	    removeClass = function(el, cn)
-	    {
-	        el.className = trim((' ' + el.className + ' ').replace(' ' + cn + ' ', ' '));
-	    },
-	
-	    isArray = function(obj)
-	    {
-	        return (/Array/).test(Object.prototype.toString.call(obj));
-	    },
-	
-	    isDate = function(obj)
-	    {
-	        return (/Date/).test(Object.prototype.toString.call(obj)) && !isNaN(obj.getTime());
-	    },
-	
-	    isWeekend = function(date)
-	    {
-	        var day = date.getDay();
-	        return day === 0 || day === 6;
-	    },
-	
-	    isLeapYear = function(year)
-	    {
-	        // solution by Matti Virkkunen: http://stackoverflow.com/a/4881951
-	        return year % 4 === 0 && year % 100 !== 0 || year % 400 === 0;
-	    },
-	
-	    getDaysInMonth = function(year, month)
-	    {
-	        return [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
-	    },
-	
-	    setToStartOfDay = function(date)
-	    {
-	        if (isDate(date)) date.setHours(0,0,0,0);
-	    },
-	
-	    compareDates = function(a,b)
-	    {
-	        // Copy so we don't change the dates being passed in
-	        var _a = new Date(a.getTime());
-	        var _b = new Date(b.getTime());
-	        setToStartOfDay(_a);
-	        setToStartOfDay(_b);
-	        return _a.getTime() === _b.getTime();
-	    },
-	
-	    extend = function(to, from, overwrite)
-	    {
-	        var prop, hasProp;
-	        for (prop in from) {
-	            hasProp = to[prop] !== undefined;
-	            if (hasProp && typeof from[prop] === 'object' && from[prop] !== null && from[prop].nodeName === undefined) {
-	                if (isDate(from[prop])) {
-	                    if (overwrite) {
-	                        to[prop] = new Date(from[prop].getTime());
-	                    }
-	                }
-	                else if (isArray(from[prop])) {
-	                    if (overwrite) {
-	                        to[prop] = from[prop].slice(0);
-	                    }
-	                } else {
-	                    to[prop] = extend({}, from[prop], overwrite);
-	                }
-	            } else if (overwrite || !hasProp) {
-	                to[prop] = from[prop];
-	            }
-	        }
-	        return to;
-	    },
-	
-	    adjustCalendar = function(calendar) {
-	        if (calendar.month < 0) {
-	            calendar.year -= Math.ceil(Math.abs(calendar.month)/12);
-	            calendar.month += 12;
-	        }
-	        if (calendar.month > 11) {
-	            calendar.year += Math.floor(Math.abs(calendar.month)/12);
-	            calendar.month -= 12;
-	        }
-	        return calendar;
-	    },
-	
-	    /**
-	     * defaults and localisation
-	     */
-	    defaults = {
-	
-	        // bind the picker to a form field
-	        field: null,
-	
-	        // automatically show/hide the picker on `field` focus (default `true` if `field` is set)
-	        bound: undefined,
-	
-	        // position of the datepicker, relative to the field (default to bottom & left)
-	        // ('bottom' & 'left' keywords are not used, 'top' & 'right' are modifier on the bottom/left position)
-	        position: 'bottom left',
-	
-	        // automatically fit in the viewport even if it means repositioning from the position option
-	        reposition: true,
-	
-	        // the default output format for `.toString()` and `field` value
-	        // set in `config` based on if showTime is set
-	        format: null,
-	
-	        // an array giving the allowable input format(s).  As with moment,
-	        // the input formats may be either a single string or an array of strings.
-	        // Usually set in `config`
-	        inputFormats: null,
-	
-	        // the initial date to view when first opened
-	        defaultDate: null,
-	
-	        // make the `defaultDate` the initial selected value
-	        setDefaultDate: false,
-	
-	        // first day of week (0: Sunday, 1: Monday etc)
-	        firstDay: 0,
-	
-	        // the default flag for moment's strict date parsing
-	        formatStrict: false,
-	
-	        // the minimum/earliest date that can be selected
-	        minDate: null,
-	        // the maximum/latest date that can be selected
-	        maxDate: null,
-	
-	        // number of years either side, or array of upper/lower range
-	        yearRange: 10,
-	
-	        // show week numbers at head of row
-	        showWeekNumber: false,
-	
-	        // used internally (don't config outside)
-	        minYear: 0,
-	        maxYear: 9999,
-	        minMonth: undefined,
-	        maxMonth: undefined,
-	
-	        startRange: null,
-	        endRange: null,
-	
-	        isRTL: false,
-	
-	        // Additional text to append to the year in the calendar title
-	        yearSuffix: '',
-	
-	        // Render the month after year in the calendar title
-	        showMonthAfterYear: false,
-	
-	        // Render days of the calendar grid that fall in the next or previous month
-	        showDaysInNextAndPreviousMonths: false,
-	
-	        // how many months are visible
-	        numberOfMonths: 1,
-	
-	        // time
-	        showTime: true,
-	        showSeconds: false,
-	        use24hour: false,
-	        incrementHourBy: 1,
-	        incrementMinuteBy: 1,
-	        incrementSecondBy: 1,
-	
-	        // option to prevent calendar from auto-closing after date is selected
-	        autoClose: true,
-	
-	        // when numberOfMonths is used, this will help you to choose where the main calendar will be (default `left`, can be set to `right`)
-	        // only used for the first display or when a selected date is not visible
-	        mainCalendar: 'left',
-	
-	        // Specify a DOM element to render the calendar in
-	        container: undefined,
-	
-	        // internationalization
-	        i18n: {
-	            previousMonth : 'Previous Month',
-	            nextMonth     : 'Next Month',
-	            months        : ['January','February','March','April','May','June','July','August','September','October','November','December'],
-	            weekdays      : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
-	            weekdaysShort : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
-	            midnight      : 'Midnight',
-	            noon          : 'Noon'
-	        },
-	
-	        // Theme Classname
-	        theme: null,
-	
-	        // callback function
-	        onSelect: null,
-	        onOpen: null,
-	        onClose: null,
-	        onDraw: null
-	    },
-	
-	
-	    /**
-	     * templating functions to abstract HTML rendering
-	     */
-	    renderDayName = function(opts, day, abbr)
-	    {
-	        day += opts.firstDay;
-	        while (day >= 7) {
-	            day -= 7;
-	        }
-	        return abbr ? opts.i18n.weekdaysShort[day] : opts.i18n.weekdays[day];
-	    },
-	
-	    renderDay = function(opts)
-	    {
-	        var arr = [];
-	        if (opts.isEmpty) {
-	            if (opts.showDaysInNextAndPreviousMonths) {
-	                arr.push('is-outside-current-month');
-	            } else {
-	                return '<td class="is-empty"></td>';
-	            }
-	        }
-	        if (opts.isDisabled) {
-	            arr.push('is-disabled');
-	        }
-	        if (opts.isToday) {
-	            arr.push('is-today');
-	        }
-	        if (opts.isSelected) {
-	            arr.push('is-selected');
-	        }
-	        if (opts.isInRange) {
-	            arr.push('is-inrange');
-	        }
-	        if (opts.isStartRange) {
-	            arr.push('is-startrange');
-	        }
-	        if (opts.isEndRange) {
-	            arr.push('is-endrange');
-	        }
-	        return '<td data-day="' + opts.day + '" class="' + arr.join(' ') + '">' +
-	                 '<button class="pika-button pika-day" type="button" ' +
-	                    'data-pika-year="' + opts.year + '" data-pika-month="' + opts.month + '" data-pika-day="' + opts.day + '">' +
-	                        opts.day +
-	                 '</button>' +
-	               '</td>';
-	    },
-	
-	    renderWeek = function (d, m, y) {
-	        // Lifted from http://javascript.about.com/library/blweekyear.htm, lightly modified.
-	        var onejan = new Date(y, 0, 1),
-	            weekNum = Math.ceil((((new Date(y, m, d) - onejan) / 86400000) + onejan.getDay()+1)/7);
-	        return '<td class="pika-week">' + weekNum + '</td>';
-	    },
-	
-	    renderRow = function(days, isRTL)
-	    {
-	        return '<tr>' + (isRTL ? days.reverse() : days).join('') + '</tr>';
-	    },
-	
-	    renderBody = function(rows)
-	    {
-	        return '<tbody>' + rows.join('') + '</tbody>';
-	    },
-	
-	    renderHead = function(opts)
-	    {
-	        var i, arr = [];
-	        if (opts.showWeekNumber) {
-	            arr.push('<th></th>');
-	        }
-	        for (i = 0; i < 7; i++) {
-	            arr.push('<th scope="col"><abbr title="' + renderDayName(opts, i) + '">' + renderDayName(opts, i, true) + '</abbr></th>');
-	        }
-	        return '<thead>' + (opts.isRTL ? arr.reverse() : arr).join('') + '</thead>';
-	    },
-	
-	    renderTitle = function(instance, c, year, month, refYear)
-	    {
-	        var i, j, arr,
-	            opts = instance._o,
-	            isMinYear = year === opts.minYear,
-	            isMaxYear = year === opts.maxYear,
-	            html = '<div class="pika-title">',
-	            monthHtml,
-	            yearHtml,
-	            prev = true,
-	            next = true;
-	
-	        for (arr = [], i = 0; i < 12; i++) {
-	            arr.push('<option value="' + (year === refYear ? i - c : 12 + i - c) + '"' +
-	                (i === month ? ' selected': '') +
-	                ((isMinYear && i < opts.minMonth) || (isMaxYear && i > opts.maxMonth) ? 'disabled' : '') + '>' +
-	                opts.i18n.months[i] + '</option>');
-	        }
-	        monthHtml = '<div class="pika-label">' + opts.i18n.months[month] + '<select class="pika-select pika-select-month" tabindex="-1">' + arr.join('') + '</select></div>';
-	
-	        if (isArray(opts.yearRange)) {
-	            i = opts.yearRange[0];
-	            j = opts.yearRange[1] + 1;
-	        } else {
-	            i = year - opts.yearRange;
-	            j = 1 + year + opts.yearRange;
-	        }
-	
-	        for (arr = []; i < j && i <= opts.maxYear; i++) {
-	            if (i >= opts.minYear) {
-	                arr.push('<option value="' + i + '"' + (i === year ? ' selected': '') + '>' + (i) + '</option>');
-	            }
-	        }
-	        yearHtml = '<div class="pika-label">' + year + opts.yearSuffix + '<select class="pika-select pika-select-year" tabindex="-1">' + arr.join('') + '</select></div>';
-	
-	        if (opts.showMonthAfterYear) {
-	            html += yearHtml + monthHtml;
-	        } else {
-	            html += monthHtml + yearHtml;
-	        }
-	
-	        if (isMinYear && (month === 0 || opts.minMonth >= month)) {
-	            prev = false;
-	        }
-	
-	        if (isMaxYear && (month === 11 || opts.maxMonth <= month)) {
-	            next = false;
-	        }
-	
-	        if (c === 0) {
-	            html += '<button class="pika-prev' + (prev ? '' : ' is-disabled') + '" type="button">' + opts.i18n.previousMonth + '</button>';
-	        }
-	        if (c === (instance._o.numberOfMonths - 1) ) {
-	            html += '<button class="pika-next' + (next ? '' : ' is-disabled') + '" type="button">' + opts.i18n.nextMonth + '</button>';
-	        }
-	
-	        return html += '</div>';
-	    },
-	
-	    renderTable = function(opts, data)
-	    {
-	        return '<table cellpadding="0" cellspacing="0" class="pika-table">' + renderHead(opts) + renderBody(data) + '</table>';
-	    },
-	
-	    renderTimePicker = function(num_options, selected_val, select_class, display_func, increment_by) {
-	        increment_by = increment_by || 1;
-	        var to_return = '<td><select class="pika-select '+select_class+'">';
-	        for (var i = 0; i < num_options; i += increment_by) {
-	            to_return += '<option value="'+i+'" '+(i==selected_val ? 'selected' : '')+'>'+display_func(i)+'</option>'
-	        }
-	        to_return += '</select></td>';
-	        return to_return;
-	    },
-	
-	    renderTime = function(hh, mm, ss, opts)
-	    {
-	        var to_return = '<table cellpadding="0" cellspacing="0" class="pika-time"><tbody><tr>' +
-	            renderTimePicker(24, hh, 'pika-select-hour', function(i) {
-	                if (opts.use24hour) {
-	                    return i;
-	                } else {
-	                    var to_return = (i%12) + (i<12 ? ' AM' : ' PM');
-	                    if (to_return == '0 AM') {
-	                        return opts.i18n.midnight;
-	                    } else if (to_return == '0 PM') {
-	                        return opts.i18n.noon;
-	                    } else {
-	                        return to_return;
-	                    }
-	                }
-	            },
-	            opts.incrementHourBy) +
-	            '<td>:</td>' +
-	            renderTimePicker(60, mm, 'pika-select-minute', function(i) { if (i < 10) return "0" + i; return i }, opts.incrementMinuteBy);
-	
-	        if (opts.showSeconds) {
-	            to_return += '<td>:</td>' +
-	                renderTimePicker(60, ss, 'pika-select-second', function(i) { if (i < 10) return "0" + i; return i }, opts.incrementSecondBy);
-	        }
-	        return to_return + '</tr></tbody></table>';
-	    },
-	
-	
-	
-	    /**
-	     * Pikaday constructor
-	     */
-	    Pikaday = function(options)
-	    {
-	        var self = this,
-	            opts = self.config(options);
-	
-	        self._onMouseDown = function(e)
-	        {
-	            if (!self._v) {
-	                return;
-	            }
-	            e = e || window.event;
-	            var target = e.target || e.srcElement;
-	            if (!target) {
-	                return;
-	            }
-	
-	            if (!hasClass(target, 'is-disabled')) {
-	                if (hasClass(target, 'pika-button') && !hasClass(target, 'is-empty')) {
-	                    var newDate = new Date(
-	                            target.getAttribute('data-pika-year'),
-	                            target.getAttribute('data-pika-month'),
-	                            target.getAttribute('data-pika-day')
-	                        );
-	                    // Preserve time selection when date changed
-	                    if (self._d && opts.showTime) {
-	                        newDate.setHours(self._d.getHours());
-	                        newDate.setMinutes(self._d.getMinutes());
-	                        if (opts.showSeconds) {
-	                            newDate.setSeconds(self._d.getSeconds());
-	                        }
-	                    }
-	                    self.setDate(newDate);
-	                    if (opts.bound) {
-	                        sto(function() {
-	                            if (opts.autoClose) {
-	                                self.hide();
-	                            }
-	                            if (opts.field) {
-	                                opts.field.blur();
-	                            }
-	                        }, 100);
-	                    }
-	                }
-	                else if (hasClass(target, 'pika-prev')) {
-	                    self.prevMonth();
-	                }
-	                else if (hasClass(target, 'pika-next')) {
-	                    self.nextMonth();
-	                }
-	            }
-	            if (!hasClass(target, 'pika-select')) {
-	                // if this is touch event prevent mouse events emulation
-	                if (e.preventDefault) {
-	                    e.preventDefault();
-	                } else {
-	                    e.returnValue = false;
-	                    return false;
-	                }
-	            } else {
-	                self._c = true;
-	            }
-	        };
-	
-	        self._onChange = function(e)
-	        {
-	            e = e || window.event;
-	            var target = e.target || e.srcElement;
-	            if (!target) {
-	                return;
-	            }
-	            if (hasClass(target, 'pika-select-month')) {
-	                self.gotoMonth(target.value);
-	            }
-	            else if (hasClass(target, 'pika-select-year')) {
-	                self.gotoYear(target.value);
-	            }
-	            else if (hasClass(target, 'pika-select-hour')) {
-	                self.setTime(target.value);
-	            }
-	            else if (hasClass(target, 'pika-select-minute')) {
-	                self.setTime(null, target.value);
-	            }
-	            else if (hasClass(target, 'pika-select-second')) {
-	                self.setTime(null, null, target.value);
-	            }
-	        };
-	
-	        self._onInputChange = function(e)
-	        {
-	            var date;
-	
-	            if (e.firedBy === self) {
-	                return;
-	            }
-	            if (hasMoment) {
-	                date = moment(opts.field.value, opts.inputFormats, opts.formatStrict);
-	                date = (date && date.isValid()) ? date.toDate() : null;
-	            }
-	            else {
-	                date = new Date(Date.parse(opts.field.value));
-	            }
-	            if (isDate(date)) {
-	              self.setDate(date);
-	            }
-	            if (!self._v) {
-	                self.show();
-	            }
-	        };
-	
-	        self._onInputFocus = function()
-	        {
-	            self.show();
-	        };
-	
-	        self._onInputClick = function()
-	        {
-	            self.show();
-	        };
-	
-	        self._onInputBlur = function()
-	        {
-	            // IE allows pika div to gain focus; catch blur the input field
-	            var pEl = document.activeElement;
-	            do {
-	                if (hasClass(pEl, 'pika-single')) {
-	                    return;
-	                }
-	            }
-	            while ((pEl = pEl.parentNode));
-	
-	            if (opts.autoClose && !self._c) {
-	                self._b = sto(function() {
-	                    self.hide();
-	                }, 50);
-	            }
-	            self._c = false;
-	        };
-	
-	        self._onClick = function(e)
-	        {
-	            e = e || window.event;
-	            var target = e.target || e.srcElement,
-	                pEl = target;
-	            if (!target) {
-	                return;
-	            }
-	            if (!hasEventListeners && hasClass(target, 'pika-select')) {
-	                if (!target.onchange) {
-	                    target.setAttribute('onchange', 'return;');
-	                    addEvent(target, 'change', self._onChange);
-	                }
-	            }
-	            do {
-	                if (hasClass(pEl, 'pika-single') ||
-	                    pEl === opts.trigger ||
-	                    (opts.showTime && hasClass(pEl, 'pika-time-container'))) {
-	                    return;
-	                }
-	            }
-	            while ((pEl = pEl.parentNode));
-	            if (self._v && target !== opts.trigger && pEl !== opts.trigger) {
-	                self.hide();
-	            }
-	        };
-	
-	        self.el = document.createElement('div');
-	        self.el.className = 'pika-single' + (opts.isRTL ? ' is-rtl' : '') + (opts.theme ? ' ' + opts.theme : '');
-	
-	        addEvent(self.el, 'mousedown', self._onMouseDown, true);
-	        addEvent(self.el, 'touchend', self._onMouseDown, true);
-	        addEvent(self.el, 'change', self._onChange);
-	
-	        if (opts.field) {
-	            if (opts.container) {
-	                opts.container.appendChild(self.el);
-	            } else if (opts.bound) {
-	                document.body.appendChild(self.el);
-	            } else {
-	                opts.field.parentNode.insertBefore(self.el, opts.field.nextSibling);
-	            }
-	            addEvent(opts.field, 'change', self._onInputChange);
-	
-	            if (!opts.defaultDate) {
-	                if (hasMoment && opts.field.value) {
-	                    opts.defaultDate = moment(opts.field.value, opts.inputFormats).toDate();
-	                } else {
-	                    opts.defaultDate = new Date(Date.parse(opts.field.value));
-	                }
-	                opts.setDefaultDate = true;
-	            }
-	        }
-	
-	        var defDate = opts.defaultDate;
-	
-	        if (isDate(defDate)) {
-	            if (opts.setDefaultDate) {
-	                self.setDate(defDate, true);
-	            } else {
-	                self.gotoDate(defDate);
-	            }
-	        } else {
-	            self.gotoDate(new Date());
-	        }
-	
-	        if (opts.bound) {
-	            this.hide();
-	            self.el.className += ' is-bound';
-	            addEvent(opts.trigger, 'click', self._onInputClick);
-	            addEvent(opts.trigger, 'focus', self._onInputFocus);
-	            addEvent(opts.trigger, 'blur', self._onInputBlur);
-	        } else {
-	            this.show();
-	        }
-	    };
-	
-	
-	    /**
-	     * public Pikaday API
-	     */
-	    Pikaday.prototype = {
-	
-	
-	        /**
-	         * configure functionality
-	         */
-	        config: function(options)
-	        {
-	            if (!this._o) {
-	                this._o = extend({}, defaults, true);
-	            }
-	
-	            var opts = extend(this._o, options, true);
-	
-	            opts.isRTL = !!opts.isRTL;
-	
-	            opts.autoClose = !!opts.autoClose;
-	
-	            opts.field = (opts.field && opts.field.nodeName) ? opts.field : null;
-	
-	            opts.theme = (typeof opts.theme) === 'string' && opts.theme ? opts.theme : null;
-	
-	            opts.bound = !!(opts.bound !== undefined ? opts.field && opts.bound : opts.field);
-	
-	            opts.trigger = (opts.trigger && opts.trigger.nodeName) ? opts.trigger : opts.field;
-	
-	            opts.disableWeekends = !!opts.disableWeekends;
-	
-	            opts.disableDayFn = (typeof opts.disableDayFn) === 'function' ? opts.disableDayFn : null;
-	
-	            var nom = parseInt(opts.numberOfMonths, 10) || 1;
-	            opts.numberOfMonths = nom > 4 ? 4 : nom;
-	
-	            if (!isDate(opts.minDate)) {
-	                opts.minDate = false;
-	            }
-	            if (!isDate(opts.maxDate)) {
-	                opts.maxDate = false;
-	            }
-	            if ((opts.minDate && opts.maxDate) && opts.maxDate < opts.minDate) {
-	                opts.maxDate = opts.minDate = false;
-	            }
-	            if (opts.minDate) {
-	               this.setMinDate(opts.minDate);
-	            }
-	            if (opts.maxDate) {
-	                this.setMaxDate(opts.maxDate);
-	            }
-	
-	            if (isArray(opts.yearRange)) {
-	                var fallback = new Date().getFullYear() - 10;
-	                opts.yearRange[0] = parseInt(opts.yearRange[0], 10) || fallback;
-	                opts.yearRange[1] = parseInt(opts.yearRange[1], 10) || fallback;
-	            } else {
-	                opts.yearRange = Math.abs(parseInt(opts.yearRange, 10)) || defaults.yearRange;
-	                if (opts.yearRange > 100) {
-	                    opts.yearRange = 100;
-	                }
-	            }
-	
-	            // If no format is given, set based on showTime
-	            if (opts.format === null) {
-	                opts.format = 'YYYY-MM-DD';
-	                if (opts.showTime) {
-	                    opts.format += ' HH:mm:ss';
-	                }
-	            }
-	
-	            if(!opts.inputFormats) {
-	                opts.inputFormats = opts.format;
-	            }
-	
-	            return opts;
-	        },
-	
-	        /**
-	         * return a formatted string of the current selection (using Moment.js if available)
-	         */
-	        toString: function(format)
-	        {
-	            return !isDate(this._d) ? '' : hasMoment ? moment(this._d).format(format || this._o.format) : this._o.showTime ? this._d.toString() : this._d.toDateString();
-	        },
-	
-	        /**
-	         * return a Moment.js object of the current selection (if available)
-	         */
-	        getMoment: function()
-	        {
-	            return hasMoment ? moment(this._d) : null;
-	        },
-	
-	        /**
-	         * set the current selection from a Moment.js object (if available)
-	         */
-	        setMoment: function(date, preventOnSelect)
-	        {
-	            if (hasMoment && moment.isMoment(date)) {
-	                this.setDate(date.toDate(), preventOnSelect);
-	            }
-	        },
-	
-	        /**
-	         * return a Date object of the current selection
-	         */
-	        getDate: function()
-	        {
-	            return isDate(this._d) ? new Date(this._d.getTime()) : null;
-	        },
-	
-	        /**
-	         * set time components
-	         * Currently defaulting to setting date to today if not set
-	         */
-	        setTime: function(hours, minutes, seconds) {
-	            if (!this._d) {
-	                this._d = new Date();
-	                this._d.setHours(0,0,0,0);
-	            }
-	            if (hours) {
-	                this._d.setHours(hours);
-	            }
-	            if (minutes) {
-	                this._d.setMinutes(minutes);
-	            }
-	            if (seconds) {
-	                this._d.setSeconds(seconds);
-	            }
-	            this.setDate(this._d);
-	        },
-	
-	        /**
-	         * set the current selection
-	         */
-	        setDate: function(date, preventOnSelect)
-	        {
-	            if (!date) {
-	                this._d = null;
-	
-	                if (this._o.field) {
-	                    this._o.field.value = '';
-	                    fireEvent(this._o.field, 'change', { firedBy: this });
-	                }
-	
-	                return this.draw();
-	            }
-	            if (typeof date === 'string') {
-	                date = new Date(Date.parse(date));
-	            }
-	            if (!isDate(date)) {
-	                return;
-	            }
-	
-	            var min = this._o.minDate,
-	                max = this._o.maxDate;
-	
-	            if (isDate(min) && date < min) {
-	                date = min;
-	            } else if (isDate(max) && date > max) {
-	                date = max;
-	            }
-	
-	            this._d = new Date(date.getTime());
-	
-	            if (this._o.showTime && !this._o.showSeconds) {
-	                this._d.setSeconds(0);
-	            } else if (!this._o.showTime) {
-	                setToStartOfDay(this._d);
-	            }
-	
-	            this.gotoDate(this._d);
-	
-	            if (this._o.field) {
-	                this._o.field.value = this.toString();
-	                fireEvent(this._o.field, 'change', { firedBy: this });
-	            }
-	            if (!preventOnSelect && typeof this._o.onSelect === 'function') {
-	                this._o.onSelect.call(this, this.getDate());
-	            }
-	        },
-	
-	        /**
-	         * change view to a specific date
-	         */
-	        gotoDate: function(date)
-	        {
-	            var newCalendar = true;
-	
-	            if (!isDate(date)) {
-	                return;
-	            }
-	
-	            if (this.calendars) {
-	                var firstVisibleDate = new Date(this.calendars[0].year, this.calendars[0].month, 1),
-	                    lastVisibleDate = new Date(this.calendars[this.calendars.length-1].year, this.calendars[this.calendars.length-1].month, 1),
-	                    visibleDate = date.getTime();
-	                // get the end of the month
-	                lastVisibleDate.setMonth(lastVisibleDate.getMonth()+1);
-	                lastVisibleDate.setDate(lastVisibleDate.getDate()-1);
-	                newCalendar = (visibleDate < firstVisibleDate.getTime() || lastVisibleDate.getTime() < visibleDate);
-	            }
-	
-	            if (newCalendar) {
-	                this.calendars = [{
-	                    month: date.getMonth(),
-	                    year: date.getFullYear(),
-	                    hour: date.getHours(),
-	                    minute: date.getMinutes(),
-	                    second: date.getSeconds()
-	                }];
-	                if (this._o.mainCalendar === 'right') {
-	                    this.calendars[0].month += 1 - this._o.numberOfMonths;
-	                }
-	            }
-	
-	            this.adjustCalendars();
-	        },
-	
-	        adjustCalendars: function() {
-	            this.calendars[0] = adjustCalendar(this.calendars[0]);
-	            for (var c = 1; c < this._o.numberOfMonths; c++) {
-	                this.calendars[c] = adjustCalendar({
-	                    month: this.calendars[0].month + c,
-	                    year: this.calendars[0].year
-	                });
-	            }
-	            this.draw();
-	        },
-	
-	        gotoToday: function()
-	        {
-	            this.gotoDate(new Date());
-	        },
-	
-	        /**
-	         * change view to a specific month (zero-index, e.g. 0: January)
-	         */
-	        gotoMonth: function(month)
-	        {
-	            if (!isNaN(month)) {
-	                this.calendars[0].month = parseInt(month, 10);
-	                this.adjustCalendars();
-	            }
-	        },
-	
-	        nextMonth: function()
-	        {
-	            this.calendars[0].month++;
-	            this.adjustCalendars();
-	        },
-	
-	        prevMonth: function()
-	        {
-	            this.calendars[0].month--;
-	            this.adjustCalendars();
-	        },
-	
-	        /**
-	         * change view to a specific full year (e.g. "2012")
-	         */
-	        gotoYear: function(year)
-	        {
-	            if (!isNaN(year)) {
-	                this.calendars[0].year = parseInt(year, 10);
-	                this.adjustCalendars();
-	            }
-	        },
-	
-	        /**
-	         * change the minDate
-	         */
-	        setMinDate: function(value)
-	        {
-	            if (!this._o.showTime) setToStartOfDay(value);
-	            this._o.minDate = value;
-	            this._o.minYear  = value.getFullYear();
-	            this._o.minMonth = value.getMonth();
-	            this.draw();
-	        },
-	
-	        /**
-	         * change the maxDate
-	         */
-	        setMaxDate: function(value)
-	        {
-	            setToStartOfDay(value);
-	            this._o.maxDate = value;
-	            this._o.maxYear = value.getFullYear();
-	            this._o.maxMonth = value.getMonth();
-	            this.draw();
-	        },
-	
-	        setStartRange: function(value)
-	        {
-	            this._o.startRange = value;
-	        },
-	
-	        setEndRange: function(value)
-	        {
-	            this._o.endRange = value;
-	        },
-	
-	        /**
-	         * refresh the HTML
-	         */
-	        draw: function(force)
-	        {
-	            if (!this._v && !force) {
-	                return;
-	            }
-	            var opts = this._o,
-	                minYear = opts.minYear,
-	                maxYear = opts.maxYear,
-	                minMonth = opts.minMonth,
-	                maxMonth = opts.maxMonth,
-	                html = '';
-	
-	            if (this._y <= minYear) {
-	                this._y = minYear;
-	                if (!isNaN(minMonth) && this._m < minMonth) {
-	                    this._m = minMonth;
-	                }
-	            }
-	            if (this._y >= maxYear) {
-	                this._y = maxYear;
-	                if (!isNaN(maxMonth) && this._m > maxMonth) {
-	                    this._m = maxMonth;
-	                }
-	            }
-	
-	            for (var c = 0; c < opts.numberOfMonths; c++) {
-	                html += '<div class="pika-lendar">' + renderTitle(this, c, this.calendars[c].year, this.calendars[c].month, this.calendars[0].year) + this.render(this.calendars[c].year, this.calendars[c].month) + '</div>';
-	            }
-	
-	            if (opts.showTime) {
-	                html += '<div class="pika-time-container">' +
-	                        renderTime(
-	                            this._d ? this._d.getHours() : 0,
-	                            this._d ? this._d.getMinutes() : 0,
-	                            this._d ? this._d.getSeconds() : 0,
-	                            opts)
-	                    + '</div>';
-	            }
-	
-	            this.el.innerHTML = html;
-	
-	            if (opts.bound) {
-	                if(opts.field.type !== 'hidden') {
-	                    sto(function() {
-	                        opts.trigger.focus();
-	                    }, 1);
-	                }
-	            }
-	
-	            if (typeof this._o.onDraw === 'function') {
-	                var self = this;
-	                sto(function() {
-	                    self._o.onDraw.call(self);
-	                }, 0);
-	            }
-	        },
-	
-	        adjustPosition: function()
-	        {
-	            var field, pEl, width, height, viewportWidth, viewportHeight, scrollTop, left, top, clientRect;
-	
-	            if (this._o.container) return;
-	
-	            this.el.style.position = 'absolute';
-	
-	            field = this._o.trigger;
-	            pEl = field;
-	            width = this.el.offsetWidth;
-	            height = this.el.offsetHeight;
-	            viewportWidth = window.innerWidth || document.documentElement.clientWidth;
-	            viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-	            scrollTop = window.pageYOffset || document.body.scrollTop || document.documentElement.scrollTop;
-	
-	            if (typeof field.getBoundingClientRect === 'function') {
-	                clientRect = field.getBoundingClientRect();
-	                left = clientRect.left + window.pageXOffset;
-	                top = clientRect.bottom + window.pageYOffset;
-	            } else {
-	                left = pEl.offsetLeft;
-	                top  = pEl.offsetTop + pEl.offsetHeight;
-	                while((pEl = pEl.offsetParent)) {
-	                    left += pEl.offsetLeft;
-	                    top  += pEl.offsetTop;
-	                }
-	            }
-	
-	            // default position is bottom & left
-	            if ((this._o.reposition && left + width > viewportWidth) ||
-	                (
-	                    this._o.position.indexOf('right') > -1 &&
-	                    left - width + field.offsetWidth > 0
-	                )
-	            ) {
-	                left = left - width + field.offsetWidth;
-	            }
-	            if ((this._o.reposition && top + height > viewportHeight + scrollTop) ||
-	                (
-	                    this._o.position.indexOf('top') > -1 &&
-	                    top - height - field.offsetHeight > 0
-	                )
-	            ) {
-	                top = top - height - field.offsetHeight;
-	            }
-	
-	            this.el.style.left = left + 'px';
-	            this.el.style.top = top + 'px';
-	        },
-	
-	        /**
-	         * render HTML for a particular month
-	         */
-	        render: function(year, month)
-	        {
-	            var opts   = this._o,
-	                now    = new Date(),
-	                days   = getDaysInMonth(year, month),
-	                before = new Date(year, month, 1).getDay(),
-	                data   = [],
-	                row    = [];
-	            if (!opts.showTime) setToStartOfDay(now);
-	            if (opts.firstDay > 0) {
-	                before -= opts.firstDay;
-	                if (before < 0) {
-	                    before += 7;
-	                }
-	            }
-	            var previousMonth = month === 0 ? 11 : month - 1,
-	                nextMonth = month === 11 ? 0 : month + 1,
-	                yearOfPreviousMonth = month === 0 ? year - 1 : year,
-	                yearOfNextMonth = month === 11 ? year + 1 : year,
-	                daysInPreviousMonth = getDaysInMonth(yearOfPreviousMonth, previousMonth);
-	            var cells = days + before,
-	                after = cells;
-	            while(after > 7) {
-	                after -= 7;
-	            }
-	            cells += 7 - after;
-	
-	            // Ensure we only compare date portion when deciding to show a date in picker
-	            var minDate_date = opts.minDate ? new Date(opts.minDate.getFullYear(), opts.minDate.getMonth(), opts.minDate.getDate()) : null;
-	            var maxDate_date = opts.maxDate ? new Date(opts.maxDate.getFullYear(), opts.maxDate.getMonth(), opts.maxDate.getDate()) : null;
-	
-	            for (var i = 0, r = 0; i < cells; i++)
-	            {
-	                var day = new Date(year, month, 1 + (i - before)),
-	                    isSelected = isDate(this._d) ? compareDates(day, this._d) : false,
-	                    isToday = compareDates(day, now),
-	                    isEmpty = i < before || i >= (days + before),
-	                    dayNumber = 1 + (i - before),
-	                    monthNumber = month,
-	                    yearNumber = year,
-	                    isStartRange = opts.startRange && compareDates(opts.startRange, day),
-	                    isEndRange = opts.endRange && compareDates(opts.endRange, day),
-	                    isInRange = opts.startRange && opts.endRange && opts.startRange < day && day < opts.endRange,
-	                    isDisabled = (opts.minDate && day < opts.minDate) ||
-	                                 (opts.maxDate && day > opts.maxDate) ||
-	                                 (opts.disableWeekends && isWeekend(day)) ||
-	                                 (opts.disableDayFn && opts.disableDayFn(day));
-	
-	                if (isEmpty) {
-	                    if (i < before) {
-	                        dayNumber = daysInPreviousMonth + dayNumber;
-	                        monthNumber = previousMonth;
-	                        yearNumber = yearOfPreviousMonth;
-	                    } else {
-	                        dayNumber = dayNumber - days;
-	                        monthNumber = nextMonth;
-	                        yearNumber = yearOfNextMonth;
-	                    }
-	                }
-	
-	                var dayConfig = {
-	                        day: dayNumber,
-	                        month: monthNumber,
-	                        year: yearNumber,
-	                        isSelected: isSelected,
-	                        isToday: isToday,
-	                        isDisabled: isDisabled,
-	                        isEmpty: isEmpty,
-	                        isStartRange: isStartRange,
-	                        isEndRange: isEndRange,
-	                        isInRange: isInRange,
-	                        showDaysInNextAndPreviousMonths: opts.showDaysInNextAndPreviousMonths
-	                    };
-	
-	                row.push(renderDay(dayConfig));
-	
-	                if (++r === 7) {
-	                    if (opts.showWeekNumber) {
-	                        row.unshift(renderWeek(i - before, month, year));
-	                    }
-	                    data.push(renderRow(row, opts.isRTL));
-	                    row = [];
-	                    r = 0;
-	                }
-	            }
-	            return renderTable(opts, data);
-	        },
-	
-	        isVisible: function()
-	        {
-	            return this._v;
-	        },
-	
-	        show: function()
-	        {
-	            if (!this._v) {
-	                removeClass(this.el, 'is-hidden');
-	                this._v = true;
-	                this.draw();
-	                if (this._o.bound) {
-	                    addEvent(document, 'click', this._onClick);
-	                    this.adjustPosition();
-	                }
-	                if (typeof this._o.onOpen === 'function') {
-	                    this._o.onOpen.call(this);
-	                }
-	            }
-	        },
-	
-	        hide: function()
-	        {
-	            var v = this._v;
-	            if (v !== false) {
-	                if (this._o.bound) {
-	                    removeEvent(document, 'click', this._onClick);
-	                }
-	                this.el.style.position = 'static'; // reset
-	                this.el.style.left = 'auto';
-	                this.el.style.top = 'auto';
-	                addClass(this.el, 'is-hidden');
-	                this._v = false;
-	                if (v !== undefined && typeof this._o.onClose === 'function') {
-	                    this._o.onClose.call(this);
-	                }
-	            }
-	        },
-	
-	        /**
-	         * GAME OVER
-	         */
-	        destroy: function()
-	        {
-	            this.hide();
-	            removeEvent(this.el, 'mousedown', this._onMouseDown, true);
-	            removeEvent(this.el, 'touchend', this._onMouseDown, true);
-	            removeEvent(this.el, 'change', this._onChange);
-	            if (this._o.field) {
-	                removeEvent(this._o.field, 'change', this._onInputChange);
-	                if (this._o.bound) {
-	                    removeEvent(this._o.trigger, 'click', this._onInputClick);
-	                    removeEvent(this._o.trigger, 'focus', this._onInputFocus);
-	                    removeEvent(this._o.trigger, 'blur', this._onInputBlur);
-	                }
-	            }
-	            if (this.el.parentNode) {
-	                this.el.parentNode.removeChild(this.el);
-	            }
-	        }
-	
-	    };
-	
-	    return Pikaday;
-	
-	}));
-
 
 /***/ }
 /******/ ]);

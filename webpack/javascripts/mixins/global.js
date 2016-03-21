@@ -26,8 +26,8 @@ riot.mixin({
   },
   request: request,
   dot: new dot('.', true), // allow overrides!
-  serializeForm: function (form) {
-    return $(form).serializeJSON({parseAll: true})
+  serializeForm: function (form, options = {parseAll: true}) {
+    return $(form).serializeJSON(options)
   },
   errorHandler: function (xhr) {
     this.update({busy: false})
