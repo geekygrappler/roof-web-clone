@@ -35,6 +35,7 @@ import './_tender_section.tag'
       </div>
 
       <button if="{!currentAccount.isProfessional}" type="submit" class="btn btn-primary btn-big {busy: busy}">Save</button>
+      <a if="{currentAccount.isProfessional}" onclick="{cloneTender}" class="btn btn-primary btn-big {busy: busy}">Clone</a>
     </form>
   </div>
   <script>
@@ -95,6 +96,17 @@ import './_tender_section.tag'
     }
     this.updateRecord = (record) => {
       this.update({record: record})
+    }
+    this.cloneTender = (e) => {
+      e.preventDefault()
+      opts.api.quotes.create({
+        project_id: this.record.project_id,
+        tender_id: this.record.id,
+        professional_id: this.currentAccount.user_id
+      })
+      .then((quote) => {
+        riot.route(`/projects/${this.record.project_id}/quotes/${quote.id}`)
+      })
     }
 
     this.mixin('tenderMixin')
