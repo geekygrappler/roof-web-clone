@@ -3041,7 +3041,7 @@
 	    500: "Ops!, something went wrong at our end, try again later.",
 	    ASSET_ASSIGNMENT: "We got your brief, but unfortunately your files lost on the way to us",
 	    BLANK: "cannot be blank",
-	    CONFIRM_DELETE: "Are you sure to delete this file?",
+	    CONFIRM_DELETE: "Are you sure to delete?",
 	    CONFIRM_UNSAVED_CHANGES: "You have unsaved changes!"
 	  },
 	  init: function init() {
@@ -17495,13 +17495,13 @@
 	
 	__webpack_require__(126);
 	
-	__webpack_require__(135);
-	
-	__webpack_require__(142);
+	__webpack_require__(136);
 	
 	__webpack_require__(143);
 	
 	__webpack_require__(144);
+	
+	__webpack_require__(145);
 	
 	riot.tag2("r-app", "<yield from=\"header\"></yield> <div name=\"content\"></div>", "", "", function (opts) {
 	  var _this = this;
@@ -18307,11 +18307,11 @@
 	
 	__webpack_require__(131);
 	
-	__webpack_require__(148);
-	
 	__webpack_require__(132);
 	
 	__webpack_require__(134);
+	
+	__webpack_require__(135);
 	
 	riot.tag2("r-projects-show", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <div class=\"py3 px2\"> <div class=\"clearfix mxn2\"> <r-subnav links=\"{subnavLinks}\" tab=\"{opts.tab}\"></r-subnav> <div class=\"sm-col sm-col-9 sm-px2\"> <r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\" content_opts=\"{opts.contentOpts}\"></r-tabs> </div> </div> </div> </div>", "", "", function (opts) {
 	  this.subnavLinks = [{ href: "/app/projects/" + opts.id + "/overview", name: "overview", tag: "r-project-overview" }, { href: "/app/projects/" + opts.id + "/brief", name: "brief", tag: "r-project-brief" }, { href: "/app/projects/" + opts.id + "/docs", name: "docs", tag: "r-project-docs" }, { href: "/app/projects/" + opts.id + "/team", name: "team", tag: "r-project-team" }, { href: "/app/projects/" + opts.id + "/quotes", name: "quotes", tag: "r-project-quotes" }];
@@ -18456,78 +18456,68 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-project-team", "<h2 class=\"mt0\">Team</h2> <p>Here is the team of your project. You can arrange site visits with professionals here or invite other members such as family members or your own builders. </p> <ul class=\"list-reset clearfix mxn1\"> <li each=\"{project.customers}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-lime navy right mt2\">Customer</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> </p> </div> </li> <li each=\"{project.professionals}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-aqua blue white right mt2\">Professional</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> <div if=\"{profile.website}\"><i class=\"fa fa-world\"></i>{profile.website}</div> </p> </div> </li> <li each=\"{project.administrators}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Admin</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> </p> </div> </li> </ul> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-6 px1 mb2\"> <form name=\"form\" class=\"sm-col-12 px2 border\" onsubmit=\"{submit}\"> <h3><i class=\"fa fa-paper-plane-o\"></i> Invite a new member</h3> <div class=\"clearfix\"> <label class=\"inline-block col col-6 mb2 truncate\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Customer\">Customer </label> <label class=\"inline-block col col-6 mb2 truncate\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Professional\">Professional </label> </div> <span class=\"inline-error block\" if=\"{errors['invitee_attributes.user_type']}\">{errors['invitee_attributes.user_type']}</span> <input name=\"invitee_attributes[email]\" class=\"col-12 mb2 field\" placeholder=\"Email\" type=\"email\"> <span class=\"inline-error\" if=\"{errors['invitee_attributes.email']}\">{errors['invitee_attributes.email']}</span> <input type=\"hidden\" name=\"inviter_id\" value=\"{opts.api.currentAccount.id}\"> <input type=\"hidden\" name=\"project_id\" value=\"{opts.id}\"> <div class=\"right-align\"> <button type=\"submit\" class=\"btn btn-primary mb2 {busy: busy}\">Invite</button> </div> </form> </div> <div class=\"sm-col sm-col-6 px1 mb2\"> <div class=\"sm-col-12 px2 border\"> <h3><i class=\"fa fa-calendar-o\"></i> Appointments</h3> <a class=\"h6 btn btn-small btn-primary mb2\" onclick=\"{openAppointmentModal}\"><i class=\"fa fa-calendar-check-o\"></i> Arrange Appointment</a> <dl each=\"{appointments}\" class=\"{gray: new Date(time) < new Date()}\"> <dt class=\"left\"> <i class=\"fa fa-{'thumbs-o-up': new Date(time) < new Date(), 'hand-o-right': new Date(time) >= new Date()}\"></i> </dt> <dd> <h4>At {formatTime(time)}</h4> <div><strong>Host:</strong> {host.profile.first_name} {host.profile.last_name}</div> <div><strong>Attendant:</strong> {attendant.profile.first_name} {attendant.profile.last_name}</div> <a if=\"{new Date(time) >= new Date()}\" class=\"btn btn-small h6 bg-maroon white mt1\" onclick=\"{cancelAppointment}\"><i class=\"fa fa-ban\"></i> Cancel</a> </dd> </dl> </div> </div> </div>", "", "", function (opts) {
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+	
+	var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
+	
+	var Pikaday = _interopRequire(__webpack_require__(133));
+	
+	riot.tag2("r-appointment-form", "<h2 class=\"center mt0 mb2\">Arrange an Appointment</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/appointments\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <input type=\"hidden\" name=\"host_id\" value=\"{record.host_id}\"> <input type=\"hidden\" name=\"host_type\" value=\"{record.host_type}\"> <input type=\"hidden\" name=\"attendant_id\" value=\"{record.attendant_id}\"> <input type=\"hidden\" name=\"attendant_type\" value=\"{record.attendant_type}\"> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"time\" value=\"{record.time}\" placeholder=\"Time\"> <span if=\"{errors['time']}\" class=\"inline-error\">{errors['time']}</span> <textarea class=\"block col-12 mb2 field\" type=\"text\" name=\"description\" placeholder=\"Description\">{record.description}</textarea> <span if=\"{errors['description']}\" class=\"inline-error\">{errors['description']}</span> <virtual if=\"{currentAccount.isAdministrator}\"> <label for=\"host_id\">Host</label> <select class=\"block col-12 mb2 field\" onchange=\"{setHost}\"> <option></option> <option each=\"{opts.project.customers}\" value=\"{user_id}:{user_type}\" __selected=\"{record.host_id == user_id && record.host_type == user_type}\">{profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors['host']}\" class=\"inline-error\">{errors['host']}</span> <span if=\"{errors['host_id']}\" class=\"inline-error\">{errors['host_id']}</span> <span if=\"{errors['host_type']}\" class=\"inline-error\">{errors['host_type']}</span> </virtual> <label for=\"host_id\">Attendand</label> <select class=\"block col-12 mb2 field\" onchange=\"{setAttendant}\"> <option></option> <option each=\"{opts.project.professionals}\" value=\"{user_id}:{user_type}\" __selected=\"{record.attendant_id == user_id && record.attendant_type == user_type}\">{profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors['attendant']}\" class=\"inline-error\">{errors['attendant']}</span> <span if=\"{errors['attendant_id']}\" class=\"inline-error\">{errors['attendant_id']}</span> <span if=\"{errors['attendant_type']}\" class=\"inline-error\">{errors['attendant_type']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Schedule</button> </form>", "", "", function (opts) {
 	  var _this = this;
 	
-	  this.mixin("projectTab");
-	
 	  this.on("mount", function () {
-	    opts.api.appointments.on("create.success", _this.addAppointment);
-	    opts.api.appointments.on("delete.success", _this.removeAppointment);
+	    var picker = new Pikaday({
+	      field: _this.time,
+	      onSelect: function (date) {
+	        _this.record.time = picker.toString();
+	        _this.update();
+	      }
+	    });
 	  });
-	  this.on("unmount", function () {
-	    opts.api.appointments.off("create.success", _this.addAppointment);
-	    opts.api.appointments.off("delete.success", _this.removeAppointment);
-	  });
+	  this.record = {
+	    project_id: opts.project.id,
+	    host_id: this.currentAccount.user_id,
+	    host_type: this.currentAccount.user_type };
+	  this.setHost = function (e) {
+	    var _e$target$value$split = e.target.value.split(":");
 	
-	  this.on("update", function () {
-	    if (_this.project) {
-	      _this.loadResources("appointments", { project_id: _this.project.id });
-	    }
-	  });
+	    var _e$target$value$split2 = _slicedToArray(_e$target$value$split, 2);
 	
-	  this.getName = function () {
-	    return this.id !== this.currentAccount.id ? this.fullName() : "You";
+	    var id = _e$target$value$split2[0];
+	    var type = _e$target$value$split2[1];
+	
+	    _this.record.host_id = id;
+	    _this.record.host_type = type;
+	    _this.update();
 	  };
-	  this.fullName = function () {
-	    return "" + this.profile.first_name + " " + this.profile.last_name;
-	  };
+	  this.setAttendant = function (e) {
+	    var _e$target$value$split = e.target.value.split(":");
 	
+	    var _e$target$value$split2 = _slicedToArray(_e$target$value$split, 2);
+	
+	    var id = _e$target$value$split2[0];
+	    var type = _e$target$value$split2[1];
+	
+	    _this.record.attendant_id = id;
+	    _this.record.attendant_type = type;
+	    _this.update();
+	  };
 	  this.submit = function (e) {
-	
 	    e.preventDefault();
 	
 	    var data = _this.serializeForm(_this.form);
 	
-	    if (_.isEmpty(data)) {
+	    if (_.isEmpty(data) || _.isEmpty(data.time)) {
 	      $(_this.form).animateCss("shake");
 	      return;
 	    }
 	
 	    _this.update({ busy: true, errors: null });
 	
-	    _this.opts.api.invitations.invite(data).fail(_this.errorHandler).then(function (invitation) {
-	      _this.update({ busy: false });
-	      _this.form.reset();
+	    _this.opts.api.appointments.create(data).fail(_this.errorHandler).then(function (record) {
+	      _this.update({ record: record, busy: false });
+	      $(_this.form).html("You appoingment has been scheduled");
 	    });
-	  };
-	
-	  this.openAppointmentModal = function (e) {
-	    e.preventDefault();
-	    riot.mount("r-modal", {
-	      content: "r-appointment-form",
-	      persisted: false,
-	      api: opts.api,
-	      contentOpts: { api: opts.api, project: _this.project }
-	    });
-	  };
-	  this.cancelAppointment = function (e) {
-	    e.preventDefault();
-	    opts.api.appointments["delete"](e.item.id).fail(_this.errorHandler);
-	  };
-	  this.addAppointment = function (record) {
-	    var _id = _.findIndex(_this.appointments, { id: record.id });
-	    if (_id === -1) {
-	      _this.appointments.push(record);
-	      _this.update();
-	    }
-	  };
-	  this.removeAppointment = function (id) {
-	    var _id = _.findIndex(_this.appointments, { id: id });
-	    if (_id > -1) {
-	      _this.appointments.splice(_id, 1);
-	      _this.update();
-	    }
 	  };
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
@@ -19807,7 +19797,143 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <p if=\"{hasNothing()}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <div if=\"{hasNothing() && currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{hasNothing() && currentAccount.isCustomer}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> <div if=\"{hasNothing() && currentAccount.isAdministrator}\" class=\"mt2\"> <a class=\"btn btn-primary mr1\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isCustomer}\"> Here is your <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Actual <strong>quotes</strong> from Professionals will appear here when they submit them. </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isProfessional}\"> Here is the the <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Click <strong>Clone</strong> button to get your copy and work on it. </p> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Tender</span> <p class=\"overflow-hidden m0 mxn2 p1 border-top\"> <a class=\"btn btn-small\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Open</a> <a class=\"btn btn-small btn-primary\" if=\"{currentAccount.isProfessional && (quotes && quotes.length == 0)}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span if=\"{accepted_at}\" class=\"inline-block align-middle h6 mb1 px1 border bg-lime navy pill right mt2\">Accepted</span> <span if=\"{!accepted_at && submitted_at}\" class=\"inline-block align-middle h6 mb1 px1 border pill mr1\">Submitted</span> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2 mr1\">Quote</span> <span class=\"italic mt2 mr1\">by {professional.profile.first_name} {professional.profile.last_name}</span> <div class=\"clearfix overflow-hidden m0 mxn2 p1 {'bg-lime': accepted_at, 'bg-yellow': (submitted_at && !accepted_at), 'bg-gray white': (!submitted_at && !accepted_at)}\"> <span if=\"{!accepted_at && submitted_at}\"><i class=\"fa fa-clock-o mr1\"></i>submitted at: {fromNow(submitted_at)}</i></span> <span if=\"{accepted_at}\"><i class=\"fa fa-clock-o mr1\"></i>accepted at: {fromNow(accepted_at)}</i></span> <div class=\"mt1\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Open</a> <a class=\"btn btn-small bg-darken-2\" if=\"{currentAccount.isProfessional && !accepted_at}\" onclick=\"{delete}\">Delete</a> </div> </div> </div> </li> </ul>", "", "", function (opts) {
+	riot.tag2("r-project-team", "<h2 class=\"mt0\">Team</h2> <p>Here is the team of your project. You can arrange site visits with professionals here or invite other members such as family members or your own builders. </p> <ul class=\"list-reset clearfix mxn1\"> <li each=\"{project.customers}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-lime navy right mt2\">Customer</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> </p> </div> </li> <li each=\"{project.professionals}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-aqua blue white right mt2\">Professional</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> <div if=\"{profile.website}\"><i class=\"fa fa-world\"></i>{profile.website}</div> </p> </div> </li> <li each=\"{project.administrators}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Admin</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> </p> </div> </li> </ul> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-6 px1 mb2\"> <form name=\"form\" class=\"sm-col-12 px2 border\" onsubmit=\"{submit}\"> <h3><i class=\"fa fa-paper-plane-o\"></i> Invite a new member</h3> <div class=\"clearfix\"> <label class=\"inline-block col col-6 mb2 truncate\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Customer\">Customer </label> <label class=\"inline-block col col-6 mb2 truncate\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Professional\">Professional </label> </div> <span class=\"inline-error block\" if=\"{errors['invitee_attributes.user_type']}\">{errors['invitee_attributes.user_type']}</span> <input name=\"invitee_attributes[email]\" class=\"col-12 mb2 field\" placeholder=\"Email\" type=\"email\"> <span class=\"inline-error\" if=\"{errors['invitee_attributes.email']}\">{errors['invitee_attributes.email']}</span> <input type=\"hidden\" name=\"inviter_id\" value=\"{opts.api.currentAccount.id}\"> <input type=\"hidden\" name=\"project_id\" value=\"{opts.id}\"> <div class=\"right-align\"> <button type=\"submit\" class=\"btn btn-primary mb2 {busy: busy}\">Invite</button> </div> </form> </div> <div class=\"sm-col sm-col-6 px1 mb2\"> <div class=\"sm-col-12 px2 border\"> <h3><i class=\"fa fa-calendar-o\"></i> Appointments</h3> <a class=\"h6 btn btn-small btn-primary mb2\" onclick=\"{openAppointmentModal}\"><i class=\"fa fa-calendar-check-o\"></i> Arrange Appointment</a> <dl each=\"{appointments}\" class=\"{gray: new Date(time) < new Date()}\"> <dt class=\"left\"> <i class=\"fa fa-{'thumbs-o-up': new Date(time) < new Date(), 'hand-o-right': new Date(time) >= new Date()}\"></i> </dt> <dd> <h4>At {formatTime(time)}</h4> <div><strong>Host:</strong> {host.profile.first_name} {host.profile.last_name}</div> <div><strong>Attendant:</strong> {attendant.profile.first_name} {attendant.profile.last_name}</div> <a if=\"{new Date(time) >= new Date()}\" class=\"btn btn-small h6 bg-maroon white mt1\" onclick=\"{cancelAppointment}\"><i class=\"fa fa-ban\"></i> Cancel</a> </dd> </dl> </div> </div> </div>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.mixin("projectTab");
+	
+	  this.on("mount", function () {
+	    opts.api.appointments.on("create.success", _this.addAppointment);
+	    opts.api.appointments.on("delete.success", _this.removeAppointment);
+	  });
+	  this.on("unmount", function () {
+	    opts.api.appointments.off("create.success", _this.addAppointment);
+	    opts.api.appointments.off("delete.success", _this.removeAppointment);
+	  });
+	
+	  this.on("update", function () {
+	    if (_this.project) {
+	      _this.loadResources("appointments", { project_id: _this.project.id });
+	    }
+	  });
+	
+	  this.getName = function () {
+	    return this.id !== this.currentAccount.id ? this.fullName() : "You";
+	  };
+	  this.fullName = function () {
+	    return "" + this.profile.first_name + " " + this.profile.last_name;
+	  };
+	
+	  this.submit = function (e) {
+	
+	    e.preventDefault();
+	
+	    var data = _this.serializeForm(_this.form);
+	
+	    if (_.isEmpty(data)) {
+	      $(_this.form).animateCss("shake");
+	      return;
+	    }
+	
+	    _this.update({ busy: true, errors: null });
+	
+	    _this.opts.api.invitations.invite(data).fail(_this.errorHandler).then(function (invitation) {
+	      _this.update({ busy: false });
+	      _this.form.reset();
+	    });
+	  };
+	
+	  this.openAppointmentModal = function (e) {
+	    e.preventDefault();
+	    riot.mount("r-modal", {
+	      content: "r-appointment-form",
+	      persisted: false,
+	      api: opts.api,
+	      contentOpts: { api: opts.api, project: _this.project }
+	    });
+	  };
+	  this.cancelAppointment = function (e) {
+	    e.preventDefault();
+	    opts.api.appointments["delete"](e.item.id).fail(_this.errorHandler);
+	  };
+	  this.addAppointment = function (record) {
+	    var _id = _.findIndex(_this.appointments, { id: record.id });
+	    if (_id === -1) {
+	      _this.appointments.push(record);
+	      _this.update();
+	    }
+	  };
+	  this.removeAppointment = function (id) {
+	    var _id = _.findIndex(_this.appointments, { id: id });
+	    if (_id > -1) {
+	      _this.appointments.splice(_id, 1);
+	      _this.update();
+	    }
+	  };
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 135 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+	
+	var Pikaday = _interopRequire(__webpack_require__(133));
+	
+	riot.tag2("r-payment-form", "<h2 class=\"center mt0 mb2\">Payment Form</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/payments\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <input type=\"hidden\" name=\"quote_id\" value=\"{record.quote_id}\"> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <input class=\"block col-12 mb2 field\" name=\"amount\" value=\"{record.amount}\" placeholder=\"Amount\" type=\"{'number'}\"> <span if=\"{errors['amount']}\" class=\"inline-error\">{errors['amount']}</span> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"due_date\" value=\"{record.due_date}\" placeholder=\"Due Date\"> <span if=\"{errors['due_date']}\" class=\"inline-error\">{errors['due_date']}</span> <textarea class=\"block col-12 mb2 field\" type=\"text\" name=\"description\" placeholder=\"Description\">{record.description}</textarea> <span if=\"{errors['description']}\" class=\"inline-error\">{errors['description']}</span> <div if=\"{errors}\" id=\"error_explanation\"> <ul> <li each=\"{field, messages in errors}\">{field.humanize()} {messages.join(',')}</li> </ul> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Create</button> </form>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.on("mount", function () {
+	    var picker = new Pikaday({
+	      showTime: false,
+	      field: _this.due_date,
+	      onSelect: function (date) {
+	        _this.record.due_date = picker.toString();
+	        _this.update();
+	      }
+	    });
+	  });
+	
+	  this.updateRecord = function (record) {
+	    _this.update({ record: record });
+	  };
+	
+	  if (!this.opts.id) {
+	    this.record = {
+	      project_id: opts.quote.project_id,
+	      quote_id: opts.quote.id,
+	      professional_id: this.currentAccount.user_id };
+	  } else {
+	    this.opts.api.payments.show(this.opts.id).fail(this.errorHandler).then(this.updateRecord);
+	  }
+	
+	  this.submit = function (e) {
+	    e.preventDefault();
+	
+	    var data = _this.serializeForm(_this.form);
+	
+	    if (_.isEmpty(data) || _.isEmpty(data.due_date)) {
+	      $(_this.form).animateCss("shake");
+	      return;
+	    }
+	
+	    _this.update({ busy: true, errors: null });
+	
+	    if (_this.opts.id) {
+	      _this.opts.api.payments.update(opts.id, data).fail(_this.errorHandler).then(_this.updateReset);
+	    } else {
+	      _this.opts.api.payments.create(data).fail(_this.errorHandler).then(function (record) {
+	        _this.updateReset();
+	        _this.opts.id = record.id;
+	      });
+	    }
+	  };
+	});
+	
+	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <p if=\"{hasNothing()}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <div if=\"{hasNothing() && currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{hasNothing() && currentAccount.isCustomer}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> <div if=\"{hasNothing() && currentAccount.isAdministrator}\" class=\"mt2\"> <a class=\"btn btn-primary mr1\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isCustomer}\"> Here is your <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Actual <strong>quotes</strong> from Professionals will appear here when they submit them. </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isProfessional}\"> Here is the the <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Click <strong>Clone</strong> button to get your copy and work on it. </p> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Tender</span> <p class=\"overflow-hidden m0 mxn2 p1 border-top\"> <a class=\"btn btn-small\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Open</a> <a class=\"btn btn-small btn-primary\" if=\"{currentAccount.isProfessional && (quotes && quotes.length == 0)}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span if=\"{accepted_at}\" class=\"inline-block align-middle h6 mb1 px1 border bg-lime navy pill right mt2\">Accepted</span> <span if=\"{!accepted_at && submitted_at}\" class=\"inline-block align-middle h6 mb1 px1 border pill mr1\">Submitted</span> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2 mr1\">Quote</span> <span class=\"italic mt2 mr1\">by {professional.profile.first_name} {professional.profile.last_name}</span> <div class=\"clearfix overflow-hidden m0 mxn2 p1 {'bg-lime': accepted_at, 'bg-yellow': (submitted_at && !accepted_at), 'bg-gray white': (!submitted_at && !accepted_at)}\"> <span if=\"{!accepted_at && submitted_at}\"><i class=\"fa fa-clock-o mr1\"></i>submitted at: {fromNow(submitted_at)}</i></span> <span if=\"{accepted_at}\"><i class=\"fa fa-clock-o mr1\"></i>accepted at: {fromNow(accepted_at)}</i></span> <div class=\"mt1\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Open</a> <a class=\"btn btn-small bg-darken-2\" if=\"{currentAccount.isProfessional && !accepted_at}\" onclick=\"{delete}\">Delete</a> <a class=\"btn btn-small bg-darken-2\" if=\"{currentAccount.isProfessional}\" onclick=\"{addPayment}\">Add Payment</a> </div> </div> </div> </li> </ul>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.hasNothing = function () {
@@ -19864,25 +19990,35 @@
 	    }
 	  };
 	
+	  this.addPayment = function (e) {
+	    e.preventDefault();
+	    riot.mount("r-modal", {
+	      content: "r-payment-form",
+	      persisted: false,
+	      api: opts.api,
+	      contentOpts: { api: opts.api, quote: e.item }
+	    });
+	  };
+	
 	  this.mixin("projectTab");
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 135 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(136);
-	
 	__webpack_require__(137);
 	
-	__webpack_require__(139);
+	__webpack_require__(138);
 	
 	__webpack_require__(140);
 	
 	__webpack_require__(141);
+	
+	__webpack_require__(142);
 	
 	riot.tag2("r-tenders-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1><a class=\"btn btn-small h6 btn-outline orange\" href=\"/app/projects/{project.id}\"><i class=\"fa fa-chevron-left\"></i> Back to Project</a> {opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Tender ' + opts.id : 'New Tender'}</h1> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{!currentAccount.isProfessional}\" type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{currentAccount.isProfessional}\" onclick=\"{cloneTender}\" class=\"btn btn-primary btn-big {busy: busy}\">Clone</a> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -19960,7 +20096,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 136 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -20069,14 +20205,14 @@
 	// $('[name=searchable_names]').last()[0].focus()
 
 /***/ },
-/* 137 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 	
-	var Handlebars = _interopRequire(__webpack_require__(138));
+	var Handlebars = _interopRequire(__webpack_require__(139));
 	
 	riot.tag2("r-tender-item-input", "<div class=\"relative\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Strart typing to add {modelName}\" autocomplete=\"off\"> </form> <i class=\"fa fa-plus absolute right-0 top-0 p1\"></i> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -20151,7 +20287,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 138 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*!
@@ -24764,7 +24900,7 @@
 	;
 
 /***/ },
-/* 139 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -24799,7 +24935,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 140 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -24848,7 +24984,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 141 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -24920,12 +25056,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 142 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(136);
+	__webpack_require__(137);
 	
 	riot.tag2("r-quotes-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1><a class=\"btn btn-small h6 btn-outline orange\" href=\"/app/projects/{record.project_id}\"><i class=\"fa fa-chevron-left\"></i> Back to Project</a> {opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Quote ' + opts.id : 'New Quote'}</h1> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{opts.id && !currentAccount.isProfessional}\" class=\"btn btn-primary btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </button> <virtual if=\"{!opts.readonly && !currentAccount.isCustomer}\"> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{opts.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> </virtual> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -25004,7 +25140,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 143 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -25015,41 +25151,71 @@
 	
 	riot.tag2("r-settings-notifications", "<h2 class=\"mt0\">Notifications</h2>", "", "", function (opts) {});
 	
-	riot.tag2("r-settings-account", "<h2 class=\"mt0\">Account</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <virtual if=\"{needsLegalEntity()}\"> <h3>Legal Entity</h3> <label>Date of birth *</label> <div class=\"clearfix\"> <div class=\"sm-col sm-col-4\"> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][legal_entity][dob][day]\" value=\"{record.stripe_account.object.legal_entity.dob.day}\" placeholder=\"Day\"> <span if=\"{errors['stripe_account.updates.legal_entity.dob.day']}\" class=\"inline-error\"> {errors['stripe_account.updates.legal_entity.dob.day']} </span> </div> <div class=\"sm-col sm-col-4\"> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][legal_entity][dob][month]\" value=\"{record.stripe_account.object.legal_entity.dob.month}\" placeholder=\"Month\"> <span if=\"{errors['stripe_account.updates.legal_entity.dob.month']}\" class=\"inline-error\"> {errors['stripe_account.updates.legal_entity.dob.month']} </span> </div> <div class=\"sm-col sm-col-4\"> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][legal_entity][dob][year]\" value=\"{record.stripe_account.object.legal_entity.dob.year}\" placeholder=\"Year\"> <span if=\"{errors['stripe_account.updates.legal_entity.dob.year']}\" class=\"inline-error\"> {errors['stripe_account.updates.legal_entity.dob.year']} </span> </div> </div> <label>Type *</label> <select class=\"block col-12 mb2 field\" name=\"stripe_account[updates][legal_entity][type]\"> <option></option> <option value=\"individual\" __selected=\"{this.dot.pick('legal_entity.type', record.stripe_account.object) == 'individual'}\">Individual</option> <option value=\"company\" __selected=\"{this.dot.pick('legal_entity.type', record.stripe_account.object) == 'company'}\">Company</option> </select> <label>First Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][legal_entity][first_name]\" value=\"{record.stripe_account.object.legal_entity.first_name}\"> <label>Last Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][legal_entity][last_name]\" value=\"{record.stripe_account.object.legal_entity.last_name}\"> </virtual> <virtual if=\"{needsBankAccount()}\"> <h3>Bank Account</h3> <input type=\"hidden\" name=\"stripe_account[updates][external_account][object]\" value=\"bank_account\"> <input type=\"hidden\" name=\"stripe_account[updates][external_account][country]\" value=\"GB\"> <input type=\"hidden\" name=\"stripe_account[updates][external_account][currency]\" value=\"gbp\"> <label>Account Number *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][external_account][account_number]\" value=\"{record.stripe_account.object.external_account.account_number}\"> <label>Sort Code *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][external_account][routing_number]\" value=\"{record.stripe_account.object.external_account.routing_number}\"> <label>Account Holder Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][external_account][account_holder_name]\" value=\"{record.stripe_account.object.external_account.account_holder_name}\"> <label>Account Holder Type</label> <select class=\"block col-12 mb2 field\" name=\"stripe_account[updates][external_account][account_holder_type]\"> <option></option> <option value=\"individual\" __selected=\"{this.dot.pick('external_account.account_holder_type', record.stripe_account.object) == 'individual'}\">Individual</option> <option value=\"company\" __selected=\"{this.dot.pick('external_account.account_holder_type', record.stripe_account.object) == 'company'}\">Company</option> </select> </virtual> <virtual if=\"{needsIdDocument()}\"> <label>Clear photo or scan of your ID *</label> <input type=\"file\" name=\"stripe_account[updates][legal_entity][verification][document]\"> </virtual> <div if=\"{!_.isEmpty(errors)}\" id=\"error_explanation\"> <ul> <li each=\"{field, messages in errors}\">{field.humanize()} {messages.join(', ')}</li> </ul> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
+	riot.tag2("r-settings-account", "<h2 class=\"mt0\">Account</h2> <p class=\"bg-green white p1\" if=\"{fieldsComplete()}\"> Congrats! Your account is verified and you can receive your payments. </p> <form if=\"{record}\" name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <virtual if=\"{fieldsNeeded('business_logo')}\"> <label>Business Logo</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.business_logo}\" name=\"stripe_account[updates][business_logo]\"> </virtual> <virtual if=\"{fieldsNeeded('business_name')}\"> <label>Business Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.business_name}\" name=\"stripe_account[updates][business_name]\"> </virtual> <virtual if=\"{fieldsNeeded('business_primary_color')}\"> <label>Business Primary Color</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.business_primary_color}\" name=\"stripe_account[updates][business_primary_color]\"> </virtual> <virtual if=\"{fieldsNeeded('business_url')}\"> <label>Business URL</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.business_url}\" name=\"stripe_account[updates][business_url]\"> </virtual> <virtual if=\"{fieldsNeeded('debit_negative_balances')}\"> <label>Debit Negative Balances</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.debit_negative_balances}\" name=\"stripe_account[updates][debit_negative_balances]\"> </virtual> <virtual if=\"{fieldsNeeded('default_currency')}\"> <label>Default Currency</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.default_currency}\" name=\"stripe_account[updates][default_currency]\"> </virtual> <virtual if=\"{fieldsNeeded('email')}\"> <label>Email</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.email}\" name=\"stripe_account[updates][email]\"> </virtual> <fieldset if=\"{fieldsNeeded('decline_charge_on')}\"> <legend>Decline Charge On</legend> <label>Avs Failure</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.decline_charge_on.avs_failure}\" name=\"stripe_account[updates][decline_charge_on][avs_failure]\"> <label>Avs Failure</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.decline_charge_on.cvc_failure}\" name=\"stripe_account[updates][decline_charge_on][cvc_failure]\"> </fieldset> <fieldset class=\"mb2 p1 border\"> <legend><h3>Bank Account</h3></legend> <p if=\"{record.stripe_account.object.external_accounts.total_count > 0}\" class=\"bg-orange white p1\"> You have already registered your bank account with us. You can change the details but this will trigger verification process again. <br> <a class=\"btn btn-primary\" onclick=\"{letBankAccountChange}\">OK, got it. Let me change my account details</a> </p> <virtual if=\"{bankAccountWillChange || fieldsNeeded('bank')}\"> <label class=\"display-none\">Object</label> <input class=\"block col-12 mb2 field\" type=\"hidden\" value=\"bank_account\" name=\"stripe_account[updates][external_account][object]\"> <label>Account Number *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][external_account][account_number]\"> <label>Country *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"GB\" name=\"stripe_account[updates][external_account][country]\"> <label>Currency *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"gbp\" name=\"stripe_account[updates][external_account][currency]\"> <label>Account Holder Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][external_account][account_holder_name]\"> <label>Account Holder Type *</label> <select class=\"block col-12 mb2 field\" name=\"stripe_account[updates][external_account][account_holder_type]\"> <option></option> <option value=\"individual\">Individual</option> <option value=\"company\">Company</option> </select> <label>Account Sort Code *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][external_account][routing_number]\"> <a if=\"{!fieldsNeeded('bank')}\" class=\"btn btn-primary\" onclick=\"{cancelBankAccountChange}\">Cancel</a> </virtual> </fieldset> <fieldset class=\"mb2 p1 border\" if=\"{fieldsNeeded('legal_entity')}\"> <legend><h3>Legal Entity</h3></legend> <virtual if=\"{fieldsNeeded('legal_entity.type')}\"> <label>Type *</label> <select class=\"block col-12 mb2 field\" name=\"stripe_account[updates][legal_entity][type]\"> <option></option> <option value=\"individual\" __selected=\"{record.stripe_account.object.legal_entity.type === 'individual'}\">Individual</option> <option value=\"company\" __selected=\"{record.stripe_account.object.legal_entity.type === 'company'}\">Company</option> </select> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.first_name')}\"> <label>First Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.first_name}\" name=\"stripe_account[updates][legal_entity][first_name]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.last_name')}\"> <label>Last Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.last_name}\" name=\"stripe_account[updates][legal_entity][last_name]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.gender')}\"> <label>Gender</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.gender}\" name=\"stripe_account[updates][legal_entity][gender]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.maiden_name')}\"> <label>Maiden Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.maiden_name}\" name=\"stripe_account[updates][legal_entity][maiden_name]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.dob')}\"> <label>Date of Birth</label> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-4 px1\"> <label>Day *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.dob.day}\" name=\"stripe_account[updates][legal_entity][dob][day]\"> </div> <div class=\"sm-col sm-col-4 px1\"> <label>Month *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.dob.month}\" name=\"stripe_account[updates][legal_entity][dob][month]\"> </div> <div class=\"sm-col sm-col-4 px1\"> <label>Year *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.dob.year}\" name=\"stripe_account[updates][legal_entity][dob][year]\"> </div> </div> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.phone_number')}\"> <label>Phone Number *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.phone_number}\" name=\"stripe_account[updates][legal_entity][phone_number]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.personal_id_number')}\"> <label>Personal ID Number *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_id_number}\" name=\"stripe_account[updates][legal_entity][personal_id_number]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.business_name')}\"> <label>Business Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.business_name}\" name=\"stripe_account[updates][legal_entity][business_name]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.business_tax_id')}\"> <label>Business Tax ID</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.business_tax_id}\" name=\"stripe_account[updates][legal_entity][business_tax_id]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.business_vat_id')}\"> <label>Business VAT ID</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.business_vat_id}\" name=\"stripe_account[updates][legal_entity][business_vat_id]\"> </virtual> <fieldset class=\"mb2 p1 border\" if=\"{fieldsNeeded('legal_entity.address')}\"> <legend><h4>Address</h4></legend> <label>Line1 *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.address.line1}\" name=\"stripe_account[updates][legal_entity][address][line1]\"> <label>Line2</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.address.line2}\" name=\"stripe_account[updates][legal_entity][address][line2]\"> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-3 px1\"> <label>City *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.address.city}\" name=\"stripe_account[updates][legal_entity][address][city]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>Country *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.address.country}\" name=\"stripe_account[updates][legal_entity][address][country]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>Postcode *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.address.postal_code}\" name=\"stripe_account[updates][legal_entity][address][postal_code]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>State *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.address.state}\" name=\"stripe_account[updates][legal_entity][address][state]\"> </div> </div> </fieldset> <fieldset class=\"mb2 p1 border\" if=\"{fieldsNeeded('legal_entity.personal_address')}\"> <legend><h4>Personal Address</h4></legend> <label>Line1 *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_address.line1}\" name=\"stripe_account[updates][legal_entity][personal_address][line1]\"> <label>Line2</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_address.line2}\" name=\"stripe_account[updates][legal_entity][personal_address][line2]\"> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-3 px1\"> <label>City *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_address.city}\" name=\"stripe_account[updates][legal_entity][personal_address][city]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>Country *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_address.country}\" name=\"stripe_account[updates][legal_entity][personal_address][country]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>Postcode *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_address.postal_code}\" name=\"stripe_account[updates][legal_entity][personal_address][postal_code]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>State *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_address.state}\" name=\"stripe_account[updates][legal_entity][personal_address][state]\"> </div> </div> </fieldset> <fieldset class=\"mb2 p1 border\" if=\"{fieldsNeeded('legal_entity.additional_owners')}\"> <legend><h4>Additional Owners</h4></legend> <ol> <li each=\"{owner, index in record.stripe_account.object.legal_entity.additional_owners}\" class=\"p1 border\"> <virtual if=\"{fieldsNeeded('legal_entity.additional_owners.' + index + '.first_name')}\"> <label>First Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.first_name}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][first_name]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.additional_owners.' + index + '.last_name')}\"> <label>Last Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.last_name}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][last_name]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.additional_owners.' + index + '.dob')}\"> <label>Date of Birth</label> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-4 px1\"> <label>Day *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.dob.day}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][dob][day]\"> </div> <div class=\"sm-col sm-col-4 px1\"> <label>Month *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.dob.month}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][dob][month]\"> </div> <div class=\"sm-col sm-col-4 px1\"> <label>Year *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.dob.year}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][dob][year]\"> </div> </div> </virtual> <fieldset class=\"mb2 p1 border\" if=\"{fieldsNeeded('legal_entity.additional_owners.' + index + '.address')}\"> <legend><h5>Address</h5></legend> <label>Line1 *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.address.line1}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][address][line1]\"> <label>Line2</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.address.line2}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][address][line2]\"> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-3 px1\"> <label>City *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.address.city}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][address][city]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>Country *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.address.country}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][address][country]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>Postcode *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.address.postal_code}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][address][postal_code]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>State *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.address.state}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][address][state]\"> </div> </div> </fieldset> <virtual if=\"{fieldsNeeded('legal_entity.additional_owners.' + index + '.verification.document')}\"> <label>Verification Document *</label> <input class=\"block col-12 p1 mb2 field\" type=\"file\" data-additional-owners-file-index=\"{index}\" name=\"professional[stripe_account][updates][legal_entity][additional_owners][{index}][identity_document]\"> </virtual> <a class=\"btn btn-small btn-primary\" onclick=\"{removeAdditionalOwner}\">Remove Additional Owner</a> </li> </ol> <a class=\"btn btn-small btn-primary mb2\" onclick=\"{addAdditionalOwner}\">Add Additional Owner</a> </fieldset> </fieldset> <virtual if=\"{fieldsNeeded('legal_entity.verification.document')}\"> <label>Verification Document *</label> <input class=\"block col-12 p1 mb2 field\" type=\"file\" id=\"stripe_account_updates_legal_entity_identity_document\" name=\"professional[stripe_account][updates][legal_entity][identity_document]\"> </virtual> <div if=\"{!_.isEmpty(errors)}\" id=\"error_explanation\"> <ul> <li each=\"{field, messages in errors}\">{field.humanize()} {messages.join(', ')}</li> </ul> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
 	  var _this = this;
 	
-	  this.needsLegalEntity = function () {
-	    return !_.isEmpty(_.filter(_this.dot.pick("verification.fields_needed", _this.record.stripe_account.object), function (er) {
-	      return er.indexOf("legal_entity") > -1;
+	  this.fieldsComplete = function () {
+	    return _.isEmpty(_this.record.stripe_account.object.verification.fields_needed);
+	  };
+	  this.fieldsNeeded = function (key) {
+	    var needed = false;
+	    needed = !_.isEmpty(_.filter(_this.dot.pick("verification.fields_needed", _this.record.stripe_account.object), function (er) {
+	      return er.startsWith(key);
 	    }));
+	    if (key.includes("additional_owners.") && !_.isEmpty(_.filter(_this.dot.pick("verification.fields_needed", _this.record.stripe_account.object), function (er) {
+	      return er === "additional_owners";
+	    }))) {
+	      needed = true;
+	    }
+	    return needed;
 	  };
-	  this.needsBankAccount = function () {
-	    return !_.isEmpty(_this.dot.pick("verification.fields_needed.bank", _this.record.stripe_account.object));
+	  this.letBankAccountChange = function (e) {
+	    e.preventDefault();
+	    _this.update({ bankAccountWillChange: true });
 	  };
-	  this.needsIdDocument = function () {
-	    return !_.isEmpty(_this.dot.pick("verification.fields_needed.document", _this.record.stripe_account.object));
+	  this.cancelBankAccountChange = function (e) {
+	    e.preventDefault();
+	    _this.update({ bankAccountWillChange: false });
+	  };
+	  this.addAdditionalOwner = function (e) {
+	    e.preventDefault();
+	    _this.record.stripe_account.object.legal_entity.additional_owners = _this.record.stripe_account.object.legal_entity.additional_owners || [];
+	    _this.record.stripe_account.object.legal_entity.additional_owners.push({});
+	    _this.update();
+	  };
+	  this.removeAdditionalOwner = function (e) {
+	    e.preventDefault();
+	    if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
+	      _this.record.stripe_account.object.legal_entity.additional_owners.splice(e.item.index, 1);
+	      _this.update();
+	    }
 	  };
 	  this.on("mount", function () {
 	    opts.api.professionals.on("show.success", _this.show);
 	    opts.api.professionals.on("show.fail", _this.errorHandler);
-	    opts.api.professionals.on("update.success", _this.updateReset);
+	    opts.api.professionals.on("update.success", _this.reload);
 	    opts.api.professionals.on("update.fail", _this.errorHandler);
 	    opts.api.professionals.show(_this.currentAccount.user_id);
 	  });
 	  this.on("unmount", function () {
 	    opts.api.professionals.off("show.success", _this.update);
 	    opts.api.professionals.off("show.fail", _this.errorHandler);
-	    opts.api.professionals.off("update.success", _this.updateReset);
+	    opts.api.professionals.off("update.success", _this.reload);
 	    opts.api.professionals.off("update.fail", _this.errorHandler);
+	    _this.destroyFileUploader();
 	  });
 	  this.show = function (record) {
-	    _this.update({ record: record });
+	    _this.update({ record: record, errors: null, busy: false });
+	    _this.setupFileUploader();
+	  };
+	  this.reload = function () {
+	    _this.destroyFileUploader();
+	    opts.api.professionals.show(_this.currentAccount.user_id);
 	  };
 	  this.submit = function (e) {
-	
 	    e.preventDefault();
 	
-	    var data = _this.serializeForm(e.target, {});
+	    var data = _this.serializeForm(e.target, { useIntKeysAsArrayIndex: true });
 	
 	    if (_.isEmpty(data)) {
 	      $(e.target).animateCss("shake");
@@ -25057,8 +25223,25 @@
 	    }
 	
 	    _this.update({ busy: true, errors: null });
-	
 	    _this.opts.api.professionals.update(_this.currentAccount.user_id, data);
+	  };
+	  this.setupFileUploader = function () {
+	    var self = _this;
+	    $("input[type=file]", _this.root).each(function () {
+	      var $input = $(this);
+	      $input.fileupload({
+	        paramName: $input.attr("name"),
+	        type: "put",
+	        url: "/api/professionals/" + self.currentAccount.user_id,
+	        dropZone: false,
+	        add: function add(e, data) {
+	          data.submit().success(self.reload).error(self.errorHandler);
+	        }
+	      });
+	    });
+	  };
+	  this.destroyFileUploader = function () {
+	    $("input[type=file]", _this.root).fileupload("destroy");
 	  };
 	});
 	
@@ -25106,16 +25289,16 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 144 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(145);
-	
 	__webpack_require__(146);
 	
 	__webpack_require__(147);
+	
+	__webpack_require__(148);
 	
 	riot.tag2("r-admin-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in attributes}\"> <div if=\"{attr != 'id'}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <textarea if=\"{_.isObject(record[attr])}\" class=\"block col-12 mb2 field fixed-height\">{JSON.stringify(record[attr], null, 2)}</textarea> <input if=\"{!_.isObject(record[attr])}\" class=\"block col-12 mb2 field\" type=\"text\" name=\"{resource.singular()}[{attr}]\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
 	  var _this = this;
@@ -25223,12 +25406,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 145 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(136);
+	__webpack_require__(137);
 	
 	riot.tag2("r-admin-tender-template-form", "<div class=\"container p2\"> <h1><input type=\"text\" name=\"name\" value=\"{record.name}\" class=\"block col-12 field\" placeholder=\"Name\" oninput=\"{setInputValue}\"></h1> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>When you apply a template to a project, if there isn't Tender on the project it clones itself to project, if Tender exists it apply changes to project's tender </p> <div class=\"sm-col sm-col-9\"> <select name=\"project_ids[]\" id=\"project_ids\" multiple class=\"block col-12 mb2 field\"> <option each=\"{projects}\" value=\"{id}\">#{id} | {name} | {customers[0].profile.first_name} {customers[0].profile.last_name}</option> </select> </div> <div class=\"sm-col sm-col-3 center px1 right-align\"> <a class=\"block center white btn bg-blue {busy: busy}\" onclick=\"{addToProject}\">Apply to Project(s)</a> </div> </div> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -25305,12 +25488,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 146 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(136);
+	__webpack_require__(137);
 	
 	riot.tag2("r-admin-tender-form", "<div class=\"container p2\"> <label for=\"project_id\">Project</label> <select name=\"project_id\" class=\"block col-12 mb2 field\" onchange=\"{setInputValue}\"> <option></option> <option each=\"{projects}\" value=\"{id}\" __selected=\"{record.project_id == id}\">#{id} | {name} | {customers[0].profile.first_name} {customers[0].profile.last_name}</option> </select> <span if=\"{errors.project_id}\" class=\"inline-error\">{errors.project_id}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>Add a Professional to this Project by creating a Quote from this tender. Choosen pro will be shortlisted.</p> <div class=\"sm-col sm-col-9\"> <select name=\"professional_ids[]\" id=\"professional_ids\" multiple class=\"block col-12 mb2 field\"> <option each=\"{professionals}\" value=\"{id}\">#{id} | {profile.first_name} | {profile.last_name}</option> </select> </div> <div class=\"sm-col sm-col-3 px1 center white\"> <a class=\"btn bg-blue {busy: busy}\" onclick=\"{createQuote}\">Create Quote!</a> </div> </div> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -25394,12 +25577,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 147 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(136);
+	__webpack_require__(137);
 	
 	riot.tag2("r-admin-quote-form", "<div class=\"container p2\"> <label for=\"project\">Project</label> <select name=\"project_id\" class=\"block col-12 mb2 field\" onchange=\"{setInputValue}\"> <option></option> <option each=\"{projects}\" value=\"{id}\" __selected=\"{record.project_id == id}\">#{id} | {name} | {customers[0].profile.first_name} {customers[0].profile.last_name}</option> </select> <span if=\"{errors.project}\" class=\"inline-error\">{errors.project}</span> <label for=\"project_id\">Professional</label> <select name=\"professional_id\" class=\"block col-12 mb2 field\" onchange=\"{setInputValue}\"> <option></option> <option each=\"{professionals}\" value=\"{id}\" __selected=\"{record.professional_id == id}\">#{id} | {profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"tender_id\">Tender</label> <select name=\"tender_id\" class=\"block col-12 mb2 field\" onchange=\"{setInputValue}\"> <option></option> <option each=\"{tenders}\" value=\"{id}\" __selected=\"{record.tender_id == id}\">#{id}</option> </select> <span if=\"{errors.tender_id}\" class=\"inline-error\">{errors.project}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{record.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> <a if=\"{record.id}\" class=\"btn bg-red btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </a> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -25476,78 +25659,6 @@
 	  };
 	
 	  this.mixin("tenderMixin");
-	});
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ },
-/* 148 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
-	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
-	
-	var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
-	
-	var Pikaday = _interopRequire(__webpack_require__(133));
-	
-	riot.tag2("r-appointment-form", "<h2 class=\"center mt0 mb2\">Arrange an Appointment</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/appointments\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <input type=\"hidden\" name=\"host_id\" value=\"{record.host_id}\"> <input type=\"hidden\" name=\"host_type\" value=\"{record.host_type}\"> <input type=\"hidden\" name=\"attendant_id\" value=\"{record.attendant_id}\"> <input type=\"hidden\" name=\"attendant_type\" value=\"{record.attendant_type}\"> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"time\" value=\"{record.time}\" placeholder=\"Time\"> <span if=\"{errors['time']}\" class=\"inline-error\">{errors['time']}</span> <textarea class=\"block col-12 mb2 field\" type=\"text\" name=\"description\" placeholder=\"Description\">{record.description}</textarea> <span if=\"{errors['description']}\" class=\"inline-error\">{errors['description']}</span> <virtual if=\"{currentAccount.isAdministrator}\"> <label for=\"host_id\">Host</label> <select class=\"block col-12 mb2 field\" onchange=\"{setHost}\"> <option></option> <option each=\"{opts.project.customers}\" value=\"{user_id}:{user_type}\" __selected=\"{record.host_id == user_id && record.host_type == user_type}\">{profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors['host']}\" class=\"inline-error\">{errors['host']}</span> <span if=\"{errors['host_id']}\" class=\"inline-error\">{errors['host_id']}</span> <span if=\"{errors['host_type']}\" class=\"inline-error\">{errors['host_type']}</span> </virtual> <label for=\"host_id\">Attendand</label> <select class=\"block col-12 mb2 field\" onchange=\"{setAttendant}\"> <option></option> <option each=\"{opts.project.professionals}\" value=\"{user_id}:{user_type}\" __selected=\"{record.attendant_id == user_id && record.attendant_type == user_type}\">{profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors['attendant']}\" class=\"inline-error\">{errors['attendant']}</span> <span if=\"{errors['attendant_id']}\" class=\"inline-error\">{errors['attendant_id']}</span> <span if=\"{errors['attendant_type']}\" class=\"inline-error\">{errors['attendant_type']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Schedule</button> </form>", "", "", function (opts) {
-	  var _this = this;
-	
-	  this.on("mount", function () {
-	    var picker = new Pikaday({
-	      field: _this.time,
-	      onSelect: function (date) {
-	        _this.record.time = picker.toString();
-	        _this.update();
-	      }
-	    });
-	  });
-	  this.record = {
-	    project_id: opts.project.id,
-	    host_id: this.currentAccount.user_id,
-	    host_type: this.currentAccount.user_type };
-	  this.setHost = function (e) {
-	    var _e$target$value$split = e.target.value.split(":");
-	
-	    var _e$target$value$split2 = _slicedToArray(_e$target$value$split, 2);
-	
-	    var id = _e$target$value$split2[0];
-	    var type = _e$target$value$split2[1];
-	
-	    _this.record.host_id = id;
-	    _this.record.host_type = type;
-	    _this.update();
-	  };
-	  this.setAttendant = function (e) {
-	    var _e$target$value$split = e.target.value.split(":");
-	
-	    var _e$target$value$split2 = _slicedToArray(_e$target$value$split, 2);
-	
-	    var id = _e$target$value$split2[0];
-	    var type = _e$target$value$split2[1];
-	
-	    _this.record.attendant_id = id;
-	    _this.record.attendant_type = type;
-	    _this.update();
-	  };
-	  this.submit = function (e) {
-	    e.preventDefault();
-	
-	    var data = _this.serializeForm(_this.form);
-	
-	    if (_.isEmpty(data) || _.isEmpty(data.time)) {
-	      $(_this.form).animateCss("shake");
-	      return;
-	    }
-	
-	    _this.update({ busy: true, errors: null });
-	
-	    _this.opts.api.appointments.create(data).fail(_this.errorHandler).then(function (record) {
-	      _this.update({ record: record, busy: false });
-	      $(_this.form).html("You appoingment has been scheduled");
-	    });
-	  };
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 

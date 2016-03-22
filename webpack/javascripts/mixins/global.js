@@ -15,7 +15,7 @@ riot.mixin({
     500: 'Ops!, something went wrong at our end, try again later.',
     'ASSET_ASSIGNMENT': 'We got your brief, but unfortunately your files lost on the way to us',
     'BLANK': 'cannot be blank',
-    'CONFIRM_DELETE': 'Are you sure to delete this file?',
+    'CONFIRM_DELETE': 'Are you sure to delete?',
     'CONFIRM_UNSAVED_CHANGES': 'You have unsaved changes!'
   },
   init: function () {
