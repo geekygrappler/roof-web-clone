@@ -2,6 +2,7 @@ import '../../mixins/project_tab'
 import './_overview.tag'
 import './_brief.tag'
 import './_docs.tag'
+import './_appointments.tag'
 import './_team.tag'
 import './_quotes.tag'
 

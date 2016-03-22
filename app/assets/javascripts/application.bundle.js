@@ -18307,6 +18307,8 @@
 	
 	__webpack_require__(131);
 	
+	__webpack_require__(148);
+	
 	__webpack_require__(132);
 	
 	__webpack_require__(134);
@@ -18453,71 +18455,6 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
-	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
-	
-	var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
-	
-	var Pikaday = _interopRequire(__webpack_require__(133));
-	
-	riot.tag2("r-appointment-form", "<h2 class=\"center mt0 mb2\">Arrange an Appointment</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/appointments\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <input type=\"hidden\" name=\"host_id\" value=\"{record.host_id}\"> <input type=\"hidden\" name=\"host_type\" value=\"{record.host_type}\"> <input type=\"hidden\" name=\"attendant_id\" value=\"{record.attendant_id}\"> <input type=\"hidden\" name=\"attendant_type\" value=\"{record.attendant_type}\"> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"time\" value=\"{record.time}\" placeholder=\"Time\"> <span if=\"{errors['time']}\" class=\"inline-error\">{errors['time']}</span> <textarea class=\"block col-12 mb2 field\" type=\"text\" name=\"description\" placeholder=\"Description\">{record.description}</textarea> <span if=\"{errors['description']}\" class=\"inline-error\">{errors['description']}</span> <virtual if=\"{currentAccount.isAdministrator}\"> <label for=\"host_id\">Host</label> <select class=\"block col-12 mb2 field\" onchange=\"{setHost}\"> <option></option> <option each=\"{opts.project.customers}\" value=\"{user_id}:{user_type}\" __selected=\"{record.host_id == user_id && record.host_type == user_type}\">{profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors['host']}\" class=\"inline-error\">{errors['host']}</span> <span if=\"{errors['host_id']}\" class=\"inline-error\">{errors['host_id']}</span> <span if=\"{errors['host_type']}\" class=\"inline-error\">{errors['host_type']}</span> </virtual> <label for=\"host_id\">Attendand</label> <select class=\"block col-12 mb2 field\" onchange=\"{setAttendant}\"> <option></option> <option each=\"{opts.project.professionals}\" value=\"{user_id}:{user_type}\" __selected=\"{record.attendant_id == user_id && record.attendant_type == user_type}\">{profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors['attendant']}\" class=\"inline-error\">{errors['attendant']}</span> <span if=\"{errors['attendant_id']}\" class=\"inline-error\">{errors['attendant_id']}</span> <span if=\"{errors['attendant_type']}\" class=\"inline-error\">{errors['attendant_type']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Sign up</button> </form>", "", "", function (opts) {
-	  var _this = this;
-	
-	  this.on("mount", function () {
-	    var picker = new Pikaday({
-	      field: _this.time,
-	      onSelect: function (date) {
-	        _this.record.time = picker.toString();
-	        _this.update();
-	      }
-	    });
-	  });
-	  this.record = {
-	    project_id: opts.project.id,
-	    host_id: this.currentAccount.user_id,
-	    host_type: this.currentAccount.user_type };
-	  this.setHost = function (e) {
-	    var _e$target$value$split = e.target.value.split(":");
-	
-	    var _e$target$value$split2 = _slicedToArray(_e$target$value$split, 2);
-	
-	    var id = _e$target$value$split2[0];
-	    var type = _e$target$value$split2[1];
-	
-	    _this.record.host_id = id;
-	    _this.record.host_type = type;
-	    _this.update();
-	  };
-	  this.setAttendant = function (e) {
-	    var _e$target$value$split = e.target.value.split(":");
-	
-	    var _e$target$value$split2 = _slicedToArray(_e$target$value$split, 2);
-	
-	    var id = _e$target$value$split2[0];
-	    var type = _e$target$value$split2[1];
-	
-	    _this.record.attendant_id = id;
-	    _this.record.attendant_type = type;
-	    _this.update();
-	  };
-	  this.submit = function (e) {
-	    e.preventDefault();
-	
-	    var data = _this.serializeForm(_this.form);
-	
-	    if (_.isEmpty(data) || _.isEmpty(data.time)) {
-	      $(_this.form).animateCss("shake");
-	      return;
-	    }
-	
-	    _this.update({ busy: true, errors: null });
-	
-	    _this.opts.api.appointments.create(data).fail(_this.errorHandler).then(function (record) {
-	      _this.update({ record: record, busy: false });
-	      $(_this.form).html("You appoingment has been scheduled");
-	    });
-	  };
-	});
 	
 	riot.tag2("r-project-team", "<h2 class=\"mt0\">Team</h2> <p>Here is the team of your project. You can arrange site visits with professionals here or invite other members such as family members or your own builders. </p> <ul class=\"list-reset clearfix mxn1\"> <li each=\"{project.customers}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-lime navy right mt2\">Customer</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> </p> </div> </li> <li each=\"{project.professionals}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-aqua blue white right mt2\">Professional</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> <div if=\"{profile.website}\"><i class=\"fa fa-world\"></i>{profile.website}</div> </p> </div> </li> <li each=\"{project.administrators}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Admin</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> </p> </div> </li> </ul> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-6 px1 mb2\"> <form name=\"form\" class=\"sm-col-12 px2 border\" onsubmit=\"{submit}\"> <h3><i class=\"fa fa-paper-plane-o\"></i> Invite a new member</h3> <div class=\"clearfix\"> <label class=\"inline-block col col-6 mb2 truncate\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Customer\">Customer </label> <label class=\"inline-block col col-6 mb2 truncate\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Professional\">Professional </label> </div> <span class=\"inline-error block\" if=\"{errors['invitee_attributes.user_type']}\">{errors['invitee_attributes.user_type']}</span> <input name=\"invitee_attributes[email]\" class=\"col-12 mb2 field\" placeholder=\"Email\" type=\"email\"> <span class=\"inline-error\" if=\"{errors['invitee_attributes.email']}\">{errors['invitee_attributes.email']}</span> <input type=\"hidden\" name=\"inviter_id\" value=\"{opts.api.currentAccount.id}\"> <input type=\"hidden\" name=\"project_id\" value=\"{opts.id}\"> <div class=\"right-align\"> <button type=\"submit\" class=\"btn btn-primary mb2 {busy: busy}\">Invite</button> </div> </form> </div> <div class=\"sm-col sm-col-6 px1 mb2\"> <div class=\"sm-col-12 px2 border\"> <h3><i class=\"fa fa-calendar-o\"></i> Appointments</h3> <a class=\"h6 btn btn-small btn-primary mb2\" onclick=\"{openAppointmentModal}\"><i class=\"fa fa-calendar-check-o\"></i> Arrange Appointment</a> <dl each=\"{appointments}\" class=\"{gray: new Date(time) < new Date()}\"> <dt class=\"left\"> <i class=\"fa fa-{'thumbs-o-up': new Date(time) < new Date(), 'hand-o-right': new Date(time) >= new Date()}\"></i> </dt> <dd> <h4>At {formatTime(time)}</h4> <div><strong>Host:</strong> {host.profile.first_name} {host.profile.last_name}</div> <div><strong>Attendant:</strong> {attendant.profile.first_name} {attendant.profile.last_name}</div> <a if=\"{new Date(time) >= new Date()}\" class=\"btn btn-small h6 bg-maroon white mt1\" onclick=\"{cancelAppointment}\"><i class=\"fa fa-ban\"></i> Cancel</a> </dd> </dl> </div> </div> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -25529,6 +25466,78 @@
 	  };
 	
 	  this.mixin("tenderMixin");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 148 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+	
+	var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
+	
+	var Pikaday = _interopRequire(__webpack_require__(133));
+	
+	riot.tag2("r-appointment-form", "<h2 class=\"center mt0 mb2\">Arrange an Appointment</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/appointments\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <input type=\"hidden\" name=\"host_id\" value=\"{record.host_id}\"> <input type=\"hidden\" name=\"host_type\" value=\"{record.host_type}\"> <input type=\"hidden\" name=\"attendant_id\" value=\"{record.attendant_id}\"> <input type=\"hidden\" name=\"attendant_type\" value=\"{record.attendant_type}\"> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"time\" value=\"{record.time}\" placeholder=\"Time\"> <span if=\"{errors['time']}\" class=\"inline-error\">{errors['time']}</span> <textarea class=\"block col-12 mb2 field\" type=\"text\" name=\"description\" placeholder=\"Description\">{record.description}</textarea> <span if=\"{errors['description']}\" class=\"inline-error\">{errors['description']}</span> <virtual if=\"{currentAccount.isAdministrator}\"> <label for=\"host_id\">Host</label> <select class=\"block col-12 mb2 field\" onchange=\"{setHost}\"> <option></option> <option each=\"{opts.project.customers}\" value=\"{user_id}:{user_type}\" __selected=\"{record.host_id == user_id && record.host_type == user_type}\">{profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors['host']}\" class=\"inline-error\">{errors['host']}</span> <span if=\"{errors['host_id']}\" class=\"inline-error\">{errors['host_id']}</span> <span if=\"{errors['host_type']}\" class=\"inline-error\">{errors['host_type']}</span> </virtual> <label for=\"host_id\">Attendand</label> <select class=\"block col-12 mb2 field\" onchange=\"{setAttendant}\"> <option></option> <option each=\"{opts.project.professionals}\" value=\"{user_id}:{user_type}\" __selected=\"{record.attendant_id == user_id && record.attendant_type == user_type}\">{profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors['attendant']}\" class=\"inline-error\">{errors['attendant']}</span> <span if=\"{errors['attendant_id']}\" class=\"inline-error\">{errors['attendant_id']}</span> <span if=\"{errors['attendant_type']}\" class=\"inline-error\">{errors['attendant_type']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Schedule</button> </form>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.on("mount", function () {
+	    var picker = new Pikaday({
+	      field: _this.time,
+	      onSelect: function (date) {
+	        _this.record.time = picker.toString();
+	        _this.update();
+	      }
+	    });
+	  });
+	  this.record = {
+	    project_id: opts.project.id,
+	    host_id: this.currentAccount.user_id,
+	    host_type: this.currentAccount.user_type };
+	  this.setHost = function (e) {
+	    var _e$target$value$split = e.target.value.split(":");
+	
+	    var _e$target$value$split2 = _slicedToArray(_e$target$value$split, 2);
+	
+	    var id = _e$target$value$split2[0];
+	    var type = _e$target$value$split2[1];
+	
+	    _this.record.host_id = id;
+	    _this.record.host_type = type;
+	    _this.update();
+	  };
+	  this.setAttendant = function (e) {
+	    var _e$target$value$split = e.target.value.split(":");
+	
+	    var _e$target$value$split2 = _slicedToArray(_e$target$value$split, 2);
+	
+	    var id = _e$target$value$split2[0];
+	    var type = _e$target$value$split2[1];
+	
+	    _this.record.attendant_id = id;
+	    _this.record.attendant_type = type;
+	    _this.update();
+	  };
+	  this.submit = function (e) {
+	    e.preventDefault();
+	
+	    var data = _this.serializeForm(_this.form);
+	
+	    if (_.isEmpty(data) || _.isEmpty(data.time)) {
+	      $(_this.form).animateCss("shake");
+	      return;
+	    }
+	
+	    _this.update({ busy: true, errors: null });
+	
+	    _this.opts.api.appointments.create(data).fail(_this.errorHandler).then(function (record) {
+	      _this.update({ record: record, busy: false });
+	      $(_this.form).html("You appoingment has been scheduled");
+	    });
+	  };
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
