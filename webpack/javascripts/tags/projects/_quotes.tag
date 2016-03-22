@@ -35,7 +35,7 @@
         <span class="inline-block align-middle h6 mb1 px1 border pill right mt2">Tender</span>
         <p class="overflow-hidden m0 mxn2 p1 border-top">
           <a class="btn btn-small" href="/app/projects/{opts.id}/tenders/{project.tender.id}">Open</a>
-          <a class="btn btn-small btn-primary" if="{currentAccount.isProfessional}" onclick="{clone}">Clone</a>
+          <a class="btn btn-small btn-primary" if="{currentAccount.isProfessional && (quotes && quotes.length == 0)}" onclick="{clone}">Clone</a>
         </p>
       </div>
     </li>

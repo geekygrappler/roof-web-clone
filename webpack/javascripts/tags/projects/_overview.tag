@@ -12,6 +12,9 @@
       <p if="{ !project.brief.budget && !currentAccount.isProfessional}">
         You have not set a project budget yet (<a href="/app/projects/{ project.id }/brief">add one</a>)
       </p>
+      <p if="{ !project.brief.budget && currentAccount.isProfessional}">
+        N/A
+      </p>
     </div>
 
     <div class="sm-col sm-col-6 px1">
@@ -19,6 +22,9 @@
       <p if="{ project.brief.preferred_start }">{ project.brief.preferred_start }</p>
       <p if="{ !project.brief.preferred_start && !currentAccount.isProfessional}">
         You have not defined a start date yet (<a href="/app/projects/{ project.id }/brief">set now</a>)
+      </p>
+      <p if="{ !project.brief.preferred_start && currentAccount.isProfessional}">
+        N/A
       </p>
     </div>
   </div>
@@ -30,6 +36,9 @@
     </address>
     <p if="{ isAllValuesEmpty(project.address) && !currentAccount.isProfessional}">
       You have not defined the address yet (<a href="/app/projects/{ project.id }/brief">fix now</a>)
+    </p>
+    <p if="{ isAllValuesEmpty(project.address) && currentAccount.isProfessional}">
+      N/A
     </p>
   </div>
 
