@@ -31,6 +31,7 @@ PATH
       rails-api
       request_store
       stripe
+      verbs
 
 GEM
   remote: https://rubygems.org/
@@ -239,6 +240,9 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.2)
+    verbs (2.1.4)
+      activesupport (>= 2.3.4)
+      i18n
     warden (1.2.6)
       rack (>= 1.0)
     web-console (2.3.0)

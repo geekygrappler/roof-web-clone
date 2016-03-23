@@ -1,0 +1,91 @@
+---
+lead:
+  create:
+    -
+      from: 'bot'
+      to: 'random_administrator'
+      name: 'lead'
+
+account:
+  register:
+    -
+      from: 'bot'
+      to: 'actor'
+      name: 'welcome'
+
+project:
+  create:
+    -
+      from: 'bot'
+      to: 'actor'
+      name: 'new_project'
+  added_to_shortlist:
+    -
+      from: 'bot'
+      to: 'subject'
+      name: 'added_to_shortlist'
+  added_to_professional:
+    -
+      from: 'bot'
+      to: 'subject'
+      name: 'added_to_professionals'
+
+appointment:
+  create:
+    -
+      from: 'actor'
+      to: 'subject.attendant'
+      name: 'new_appointment'
+  destroy:
+    -
+      from: 'actor'
+      to: 'subject.attendant'
+      name: 'appointment_canceled'
+      deliver_now: true
+
+quote:
+  submit:
+    -
+      from: 'actor'
+      to: 'subject.project.customers'
+      name: 'quote_submitted'
+  accept:
+    -
+      from: 'actor'
+      to: 'subject.professional'
+      name: 'quote_accepted'
+
+payment:
+  create:
+    -
+      from: 'bot'
+      to: 'subject.project.administrator'
+      name: 'new_payment'
+  approve:
+    -
+      from: 'actor'
+      to: 'subject.professional'
+      name: 'payment_approved'
+  cancel:
+    -
+      from: 'actor'
+      to: 'subject.project.customers'
+      name: 'payment_canceled'
+    -
+      from: 'bot'
+      to: 'subject.project.administrator'
+      name: 'payment_canceled'
+  pay:
+    -
+      from: 'actor'
+      to: 'subject.professional'
+      name: 'payment_paid'
+    -
+      from: 'bot'
+      to: 'subject.project.administrator'
+      name: 'payment_paid'
+  refund:
+    -
+      from: 'actor'
+      to: 'subject.customer'
+      name: 'payment_refunded'

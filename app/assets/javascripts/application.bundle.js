@@ -17551,13 +17551,13 @@
 	
 	__webpack_require__(126);
 	
-	__webpack_require__(136);
-	
-	__webpack_require__(143);
+	__webpack_require__(137);
 	
 	__webpack_require__(144);
 	
 	__webpack_require__(145);
+	
+	__webpack_require__(146);
 	
 	riot.tag2("r-app", "<yield from=\"header\"></yield> <div name=\"content\"></div>", "", "", function (opts) {
 	  var _this = this;
@@ -18371,9 +18371,9 @@
 	
 	__webpack_require__(134);
 	
-	__webpack_require__(150);
-	
 	__webpack_require__(135);
+	
+	__webpack_require__(136);
 	
 	riot.tag2("r-projects-show", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <div class=\"py3 px2\"> <div class=\"clearfix mxn2\"> <r-subnav links=\"{subnavLinks}\" tab=\"{opts.tab}\"></r-subnav> <div class=\"sm-col sm-col-9 sm-px2\"> <r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\" content_opts=\"{opts.contentOpts}\"></r-tabs> </div> </div> </div> </div>", "", "", function (opts) {
 	  this.subnavLinks = [{ href: "/app/projects/" + opts.id + "/overview", name: "overview", tag: "r-project-overview" }, { href: "/app/projects/" + opts.id + "/brief", name: "brief", tag: "r-project-brief" }, { href: "/app/projects/" + opts.id + "/docs", name: "docs", tag: "r-project-docs" }, { href: "/app/projects/" + opts.id + "/team", name: "team", tag: "r-project-team" }, { href: "/app/projects/" + opts.id + "/quotes", name: "quotes", tag: "r-project-quotes" }];
@@ -19941,6 +19941,68 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+	
+	var Pikaday = _interopRequire(__webpack_require__(133));
+	
+	riot.tag2("r-payment-form", "<h2 class=\"center mt0 mb2\">Payment Form</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/payments\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <input type=\"hidden\" name=\"quote_id\" value=\"{record.quote_id}\"> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <input class=\"block col-12 mb2 field\" name=\"amount\" value=\"{record.amount}\" placeholder=\"Amount\" type=\"{'number'}\"> <span if=\"{errors['amount']}\" class=\"inline-error\">{errors['amount']}</span> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"due_date\" value=\"{record.due_date}\" placeholder=\"Due Date\"> <span if=\"{errors['due_date']}\" class=\"inline-error\">{errors['due_date']}</span> <textarea class=\"block col-12 mb2 field\" type=\"text\" name=\"description\" placeholder=\"Description\">{record.description}</textarea> <span if=\"{errors['description']}\" class=\"inline-error\">{errors['description']}</span> <div if=\"{errors}\" id=\"error_explanation\"> <ul> <li each=\"{field, messages in errors}\">{field.humanize()} {messages.join(',')}</li> </ul> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Create</button> </form>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.on("mount", function () {
+	    var picker = new Pikaday({
+	      showTime: false,
+	      field: _this.due_date,
+	      onSelect: function (date) {
+	        _this.record.due_date = picker.toString();
+	        _this.update();
+	      }
+	    });
+	  });
+	
+	  this.updateRecord = function (record) {
+	    _this.update({ record: record });
+	  };
+	
+	  if (!this.opts.id) {
+	    this.record = {
+	      project_id: opts.quote.project_id,
+	      quote_id: opts.quote.id,
+	      professional_id: this.currentAccount.user_id };
+	  } else {
+	    this.opts.api.payments.show(this.opts.id).fail(this.errorHandler).then(this.updateRecord);
+	  }
+	
+	  this.submit = function (e) {
+	    e.preventDefault();
+	
+	    var data = _this.serializeForm(_this.form);
+	
+	    if (_.isEmpty(data) || _.isEmpty(data.due_date)) {
+	      $(_this.form).animateCss("shake");
+	      return;
+	    }
+	
+	    _this.update({ busy: true, errors: null });
+	
+	    if (_this.opts.id) {
+	      _this.opts.api.payments.update(opts.id, data).fail(_this.errorHandler).then(_this.updateReset);
+	    } else {
+	      _this.opts.api.payments.create(data).fail(_this.errorHandler).then(function (record) {
+	        _this.updateReset();
+	        _this.opts.id = record.id;
+	        _this.closeModal();
+	      });
+	    }
+	  };
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 136 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
 	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <p if=\"{hasNothing()}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <div if=\"{hasNothing() && currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{hasNothing() && currentAccount.isCustomer}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> <div if=\"{hasNothing() && currentAccount.isAdministrator}\" class=\"mt2\"> <a class=\"btn btn-primary mr1\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isCustomer}\"> Here is your <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Actual <strong>quotes</strong> from Professionals will appear here when they submit them. </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isProfessional}\"> Here is the the <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Click <strong>Clone</strong> button to get your copy and work on it. </p> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Tender</span> <p class=\"overflow-hidden m0 mxn2 p1 border-top\"> <a class=\"btn btn-small\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Open</a> <a class=\"btn btn-small btn-primary\" if=\"{currentAccount.isProfessional && (quotes && quotes.length == 0)}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2 mr1\">Quote</span> <div class=\"tab-nav\"> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'summary'}\" onclick=\"{changeTab}\" rel=\"summary\">Summary</a> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'payments'}\" onclick=\"{changeTab}\" rel=\"payments\">Payments</a> </div> <div class=\"tabs m0 mxn2 border-top\"> <div if=\"{activeTab == 'summary'}\"> <div class=\"clearfix px2 mt2 mb1\" if=\"{submitted_at}\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-clock-o mr1\"></i> Submitted at:</div> <div class=\"sm-col sm-col-6\">{fromNow(submitted_at)}</div> </div> <div class=\"clearfix px2 mb1\" if=\"{accepted_at}\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-clock-o mr1\"></i> Accepted at:</div> <div class=\"sm-col sm-col-6\">{fromNow(accepted_at)}</div> </div> <div class=\"clearfix px2 mb1\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-user mr1\"></i> Professional:</div> <div class=\"sm-col sm-col-6\">{professional.profile.first_name} {professional.profile.last_name}</div> </div> <div class=\"clearfix overflow-hidden p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Open</a> <a class=\"btn btn-small bg-darken-2\" if=\"{currentAccount.isProfessional && !accepted_at}\" onclick=\"{delete}\">Delete</a> </div> </div> <div if=\"{activeTab == 'payments'}\"> <table class=\"table-light mt2\"> <thead> <tr> <th>Amount</th> <th>Due Date</th> <th>Status</th> <th></th> </tr> </thead> <tbody> <tr each=\"{payments}\"> <th>{formatCurrency(amount)}</th> <th>{formatTime(due_date)}</th> <th>{status}</th> <th> <a if=\"{currentAccount.isProfessional && (status == 'payable' || status == 'waiting')}\" class=\"btn btn-small bg-red white h6 {busy: busy}\" onclick=\"{cancelPayment}\">Cancel</a> <button if=\"{currentAccount.isCustomer && status == 'payable'}\" class=\"btn btn-small bg-green white h6 {busy: busy}\" __disabled=\"{busy}\" onclick=\"{payPayment}\">Pay</button> </th> </tr> </tbody> </table> <table if=\"{payments.length > 0}\" class=\"table-light mt2\"> <thead> <tr> <th>Paid</th> <th if=\"{refunded_amount > 0}\">Refunded</th> <th if=\"{declined_amount > 0}\">Declined</th> <th if=\"{currentAccount.isProfessional}\">Approved</th> </tr> </thead> <tbody> <tr> <th>{formatCurrency(paid_amount)}</th> <th if=\"{refunded_amount > 0}\">{formatCurrency(refunded_amount)}</th> <th if=\"{declined_amount > 0}\">{formatCurrency(declined_amount)}</th> <th if=\"{currentAccount.isProfessional}\">{formatCurrency(approved_amount)}</th> </tr> </tbody> </table> <div if=\"{currentAccount.isProfessional}\" class=\"clearfix overflow-hidden p1 bg-yellow\"> <div class=\"mt1\"> <a class=\"btn btn-small bg-darken-2\" onclick=\"{openPaymentForm}\">Add Payment</a> </div> </div> </div> </div> </div> </li> </ul>", "", "", function (opts) {
 	  var _this = this;
 	
@@ -20093,20 +20155,20 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 136 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(137);
-	
 	__webpack_require__(138);
 	
-	__webpack_require__(140);
+	__webpack_require__(139);
 	
 	__webpack_require__(141);
 	
 	__webpack_require__(142);
+	
+	__webpack_require__(143);
 	
 	riot.tag2("r-tenders-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1><a class=\"btn btn-small h6 btn-outline orange\" href=\"/app/projects/{project.id}\"><i class=\"fa fa-chevron-left\"></i> Back to Project</a> {opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Tender ' + opts.id : 'New Tender'}</h1> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{!currentAccount.isProfessional}\" type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{currentAccount.isProfessional}\" onclick=\"{cloneTender}\" class=\"btn btn-primary btn-big {busy: busy}\">Clone</a> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -20184,7 +20246,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 137 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -20295,14 +20357,14 @@
 	// $('[name=searchable_names]').last()[0].focus()
 
 /***/ },
-/* 138 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 	
-	var Handlebars = _interopRequire(__webpack_require__(139));
+	var Handlebars = _interopRequire(__webpack_require__(140));
 	
 	riot.tag2("r-tender-item-input", "<div class=\"relative\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Strart typing to add {modelName}\" autocomplete=\"off\"> </form> <i class=\"fa fa-plus absolute right-0 top-0 p1\"></i> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -20377,7 +20439,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 139 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*!
@@ -24990,7 +25052,7 @@
 	;
 
 /***/ },
-/* 140 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -25025,7 +25087,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 141 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -25074,7 +25136,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 142 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -25146,12 +25208,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 143 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(137);
+	__webpack_require__(138);
 	
 	riot.tag2("r-quotes-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1><a class=\"btn btn-small h6 btn-outline orange\" href=\"/app/projects/{record.project_id}\"><i class=\"fa fa-chevron-left\"></i> Back to Project</a> {opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Quote ' + opts.id : 'New Quote'}</h1> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{opts.id && !currentAccount.isProfessional}\" class=\"btn btn-primary btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </button> <virtual if=\"{!opts.readonly && !currentAccount.isCustomer}\"> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{opts.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> </virtual> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -25230,7 +25292,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 144 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -25239,7 +25301,26 @@
 	
 	var Pikaday = _interopRequire(__webpack_require__(133));
 	
-	riot.tag2("r-settings-notifications", "<h2 class=\"mt0\">Notifications</h2>", "", "", function (opts) {});
+	riot.tag2("r-settings-notifications", "<h2 class=\"mt0\">Notifications</h2> <form name=\"form\" onsubmit=\"{submit}\"> <div each=\"{not, i in notifications}\"> <label> <input type=\"checkbox\" name=\"notifications[{not}]\" __checked=\"{currentAccount.notifications[not]}\"> {not.humanize()} </label> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.notifications = ["added_to_shortlist", "added_to_professionals", "appointment_canceled", "lead", "new_appointment", "new_payment", "new_project", "payment_approved", "payment_canceled", "payment_paid", "payment_refunded", "quote_accepted", "quote_submitted", "welcome"];
+	  this.submit = function (e) {
+	
+	    e.preventDefault();
+	
+	    var data = _this.serializeForm(_this.form);
+	
+	    if (_.isEmpty(data)) {
+	      $(_this.form).animateCss("shake");
+	      return;
+	    }
+	
+	    _this.update({ busy: true, errors: null });
+	
+	    _this.opts.api[_this.currentAccount.user_type.plural().toLowerCase()].update(_this.currentAccount.user_id, data).fail(_this.errorHandler).then(_this.updateReset);
+	  };
+	});
 	
 	riot.tag2("r-settings-account", "<h2 class=\"mt0\">Account</h2> <p class=\"bg-green white p1\" if=\"{fieldsComplete()}\"> Congrats! Your account is verified and you can receive your payments. </p> <form if=\"{record}\" name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <virtual if=\"{fieldsNeeded('business_logo')}\"> <label>Business Logo</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.business_logo}\" name=\"stripe_account[updates][business_logo]\"> </virtual> <virtual if=\"{fieldsNeeded('business_name')}\"> <label>Business Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.business_name}\" name=\"stripe_account[updates][business_name]\"> </virtual> <virtual if=\"{fieldsNeeded('business_primary_color')}\"> <label>Business Primary Color</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.business_primary_color}\" name=\"stripe_account[updates][business_primary_color]\"> </virtual> <virtual if=\"{fieldsNeeded('business_url')}\"> <label>Business URL</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.business_url}\" name=\"stripe_account[updates][business_url]\"> </virtual> <virtual if=\"{fieldsNeeded('debit_negative_balances')}\"> <label>Debit Negative Balances</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.debit_negative_balances}\" name=\"stripe_account[updates][debit_negative_balances]\"> </virtual> <virtual if=\"{fieldsNeeded('default_currency')}\"> <label>Default Currency</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.default_currency}\" name=\"stripe_account[updates][default_currency]\"> </virtual> <virtual if=\"{fieldsNeeded('email')}\"> <label>Email</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.email}\" name=\"stripe_account[updates][email]\"> </virtual> <fieldset if=\"{fieldsNeeded('decline_charge_on')}\"> <legend>Decline Charge On</legend> <label>Avs Failure</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.decline_charge_on.avs_failure}\" name=\"stripe_account[updates][decline_charge_on][avs_failure]\"> <label>Avs Failure</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.decline_charge_on.cvc_failure}\" name=\"stripe_account[updates][decline_charge_on][cvc_failure]\"> </fieldset> <fieldset class=\"mb2 p1 border\"> <legend><h3>Bank Account</h3></legend> <p if=\"{record.stripe_account.object.external_accounts.total_count > 0}\" class=\"bg-orange white p1\"> You have already registered your bank account with us. You can change the details but this will trigger verification process again. <br> <a class=\"btn btn-primary\" onclick=\"{letBankAccountChange}\">OK, got it. Let me change my account details</a> </p> <virtual if=\"{bankAccountWillChange || fieldsNeeded('bank')}\"> <label class=\"display-none\">Object</label> <input class=\"block col-12 mb2 field\" type=\"hidden\" value=\"bank_account\" name=\"stripe_account[updates][external_account][object]\"> <label>Account Number *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][external_account][account_number]\"> <label>Country *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"GB\" name=\"stripe_account[updates][external_account][country]\"> <label>Currency *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"gbp\" name=\"stripe_account[updates][external_account][currency]\"> <label>Account Holder Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][external_account][account_holder_name]\"> <label>Account Holder Type *</label> <select class=\"block col-12 mb2 field\" name=\"stripe_account[updates][external_account][account_holder_type]\"> <option></option> <option value=\"individual\">Individual</option> <option value=\"company\">Company</option> </select> <label>Account Sort Code *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][external_account][routing_number]\"> <a if=\"{!fieldsNeeded('bank')}\" class=\"btn btn-primary\" onclick=\"{cancelBankAccountChange}\">Cancel</a> </virtual> </fieldset> <fieldset class=\"mb2 p1 border\" if=\"{fieldsNeeded('legal_entity')}\"> <legend><h3>Legal Entity</h3></legend> <virtual if=\"{fieldsNeeded('legal_entity.type')}\"> <label>Type *</label> <select class=\"block col-12 mb2 field\" name=\"stripe_account[updates][legal_entity][type]\"> <option></option> <option value=\"individual\" __selected=\"{record.stripe_account.object.legal_entity.type === 'individual'}\">Individual</option> <option value=\"company\" __selected=\"{record.stripe_account.object.legal_entity.type === 'company'}\">Company</option> </select> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.first_name')}\"> <label>First Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.first_name}\" name=\"stripe_account[updates][legal_entity][first_name]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.last_name')}\"> <label>Last Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.last_name}\" name=\"stripe_account[updates][legal_entity][last_name]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.gender')}\"> <label>Gender</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.gender}\" name=\"stripe_account[updates][legal_entity][gender]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.maiden_name')}\"> <label>Maiden Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.maiden_name}\" name=\"stripe_account[updates][legal_entity][maiden_name]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.dob')}\"> <label>Date of Birth</label> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-4 px1\"> <label>Day *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.dob.day}\" name=\"stripe_account[updates][legal_entity][dob][day]\"> </div> <div class=\"sm-col sm-col-4 px1\"> <label>Month *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.dob.month}\" name=\"stripe_account[updates][legal_entity][dob][month]\"> </div> <div class=\"sm-col sm-col-4 px1\"> <label>Year *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.dob.year}\" name=\"stripe_account[updates][legal_entity][dob][year]\"> </div> </div> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.phone_number')}\"> <label>Phone Number *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.phone_number}\" name=\"stripe_account[updates][legal_entity][phone_number]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.personal_id_number')}\"> <label>Personal ID Number *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_id_number}\" name=\"stripe_account[updates][legal_entity][personal_id_number]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.business_name')}\"> <label>Business Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.business_name}\" name=\"stripe_account[updates][legal_entity][business_name]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.business_tax_id')}\"> <label>Business Tax ID</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.business_tax_id}\" name=\"stripe_account[updates][legal_entity][business_tax_id]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.business_vat_id')}\"> <label>Business VAT ID</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.business_vat_id}\" name=\"stripe_account[updates][legal_entity][business_vat_id]\"> </virtual> <fieldset class=\"mb2 p1 border\" if=\"{fieldsNeeded('legal_entity.address')}\"> <legend><h4>Address</h4></legend> <label>Line1 *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.address.line1}\" name=\"stripe_account[updates][legal_entity][address][line1]\"> <label>Line2</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.address.line2}\" name=\"stripe_account[updates][legal_entity][address][line2]\"> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-3 px1\"> <label>City *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.address.city}\" name=\"stripe_account[updates][legal_entity][address][city]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>Country *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.address.country}\" name=\"stripe_account[updates][legal_entity][address][country]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>Postcode *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.address.postal_code}\" name=\"stripe_account[updates][legal_entity][address][postal_code]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>State *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.address.state}\" name=\"stripe_account[updates][legal_entity][address][state]\"> </div> </div> </fieldset> <fieldset class=\"mb2 p1 border\" if=\"{fieldsNeeded('legal_entity.personal_address')}\"> <legend><h4>Personal Address</h4></legend> <label>Line1 *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_address.line1}\" name=\"stripe_account[updates][legal_entity][personal_address][line1]\"> <label>Line2</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_address.line2}\" name=\"stripe_account[updates][legal_entity][personal_address][line2]\"> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-3 px1\"> <label>City *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_address.city}\" name=\"stripe_account[updates][legal_entity][personal_address][city]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>Country *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_address.country}\" name=\"stripe_account[updates][legal_entity][personal_address][country]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>Postcode *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_address.postal_code}\" name=\"stripe_account[updates][legal_entity][personal_address][postal_code]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>State *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_address.state}\" name=\"stripe_account[updates][legal_entity][personal_address][state]\"> </div> </div> </fieldset> <fieldset class=\"mb2 p1 border\" if=\"{fieldsNeeded('legal_entity.additional_owners')}\"> <legend><h4>Additional Owners</h4></legend> <ol> <li each=\"{owner, index in record.stripe_account.object.legal_entity.additional_owners}\" class=\"p1 border\"> <virtual if=\"{fieldsNeeded('legal_entity.additional_owners.' + index + '.first_name')}\"> <label>First Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.first_name}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][first_name]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.additional_owners.' + index + '.last_name')}\"> <label>Last Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.last_name}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][last_name]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.additional_owners.' + index + '.dob')}\"> <label>Date of Birth</label> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-4 px1\"> <label>Day *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.dob.day}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][dob][day]\"> </div> <div class=\"sm-col sm-col-4 px1\"> <label>Month *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.dob.month}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][dob][month]\"> </div> <div class=\"sm-col sm-col-4 px1\"> <label>Year *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.dob.year}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][dob][year]\"> </div> </div> </virtual> <fieldset class=\"mb2 p1 border\" if=\"{fieldsNeeded('legal_entity.additional_owners.' + index + '.address')}\"> <legend><h5>Address</h5></legend> <label>Line1 *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.address.line1}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][address][line1]\"> <label>Line2</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.address.line2}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][address][line2]\"> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-3 px1\"> <label>City *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.address.city}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][address][city]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>Country *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.address.country}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][address][country]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>Postcode *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.address.postal_code}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][address][postal_code]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>State *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.address.state}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][address][state]\"> </div> </div> </fieldset> <virtual if=\"{fieldsNeeded('legal_entity.additional_owners.' + index + '.verification.document')}\"> <label>Verification Document *</label> <input class=\"block col-12 p1 mb2 field\" type=\"file\" data-additional-owners-file-index=\"{index}\" name=\"professional[stripe_account][updates][legal_entity][additional_owners][{index}][identity_document]\"> </virtual> <a class=\"btn btn-small btn-primary\" onclick=\"{removeAdditionalOwner}\">Remove Additional Owner</a> </li> </ol> <a class=\"btn btn-small btn-primary mb2\" onclick=\"{addAdditionalOwner}\">Add Additional Owner</a> </fieldset> </fieldset> <virtual if=\"{fieldsNeeded('legal_entity.verification.document')}\"> <label>Verification Document *</label> <input class=\"block col-12 p1 mb2 field\" type=\"file\" id=\"stripe_account_updates_legal_entity_identity_document\" name=\"professional[stripe_account][updates][legal_entity][identity_document]\"> </virtual> <div if=\"{!_.isEmpty(errors)}\" id=\"error_explanation\"> <ul> <li each=\"{field, messages in errors}\">{field.humanize()} {messages.join(', ')}</li> </ul> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
 	  var _this = this;
@@ -25379,18 +25460,18 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 145 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
-	__webpack_require__(146);
 	
 	__webpack_require__(147);
 	
 	__webpack_require__(148);
 	
 	__webpack_require__(149);
+	
+	__webpack_require__(150);
 	
 	riot.tag2("r-admin-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in attributes}\"> <div if=\"{attr != 'id'}\"> <label for=\"{attr}\">{attr.humanize()}</label> <textarea if=\"{_.isObject(record[attr])}\" class=\"block col-12 mb2 field fixed-height\" name=\"{attr}\">{JSON.stringify(record[attr], null, 2)}</textarea> <input if=\"{!_.isObject(record[attr])}\" class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
 	  var _this = this;
@@ -25498,12 +25579,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 146 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(137);
+	__webpack_require__(138);
 	
 	riot.tag2("r-admin-tender-template-form", "<div class=\"container p2\"> <h1><input type=\"text\" name=\"name\" value=\"{record.name}\" class=\"block col-12 field\" placeholder=\"Name\" oninput=\"{setInputValue}\"></h1> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>When you apply a template to a project, if there isn't Tender on the project it clones itself to project, if Tender exists it apply changes to project's tender </p> <div class=\"sm-col sm-col-9\"> <select name=\"project_ids[]\" id=\"project_ids\" multiple class=\"block col-12 mb2 field\"> <option each=\"{projects}\" value=\"{id}\">#{id} | {name} | {customers[0].profile.first_name} {customers[0].profile.last_name}</option> </select> </div> <div class=\"sm-col sm-col-3 center px1 right-align\"> <a class=\"block center white btn bg-blue {busy: busy}\" onclick=\"{addToProject}\">Apply to Project(s)</a> </div> </div> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -25580,12 +25661,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 147 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(137);
+	__webpack_require__(138);
 	
 	riot.tag2("r-admin-tender-form", "<div class=\"container p2\"> <label for=\"project_id\">Project</label> <select name=\"project_id\" class=\"block col-12 mb2 field\" onchange=\"{setInputValue}\"> <option></option> <option each=\"{projects}\" value=\"{id}\" __selected=\"{record.project_id == id}\">#{id} | {name} | {customers[0].profile.first_name} {customers[0].profile.last_name}</option> </select> <span if=\"{errors.project_id}\" class=\"inline-error\">{errors.project_id}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>Add a Professional to this Project by creating a Quote from this tender. Choosen pro will be shortlisted.</p> <div class=\"sm-col sm-col-9\"> <select name=\"professional_ids[]\" id=\"professional_ids\" multiple class=\"block col-12 mb2 field\"> <option each=\"{professionals}\" value=\"{id}\">#{id} | {profile.first_name} | {profile.last_name}</option> </select> </div> <div class=\"sm-col sm-col-3 px1 center white\"> <a class=\"btn bg-blue {busy: busy}\" onclick=\"{createQuote}\">Create Quote!</a> </div> </div> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -25669,12 +25750,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 148 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(137);
+	__webpack_require__(138);
 	
 	riot.tag2("r-admin-quote-form", "<div class=\"container p2\"> <label for=\"project\">Project</label> <select name=\"project_id\" class=\"block col-12 mb2 field\" onchange=\"{setInputValue}\"> <option></option> <option each=\"{projects}\" value=\"{id}\" __selected=\"{record.project_id == id}\">#{id} | {name} | {customers[0].profile.first_name} {customers[0].profile.last_name}</option> </select> <span if=\"{errors.project}\" class=\"inline-error\">{errors.project}</span> <label for=\"project_id\">Professional</label> <select name=\"professional_id\" class=\"block col-12 mb2 field\" onchange=\"{setInputValue}\"> <option></option> <option each=\"{professionals}\" value=\"{id}\" __selected=\"{record.professional_id == id}\">#{id} | {profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"tender_id\">Tender</label> <select name=\"tender_id\" class=\"block col-12 mb2 field\" onchange=\"{setInputValue}\"> <option></option> <option each=\"{tenders}\" value=\"{id}\" __selected=\"{record.tender_id == id}\">#{id}</option> </select> <span if=\"{errors.tender_id}\" class=\"inline-error\">{errors.project}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <h3 class=\"right-align m0 py3\">Estimated total: {tenderTotal()}</h3> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{record.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> <a if=\"{record.id}\" class=\"btn bg-red btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </a> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -25755,7 +25836,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 149 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -25831,68 +25912,6 @@
 	
 	    _this.update({ busy: true, errors: null });
 	    _this.opts.api[opts.resource].refund(opts.id).fail(_this.errorHandler).then(_this.updateReset);
-	  };
-	});
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ },
-/* 150 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
-	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
-	
-	var Pikaday = _interopRequire(__webpack_require__(133));
-	
-	riot.tag2("r-payment-form", "<h2 class=\"center mt0 mb2\">Payment Form</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/payments\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <input type=\"hidden\" name=\"quote_id\" value=\"{record.quote_id}\"> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <input class=\"block col-12 mb2 field\" name=\"amount\" value=\"{record.amount}\" placeholder=\"Amount\" type=\"{'number'}\"> <span if=\"{errors['amount']}\" class=\"inline-error\">{errors['amount']}</span> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"due_date\" value=\"{record.due_date}\" placeholder=\"Due Date\"> <span if=\"{errors['due_date']}\" class=\"inline-error\">{errors['due_date']}</span> <textarea class=\"block col-12 mb2 field\" type=\"text\" name=\"description\" placeholder=\"Description\">{record.description}</textarea> <span if=\"{errors['description']}\" class=\"inline-error\">{errors['description']}</span> <div if=\"{errors}\" id=\"error_explanation\"> <ul> <li each=\"{field, messages in errors}\">{field.humanize()} {messages.join(',')}</li> </ul> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Create</button> </form>", "", "", function (opts) {
-	  var _this = this;
-	
-	  this.on("mount", function () {
-	    var picker = new Pikaday({
-	      showTime: false,
-	      field: _this.due_date,
-	      onSelect: function (date) {
-	        _this.record.due_date = picker.toString();
-	        _this.update();
-	      }
-	    });
-	  });
-	
-	  this.updateRecord = function (record) {
-	    _this.update({ record: record });
-	  };
-	
-	  if (!this.opts.id) {
-	    this.record = {
-	      project_id: opts.quote.project_id,
-	      quote_id: opts.quote.id,
-	      professional_id: this.currentAccount.user_id };
-	  } else {
-	    this.opts.api.payments.show(this.opts.id).fail(this.errorHandler).then(this.updateRecord);
-	  }
-	
-	  this.submit = function (e) {
-	    e.preventDefault();
-	
-	    var data = _this.serializeForm(_this.form);
-	
-	    if (_.isEmpty(data) || _.isEmpty(data.due_date)) {
-	      $(_this.form).animateCss("shake");
-	      return;
-	    }
-	
-	    _this.update({ busy: true, errors: null });
-	
-	    if (_this.opts.id) {
-	      _this.opts.api.payments.update(opts.id, data).fail(_this.errorHandler).then(_this.updateReset);
-	    } else {
-	      _this.opts.api.payments.create(data).fail(_this.errorHandler).then(function (record) {
-	        _this.updateReset();
-	        _this.opts.id = record.id;
-	        _this.closeModal();
-	      });
-	    }
 	  };
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))

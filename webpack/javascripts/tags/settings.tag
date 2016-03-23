@@ -2,6 +2,55 @@ import Pikaday from 'pikaday-time/pikaday'
 
 <r-settings-notifications>
   <h2 class="mt0">Notifications</h2>
+
+  <form name="form" onsubmit="{submit}">
+    <div each="{not, i in notifications}">
+      <label>
+        <input type="checkbox" name="notifications[{not}]" checked="{currentAccount.notifications[not]}" >
+        {not.humanize()}
+      </label>
+    </div>
+
+    <button type="submit" class="block col-12 mb2 btn btn-big btn-primary {busy: busy}">Save</button>
+
+  </form>
+
+  <script>
+  this.notifications = [
+    'added_to_shortlist',
+    'added_to_professionals',
+    'appointment_canceled',
+    'lead',
+    'new_appointment',
+    'new_payment',
+    'new_project',
+    'payment_approved',
+    'payment_canceled',
+    'payment_paid',
+    'payment_refunded',
+    'quote_accepted',
+    'quote_submitted',
+    'welcome'
+  ]
+  this.submit = (e) => {
+
+    e.preventDefault()
+
+    let data = this.serializeForm(this.form)
+
+    if (_.isEmpty(data)) {
+      $(this.form).animateCss('shake')
+      return
+    }
+
+    this.update({busy: true, errors: null})
+
+    this.opts.api[this.currentAccount.user_type.plural().toLowerCase()].update(this.currentAccount.user_id, data)
+    .fail(this.errorHandler)
+    .then(this.updateReset)
+  }
+  </script>
+
 </r-settings-notifications>
 
 <r-settings-account>
