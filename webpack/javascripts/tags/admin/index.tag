@@ -1,3 +1,4 @@
+import './_admin_form.tag'
 import './_tender_template_form.tag'
 import './_tender_form.tag'
 import './_quote_form.tag'
@@ -6,34 +7,6 @@ import './_account_form.tag'
 import './_lead_form.tag'
 import './_project_form.tag'
 
-
-
-<r-admin-form>
-
-  <h2 class="center mt0 mb2">{ opts.resource.humanize() }</h2>
-
-  <form name="form" class="sm-col-12 left-align" onsubmit="{ submit }" >
-
-    <div each="{attr, i in attributes}">
-      <div if="{attr != 'id'}">
-      <label for="{attr}">{attr.humanize()}</label>
-      <textarea if="{_.isObject(record[attr])}" class="block col-12 mb2 field fixed-height" name="{attr}:object">{JSON.stringify(record[attr], null, 2)}</textarea>
-      <input  if="{!_.isObject(record[attr])}" class="block col-12 mb2 field"
-      type="text" name="{attr}" value="{record[attr]}"/>
-      <span if="{errors[attr]}" class="inline-error">{errors[attr]}</span>
-      </div>
-    </div>
-
-    <button type="submit" class="block col-12 mb2 btn btn-big btn-primary {busy: busy}">Save</button>
-
-  </form>
-
-  <script>
-  this.mixin('adminForm')
-  </script>
-
-</r-admin-form>
-
 <r-admin-index>
 
   <yield to="header">
@@ -41,8 +14,8 @@ import './_project_form.tag'
   </yield>
 
   <div class="container p2">
-    <form submit="{ search }">
-      <input type="text" class="block mb2 col-12 field" placeholder="Search { opts.resource }" />
+    <form onsubmit="{ search }">
+      <input type="text" name="query" class="block mb2 col-12 field" placeholder="Search { opts.resource }" />
     </form>
 
     <div class="overflow-auto">
@@ -108,8 +81,9 @@ import './_project_form.tag'
       this.opts.api[opts.resource].delete(e.item.record.id)
     }
   }
-  this.search = () => {
-    this.opts.api[opts.resource].index()
+  this.search = (e) => {
+    e.preventDefault()
+    this.opts.api[opts.resource].index({query: this.query.value})
   }
 
   </script>

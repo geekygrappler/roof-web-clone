@@ -7,10 +7,10 @@ import '../projects/_option_group_input.tag'
 
   <form name="form" class="edit_project" onsubmit="{ submit }" autocomplete="off">
 
-    <label for="account_id">Customer</label>
+    <label for="account_id">Account</label>
     <select name="account_id" class="block col-12 mb2 field" onchange="{setInputValue}">
       <option></option>
-      <option each="{user, i in customers}" value="{user.account_id}" selected="{record.account_id == user.account_id}">#{user.account_id} | {user.profile.first_name} {user.profile.last_name}</option>
+      <option each="{accounts}" value="{id}" selected="{record.account_id == id}">#{id} | {user_type} | {profile.first_name} {profile.last_name}</option>
     </select>
     <span if="{errors.account_id}" class="inline-error">{errors.account_id}</span>
 
@@ -123,7 +123,7 @@ import '../projects/_option_group_input.tag'
     this.record[e.target.name] = e.target.value
   }
 
-  this.loadResources('customers')
+  this.loadResources('accounts')
   </script>
 
 </r-admin-project-form>
