@@ -54,7 +54,7 @@ riot.mixin({
     return xhr
   },
   formatCurrency: function (number) {
-    return numeral(number).format('$0,0.00');
+    return numeral(number / 100).format('$0,0.00');
   },
   formatTime: function(time) {
     return moment(time).format('MM Do YY')
@@ -109,5 +109,8 @@ riot.mixin({
   },
   updateReset: function () {
     this.update({busy: false, errors: null})
+  },
+  closeModal: function () {
+    $('r-modal')[0]._tag.close()
   }
 })

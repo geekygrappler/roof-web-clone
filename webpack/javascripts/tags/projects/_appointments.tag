@@ -83,7 +83,7 @@ import Pikaday from 'pikaday-time/pikaday'
     .fail(this.errorHandler)
     .then(record => {
       this.update({record: record, busy:false})
-      $(this.form).html(`You appoingment has been scheduled`)
+      this.closeModal()
     })
   }
   </script>

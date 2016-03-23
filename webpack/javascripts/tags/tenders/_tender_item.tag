@@ -14,7 +14,7 @@
       </div>
 
       <div if="{ parent.headers.price }" class="col sm-col-{ parent.headers.price } col-{parent.opts.name == 'task' ? 3 : 2} center">
-        <input type="number" name="price" value="{ parent.opts.name == 'task' ? price : (supplied ? price : 0) }"
+        <input type="number" name="price" value="{ parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0) }"
         disabled="{ parent.opts.name == 'material' && !supplied }" min="0" class="fit field inline-input center" oninput="{ input }" />
       </div>
 

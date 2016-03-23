@@ -193,3 +193,9 @@ r-tender-item-group .border-left {
 .cursor-default{
   cursor: default;
 }
+
+.tab-nav a.active{
+  border-bottom: 1px solid $white;
+  position: relative;
+  top: 1px;
+}

@@ -125,6 +125,10 @@ import './admin/index.tag'
     })
   })
 
+  riot.route(() => {
+    riot.route(`/projects`, 'Projects', true)
+  })
+
   if (this.currentAccount && this.currentAccount.isAdministrator) {
 
       riot.route(`admin/*`, (resource) => {

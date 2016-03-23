@@ -2803,6 +2803,7 @@
 	    window.location.href = apis.unauthenticatedRoot;
 	  });
 	};
+	
 	apis.registrations.signup = function (data) {
 	  return request({
 	    type: "post",
@@ -2831,6 +2832,7 @@
 	    return apis.currentAccount;
 	  });
 	};
+	
 	apis.quotes.submit = function (id) {
 	  return request({
 	    url: "/api/quotes/" + id + "/submit",
@@ -2883,6 +2885,57 @@
 	    apis.invitations.trigger("accept.success", data);
 	    apis.registrations.trigger("signup.success", data.invitee);
 	    return data;
+	  });
+	};
+	
+	apis.payments.approve = function (id, data) {
+	  return request({
+	    url: "/api/payments/" + id + "/approve",
+	    type: "put",
+	    data: { payment: data }
+	  }).fail(function (xhr) {
+	    apis.payments.trigger("approve.fail", xhr);
+	    return xhr;
+	  }).then(function () {
+	    apis.payments.trigger("approve.success", id);
+	    return id;
+	  });
+	};
+	apis.payments.refund = function (id) {
+	  return request({
+	    url: "/api/payments/" + id + "/refund",
+	    type: "post"
+	  }).fail(function (xhr) {
+	    apis.payments.trigger("refund.fail", xhr);
+	    return xhr;
+	  }).then(function () {
+	    apis.payments.trigger("refund.success", id);
+	    return id;
+	  });
+	};
+	apis.payments.pay = function (id, token) {
+	  return request({
+	    url: "/api/payments/" + id + "/pay",
+	    type: "post",
+	    data: { token: token }
+	  }).fail(function (xhr) {
+	    apis.payments.trigger("pay.fail", xhr);
+	    return xhr;
+	  }).then(function () {
+	    apis.payments.trigger("pay.success", id);
+	    return id;
+	  });
+	};
+	apis.payments.cancel = function (id) {
+	  return request({
+	    url: "/api/payments/" + id + "/cancel",
+	    type: "delete"
+	  }).fail(function (xhr) {
+	    apis.payments.trigger("cancel.fail", xhr);
+	    return xhr;
+	  }).then(function () {
+	    apis.payments.trigger("cancel.success", id);
+	    return id;
 	  });
 	};
 	
@@ -3082,7 +3135,7 @@
 	    return xhr;
 	  },
 	  formatCurrency: function formatCurrency(number) {
-	    return numeral(number).format("$0,0.00");
+	    return numeral(number / 100).format("$0,0.00");
 	  },
 	  formatTime: function formatTime(time) {
 	    return moment(time).format("MM Do YY");
@@ -3143,6 +3196,9 @@
 	  },
 	  updateReset: function updateReset() {
 	    this.update({ busy: false, errors: null });
+	  },
+	  closeModal: function closeModal() {
+	    $("r-modal")[0]._tag.close();
 	  }
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
@@ -17606,6 +17662,10 @@
 	    });
 	  });
 	
+	  riot.route(function () {
+	    riot.route("/projects", "Projects", true);
+	  });
+	
 	  if (this.currentAccount && this.currentAccount.isAdministrator) {
 	
 	    riot.route("admin/*", function (resource) {
@@ -18516,7 +18576,7 @@
 	
 	    _this.opts.api.appointments.create(data).fail(_this.errorHandler).then(function (record) {
 	      _this.update({ record: record, busy: false });
-	      $(_this.form).html("You appoingment has been scheduled");
+	      _this.closeModal();
 	    });
 	  };
 	});
@@ -19928,13 +19988,20 @@
 	      _this.opts.api.payments.create(data).fail(_this.errorHandler).then(function (record) {
 	        _this.updateReset();
 	        _this.opts.id = record.id;
+	        _this.closeModal();
 	      });
 	    }
 	  };
 	});
 	
-	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <p if=\"{hasNothing()}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <div if=\"{hasNothing() && currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{hasNothing() && currentAccount.isCustomer}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> <div if=\"{hasNothing() && currentAccount.isAdministrator}\" class=\"mt2\"> <a class=\"btn btn-primary mr1\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isCustomer}\"> Here is your <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Actual <strong>quotes</strong> from Professionals will appear here when they submit them. </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isProfessional}\"> Here is the the <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Click <strong>Clone</strong> button to get your copy and work on it. </p> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Tender</span> <p class=\"overflow-hidden m0 mxn2 p1 border-top\"> <a class=\"btn btn-small\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Open</a> <a class=\"btn btn-small btn-primary\" if=\"{currentAccount.isProfessional && (quotes && quotes.length == 0)}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span if=\"{accepted_at}\" class=\"inline-block align-middle h6 mb1 px1 border bg-lime navy pill right mt2\">Accepted</span> <span if=\"{!accepted_at && submitted_at}\" class=\"inline-block align-middle h6 mb1 px1 border pill mr1\">Submitted</span> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2 mr1\">Quote</span> <span class=\"italic mt2 mr1\">by {professional.profile.first_name} {professional.profile.last_name}</span> <div class=\"clearfix overflow-hidden m0 mxn2 p1 {'bg-lime': accepted_at, 'bg-yellow': (submitted_at && !accepted_at), 'bg-gray white': (!submitted_at && !accepted_at)}\"> <span if=\"{!accepted_at && submitted_at}\"><i class=\"fa fa-clock-o mr1\"></i>submitted at: {fromNow(submitted_at)}</i></span> <span if=\"{accepted_at}\"><i class=\"fa fa-clock-o mr1\"></i>accepted at: {fromNow(accepted_at)}</i></span> <div class=\"mt1\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Open</a> <a class=\"btn btn-small bg-darken-2\" if=\"{currentAccount.isProfessional && !accepted_at}\" onclick=\"{delete}\">Delete</a> <a class=\"btn btn-small bg-darken-2\" if=\"{currentAccount.isProfessional}\" onclick=\"{addPayment}\">Add Payment</a> </div> </div> </div> </li> </ul>", "", "", function (opts) {
+	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <p if=\"{hasNothing()}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <div if=\"{hasNothing() && currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{hasNothing() && currentAccount.isCustomer}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> <div if=\"{hasNothing() && currentAccount.isAdministrator}\" class=\"mt2\"> <a class=\"btn btn-primary mr1\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isCustomer}\"> Here is your <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Actual <strong>quotes</strong> from Professionals will appear here when they submit them. </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isProfessional}\"> Here is the the <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Click <strong>Clone</strong> button to get your copy and work on it. </p> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Tender</span> <p class=\"overflow-hidden m0 mxn2 p1 border-top\"> <a class=\"btn btn-small\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Open</a> <a class=\"btn btn-small btn-primary\" if=\"{currentAccount.isProfessional && (quotes && quotes.length == 0)}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2 mr1\">Quote</span> <div class=\"tab-nav\"> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'summary'}\" onclick=\"{changeTab}\" rel=\"summary\">Summary</a> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'payments'}\" onclick=\"{changeTab}\" rel=\"payments\">Payments</a> </div> <div class=\"tabs m0 mxn2 border-top\"> <div if=\"{activeTab == 'summary'}\"> <div class=\"clearfix px2 mt2 mb1\" if=\"{submitted_at}\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-clock-o mr1\"></i> Submitted at:</div> <div class=\"sm-col sm-col-6\">{fromNow(submitted_at)}</div> </div> <div class=\"clearfix px2 mb1\" if=\"{accepted_at}\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-clock-o mr1\"></i> Accepted at:</div> <div class=\"sm-col sm-col-6\">{fromNow(accepted_at)}</div> </div> <div class=\"clearfix px2 mb1\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-user mr1\"></i> Professional:</div> <div class=\"sm-col sm-col-6\">{professional.profile.first_name} {professional.profile.last_name}</div> </div> <div class=\"clearfix overflow-hidden p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Open</a> <a class=\"btn btn-small bg-darken-2\" if=\"{currentAccount.isProfessional && !accepted_at}\" onclick=\"{delete}\">Delete</a> </div> </div> <div if=\"{activeTab == 'payments'}\"> <table class=\"table-light mt2\"> <thead> <tr> <th>Amount</th> <th>Due Date</th> <th>Status</th> <th></th> </tr> </thead> <tbody> <tr each=\"{payments}\"> <th>{formatCurrency(amount)}</th> <th>{formatTime(due_date)}</th> <th>{parsePaymentStatus()}</th> <th> <a if=\"{currentAccount.isProfessional && (parsePaymentStatus() == 'payable' || parsePaymentStatus() == 'waiting')}\" class=\"btn btn-small bg-red white h6 {busy: busy}\" onclick=\"{cancelPayment}\">Cancel</a> <button if=\"{currentAccount.isCustomer && parsePaymentStatus() == 'payable'}\" class=\"btn btn-small bg-green white h6 {busy: busy}\" __disabled=\"{busy}\" onclick=\"{payPayment}\">Pay</button> </th> </tr> </tbody> </table> <table if=\"{payments.length > 0}\" class=\"table-light mt2\"> <thead> <tr> <th>Paid</th> <th if=\"{refunded_amount > 0}\">Refunded</th> <th if=\"{declined_amount > 0}\">Declined</th> <th if=\"{currentAccount.isProfessional}\">Approved</th> </tr> </thead> <tbody> <tr> <th>{formatCurrency(paid_amount)}</th> <th if=\"{refunded_amount > 0}\">{formatCurrency(refunded_amount)}</th> <th if=\"{declined_amount > 0}\">{formatCurrency(declined_amount)}</th> <th if=\"{currentAccount.isProfessional}\">{formatCurrency(approved_amount)}</th> </tr> </tbody> </table> <div if=\"{currentAccount.isProfessional}\" class=\"clearfix overflow-hidden p1 bg-yellow\"> <div class=\"mt1\"> <a class=\"btn btn-small bg-darken-2\" onclick=\"{openPaymentForm}\">Add Payment</a> </div> </div> </div> </div> </div> </li> </ul>", "", "", function (opts) {
 	  var _this = this;
+	
+	  this.activeTab = "summary";
+	  this.changeTab = function (e) {
+	    e.preventDefault();
+	    _this.update({ activeTab: e.target.rel });
+	  };
 	
 	  this.hasNothing = function () {
 	    return _.isEmpty(_this.project.tender) && _.isEmpty(_this.quotes);
@@ -19945,6 +20012,12 @@
 	    opts.api.quotes.on("index.success", _this.updateQuote);
 	    opts.api.quotes.on("create.success", _this.addQuote);
 	    opts.api.quotes.on("delete.success", _this.removeQuote);
+	
+	    opts.api.payments.on("create.success", _this.addPayment);
+	    opts.api.payments.on("cancel.success", _this.removePayment);
+	    opts.api.payments.on("cancel.fail", _this.errorHandler);
+	    opts.api.payments.on("pay.success", _this.reload);
+	    opts.api.payments.on("pay.fail", _this.errorHandler);
 	    opts.api.quotes.index({ project_id: opts.id });
 	  });
 	  this.on("unmount", function () {
@@ -19952,7 +20025,17 @@
 	    opts.api.quotes.off("index.success", _this.updateQuote);
 	    opts.api.quotes.off("create.success", _this.addQuote);
 	    opts.api.quotes.off("delete.success", _this.removeQuote);
+	
+	    opts.api.payments.off("create.success", _this.addPayment);
+	    opts.api.payments.off("cancel.success", _this.removePayment);
+	    opts.api.payments.off("cancel.fail", _this.errorHandler);
+	    opts.api.payments.off("pay.success", _this.reload);
+	    opts.api.payments.off("pay.fail", _this.errorHandler);
 	  });
+	
+	  this.reload = function () {
+	    return opts.api.quotes.index({ project_id: opts.id });
+	  };
 	
 	  this.updateQuote = function (quotes) {
 	    return _this.update({ quotes: quotes });
@@ -19990,7 +20073,7 @@
 	    }
 	  };
 	
-	  this.addPayment = function (e) {
+	  this.openPaymentForm = function (e) {
 	    e.preventDefault();
 	    riot.mount("r-modal", {
 	      content: "r-payment-form",
@@ -20000,8 +20083,74 @@
 	    });
 	  };
 	
+	  this.cancelPayment = function (e) {
+	    e.preventDefault();
+	    if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
+	      opts.api.payments.cancel(e.item.id);
+	    }
+	  };
+	
+	  this.stripeHandler = StripeCheckout.configure({
+	    key: "pk_test_QGae73XobbImg3jsMj81tPRA",
+	    //image: '/img/documentation/checkout/marketplace.png',
+	    locale: "auto",
+	    currency: "gbp",
+	    token: function (token) {
+	      _this.update({ busy: true });
+	      _this.opts.api.payments.pay(_this.payment.id, token.id);
+	    }
+	  });
+	  // Close Checkout on page navigation
+	  $(window).on("popstate", function () {
+	    this.stripeHandler.close();
+	  });
+	
+	  this.payPayment = function (e) {
+	    e.preventDefault();
+	    if (_this.currentAccount.paying) {
+	      _this.update({ busy: true });
+	      _this.opts.api.payments.pay(e.item.id);
+	    } else {
+	      _this.payment = e.item;
+	      // Open Checkout with further options
+	      _this.stripeHandler.open({
+	        //name: 'Stripe.com',
+	        //description: '2 widgets',
+	        amount: e.item.amount
+	      });
+	    }
+	  };
+	
+	  this.addPayment = function (payment) {
+	    var quote = _.findWhere(_this.quotes, { id: payment.quote_id });
+	    if (quote && !_.findWhere(quote.payments, { id: payment.id })) {
+	      quote.payments.push(payment);
+	    }
+	    _this.update();
+	  };
+	
+	  this.removePayment = function (id) {
+	    _.each(_this.quotes, function (quote) {
+	      var _id = _.findIndex(quote.payments, function (p) {
+	        return p.id === id;
+	      });
+	      if (_id > -1) quote.payments.splice(_id, 1);
+	    });
+	    _this.update();
+	  };
+	
+	  this.parsePaymentStatus = function () {
+	    return this.canceled_at ? "canceled" : this.paid_at ? "paid" : this.declined_at ? "declined" : this.refunded_at ? "refunded" : this.approved_at ? "payable" : "waiting";
+	  };
+	
+	  this.parseQuoteStatus = function () {
+	    return this.accepted_at ? "accepted" : this.submitted_at ? "submitted" : "waiting";
+	  };
+	
 	  this.mixin("projectTab");
 	});
+	// Use the token to create the charge with a server-side script.
+	// You can access the token ID with `token.id`
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
@@ -20107,6 +20256,8 @@
 	
 	var riot = _interopRequire(__webpack_require__(1));
 	
+	var VAT = 20;
+	
 	riot.mixin("tenderMixin", {
 	  warnUnsavedChanges: function warnUnsavedChanges() {
 	    if (!this.saved) {
@@ -20183,7 +20334,7 @@
 	        return total + (item.supplied ? item.price * item.quantity : 0);
 	      }, 0);
 	      if (formatted) {
-	        return _this.formatCurrency(itemTotal + itemTotal * 20 / 100 + materialTotal);
+	        return _this.formatCurrency(itemTotal + itemTotal * VAT / 100 + materialTotal);
 	      } else {
 	        return [itemTotal, materialTotal];
 	      }
@@ -24905,7 +25056,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-tender-item", "<li class=\"relative\"> <div if=\"{opts.border_cleaner}\" class=\"border-cleaner absolute\"></div> <div class=\"clearfix animate p1 border-bottom\"> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> <input type=\"text\" name=\"name\" value=\"{display_name || name}\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputname}\"> <hr class=\"sm-hide\"> </div> <div if=\"{parent.headers.quantity}\" class=\"col sm-col-{parent.headers.quantity} col-3 center\"> <input name=\"quantity\" value=\"{quantity}\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.price}\" class=\"col sm-col-{parent.headers.price} col-{parent.opts.name == 'task' ? 3 : 2} center\"> <input name=\"price\" value=\"{parent.opts.name == 'task' ? price : (supplied ? price : 0)}\" __disabled=\"{parent.opts.name == 'material' && !supplied}\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.total_cost}\" class=\"col sm-col-{parent.headers.total_cost} col-3 center\"> {this.formatCurrency(parent.opts.name == 'task' ? (price * quantity) : (supplied ? price * quantity : '0'))} </div> <div if=\"{parent.headers.supplied}\" class=\"col sm-col-{parent.headers.supplied} col-1 center\"> <input if=\"{parent.opts.name == 'material'}\" type=\"checkbox\" name=\"supplied\" __checked=\"{supplied}\" class=\"align-middle\" onchange=\"{input}\"> </div> <div if=\"{parent.headers.actions}\" class=\"col sm-col-{parent.headers.actions} col-2 center\"> <a href=\"#\" class=\"btn btn-small navy\" onclick=\"{removeItem}\"><i class=\"fa fa-trash-o\"></i></a> </div> </div> </li>", "", "", function (opts) {
+	riot.tag2("r-tender-item", "<li class=\"relative\"> <div if=\"{opts.border_cleaner}\" class=\"border-cleaner absolute\"></div> <div class=\"clearfix animate p1 border-bottom\"> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> <input type=\"text\" name=\"name\" value=\"{display_name || name}\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputname}\"> <hr class=\"sm-hide\"> </div> <div if=\"{parent.headers.quantity}\" class=\"col sm-col-{parent.headers.quantity} col-3 center\"> <input name=\"quantity\" value=\"{quantity}\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.price}\" class=\"col sm-col-{parent.headers.price} col-{parent.opts.name == 'task' ? 3 : 2} center\"> <input name=\"price\" value=\"{parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0)}\" __disabled=\"{parent.opts.name == 'material' && !supplied}\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.total_cost}\" class=\"col sm-col-{parent.headers.total_cost} col-3 center\"> {this.formatCurrency(parent.opts.name == 'task' ? (price * quantity) : (supplied ? price * quantity : '0'))} </div> <div if=\"{parent.headers.supplied}\" class=\"col sm-col-{parent.headers.supplied} col-1 center\"> <input if=\"{parent.opts.name == 'material'}\" type=\"checkbox\" name=\"supplied\" __checked=\"{supplied}\" class=\"align-middle\" onchange=\"{input}\"> </div> <div if=\"{parent.headers.actions}\" class=\"col sm-col-{parent.headers.actions} col-2 center\"> <a href=\"#\" class=\"btn btn-small navy\" onclick=\"{removeItem}\"><i class=\"fa fa-trash-o\"></i></a> </div> </div> </li>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.on("mount", function () {});
@@ -25300,7 +25451,9 @@
 	
 	__webpack_require__(148);
 	
-	riot.tag2("r-admin-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in attributes}\"> <div if=\"{attr != 'id'}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <textarea if=\"{_.isObject(record[attr])}\" class=\"block col-12 mb2 field fixed-height\">{JSON.stringify(record[attr], null, 2)}</textarea> <input if=\"{!_.isObject(record[attr])}\" class=\"block col-12 mb2 field\" type=\"text\" name=\"{resource.singular()}[{attr}]\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
+	__webpack_require__(149);
+	
+	riot.tag2("r-admin-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in attributes}\"> <div if=\"{attr != 'id'}\"> <label for=\"{attr}\">{attr.humanize()}</label> <textarea if=\"{_.isObject(record[attr])}\" class=\"block col-12 mb2 field fixed-height\" name=\"{attr}\">{JSON.stringify(record[attr], null, 2)}</textarea> <input if=\"{!_.isObject(record[attr])}\" class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.on("mount", function () {
@@ -25358,7 +25511,7 @@
 	  };
 	});
 	
-	riot.tag2("r-admin-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form submit=\"{search}\"> <input type=\"text\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table class=\"table-light overflow-hidden bg-white border rounded\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td each=\"{attr, value in record}\">{value}</td> <td> <button class=\"btn btn-small\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small\" onclick=\"{destroy}\"> <i class=\"fa fa-trash\"></i> </button> </td> </tr> <tbody> </table> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form submit=\"{search}\"> <input type=\"text\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td each=\"{attr, value in record}\">{value}</td> <td> <button class=\"btn btn-small\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small\" onclick=\"{destroy}\"> <i class=\"fa fa-trash\"></i> </button> </td> </tr> <tbody> </table> </div> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.headers = [];
@@ -25396,7 +25549,7 @@
 	  };
 	  this.destroy = function (e) {
 	    if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
-	      _this.opts.api[opts.resource]["delete"](e.item.id);
+	      _this.opts.api[opts.resource]["delete"](e.item.record.id);
 	    }
 	  };
 	  this.search = function () {
@@ -25659,6 +25812,87 @@
 	  };
 	
 	  this.mixin("tenderMixin");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 149 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-admin-payment-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in ['fee', 'amount']}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{parseInt(record[attr]) * 0.01}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> <div each=\"{attr, i in ['due_date', 'description']}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> <div class=\"right-align\"> <button type=\"submit\" class=\"mb2 btn btn-big btn-primary {busy: busy}\">Save</button> <a if=\"{record.id && !record.approved_at}\" onclick=\"{approve}\" class=\"mb2 btn btn-big bg-green white {busy: busy}\">Approve</a> <a if=\"{record.id && record.paid_at && !record.refunded_at}\" onclick=\"{refund}\" class=\"mb2 btn btn-big bg-red white {busy: busy}\">Refund</a> </div> </form>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.on("mount", function () {
+	    _this.opts.api[opts.resource].on("new.fail", _this.errorHandler);
+	    _this.opts.api[opts.resource].on("show.fail", _this.errorHandler);
+	    _this.opts.api[opts.resource].on("update.fail", _this.errorHandler);
+	    _this.opts.api[opts.resource].on("new.success", _this.updateRecord);
+	    _this.opts.api[opts.resource].on("show.success", _this.updateRecord);
+	    _this.opts.api[opts.resource].on("update.success", _this.update);
+	    if (opts.id) {
+	      _this.opts.api[opts.resource].show(opts.id);
+	      history.pushState(null, null, "/app/admin/" + opts.resource + "/" + opts.id + "/edit");
+	    } else {
+	      _this.opts.api[opts.resource]["new"]();
+	      history.pushState(null, null, "/app/admin/" + opts.resource + "/new");
+	    }
+	  });
+	
+	  this.on("unmount", function () {
+	    _this.opts.api[opts.resource].off("new.fail", _this.errorHandler);
+	    _this.opts.api[opts.resource].off("show.fail", _this.errorHandler);
+	    _this.opts.api[opts.resource].off("update.fail", _this.errorHandler);
+	    _this.opts.api[opts.resource].off("new.success", _this.updateRecord);
+	    _this.opts.api[opts.resource].off("show.success", _this.updateRecord);
+	    _this.opts.api[opts.resource].off("update.success", _this.update);
+	  });
+	
+	  this.updateRecord = function (record) {
+	    _this.update({ record: record, attributes: _.keys(record) });
+	  };
+	
+	  this.submit = function (e) {
+	    if (e) e.preventDefault();
+	
+	    var data = _this.serializeForm(_this.form);
+	
+	    if (_.isEmpty(data)) {
+	      $(_this.form).animateCss("shake");
+	      return;
+	    }
+	
+	    _this.update({ busy: true, errors: null });
+	
+	    if (_this.opts.id) {
+	      _this.opts.api[opts.resource].update(opts.id, data).fail(_this.errorHandler).then(function (id) {
+	        return _this.update({ busy: false });
+	      });
+	    } else {
+	      _this.opts.api[opts.resource].create(data).fail(_this.errorHandler).then(function (record) {
+	        _this.update({ record: record, busy: false });
+	        _this.opts.id = record.id;
+	        history.pushState(null, null, "/app/admin/" + opts.resource + "/" + record.id + "/edit");
+	      });
+	    }
+	  };
+	
+	  this.approve = function (e) {
+	    e.preventDefault();
+	
+	    var data = _this.serializeForm(_this.form);
+	
+	    _this.update({ busy: true, errors: null });
+	    _this.opts.api[opts.resource].approve(opts.id, data).fail(_this.errorHandler).then(_this.updateReset);
+	  };
+	
+	  this.refund = function (e) {
+	    e.preventDefault();
+	
+	    _this.update({ busy: true, errors: null });
+	    _this.opts.api[opts.resource].refund(opts.id).fail(_this.errorHandler).then(_this.updateReset);
+	  };
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 

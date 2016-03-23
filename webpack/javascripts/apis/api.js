@@ -175,6 +175,7 @@ apis.sessions.signout = function (creds) {
     window.location.href = apis.unauthenticatedRoot
   })
 }
+
 apis.registrations.signup = function (data) {
   return request({
     type: 'post',
@@ -203,6 +204,7 @@ apis.registrations.update = function (id, data) {
     return apis.currentAccount
   })
 }
+
 apis.quotes.submit = function (id) {
   return request({
     url: `/api/quotes/${id}/submit`,
@@ -263,6 +265,65 @@ apis.invitations.accept = function (data) {
     apis.invitations.trigger('accept.success', data)
     apis.registrations.trigger('signup.success', data.invitee)
     return data
+  })
+}
+
+apis.payments.approve = function (id, data) {
+  return request({
+    url: `/api/payments/${id}/approve`,
+    type: 'put',
+    data: {payment: data}
+  })
+  .fail((xhr) => {
+    apis.payments.trigger('approve.fail', xhr)
+    return xhr
+  })
+  .then(() => {
+    apis.payments.trigger('approve.success', id)
+    return id
+  })
+}
+apis.payments.refund = function (id) {
+  return request({
+    url: `/api/payments/${id}/refund`,
+    type: 'post'
+  })
+  .fail((xhr) => {
+    apis.payments.trigger('refund.fail', xhr)
+    return xhr
+  })
+  .then(() => {
+    apis.payments.trigger('refund.success', id)
+    return id
+  })
+}
+apis.payments.pay = function (id, token) {
+  return request({
+    url: `/api/payments/${id}/pay`,
+    type: 'post',
+    data: {token: token}
+  })
+  .fail((xhr) => {
+    apis.payments.trigger('pay.fail', xhr)
+    return xhr
+  })
+  .then(() => {
+    apis.payments.trigger('pay.success', id)
+    return id
+  })
+}
+apis.payments.cancel = function (id) {
+  return request({
+    url: `/api/payments/${id}/cancel`,
+    type: 'delete'
+  })
+  .fail((xhr) => {
+    apis.payments.trigger('cancel.fail', xhr)
+    return xhr
+  })
+  .then(() => {
+    apis.payments.trigger('cancel.success', id)
+    return id
   })
 }
 

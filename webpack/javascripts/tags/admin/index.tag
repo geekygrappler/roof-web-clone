@@ -1,6 +1,7 @@
 import './_tender_template_form.tag'
 import './_tender_form.tag'
 import './_quote_form.tag'
+import './_payment_form.tag'
 
 <r-admin-form>
 
@@ -10,10 +11,10 @@ import './_quote_form.tag'
 
     <div each="{attr, i in attributes}">
       <div if="{attr != 'id'}">
-      <label for="{resource.singular()}[{attr}]">{attr.humanize()}</label>
-      <textarea if="{_.isObject(record[attr])}" class="block col-12 mb2 field fixed-height">{JSON.stringify(record[attr], null, 2)}</textarea>
+      <label for="{attr}">{attr.humanize()}</label>
+      <textarea if="{_.isObject(record[attr])}" class="block col-12 mb2 field fixed-height" name="{attr}">{JSON.stringify(record[attr], null, 2)}</textarea>
       <input  if="{!_.isObject(record[attr])}" class="block col-12 mb2 field"
-      type="text" name="{resource.singular()}[{attr}]" value="{record[attr]}"/>
+      type="text" name="{attr}" value="{record[attr]}"/>
       <span if="{errors[attr]}" class="inline-error">{errors[attr]}</span>
       </div>
     </div>
@@ -95,7 +96,7 @@ import './_quote_form.tag'
 
     <div class="overflow-auto">
       <a class="btn btn-primary" onclick="{ open }">New</a>
-      <table class="table-light overflow-hidden bg-white border rounded">
+      <table class="table-light bg-white">
         <thead class="bg-darken-1">
           <tr>
               <th each="{ attr, i in headers }">{ attr.humanize() }</th>
@@ -152,7 +153,7 @@ import './_quote_form.tag'
   }
   this.destroy = (e) => {
     if (window.confirm(this.ERRORS.CONFIRM_DELETE)) {
-      this.opts.api[opts.resource].delete(e.item.id)
+      this.opts.api[opts.resource].delete(e.item.record.id)
     }
   }
   this.search = () => {

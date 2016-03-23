@@ -1,5 +1,7 @@
 import riot from 'riot'
 
+const VAT = 20
+
 riot.mixin('tenderMixin', {
   warnUnsavedChanges: function () {
     if (!this.saved) return this.ERRORS.CONFIRM_UNSAVED_CHANGES
@@ -69,7 +71,7 @@ riot.mixin('tenderMixin', {
         return total + (item.supplied ? item.price * item.quantity : 0)
       }, 0)
       if (formatted) {
-        return this.formatCurrency(itemTotal + (itemTotal * 20 / 100) + materialTotal)
+        return this.formatCurrency(itemTotal + (itemTotal * VAT / 100) + materialTotal)
       } else {
         return [itemTotal, materialTotal]
       }
