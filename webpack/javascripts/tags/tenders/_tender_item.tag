@@ -1,3 +1,43 @@
+<r-comments>
+  <h3>Comments</h3>
+
+  <blockquote each="{opts.item.comments}" class="clearfix m0 p1 border-left mb1">
+    {text}
+    <a class="btn btn-small border-red red right" onclick="{remove}" if="{account.id == currentAccount.id}">
+      <i class="fa fa-trash-o"></i>
+    </a>
+    <div class="h5 right-align mt1"><strong>{account.name}</strong> <span class="italic">{fromNow(date)}</span></div>
+  </blockquote>
+
+
+  <form name="form" onsubmit="{submit}" class="mt2">
+    <textarea class="block col-12 mb2 field" name="text" placeholder="Leave your comment"></textarea>
+    <button class="btn btn-primary">Comment</button>
+  </form>
+  <script>
+  this.submit = (e) =>{
+    e.preventDefault()
+    this.opts.item.comments = this.opts.item.comments || []
+    this.opts.item.comments.push({
+      text: this.text.value,
+      account: {id: this.currentAccount.id, name: `${this.currentAccount.profile.first_name} ${this.currentAccount.profile.last_name}`},
+      date: new Date(),
+      id: this.opts.item.comments.length + 1
+    })
+    this.text.value = null
+    this.update()
+  }
+  this.remove = (e) => {
+    e.preventDefault()
+    var _id = _.findIndex(this.opts.item.comments, c => c.id == e.item.id)
+    if (_id > -1) {
+      this.opts.item.comments.splice(_id, 1)
+      this.update()
+    }
+  }
+  </script>
+</r-comments>
+
 <r-tender-item>
   <li class="relative">
     <div if="{opts.border_cleaner}" class="border-cleaner absolute"></div>
@@ -29,6 +69,7 @@
 
       <div if="{ parent.headers.actions }" class="col sm-col-{ parent.headers.actions } col-2 center">
         <a href="#" class="btn btn-small border-red red" onclick="{ removeItem }"><i class="fa fa-trash-o"></i></a>
+        <a href="#" class="btn btn-small border" onclick="{ openComments }"><i class="fa fa-comment-o"></i></a>
       </div>
     </div>
   </li>
@@ -56,6 +97,17 @@
       this.parent.opts.onitemremoved(e, this.parent.opts.name)
     // } ).animateCss('bounceOut')
     }
+  }
+
+  this.openComments = (e) => {
+    e.preventDefault()
+    // console.log(this.parent.parent.section)
+    riot.mount('r-modal', {
+      content: 'r-comments',
+      persisted: false,
+      api: opts.api,
+      contentOpts: {api: opts.api, commentable: this.parent.parent.record, item: e.item}
+    })
   }
   </script>
 </r-tender-item>

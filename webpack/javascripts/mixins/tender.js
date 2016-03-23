@@ -4,19 +4,20 @@ const VAT = 20
 
 riot.mixin('tenderMixin', {
   warnUnsavedChanges: function () {
-    if (!this.saved) return this.ERRORS.CONFIRM_UNSAVED_CHANGES
+    //if (!this.saved) return this.ERRORS.CONFIRM_UNSAVED_CHANGES
   },
   init: function () {
     this.on('mount', () => {
       this.saved = true
       this.opts.api.tenders.on('update', this.updateTenderTotal)
-      window.onbeforeunload = this.warnUnsavedChanges
-      $('a[href*="/app/"]', this.root).off('click').on('click',  (e) => {
-        e.preventDefault()
-        if( this.saved || (!this.saved && window.confirm(this.ERRORS.CONFIRM_UNSAVED_CHANGES)) ) {
-          riot.route($(e.currentTarget).attr('href').substr(5), e.currentTarget.title, true)
-        }
-      })
+      //window.onbeforeunload = this.warnUnsavedChanges
+      // $('a[href*="/app/"]', this.root).off('click').on('click',  (e) => {
+      //   e.preventDefault()
+      //   if( this.saved || (!this.saved && window.confirm(this.ERRORS.CONFIRM_UNSAVED_CHANGES)) ) {
+      //     riot.route($(e.currentTarget).attr('href').substr(5), e.currentTarget.title, true)
+      //   }
+      // })
+      // not working
       // window.onpopstate = () => {
       //   if (!this.saved && !window.confirm(this.ERRORS.CONFIRM_UNSAVED_CHANGES)) {
       //     history.forward()

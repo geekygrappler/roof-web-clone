@@ -20265,24 +20265,21 @@
 	var VAT = 20;
 	
 	riot.mixin("tenderMixin", {
-	  warnUnsavedChanges: function warnUnsavedChanges() {
-	    if (!this.saved) {
-	      return this.ERRORS.CONFIRM_UNSAVED_CHANGES;
-	    }
-	  },
+	  warnUnsavedChanges: function warnUnsavedChanges() {},
 	  init: function init() {
 	    var _this = this;
 	
 	    this.on("mount", function () {
 	      _this.saved = true;
 	      _this.opts.api.tenders.on("update", _this.updateTenderTotal);
-	      window.onbeforeunload = _this.warnUnsavedChanges;
-	      $("a[href*=\"/app/\"]", _this.root).off("click").on("click", function (e) {
-	        e.preventDefault();
-	        if (_this.saved || !_this.saved && window.confirm(_this.ERRORS.CONFIRM_UNSAVED_CHANGES)) {
-	          riot.route($(e.currentTarget).attr("href").substr(5), e.currentTarget.title, true);
-	        }
-	      });
+	      //window.onbeforeunload = this.warnUnsavedChanges
+	      // $('a[href*="/app/"]', this.root).off('click').on('click',  (e) => {
+	      //   e.preventDefault()
+	      //   if( this.saved || (!this.saved && window.confirm(this.ERRORS.CONFIRM_UNSAVED_CHANGES)) ) {
+	      //     riot.route($(e.currentTarget).attr('href').substr(5), e.currentTarget.title, true)
+	      //   }
+	      // })
+	      // not working
 	      // window.onpopstate = () => {
 	      //   if (!this.saved && !window.confirm(this.ERRORS.CONFIRM_UNSAVED_CHANGES)) {
 	      //     history.forward()
@@ -20360,6 +20357,8 @@
 	    };
 	  }
 	});
+	
+	//if (!this.saved) return this.ERRORS.CONFIRM_UNSAVED_CHANGES
 	// $('[name=searchable_names]').last()[0].focus()
 
 /***/ },
@@ -25063,7 +25062,34 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-tender-item", "<li class=\"relative\"> <div if=\"{opts.border_cleaner}\" class=\"border-cleaner absolute\"></div> <div class=\"clearfix animate p1 border-bottom\"> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> <input type=\"text\" name=\"name\" value=\"{display_name || name}\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputname}\"> <hr class=\"sm-hide\"> </div> <div if=\"{parent.headers.quantity}\" class=\"col sm-col-{parent.headers.quantity} col-3 center\"> <input name=\"quantity\" value=\"{quantity}\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.price}\" class=\"col sm-col-{parent.headers.price} col-{parent.opts.name == 'task' ? 3 : 2} center\"> <input name=\"price\" value=\"{parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0)}\" __disabled=\"{parent.opts.name == 'material' && !supplied}\" step=\"1\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.total_cost}\" class=\"col sm-col-{parent.headers.total_cost} col-3 center\"> {this.formatCurrency(parent.opts.name == 'task' ? (price * quantity) : (supplied ? price * quantity : '0'))} </div> <div if=\"{parent.headers.supplied}\" class=\"col sm-col-{parent.headers.supplied} col-1 center\"> <input if=\"{parent.opts.name == 'material'}\" type=\"checkbox\" name=\"supplied\" __checked=\"{supplied}\" class=\"align-middle\" onchange=\"{input}\"> </div> <div if=\"{parent.headers.actions}\" class=\"col sm-col-{parent.headers.actions} col-2 center\"> <a href=\"#\" class=\"btn btn-small border-red red\" onclick=\"{removeItem}\"><i class=\"fa fa-trash-o\"></i></a> </div> </div> </li>", "", "", function (opts) {
+	riot.tag2("r-comments", "<h3>Comments</h3> <blockquote each=\"{opts.item.comments}\" class=\"clearfix m0 p1 border-left mb1\"> {text} <a class=\"btn btn-small border-red red right\" onclick=\"{remove}\" if=\"{account.id == currentAccount.id}\"> <i class=\"fa fa-trash-o\"></i> </a> <div class=\"h5 right-align mt1\"><strong>{account.name}</strong> <span class=\"italic\">{fromNow(date)}</span></div> </blockquote> <form name=\"form\" onsubmit=\"{submit}\" class=\"mt2\"> <textarea class=\"block col-12 mb2 field\" name=\"text\" placeholder=\"Leave your comment\"></textarea> <button class=\"btn btn-primary\">Comment</button> </form>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.submit = function (e) {
+	    e.preventDefault();
+	    _this.opts.item.comments = _this.opts.item.comments || [];
+	    _this.opts.item.comments.push({
+	      text: _this.text.value,
+	      account: { id: _this.currentAccount.id, name: "" + _this.currentAccount.profile.first_name + " " + _this.currentAccount.profile.last_name },
+	      date: new Date(),
+	      id: _this.opts.item.comments.length + 1
+	    });
+	    _this.text.value = null;
+	    _this.update();
+	  };
+	  this.remove = function (e) {
+	    e.preventDefault();
+	    var _id = _.findIndex(_this.opts.item.comments, function (c) {
+	      return c.id == e.item.id;
+	    });
+	    if (_id > -1) {
+	      _this.opts.item.comments.splice(_id, 1);
+	      _this.update();
+	    }
+	  };
+	});
+	
+	riot.tag2("r-tender-item", "<li class=\"relative\"> <div if=\"{opts.border_cleaner}\" class=\"border-cleaner absolute\"></div> <div class=\"clearfix animate p1 border-bottom\"> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> <input type=\"text\" name=\"name\" value=\"{display_name || name}\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputname}\"> <hr class=\"sm-hide\"> </div> <div if=\"{parent.headers.quantity}\" class=\"col sm-col-{parent.headers.quantity} col-3 center\"> <input name=\"quantity\" value=\"{quantity}\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.price}\" class=\"col sm-col-{parent.headers.price} col-{parent.opts.name == 'task' ? 3 : 2} center\"> <input name=\"price\" value=\"{parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0)}\" __disabled=\"{parent.opts.name == 'material' && !supplied}\" step=\"1\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.total_cost}\" class=\"col sm-col-{parent.headers.total_cost} col-3 center\"> {this.formatCurrency(parent.opts.name == 'task' ? (price * quantity) : (supplied ? price * quantity : '0'))} </div> <div if=\"{parent.headers.supplied}\" class=\"col sm-col-{parent.headers.supplied} col-1 center\"> <input if=\"{parent.opts.name == 'material'}\" type=\"checkbox\" name=\"supplied\" __checked=\"{supplied}\" class=\"align-middle\" onchange=\"{input}\"> </div> <div if=\"{parent.headers.actions}\" class=\"col sm-col-{parent.headers.actions} col-2 center\"> <a href=\"#\" class=\"btn btn-small border-red red\" onclick=\"{removeItem}\"><i class=\"fa fa-trash-o\"></i></a> <a href=\"#\" class=\"btn btn-small border\" onclick=\"{openComments}\"><i class=\"fa fa-comment-o\"></i></a> </div> </div> </li>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.on("mount", function () {});
@@ -25085,6 +25111,17 @@
 	      // $('.animate', this.root).one($.animationEnd, () => {
 	      _this.parent.opts.onitemremoved(e, _this.parent.opts.name);
 	    }
+	  };
+	
+	  this.openComments = function (e) {
+	    e.preventDefault();
+	    // console.log(this.parent.parent.section)
+	    riot.mount("r-modal", {
+	      content: "r-comments",
+	      persisted: false,
+	      api: opts.api,
+	      contentOpts: { api: opts.api, commentable: _this.parent.parent.record, item: e.item }
+	    });
 	  };
 	});
 	
