@@ -1,3 +1,5 @@
+
+
 <r-projects-index>
   <yield to="header">
     <r-header api="{opts.api}"></r-header>
@@ -8,7 +10,7 @@
       <li each="{projects}" class="p2">
         <div class="border p2">
           <a href="/app/projects/{id}" class="no-decoration">
-            <h3>{name}</h3>
+            <h3 class="mb3"><img class="kind-ico" src="/images/project_types/{kind}.png" alt="{name}"> {name}</h3>
           </a>
           <div>
             <i class="fa fa-clock-o mr1"></i> updated {fromNow(updated_at)}
