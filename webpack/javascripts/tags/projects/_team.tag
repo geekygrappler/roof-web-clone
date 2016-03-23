@@ -68,7 +68,7 @@
       </form>
     </div>
 
-    <div if="{professionals.length > 0}" class="sm-col sm-col-6 px1 mb2">
+    <div if="{project.professionals.length > 0}" class="sm-col sm-col-6 px1 mb2">
       <div class="sm-col-12 px2 border">
         <h3><i class="fa fa-calendar-o"></i> Appointments</h3>
 
