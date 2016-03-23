@@ -75,15 +75,15 @@
 
         <a class="h6 btn btn-small btn-primary mb2" onclick="{openAppointmentModal}"><i class="fa fa-calendar-check-o"></i> Arrange Appointment</a>
 
-        <dl each="{appointments}" class="{gray: new Date(time) < new Date()}">
+        <dl each="{appointments}" class="{gray: isPast(time)}">
           <dt class="left">
-            <i class="fa fa-{'thumbs-o-up': new Date(time) < new Date(), 'hand-o-right': new Date(time) >= new Date()}"></i>
+            <i class="fa fa-{'thumbs-o-up': isPast(time), 'hand-o-right': isFuture(time)}"></i>
           </dt>
           <dd>
             <h4>At {formatTime(time)}</h4>
             <div><strong>Host:</strong> {host.profile.first_name} {host.profile.last_name}</div>
             <div><strong>Attendant:</strong> {attendant.profile.first_name} {attendant.profile.last_name}</div>
-            <a if="{new Date(time) >= new Date()}" class="btn btn-small h6 bg-maroon white mt1" onclick="{cancelAppointment}"><i class="fa fa-ban"></i> Cancel</a>
+            <a if="{isFuture(time)}" class="btn btn-small h6 bg-maroon white mt1" onclick="{cancelAppointment}"><i class="fa fa-ban"></i> Cancel</a>
           </dd>
         </dl>
 
@@ -93,6 +93,12 @@
 
 
   <script>
+  this.isPast = (time) => {
+    return new Date(time.split(' ')[0]) < new Date()
+  }
+  this.isFuture = (time) => {
+    return new Date(time.split(' ')[0]) >= new Date()
+  }
   this.mixin('projectTab')
 
   this.on('mount', () => {
