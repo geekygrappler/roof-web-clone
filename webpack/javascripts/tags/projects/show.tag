@@ -4,6 +4,7 @@ import './_brief.tag'
 import './_docs.tag'
 import './_appointments.tag'
 import './_team.tag'
+import './_payment_form.tag'
 import './_quotes.tag'
 
 <r-projects-show>

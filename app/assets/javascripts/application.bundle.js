@@ -18371,6 +18371,8 @@
 	
 	__webpack_require__(134);
 	
+	__webpack_require__(150);
+	
 	__webpack_require__(135);
 	
 	riot.tag2("r-projects-show", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <div class=\"py3 px2\"> <div class=\"clearfix mxn2\"> <r-subnav links=\"{subnavLinks}\" tab=\"{opts.tab}\"></r-subnav> <div class=\"sm-col sm-col-9 sm-px2\"> <r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\" content_opts=\"{opts.contentOpts}\"></r-tabs> </div> </div> </div> </div>", "", "", function (opts) {
@@ -19939,62 +19941,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
-	
-	var Pikaday = _interopRequire(__webpack_require__(133));
-	
-	riot.tag2("r-payment-form", "<h2 class=\"center mt0 mb2\">Payment Form</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/payments\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <input type=\"hidden\" name=\"quote_id\" value=\"{record.quote_id}\"> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <input class=\"block col-12 mb2 field\" name=\"amount\" value=\"{record.amount}\" placeholder=\"Amount\" type=\"{'number'}\"> <span if=\"{errors['amount']}\" class=\"inline-error\">{errors['amount']}</span> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"due_date\" value=\"{record.due_date}\" placeholder=\"Due Date\"> <span if=\"{errors['due_date']}\" class=\"inline-error\">{errors['due_date']}</span> <textarea class=\"block col-12 mb2 field\" type=\"text\" name=\"description\" placeholder=\"Description\">{record.description}</textarea> <span if=\"{errors['description']}\" class=\"inline-error\">{errors['description']}</span> <div if=\"{errors}\" id=\"error_explanation\"> <ul> <li each=\"{field, messages in errors}\">{field.humanize()} {messages.join(',')}</li> </ul> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Create</button> </form>", "", "", function (opts) {
-	  var _this = this;
-	
-	  this.on("mount", function () {
-	    var picker = new Pikaday({
-	      showTime: false,
-	      field: _this.due_date,
-	      onSelect: function (date) {
-	        _this.record.due_date = picker.toString();
-	        _this.update();
-	      }
-	    });
-	  });
-	
-	  this.updateRecord = function (record) {
-	    _this.update({ record: record });
-	  };
-	
-	  if (!this.opts.id) {
-	    this.record = {
-	      project_id: opts.quote.project_id,
-	      quote_id: opts.quote.id,
-	      professional_id: this.currentAccount.user_id };
-	  } else {
-	    this.opts.api.payments.show(this.opts.id).fail(this.errorHandler).then(this.updateRecord);
-	  }
-	
-	  this.submit = function (e) {
-	    e.preventDefault();
-	
-	    var data = _this.serializeForm(_this.form);
-	
-	    if (_.isEmpty(data) || _.isEmpty(data.due_date)) {
-	      $(_this.form).animateCss("shake");
-	      return;
-	    }
-	
-	    _this.update({ busy: true, errors: null });
-	
-	    if (_this.opts.id) {
-	      _this.opts.api.payments.update(opts.id, data).fail(_this.errorHandler).then(_this.updateReset);
-	    } else {
-	      _this.opts.api.payments.create(data).fail(_this.errorHandler).then(function (record) {
-	        _this.updateReset();
-	        _this.opts.id = record.id;
-	        _this.closeModal();
-	      });
-	    }
-	  };
-	});
-	
-	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <p if=\"{hasNothing()}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <div if=\"{hasNothing() && currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{hasNothing() && currentAccount.isCustomer}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> <div if=\"{hasNothing() && currentAccount.isAdministrator}\" class=\"mt2\"> <a class=\"btn btn-primary mr1\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isCustomer}\"> Here is your <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Actual <strong>quotes</strong> from Professionals will appear here when they submit them. </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isProfessional}\"> Here is the the <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Click <strong>Clone</strong> button to get your copy and work on it. </p> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Tender</span> <p class=\"overflow-hidden m0 mxn2 p1 border-top\"> <a class=\"btn btn-small\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Open</a> <a class=\"btn btn-small btn-primary\" if=\"{currentAccount.isProfessional && (quotes && quotes.length == 0)}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2 mr1\">Quote</span> <div class=\"tab-nav\"> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'summary'}\" onclick=\"{changeTab}\" rel=\"summary\">Summary</a> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'payments'}\" onclick=\"{changeTab}\" rel=\"payments\">Payments</a> </div> <div class=\"tabs m0 mxn2 border-top\"> <div if=\"{activeTab == 'summary'}\"> <div class=\"clearfix px2 mt2 mb1\" if=\"{submitted_at}\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-clock-o mr1\"></i> Submitted at:</div> <div class=\"sm-col sm-col-6\">{fromNow(submitted_at)}</div> </div> <div class=\"clearfix px2 mb1\" if=\"{accepted_at}\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-clock-o mr1\"></i> Accepted at:</div> <div class=\"sm-col sm-col-6\">{fromNow(accepted_at)}</div> </div> <div class=\"clearfix px2 mb1\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-user mr1\"></i> Professional:</div> <div class=\"sm-col sm-col-6\">{professional.profile.first_name} {professional.profile.last_name}</div> </div> <div class=\"clearfix overflow-hidden p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Open</a> <a class=\"btn btn-small bg-darken-2\" if=\"{currentAccount.isProfessional && !accepted_at}\" onclick=\"{delete}\">Delete</a> </div> </div> <div if=\"{activeTab == 'payments'}\"> <table class=\"table-light mt2\"> <thead> <tr> <th>Amount</th> <th>Due Date</th> <th>Status</th> <th></th> </tr> </thead> <tbody> <tr each=\"{payments}\"> <th>{formatCurrency(amount)}</th> <th>{formatTime(due_date)}</th> <th>{parsePaymentStatus()}</th> <th> <a if=\"{currentAccount.isProfessional && (parsePaymentStatus() == 'payable' || parsePaymentStatus() == 'waiting')}\" class=\"btn btn-small bg-red white h6 {busy: busy}\" onclick=\"{cancelPayment}\">Cancel</a> <button if=\"{currentAccount.isCustomer && parsePaymentStatus() == 'payable'}\" class=\"btn btn-small bg-green white h6 {busy: busy}\" __disabled=\"{busy}\" onclick=\"{payPayment}\">Pay</button> </th> </tr> </tbody> </table> <table if=\"{payments.length > 0}\" class=\"table-light mt2\"> <thead> <tr> <th>Paid</th> <th if=\"{refunded_amount > 0}\">Refunded</th> <th if=\"{declined_amount > 0}\">Declined</th> <th if=\"{currentAccount.isProfessional}\">Approved</th> </tr> </thead> <tbody> <tr> <th>{formatCurrency(paid_amount)}</th> <th if=\"{refunded_amount > 0}\">{formatCurrency(refunded_amount)}</th> <th if=\"{declined_amount > 0}\">{formatCurrency(declined_amount)}</th> <th if=\"{currentAccount.isProfessional}\">{formatCurrency(approved_amount)}</th> </tr> </tbody> </table> <div if=\"{currentAccount.isProfessional}\" class=\"clearfix overflow-hidden p1 bg-yellow\"> <div class=\"mt1\"> <a class=\"btn btn-small bg-darken-2\" onclick=\"{openPaymentForm}\">Add Payment</a> </div> </div> </div> </div> </div> </li> </ul>", "", "", function (opts) {
+	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <p if=\"{hasNothing()}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <div if=\"{hasNothing() && currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{hasNothing() && currentAccount.isCustomer}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> <div if=\"{hasNothing() && currentAccount.isAdministrator}\" class=\"mt2\"> <a class=\"btn btn-primary mr1\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isCustomer}\"> Here is your <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Actual <strong>quotes</strong> from Professionals will appear here when they submit them. </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isProfessional}\"> Here is the the <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Click <strong>Clone</strong> button to get your copy and work on it. </p> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Tender</span> <p class=\"overflow-hidden m0 mxn2 p1 border-top\"> <a class=\"btn btn-small\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Open</a> <a class=\"btn btn-small btn-primary\" if=\"{currentAccount.isProfessional && (quotes && quotes.length == 0)}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2 mr1\">Quote</span> <div class=\"tab-nav\"> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'summary'}\" onclick=\"{changeTab}\" rel=\"summary\">Summary</a> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'payments'}\" onclick=\"{changeTab}\" rel=\"payments\">Payments</a> </div> <div class=\"tabs m0 mxn2 border-top\"> <div if=\"{activeTab == 'summary'}\"> <div class=\"clearfix px2 mt2 mb1\" if=\"{submitted_at}\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-clock-o mr1\"></i> Submitted at:</div> <div class=\"sm-col sm-col-6\">{fromNow(submitted_at)}</div> </div> <div class=\"clearfix px2 mb1\" if=\"{accepted_at}\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-clock-o mr1\"></i> Accepted at:</div> <div class=\"sm-col sm-col-6\">{fromNow(accepted_at)}</div> </div> <div class=\"clearfix px2 mb1\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-user mr1\"></i> Professional:</div> <div class=\"sm-col sm-col-6\">{professional.profile.first_name} {professional.profile.last_name}</div> </div> <div class=\"clearfix overflow-hidden p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Open</a> <a class=\"btn btn-small bg-darken-2\" if=\"{currentAccount.isProfessional && !accepted_at}\" onclick=\"{delete}\">Delete</a> </div> </div> <div if=\"{activeTab == 'payments'}\"> <table class=\"table-light mt2\"> <thead> <tr> <th>Amount</th> <th>Due Date</th> <th>Status</th> <th></th> </tr> </thead> <tbody> <tr each=\"{payments}\"> <th>{formatCurrency(amount)}</th> <th>{formatTime(due_date)}</th> <th>{status}</th> <th> <a if=\"{currentAccount.isProfessional && (status == 'payable' || status == 'waiting')}\" class=\"btn btn-small bg-red white h6 {busy: busy}\" onclick=\"{cancelPayment}\">Cancel</a> <button if=\"{currentAccount.isCustomer && status == 'payable'}\" class=\"btn btn-small bg-green white h6 {busy: busy}\" __disabled=\"{busy}\" onclick=\"{payPayment}\">Pay</button> </th> </tr> </tbody> </table> <table if=\"{payments.length > 0}\" class=\"table-light mt2\"> <thead> <tr> <th>Paid</th> <th if=\"{refunded_amount > 0}\">Refunded</th> <th if=\"{declined_amount > 0}\">Declined</th> <th if=\"{currentAccount.isProfessional}\">Approved</th> </tr> </thead> <tbody> <tr> <th>{formatCurrency(paid_amount)}</th> <th if=\"{refunded_amount > 0}\">{formatCurrency(refunded_amount)}</th> <th if=\"{declined_amount > 0}\">{formatCurrency(declined_amount)}</th> <th if=\"{currentAccount.isProfessional}\">{formatCurrency(approved_amount)}</th> </tr> </tbody> </table> <div if=\"{currentAccount.isProfessional}\" class=\"clearfix overflow-hidden p1 bg-yellow\"> <div class=\"mt1\"> <a class=\"btn btn-small bg-darken-2\" onclick=\"{openPaymentForm}\">Add Payment</a> </div> </div> </div> </div> </div> </li> </ul>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.activeTab = "summary";
@@ -20137,14 +20084,6 @@
 	      if (_id > -1) quote.payments.splice(_id, 1);
 	    });
 	    _this.update();
-	  };
-	
-	  this.parsePaymentStatus = function () {
-	    return this.canceled_at ? "canceled" : this.paid_at ? "paid" : this.declined_at ? "declined" : this.refunded_at ? "refunded" : this.approved_at ? "payable" : "waiting";
-	  };
-	
-	  this.parseQuoteStatus = function () {
-	    return this.accepted_at ? "accepted" : this.submitted_at ? "submitted" : "waiting";
 	  };
 	
 	  this.mixin("projectTab");
@@ -25892,6 +25831,68 @@
 	
 	    _this.update({ busy: true, errors: null });
 	    _this.opts.api[opts.resource].refund(opts.id).fail(_this.errorHandler).then(_this.updateReset);
+	  };
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 150 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+	
+	var Pikaday = _interopRequire(__webpack_require__(133));
+	
+	riot.tag2("r-payment-form", "<h2 class=\"center mt0 mb2\">Payment Form</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/payments\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <input type=\"hidden\" name=\"quote_id\" value=\"{record.quote_id}\"> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <input class=\"block col-12 mb2 field\" name=\"amount\" value=\"{record.amount}\" placeholder=\"Amount\" type=\"{'number'}\"> <span if=\"{errors['amount']}\" class=\"inline-error\">{errors['amount']}</span> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"due_date\" value=\"{record.due_date}\" placeholder=\"Due Date\"> <span if=\"{errors['due_date']}\" class=\"inline-error\">{errors['due_date']}</span> <textarea class=\"block col-12 mb2 field\" type=\"text\" name=\"description\" placeholder=\"Description\">{record.description}</textarea> <span if=\"{errors['description']}\" class=\"inline-error\">{errors['description']}</span> <div if=\"{errors}\" id=\"error_explanation\"> <ul> <li each=\"{field, messages in errors}\">{field.humanize()} {messages.join(',')}</li> </ul> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Create</button> </form>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.on("mount", function () {
+	    var picker = new Pikaday({
+	      showTime: false,
+	      field: _this.due_date,
+	      onSelect: function (date) {
+	        _this.record.due_date = picker.toString();
+	        _this.update();
+	      }
+	    });
+	  });
+	
+	  this.updateRecord = function (record) {
+	    _this.update({ record: record });
+	  };
+	
+	  if (!this.opts.id) {
+	    this.record = {
+	      project_id: opts.quote.project_id,
+	      quote_id: opts.quote.id,
+	      professional_id: this.currentAccount.user_id };
+	  } else {
+	    this.opts.api.payments.show(this.opts.id).fail(this.errorHandler).then(this.updateRecord);
+	  }
+	
+	  this.submit = function (e) {
+	    e.preventDefault();
+	
+	    var data = _this.serializeForm(_this.form);
+	
+	    if (_.isEmpty(data) || _.isEmpty(data.due_date)) {
+	      $(_this.form).animateCss("shake");
+	      return;
+	    }
+	
+	    _this.update({ busy: true, errors: null });
+	
+	    if (_this.opts.id) {
+	      _this.opts.api.payments.update(opts.id, data).fail(_this.errorHandler).then(_this.updateReset);
+	    } else {
+	      _this.opts.api.payments.create(data).fail(_this.errorHandler).then(function (record) {
+	        _this.updateReset();
+	        _this.opts.id = record.id;
+	        _this.closeModal();
+	      });
+	    }
 	  };
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
