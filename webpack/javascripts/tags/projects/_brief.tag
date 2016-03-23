@@ -54,7 +54,7 @@ import './_option_group_input.tag'
           </select>
         </div>
         <div class="sm-col sm-col-4 px2">
-          <label for="brief[ownership]">Start</label>
+          <label for="brief[ownership]">Owner</label>
           <select id="brief.ownership" name="brief[ownership]" class="block col-12 mb2 field" onchange="{setValue}">
             <option each="{value, i in options.ownership}"
             value="{value}" selected="{value === project.brief.ownership}">{value}</option>

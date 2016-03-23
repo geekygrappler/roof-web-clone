@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="viewport" content="width=device-width" />
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>1ROOF</title>
+
+  <style>
+  * {
+    margin:0;
+    padding:0;
+  }
+  * { font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif; }
+  img {
+    max-width: 100%;
+  }
+  body {
+    -webkit-font-smoothing:antialiased;
+    -webkit-text-size-adjust:none;
+    width: 100%!important;
+    height: 100%;
+  }
+  p {
+    margin-bottom:1rem;
+  }
+  </style>
+</head>
+
+<body bgcolor="#DDD">
+
+  <table width="80%" height="80%" style="margin:10% auto;">
+    <tr>
+      <td align="center" style="padding:2rem">
+        <img src="<%= image_url "logos/black.svg" %>" width="180px" height="76px"/>
+      </td>
+    </tr>
+    <tr>
+      <td bgcolor="#FFF" style="padding:2rem">
+        <%= yield %>
+      </td>
+    </tr>
+    <tr>
+      <td bgcolor="#DDD" style="padding:2rem;font-size:80%">
+        <table width="100%" style="margin-bottom:1rem;">
+          <tr>
+            <td width="50%">
+              <a href="mailto:hello@1roof.com">hello@1roof.com</a>
+            </td>
+            <td width="50%" align="right">
+              Copyright © 2015 1ROOF, All rights reserved.
+            </td>
+          </tr>
+        </table>
+        <p>Email by 1ROOF mail bot ;)</p>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
