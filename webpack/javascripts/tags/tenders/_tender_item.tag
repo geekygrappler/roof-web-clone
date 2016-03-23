@@ -15,7 +15,7 @@
 
       <div if="{ parent.headers.price }" class="col sm-col-{ parent.headers.price } col-{parent.opts.name == 'task' ? 3 : 2} center">
         <input type="number" name="price" value="{ parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0) }"
-        disabled="{ parent.opts.name == 'material' && !supplied }" min="0" class="fit field inline-input center" oninput="{ input }" />
+        disabled="{ parent.opts.name == 'material' && !supplied }" step="1" min="0" class="fit field inline-input center" oninput="{ input }" />
       </div>
 
       <div if="{ parent.headers.total_cost }" class="col sm-col-{ parent.headers.total_cost } col-3 center">
@@ -28,7 +28,7 @@
       </div>
 
       <div if="{ parent.headers.actions }" class="col sm-col-{ parent.headers.actions } col-2 center">
-        <a href="#" class="btn btn-small navy" onclick="{ removeItem }"><i class="fa fa-trash-o"></i></a>
+        <a href="#" class="btn btn-small border-red red" onclick="{ removeItem }"><i class="fa fa-trash-o"></i></a>
       </div>
     </div>
   </li>
@@ -39,7 +39,7 @@
   })
 
   this.input = (e) => {
-    e.item[e.target.name] = e.target.type === 'checkbox' ? e.target.checked : parseInt(e.target.value)
+    e.item[e.target.name] = e.target.type === 'checkbox' ? e.target.checked : (e.target.name === 'price' ? parseInt(e.target.value) * 100 : parseInt(e.target.value))
     this.update()
     this.opts.api.tenders.trigger('update')
   }

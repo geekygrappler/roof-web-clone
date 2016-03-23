@@ -6,7 +6,7 @@
         <input type="text" class="field border-none"
         value="{ section.name.humanize() }" oninput="{renameSection}">
       </h3>
-      <a class="btn btn-small right mt2" onclick="{removeSection}"><i class="fa fa-trash-o"></i></a>
+      <a class="btn btn-small border-red red right mt2" onclick="{removeSection}"><i class="fa fa-trash-o"></i></a>
     </div>
     <div data-details>
 

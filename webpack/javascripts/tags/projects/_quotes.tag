@@ -8,12 +8,8 @@
     <div if="{hasNothing() && currentAccount.isProfessional}" class="mt2">
       <a class="btn btn-primary" href="/app/projects/{opts.id}/quotes/new">Create a Quote</a>
     </div>
-    <div if="{hasNothing() && currentAccount.isCustomer}" class="mt2">
+    <div if="{hasNothing() && !currentAccount.isProfessional}" class="mt2">
       <a class="btn btn-primary" href="/app/projects/{opts.id}/tenders/new">Create a Tender Document</a>
-    </div>
-    <div if="{hasNothing() && currentAccount.isAdministrator}" class="mt2">
-      <a class="btn btn-primary mr1" href="/app/projects/{opts.id}/tenders/new">Create a Tender Document</a>
-      <a class="btn btn-primary" href="/app/projects/{opts.id}/quotes/new">Create a Quote</a>
     </div>
   </p>
 

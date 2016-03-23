@@ -31,11 +31,11 @@ import './_project_form.tag'
           <tr each="{ record, i in records }">
             <td each="{ attr, value in record }">{ value }</td>
             <td>
-              <button class="btn btn-small" onclick="{ open }">
+              <button class="btn border btn-small mr1 mb1" onclick="{ open }">
                 <i class="fa fa-pencil"></i>
               </button>
-              <button class="btn btn-small" onclick="{ destroy }">
-                <i class="fa fa-trash"></i>
+              <button class="btn btn-small border-red red mb1" onclick="{ destroy }">
+                <i class="fa fa-trash-o"></i>
               </button>
             </td>
           </tr>

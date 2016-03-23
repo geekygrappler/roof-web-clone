@@ -71,7 +71,8 @@ riot.mixin('tenderMixin', {
         return total + (item.supplied ? item.price * item.quantity : 0)
       }, 0)
       if (formatted) {
-        return this.formatCurrency(itemTotal + (itemTotal * VAT / 100) + materialTotal)
+        // return this.formatCurrency(itemTotal + (itemTotal * VAT / 100) + materialTotal)
+        return this.formatCurrency(itemTotal + materialTotal)
       } else {
         return [itemTotal, materialTotal]
       }
