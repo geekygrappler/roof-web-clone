@@ -2,6 +2,7 @@ import riot from 'riot'
 import api from './apis/api'
 import 'inflector/lib/inflector'
 import './mixins/global'
+import './mixins/admin'
 import './tags/app.tag'
 
 riot.route.base('/app/')

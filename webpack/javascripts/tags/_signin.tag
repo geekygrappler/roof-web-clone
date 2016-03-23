@@ -1,7 +1,7 @@
 <r-signin>
 
   <h2 class="center mt0 mb2">Sign in</h2>
-  <form name="form" class="sm-col-12 left-align" action="/api/accounts/sign_in" onsubmit="{submit}">
+  <form name="form" class="sm-col-12 left-align" action="/api/auth/sign_in" onsubmit="{submit}">
 
     <div if="{errors}" id="error_explanation">
       {errors}
@@ -50,7 +50,7 @@
     .fail(this.errorHandler)
     .then(account => {
       this.update({busy:false})
-      riot.route(opts.api.authenticatedRoot)
+      riot.route(opts.api.authenticatedRoot, 'Projects', true)
     })
 
   }

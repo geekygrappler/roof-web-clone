@@ -56,6 +56,8 @@
 	
 	__webpack_require__(6);
 	
+	__webpack_require__(151);
+	
 	__webpack_require__(110);
 	
 	riot.route.base("/app/");
@@ -2762,7 +2764,7 @@
 	apis.sessions.check = function () {
 	  return request({
 	    type: "get",
-	    url: "/api/accounts/sign_in"
+	    url: "/api/auth/sign_in"
 	  }).fail(function (xhr) {
 	    apis.sessions.trigger("check.fail", xhr);
 	  }).then(function (data) {
@@ -2776,7 +2778,7 @@
 	apis.sessions.signin = function (creds) {
 	  return request({
 	    type: "post",
-	    url: "/api/accounts/sign_in",
+	    url: "/api/auth/sign_in",
 	    data: { account: creds }
 	  }).fail(function (xhr) {
 	    return apis.sessions.trigger("signin.fail", xhr);
@@ -2791,7 +2793,7 @@
 	apis.sessions.signout = function (creds) {
 	  return request({
 	    type: "delete",
-	    url: "/api/accounts/sign_out",
+	    url: "/api/auth/sign_out",
 	    data: { account: creds }
 	  }).fail(function (xhr) {
 	    return apis.sessions.trigger("signout.fail", xhr);
@@ -2807,7 +2809,7 @@
 	apis.registrations.signup = function (data) {
 	  return request({
 	    type: "post",
-	    url: "/api/accounts",
+	    url: "/api/auth",
 	    data: { account: data }
 	  }).fail(function (xhr) {
 	    return apis.registrations.trigger("signup.fail", xhr);
@@ -2822,7 +2824,7 @@
 	apis.registrations.update = function (id, data) {
 	  return request({
 	    type: "put",
-	    url: "/api/accounts",
+	    url: "/api/auth",
 	    data: { account: data }
 	  }).fail(function (xhr) {
 	    return apis.registrations.trigger("update.fail", xhr);
@@ -2955,7 +2957,7 @@
 	  var data = _ref$data === undefined ? null : _ref$data;
 	
 	  if (!$.csrfToken) {
-	    return $.getJSON("/api/accounts/csrf_token.json").then(function (d, x, r) {
+	    return $.getJSON("/api/auth/csrf_token.json").then(function (d, x, r) {
 	      var token = r.getResponseHeader("X-CSRF-Token");
 	      if (token) {
 	        $.csrfToken = token;
@@ -3163,20 +3165,6 @@
 	  },
 	  isAllValuesEmpty: function isAllValuesEmpty(data) {
 	    return _.isEmpty(_.compact(_.values(data)));
-	  },
-	  openForm: function openForm(formTag, e, resource) {
-	    return riot.mount("r-modal", {
-	      content: formTag,
-	      persisted: false,
-	      api: this.opts.api,
-	      classes: "sm-col-12 sm-px3 px1",
-	      contentOpts: {
-	        resource: this.opts.resource || resource,
-	        id: e.item && (e.item.id || e.item.record && e.item.record.id),
-	        api: this.opts.api,
-	        attributes: []
-	      }
-	    });
 	  },
 	  loadResources: function loadResources(resource) {
 	    var _this = this;
@@ -17663,6 +17651,7 @@
 	  });
 	
 	  if (this.currentAccount && this.currentAccount.isAdministrator) {
+	    this.mixin("admin");
 	
 	    riot.route("admin/*", function (resource) {
 	      riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api });
@@ -17670,17 +17659,17 @@
 	    riot.route("admin/*/new", function (resource) {
 	      riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api });
 	
-	      var tags = _this.openForm("r-admin-" + resource.replace(/_/g, "-").singular() + "-form", {}, resource);
+	      var tags = _this.openAdminForm("r-admin-" + resource.replace(/_/g, "-").singular() + "-form", {}, resource);
 	
 	      if (!tags[0].content._tag) {
-	        _this.openForm("r-admin-form", {}, resource);
+	        _this.openAdminForm("r-admin-form", {}, resource);
 	      }
 	    });
 	    riot.route("admin/*/*/edit", function (resource, id) {
 	      riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api });
-	      var tags = _this.openForm("r-admin-" + resource.replace(/_/g, "-").singular() + "-form", { item: { id: id } }, resource);
+	      var tags = _this.openAdminForm("r-admin-" + resource.replace(/_/g, "-").singular() + "-form", { item: { id: id } }, resource);
 	      if (!tags[0].content._tag) {
-	        _this.openForm("r-admin-form", { item: { id: id } }, resource);
+	        _this.openAdminForm("r-admin-form", { item: { id: id } }, resource);
 	      }
 	    });
 	    riot.route("admin/*/*", function (resource, id) {
@@ -17776,6 +17765,18 @@
 			{
 				"href": "/app/admin/accounts",
 				"title": "Accounts"
+			},
+			{
+				"href": "/app/admin/customers",
+				"title": "Customers"
+			},
+			{
+				"href": "/app/admin/professionals",
+				"title": "Professionals"
+			},
+			{
+				"href": "/app/admin/administrators",
+				"title": "Administrators"
 			},
 			{
 				"href": "/app/admin/projects",
@@ -17874,7 +17875,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-signup", "<h2 class=\"center mt0 mb2\">Sign up</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/accounts\" onsubmit=\"{submit}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"user[profile][first_name]\">First Name *</label> <input class=\"block col-12 mb2 field\" autofocus=\"true\" type=\"text\" name=\"user[profile][first_name]\"> <span if=\"{errors['user.profile.first_name']}\" class=\"inline-error\">{errors['user.profile.first_name']}</span> </div> <div class=\"col col-6 px2\"> <label for=\"user[profile][last_name]\">Last Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"user[profile][last_name]\"> <span if=\"{errors['user.profile.last_name']}\" class=\"inline-error\">{errors['user.profile.last_name']}</span> </div> </div> <label for=\"user[profile][phone_number]\">Phone Number *</label> <input class=\"block col-12 mb2 field\" type=\"tel\" name=\"user[profile][phone_number]\"> <span if=\"{errors['user.profile.phone_number']}\" class=\"inline-error\">{errors['user.profile.phone_number']}</span> <h6 class=\"mb2 p1 green border-left border-right border-bottom\" style=\"margin-top:-1rem\">Your privacy is important. <br>We only share your number with selected contractors working on your project. </h6> <label for=\"email\">Email *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"email\"> <span if=\"{errors['email']}\" class=\"inline-error\">{errors['email']}</span> <label for=\"password\">Password *</label> <em class=\"h5\">(8 characters minimum)</em> <input class=\"block col-12 mb2 field\" autocomplete=\"off\" type=\"password\" name=\"password\"> <span if=\"{errors['password']}\" class=\"inline-error\">{errors['password']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Sign up</button> <small class=\"h6 block center\">By signing up, you agree to the <a href=\"/pages/terms-conditions\">Terms of Service</a></small> </form> <div class=\"center\"><a name=\"r-signin\" href=\"/app/signin\" title=\"Sign in\" onclick=\"{opts.navigate}\">Sign in</a></div>", "", "", function (opts) {
+	riot.tag2("r-signup", "<h2 class=\"center mt0 mb2\">Sign up</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/auth\" onsubmit=\"{submit}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"user[profile][first_name]\">First Name *</label> <input class=\"block col-12 mb2 field\" autofocus=\"true\" type=\"text\" name=\"user[profile][first_name]\"> <span if=\"{errors['user.profile.first_name']}\" class=\"inline-error\">{errors['user.profile.first_name']}</span> </div> <div class=\"col col-6 px2\"> <label for=\"user[profile][last_name]\">Last Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"user[profile][last_name]\"> <span if=\"{errors['user.profile.last_name']}\" class=\"inline-error\">{errors['user.profile.last_name']}</span> </div> </div> <label for=\"user[profile][phone_number]\">Phone Number *</label> <input class=\"block col-12 mb2 field\" type=\"tel\" name=\"user[profile][phone_number]\"> <span if=\"{errors['user.profile.phone_number']}\" class=\"inline-error\">{errors['user.profile.phone_number']}</span> <h6 class=\"mb2 p1 green border-left border-right border-bottom\" style=\"margin-top:-1rem\">Your privacy is important. <br>We only share your number with selected contractors working on your project. </h6> <label for=\"email\">Email *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"email\"> <span if=\"{errors['email']}\" class=\"inline-error\">{errors['email']}</span> <label for=\"password\">Password *</label> <em class=\"h5\">(8 characters minimum)</em> <input class=\"block col-12 mb2 field\" autocomplete=\"off\" type=\"password\" name=\"password\"> <span if=\"{errors['password']}\" class=\"inline-error\">{errors['password']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Sign up</button> <small class=\"h6 block center\">By signing up, you agree to the <a href=\"/pages/terms-conditions\">Terms of Service</a></small> </form> <div class=\"center\"><a name=\"r-signin\" href=\"/app/signin\" title=\"Sign in\" onclick=\"{opts.navigate}\">Sign in</a></div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.submit = function (e) {
@@ -17892,7 +17893,7 @@
 	
 	    _this.opts.api.registrations.signup(data).fail(_this.errorHandler).then(function (account) {
 	      _this.update({ busy: false });
-	      riot.route(opts.api.authenticatedRoot);
+	      riot.route(opts.api.authenticatedRoot, "Projects", true);
 	    });
 	  };
 	});
@@ -17904,7 +17905,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-signin", "<h2 class=\"center mt0 mb2\">Sign in</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/accounts/sign_in\" onsubmit=\"{submit}\"> <div if=\"{errors}\" id=\"error_explanation\"> {errors} </div> <label for=\"email\">Email</label> <input class=\"block col-12 mb2 field\" autofocus=\"true\" type=\"text\" name=\"email\"> <label for=\"email\">Password</label> <input class=\"block col-12 mb2 field\" autocomplete=\"off\" type=\"password\" name=\"password\"> <div> <label class=\"inline-block mb2\"> <input type=\"checkbox\" label=\"Remember me\" name=\"remember_me\"> Remember me </label> </div> <button name=\"submit\" type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\" __disabled=\"{busy}\">Sign in</button> <div class=\"center\"> <a name=\"r-reset-password\" href=\"/app/reset-password\" title=\"Reset Password\" onclick=\"{opts.navigate}\" class=\"block\">Forgot your password?</a> </div> </form> <div class=\"center\"><a name=\"r-signup\" href=\"/app/signup\" title=\"Sign up\" onclick=\"{opts.navigate}\">Sign up</a></div>", "", "", function (opts) {
+	riot.tag2("r-signin", "<h2 class=\"center mt0 mb2\">Sign in</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/auth/sign_in\" onsubmit=\"{submit}\"> <div if=\"{errors}\" id=\"error_explanation\"> {errors} </div> <label for=\"email\">Email</label> <input class=\"block col-12 mb2 field\" autofocus=\"true\" type=\"text\" name=\"email\"> <label for=\"email\">Password</label> <input class=\"block col-12 mb2 field\" autocomplete=\"off\" type=\"password\" name=\"password\"> <div> <label class=\"inline-block mb2\"> <input type=\"checkbox\" label=\"Remember me\" name=\"remember_me\"> Remember me </label> </div> <button name=\"submit\" type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\" __disabled=\"{busy}\">Sign in</button> <div class=\"center\"> <a name=\"r-reset-password\" href=\"/app/reset-password\" title=\"Reset Password\" onclick=\"{opts.navigate}\" class=\"block\">Forgot your password?</a> </div> </form> <div class=\"center\"><a name=\"r-signup\" href=\"/app/signup\" title=\"Sign up\" onclick=\"{opts.navigate}\">Sign up</a></div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.submit = function (e) {
@@ -17922,7 +17923,7 @@
 	
 	    _this.opts.api.sessions.signin(creds).fail(_this.errorHandler).then(function (account) {
 	      _this.update({ busy: false });
-	      riot.route(opts.api.authenticatedRoot);
+	      riot.route(opts.api.authenticatedRoot, "Projects", true);
 	    });
 	  };
 	  this.showAuthModal = function () {
@@ -18145,6 +18146,10 @@
 	      return _this.submit();
 	    });
 	  }
+	
+	  this.on("mount", function () {
+	    $("r-app").removeClass("display-none");
+	  });
 	
 	  if (this.step === 0) {
 	    $("body").one("transitionend", function () {
@@ -20003,7 +20008,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <p if=\"{hasNothing()}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <div if=\"{hasNothing() && currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{hasNothing() && currentAccount.isCustomer}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> <div if=\"{hasNothing() && currentAccount.isAdministrator}\" class=\"mt2\"> <a class=\"btn btn-primary mr1\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isCustomer}\"> Here is your <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Actual <strong>quotes</strong> from Professionals will appear here when they submit them. </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isProfessional}\"> Here is the the <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Click <strong>Clone</strong> button to get your copy and work on it. </p> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Tender</span> <p class=\"overflow-hidden m0 mxn2 p1 border-top\"> <a class=\"btn btn-small\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Open</a> <a class=\"btn btn-small btn-primary\" if=\"{currentAccount.isProfessional && (quotes && quotes.length == 0)}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2 mr1\">Quote</span> <div class=\"tab-nav\"> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'summary'}\" onclick=\"{changeTab}\" rel=\"summary\">Summary</a> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'payments'}\" onclick=\"{changeTab}\" rel=\"payments\">Payments</a> </div> <div class=\"tabs m0 mxn2 border-top\"> <div if=\"{activeTab == 'summary'}\"> <div class=\"clearfix px2 mt2 mb1\" if=\"{submitted_at}\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-clock-o mr1\"></i> Submitted at:</div> <div class=\"sm-col sm-col-6\">{fromNow(submitted_at)}</div> </div> <div class=\"clearfix px2 mb1\" if=\"{accepted_at}\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-clock-o mr1\"></i> Accepted at:</div> <div class=\"sm-col sm-col-6\">{fromNow(accepted_at)}</div> </div> <div class=\"clearfix px2 mb1\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-user mr1\"></i> Professional:</div> <div class=\"sm-col sm-col-6\">{professional.profile.first_name} {professional.profile.last_name}</div> </div> <div class=\"clearfix overflow-hidden p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Open</a> <a class=\"btn btn-small bg-darken-2\" if=\"{currentAccount.isProfessional && !accepted_at}\" onclick=\"{delete}\">Delete</a> </div> </div> <div if=\"{activeTab == 'payments'}\"> <table class=\"table-light mt2\"> <thead> <tr> <th>Amount</th> <th>Due Date</th> <th>Status</th> <th></th> </tr> </thead> <tbody> <tr each=\"{payments}\"> <th>{formatCurrency(amount)}</th> <th>{formatTime(due_date)}</th> <th>{status}</th> <th> <a if=\"{currentAccount.isProfessional && (status == 'payable' || status == 'waiting')}\" class=\"btn btn-small bg-red white h6 {busy: busy}\" onclick=\"{cancelPayment}\">Cancel</a> <button if=\"{currentAccount.isCustomer && status == 'payable'}\" class=\"btn btn-small bg-green white h6 {busy: busy}\" __disabled=\"{busy}\" onclick=\"{payPayment}\">Pay</button> </th> </tr> </tbody> </table> <table if=\"{payments.length > 0}\" class=\"table-light mt2\"> <thead> <tr> <th>Paid</th> <th if=\"{refunded_amount > 0}\">Refunded</th> <th if=\"{declined_amount > 0}\">Declined</th> <th if=\"{currentAccount.isProfessional}\">Approved</th> </tr> </thead> <tbody> <tr> <th>{formatCurrency(paid_amount)}</th> <th if=\"{refunded_amount > 0}\">{formatCurrency(refunded_amount)}</th> <th if=\"{declined_amount > 0}\">{formatCurrency(declined_amount)}</th> <th if=\"{currentAccount.isProfessional}\">{formatCurrency(approved_amount)}</th> </tr> </tbody> </table> <div if=\"{currentAccount.isProfessional}\" class=\"clearfix overflow-hidden p1 bg-yellow\"> <div class=\"mt1\"> <a class=\"btn btn-small bg-darken-2\" onclick=\"{openPaymentForm}\">Add Payment</a> </div> </div> </div> </div> </div> </li> </ul>", "", "", function (opts) {
+	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <p if=\"{hasNothing()}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <div if=\"{hasNothing() && currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{hasNothing() && currentAccount.isCustomer}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> <div if=\"{hasNothing() && currentAccount.isAdministrator}\" class=\"mt2\"> <a class=\"btn btn-primary mr1\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isCustomer}\"> Here is your <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Actual <strong>quotes</strong> from Professionals will appear here when they submit them. </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isProfessional}\"> Here is the the <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Click <strong>Clone</strong> button to get your copy and work on it. </p> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Tender</span> <p class=\"overflow-hidden m0 mxn2 p1 border-top\"> <a class=\"btn btn-small\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Open</a> <a class=\"btn btn-small btn-primary\" if=\"{currentAccount.isProfessional && (quotes && quotes.length == 0)}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2 mr1\">Quote</span> <div class=\"tab-nav\"> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'summary'}\" onclick=\"{changeTab}\" rel=\"summary\">Summary</a> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'payments'}\" onclick=\"{changeTab}\" rel=\"payments\">Payments</a> </div> <div class=\"tabs m0 mxn2 border-top\"> <div if=\"{activeTab == 'summary'}\" class=\"mt2\"> <div class=\"clearfix px2 mb1\" if=\"{submitted_at}\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-clock-o mr1\"></i> Submitted at:</div> <div class=\"sm-col sm-col-6\">{fromNow(submitted_at)}</div> </div> <div class=\"clearfix px2 mb1\" if=\"{accepted_at}\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-clock-o mr1\"></i> Accepted at:</div> <div class=\"sm-col sm-col-6\">{fromNow(accepted_at)}</div> </div> <div class=\"clearfix px2 mb1\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-user mr1\"></i> Professional:</div> <div class=\"sm-col sm-col-6\">{professional.profile.first_name} {professional.profile.last_name}</div> </div> <div class=\"clearfix overflow-hidden p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Open</a> <a class=\"btn btn-small bg-darken-2\" if=\"{currentAccount.isProfessional && !accepted_at}\" onclick=\"{delete}\">Delete</a> </div> </div> <div if=\"{activeTab == 'payments'}\" class=\"mt2\"> <table class=\"table-light\"> <thead> <tr> <th>Amount</th> <th>Due Date</th> <th>Status</th> <th></th> </tr> </thead> <tbody> <tr each=\"{payments}\"> <th>{formatCurrency(amount)}</th> <th>{formatTime(due_date)}</th> <th>{status}</th> <th> <a if=\"{currentAccount.isProfessional && (status == 'payable' || status == 'waiting')}\" class=\"btn btn-small bg-red white h6 {busy: busy}\" onclick=\"{cancelPayment}\">Cancel</a> <button if=\"{currentAccount.isCustomer && status == 'payable'}\" class=\"btn btn-small bg-green white h6 {busy: busy}\" __disabled=\"{busy}\" onclick=\"{payPayment}\">Pay</button> </th> </tr> </tbody> </table> <table if=\"{payments.length > 0}\" class=\"table-light mt2\"> <thead> <tr> <th>Paid</th> <th if=\"{refunded_amount > 0}\">Refunded</th> <th if=\"{declined_amount > 0}\">Declined</th> <th if=\"{currentAccount.isProfessional}\">Approved</th> </tr> </thead> <tbody> <tr> <th>{formatCurrency(paid_amount)}</th> <th if=\"{refunded_amount > 0}\">{formatCurrency(refunded_amount)}</th> <th if=\"{declined_amount > 0}\">{formatCurrency(declined_amount)}</th> <th if=\"{currentAccount.isProfessional}\">{formatCurrency(approved_amount)}</th> </tr> </tbody> </table> <div if=\"{currentAccount.isProfessional}\" class=\"clearfix overflow-hidden p1 bg-yellow\"> <div class=\"mt1\"> <a class=\"btn btn-small bg-darken-2\" onclick=\"{openPaymentForm}\">Add Payment</a> </div> </div> </div> </div> </div> </li> </ul>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.activeTab = "summary";
@@ -25473,67 +25478,20 @@
 	
 	__webpack_require__(150);
 	
-	riot.tag2("r-admin-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in attributes}\"> <div if=\"{attr != 'id'}\"> <label for=\"{attr}\">{attr.humanize()}</label> <textarea if=\"{_.isObject(record[attr])}\" class=\"block col-12 mb2 field fixed-height\" name=\"{attr}\">{JSON.stringify(record[attr], null, 2)}</textarea> <input if=\"{!_.isObject(record[attr])}\" class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
-	  var _this = this;
+	__webpack_require__(152);
 	
-	  this.on("mount", function () {
-	    _this.opts.api[opts.resource].on("new.fail", _this.errorHandler);
-	    _this.opts.api[opts.resource].on("show.fail", _this.errorHandler);
-	    _this.opts.api[opts.resource].on("update.fail", _this.errorHandler);
-	    _this.opts.api[opts.resource].on("new.success", _this.updateRecord);
-	    _this.opts.api[opts.resource].on("show.success", _this.updateRecord);
-	    _this.opts.api[opts.resource].on("update.success", _this.update);
-	    if (opts.id) {
-	      _this.opts.api[opts.resource].show(opts.id);
-	      history.pushState(null, null, "/app/admin/" + opts.resource + "/" + opts.id + "/edit");
-	    } else {
-	      _this.opts.api[opts.resource]["new"]();
-	      history.pushState(null, null, "/app/admin/" + opts.resource + "/new");
-	    }
-	  });
+	__webpack_require__(153);
 	
-	  this.on("unmount", function () {
-	    _this.opts.api[opts.resource].off("new.fail", _this.errorHandler);
-	    _this.opts.api[opts.resource].off("show.fail", _this.errorHandler);
-	    _this.opts.api[opts.resource].off("update.fail", _this.errorHandler);
-	    _this.opts.api[opts.resource].off("new.success", _this.updateRecord);
-	    _this.opts.api[opts.resource].off("show.success", _this.updateRecord);
-	    _this.opts.api[opts.resource].off("update.success", _this.update);
-	  });
+	__webpack_require__(154);
 	
-	  this.updateRecord = function (record) {
-	    _this.update({ record: record, attributes: _.keys(record) });
-	  };
-	
-	  this.submit = function (e) {
-	    if (e) e.preventDefault();
-	
-	    var data = _this.serializeForm(_this.form);
-	
-	    if (_.isEmpty(data)) {
-	      $(_this.form).animateCss("shake");
-	      return;
-	    }
-	
-	    _this.update({ busy: true, errors: null });
-	
-	    if (_this.opts.id) {
-	      _this.opts.api[opts.resource].update(opts.id, data).fail(_this.errorHandler).then(function (id) {
-	        return _this.update({ busy: false });
-	      });
-	    } else {
-	      _this.opts.api[opts.resource].create(data).fail(_this.errorHandler).then(function (record) {
-	        _this.update({ record: record, busy: false });
-	        _this.opts.id = record.id;
-	        history.pushState(null, null, "/app/admin/" + opts.resource + "/" + record.id + "/edit");
-	      });
-	    }
-	  };
+	riot.tag2("r-admin-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in attributes}\"> <div if=\"{attr != 'id'}\"> <label for=\"{attr}\">{attr.humanize()}</label> <textarea if=\"{_.isObject(record[attr])}\" class=\"block col-12 mb2 field fixed-height\" name=\"{attr}:object\">{JSON.stringify(record[attr], null, 2)}</textarea> <input if=\"{!_.isObject(record[attr])}\" class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
+	  this.mixin("adminForm");
 	});
 	
 	riot.tag2("r-admin-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form submit=\"{search}\"> <input type=\"text\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td each=\"{attr, value in record}\">{value}</td> <td> <button class=\"btn btn-small\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small\" onclick=\"{destroy}\"> <i class=\"fa fa-trash\"></i> </button> </td> </tr> <tbody> </table> </div> </div>", "", "", function (opts) {
 	  var _this = this;
 	
+	  this.mixin("admin");
 	  this.headers = [];
 	  this.records = [];
 	  this.on("mount", function () {
@@ -25562,9 +25520,9 @@
 	    }
 	  };
 	  this.open = function (e) {
-	    var tags = _this.openForm("r-admin-" + opts.resource.replace(/_/g, "-").singular() + "-form", e);
+	    var tags = _this.openAdminForm("r-admin-" + opts.resource.replace(/_/g, "-").singular() + "-form", e);
 	    if (!tags[0].content._tag) {
-	      _this.openForm("r-admin-form", e);
+	      _this.openAdminForm("r-admin-form", e);
 	    }
 	  };
 	  this.destroy = function (e) {
@@ -25913,6 +25871,143 @@
 	    _this.update({ busy: true, errors: null });
 	    _this.opts.api[opts.resource].refund(opts.id).fail(_this.errorHandler).then(_this.updateReset);
 	  };
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 151 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.mixin("admin", {
+	  openAdminForm: function openAdminForm(formTag, e, resource) {
+	    return riot.mount("r-modal", {
+	      content: formTag,
+	      persisted: false,
+	      api: this.opts.api,
+	      classes: "sm-col-11 p2 mt2 mb2",
+	      contentOpts: {
+	        resource: this.opts.resource || resource,
+	        id: e.item && (e.item.id || e.item.record && e.item.record.id),
+	        api: this.opts.api,
+	        attributes: []
+	      }
+	    });
+	  }
+	});
+	
+	riot.mixin("adminForm", {
+	  init: function init() {
+	    var _this = this;
+	
+	    this.on("mount", function () {
+	      _this.opts.api[_this.opts.resource].on("new.fail", _this.errorHandler);
+	      _this.opts.api[_this.opts.resource].on("show.fail", _this.errorHandler);
+	      _this.opts.api[_this.opts.resource].on("update.fail", _this.errorHandler);
+	      _this.opts.api[_this.opts.resource].on("new.success", _this.updateRecord);
+	      _this.opts.api[_this.opts.resource].on("show.success", _this.updateRecord);
+	      _this.opts.api[_this.opts.resource].on("update.success", _this.update);
+	      if (_this.opts.id) {
+	        _this.opts.api[_this.opts.resource].show(_this.opts.id);
+	        history.pushState(null, null, "/app/admin/" + _this.opts.resource + "/" + _this.opts.id + "/edit");
+	      } else {
+	        _this.opts.api[_this.opts.resource]["new"]();
+	        history.pushState(null, null, "/app/admin/" + _this.opts.resource + "/new");
+	      }
+	    });
+	
+	    this.on("unmount", function () {
+	      _this.opts.api[_this.opts.resource].off("new.fail", _this.errorHandler);
+	      _this.opts.api[_this.opts.resource].off("show.fail", _this.errorHandler);
+	      _this.opts.api[_this.opts.resource].off("update.fail", _this.errorHandler);
+	      _this.opts.api[_this.opts.resource].off("new.success", _this.updateRecord);
+	      _this.opts.api[_this.opts.resource].off("show.success", _this.updateRecord);
+	      _this.opts.api[_this.opts.resource].off("update.success", _this.update);
+	    });
+	
+	    this.updateRecord = function (record) {
+	      _this.update({ record: record, attributes: _.keys(record) });
+	    };
+	
+	    this.submit = function (e) {
+	      if (e) e.preventDefault();
+	
+	      var data = _this.serializeForm(_this.form);
+	
+	      if (_.isEmpty(data)) {
+	        $(_this.form).animateCss("shake");
+	        return;
+	      }
+	
+	      _this.update({ busy: true, errors: null });
+	
+	      if (_this.opts.id) {
+	        _this.opts.api[_this.opts.resource].update(_this.opts.id, data).fail(_this.errorHandler).then(function (id) {
+	          return _this.update({ busy: false });
+	        });
+	      } else {
+	        _this.opts.api[_this.opts.resource].create(data).fail(_this.errorHandler).then(function (record) {
+	          _this.update({ record: record, busy: false });
+	          _this.opts.id = record.id;
+	          history.pushState(null, null, "/app/admin/" + _this.opts.resource + "/" + record.id + "/edit");
+	        });
+	      }
+	    };
+	  }
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 152 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-admin-account-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <label for=\"email\">Email</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"email\" value=\"{record['email']}\"> <span if=\"{errors['email']}\" class=\"inline-error\">{errors['email']}</span> <label for=\"password\">Password</label> <input class=\"block col-12 mb2 field\" type=\"password\" name=\"password\" value=\"{record['password']}\"> <span if=\"{errors['password']}\" class=\"inline-error\">{errors['password']}</span> <label for=\"user_attributes[type]\">Type</label> <select class=\"block col-12 mb2 field\" type=\"text\" name=\"user_attributes[type]\" value=\"{record['user']['type']}\"> <option></option> <option value=\"Customer\" __selected=\"{record['user_type'] == 'Customer'}\">Customer</option> <option value=\"Professional\" __selected=\"{record['user_type'] == 'Professional'}\">Professional</option> <option value=\"Administrator\" __selected=\"{record['user_type'] == 'Administrator'}\">Administrator</option> </select> <span if=\"{errors['user']['type']}\" class=\"inline-error\">{errors['user']['type']}</span> <label for=\"user_attributes[profile][first_name]\">First Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"user_attributes[profile][first_name]\" value=\"{record['profile']['first_name']}\"> <span if=\"{errors['user.profile.first_name']}\" class=\"inline-error\">{errors['user.profile.first_name']}</span> <label for=\"user_attributes[profile][last_name]\">Last Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"user_attributes[profile][last_name]\" value=\"{record['profile']['last_name']}\"> <span if=\"{errors['user.profile.last_name']}\" class=\"inline-error\">{errors['user.profile.last_name']}</span> <label for=\"user_attributes[profile][phone_number]\">Phone Number</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"user_attributes[profile][phone_number]\" value=\"{record['profile']['phone_number']}\"> <span if=\"{errors['user.profile.phone_number']}\" class=\"inline-error\">{errors['user.profile.phone_number']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
+	  this.mixin("adminForm");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 153 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-admin-lead-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\" autocomplete=\"off\"> <label for=\"first_name\">First Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"first_name\" value=\"{record['first_name']}\"> <span if=\"{errors['first_name']}\" class=\"inline-error\">{errors['first_name']}</span> <label for=\"[last_name]\">Last Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"[last_name]\" value=\"{record['last_name']}\"> <span if=\"{errors['last_name']}\" class=\"inline-error\">{errors['last_name']}</span> <label for=\"[phone_number]\">Phone Number</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"[phone_number]\" value=\"{record['phone_number']}\"> <span if=\"{errors['phone_number']}\" class=\"inline-error\">{errors['phone_number']}</span> <h3>Convert</h3> <p>Fill below fields if you want to convert Lead to a Customer, leave empty otherwise</p> <label for=\"email\">Email</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"email\" value=\"{record['email']}\" autocomplete=\"off\"> <span if=\"{errors['email']}\" class=\"inline-error\">{errors['email']}</span> <label for=\"password\">Password</label> <input class=\"block col-12 mb2 field\" type=\"password\" name=\"password\" value=\"{record['password']}\" autocomplete=\"off\"> <span if=\"{errors['password']}\" class=\"inline-error\">{errors['password']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
+	  this.mixin("adminForm");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 154 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	var options = __webpack_require__(124);
+	
+	__webpack_require__(130);
+	
+	riot.tag2("r-admin-project-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"edit_project\" onsubmit=\"{submit}\" autocomplete=\"off\"> <label for=\"account_id\">Customer</label> <select name=\"account_id\" class=\"block col-12 mb2 field\" onchange=\"{setInputValue}\"> <option></option> <option each=\"{user, i in customers}\" value=\"{user.account_id}\" __selected=\"{record.account_id == user.account_id}\">#{user.account_id} | {user.profile.first_name} {user.profile.last_name}</option> </select> <span if=\"{errors.account_id}\" class=\"inline-error\">{errors.account_id}</span> <section class=\"container clearfix\" data-step=\"1\"> <div class=\"container\"> <h2>Mission</h2> <div class=\"clearfix mxn2 border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === record.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === record.kind}\"> </a> </div> </div> </div> </section> <section class=\"container clearfix\" data-step=\"2\"> <div class=\"container\"> <h2>Helpful details</h2> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" autofocus=\"true\" oninput=\"{setValue}\">{record.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === record.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === record.brief.preferred_start}\">{value}</option> </select> </div> </div> </div> </section> <section class=\"container clearfix\" data-step=\"3\"> <div class=\"container\"> <h2>Documents and Photos</h2> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-12 px2 mb2\"> <p class=\"h2\">Upload plans, documents, site photos or any other files about your project</p> <r-files-input-with-preview name=\"assets\" record=\"{record}\"></r-files-input-with-preview> </div> </div> </div> </section> <section class=\"container clearfix\" data-step=\"4\"> <div class=\"container\"> <h2>Address</h2> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{record.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{record.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{record.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> </div> </section> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.mixin("adminForm");
+	  this.step = 5;
+	  // this.record = {brief: {}, address: {}}
+	  this.options = options;
+	
+	  this.setProjectKind = function (e) {
+	    _this.record.kind = e.item.value;
+	  };
+	
+	  this.setInputValue = function (e) {
+	    console.log(e.target.value);
+	    _this.record[e.target.name] = e.target.value;
+	  };
+	
+	  this.loadResources("customers");
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 

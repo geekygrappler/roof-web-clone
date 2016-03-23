@@ -21,6 +21,9 @@
   "AdministratorLinks": [
     {"href": "/app/admin/leads", "title": "Leads"},
     {"href": "/app/admin/accounts", "title": "Accounts"},
+    {"href": "/app/admin/customers", "title": "Customers"},
+    {"href": "/app/admin/professionals", "title": "Professionals"},
+    {"href": "/app/admin/administrators", "title": "Administrators"},
     {"href": "/app/admin/projects", "title": "Projects"},
     {"href": "/app/admin/payments", "title": "Payments"},
     {"href": "/app/admin/quotes", "title": "Quotes"},

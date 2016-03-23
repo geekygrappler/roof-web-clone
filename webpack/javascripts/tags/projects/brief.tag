@@ -162,6 +162,10 @@ import '../arrange_callback.tag'
     opts.api.registrations.one('signup.success', () => this.submit())
   }
 
+  this.on('mount', () => {
+    $('r-app').removeClass('display-none')
+  })
+
   if( this.step === 0) {
     $('body')
     .one('transitionend', () => $('body').removeClass('no-transition'))

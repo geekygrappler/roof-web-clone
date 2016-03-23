@@ -52,9 +52,9 @@
         </div>
         <div class="tabs m0 mxn2 border-top">
 
-          <div if="{activeTab == 'summary'}">
+          <div if="{activeTab == 'summary'}" class="mt2">
 
-            <div class="clearfix px2 mt2 mb1" if="{submitted_at}">
+            <div class="clearfix px2 mb1" if="{submitted_at}">
               <div class="sm-col sm-col-6"><i class="fa fa-clock-o mr1"></i> Submitted at:</div>
               <div class="sm-col sm-col-6">{fromNow(submitted_at)}</div>
             </div>
@@ -73,8 +73,8 @@
 
           </div>
 
-          <div if="{activeTab == 'payments'}">
-            <table class="table-light mt2">
+          <div if="{activeTab == 'payments'}" class="mt2">
+            <table class="table-light">
               <thead>
                 <tr>
                   <th>Amount</th> <th>Due Date</th> <th>Status</th> <th></th>

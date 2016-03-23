@@ -81,20 +81,6 @@ riot.mixin({
   isAllValuesEmpty: function (data) {
     return _.isEmpty(_.compact(_.values(data)))
   },
-  openForm: function (formTag, e, resource) {
-    return riot.mount('r-modal', {
-      content: formTag,
-      persisted: false,
-      api: this.opts.api,
-      classes: 'sm-col-12 sm-px3 px1',
-      contentOpts: {
-        resource: this.opts.resource || resource,
-        id: e.item && (e.item.id || e.item.record && e.item.record.id),
-        api: this.opts.api,
-        attributes: []
-      }
-    })
-  },
   loadResources: function(resource, options = {}) {
     let key = `index.${resource}:${JSON.stringify(options)}`
     if (this.opts.api[resource].cache[key]) {

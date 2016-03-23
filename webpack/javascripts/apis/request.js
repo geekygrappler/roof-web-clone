@@ -1,6 +1,6 @@
 export default function ({url, type = 'get', data = null}) {
   if (!$.csrfToken) {
-    return $.getJSON('/api/accounts/csrf_token.json')
+    return $.getJSON('/api/auth/csrf_token.json')
     .then( (d, x, r) => {
       var token = r.getResponseHeader('X-CSRF-Token')
       if (token) {

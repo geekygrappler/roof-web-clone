@@ -132,7 +132,7 @@ resources.forEach((api) =>{
 apis.sessions.check = function () {
   return request({
     type: 'get',
-    url: '/api/accounts/sign_in'
+    url: '/api/auth/sign_in'
   })
   .fail((xhr) => {
     apis.sessions.trigger('check.fail', xhr)
@@ -148,7 +148,7 @@ apis.sessions.check = function () {
 apis.sessions.signin = function (creds) {
   return request({
     type: 'post',
-    url: '/api/accounts/sign_in',
+    url: '/api/auth/sign_in',
     data: {account: creds}
   })
   .fail((xhr) => apis.sessions.trigger('signin.fail', xhr))
@@ -163,7 +163,7 @@ apis.sessions.signin = function (creds) {
 apis.sessions.signout = function (creds) {
   return request({
     type: 'delete',
-    url: '/api/accounts/sign_out',
+    url: '/api/auth/sign_out',
     data: {account: creds}
   })
   .fail((xhr) => apis.sessions.trigger('signout.fail', xhr))
@@ -179,7 +179,7 @@ apis.sessions.signout = function (creds) {
 apis.registrations.signup = function (data) {
   return request({
     type: 'post',
-    url: '/api/accounts',
+    url: '/api/auth',
     data: {account: data}
   })
   .fail((xhr) => apis.registrations.trigger('signup.fail', xhr))
@@ -194,7 +194,7 @@ apis.registrations.signup = function (data) {
 apis.registrations.update = function (id, data) {
   return request({
     type: 'put',
-    url: '/api/accounts',
+    url: '/api/auth',
     data: {account: data}
   })
   .fail((xhr) => apis.registrations.trigger('update.fail', xhr))
