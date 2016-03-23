@@ -82,16 +82,18 @@ riot.mixin({
     return _.isEmpty(_.compact(_.values(data)))
   },
   loadResources: function(resource, options = {}) {
-    let key = `index.${resource}:${JSON.stringify(options)}`
-    if (this.opts.api[resource].cache[key]) {
-      this[resource] = this.opts.api[resource].cache[key]
-      this.update()
-    } else {
+    // BUGYY!!!!
+    // let key = `index.${resource}:${JSON.stringify(options)}`
+    // if (this.opts.api[resource].cache[key]) {
+    //   this[resource] = this.opts.api[resource].cache[key]
+    //   this.update()
+    // } else {
       this.opts.api[resource].index(options).then(data => {
-        this[resource] = this.opts.api[resource].cache[key] = data
+        // this[resource] = this.opts.api[resource].cache[key] = data
+        this[resource] = data
         this.update()
       })
-    }
+    // }
   },
   updateReset: function () {
     this.update({busy: false, errors: null})

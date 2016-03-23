@@ -111,7 +111,7 @@
   })
 
   this.on('update', () => {
-    if(this.project) {
+    if(this.project && !this.appointments) {
       this.loadResources('appointments', {project_id: this.project.id})
     }
   })
@@ -160,14 +160,17 @@
     .fail(this.errorHandler)
   }
   this.addAppointment = (record) => {
-    let _id = _.findIndex(this.appointments, {id: record.id})
+    let _id = _.findIndex(this.appointments, r => r.id == record.id)
+    console.log('addAppointment', _id, this.appointments, record.id)
     if (_id === -1) {
       this.appointments.push(record)
       this.update()
     }
   }
+
   this.removeAppointment = (id) => {
-    let _id = _.findIndex(this.appointments, {id: id})
+    let _id = _.findIndex(this.appointments, r => r.id == id)
+    console.log('removeAppointment', _id, this.appointments, id)
     if(_id > -1) {
       this.appointments.splice(_id, 1)
       this.update()

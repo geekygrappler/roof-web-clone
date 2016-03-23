@@ -37,7 +37,8 @@ let resources = [
   'materials',
   'tasks',
   'appointments',
-  'assets'
+  'assets',
+  'comments'
 ]
 resources.forEach((api) =>{
   apis[api] = riot.observable()

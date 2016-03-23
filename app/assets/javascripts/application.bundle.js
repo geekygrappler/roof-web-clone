@@ -2682,7 +2682,7 @@
 	  return Account;
 	})();
 	
-	var resources = ["customers", "professionals", "administrators", "leads", "accounts", "projects", "payments", "quotes", "tenders", "tender_templates", "materials", "tasks", "appointments", "assets"];
+	var resources = ["customers", "professionals", "administrators", "leads", "accounts", "projects", "payments", "quotes", "tenders", "tender_templates", "materials", "tasks", "appointments", "assets", "comments"];
 	resources.forEach(function (api) {
 	  apis[api] = riot.observable();
 	  apis[api].cache = {};
@@ -3170,16 +3170,17 @@
 	
 	    var options = arguments[1] === undefined ? {} : arguments[1];
 	
-	    var key = "index." + resource + ":" + JSON.stringify(options);
-	    if (this.opts.api[resource].cache[key]) {
-	      this[resource] = this.opts.api[resource].cache[key];
-	      this.update();
-	    } else {
-	      this.opts.api[resource].index(options).then(function (data) {
-	        _this[resource] = _this.opts.api[resource].cache[key] = data;
-	        _this.update();
-	      });
-	    }
+	    // BUGYY!!!!
+	    // let key = `index.${resource}:${JSON.stringify(options)}`
+	    // if (this.opts.api[resource].cache[key]) {
+	    //   this[resource] = this.opts.api[resource].cache[key]
+	    //   this.update()
+	    // } else {
+	    this.opts.api[resource].index(options).then(function (data) {
+	      // this[resource] = this.opts.api[resource].cache[key] = data
+	      _this[resource] = data;
+	      _this.update();
+	    });
 	  },
 	  updateReset: function updateReset() {
 	    this.update({ busy: false, errors: null });
@@ -3188,6 +3189,7 @@
 	    $("r-modal")[0]._tag.close();
 	  }
 	});
+	// }
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
@@ -19968,7 +19970,7 @@
 	  });
 	
 	  this.on("update", function () {
-	    if (_this.project) {
+	    if (_this.project && !_this.appointments) {
 	      _this.loadResources("appointments", { project_id: _this.project.id });
 	    }
 	  });
@@ -20013,14 +20015,21 @@
 	    opts.api.appointments["delete"](e.item.id).fail(_this.errorHandler);
 	  };
 	  this.addAppointment = function (record) {
-	    var _id = _.findIndex(_this.appointments, { id: record.id });
+	    var _id = _.findIndex(_this.appointments, function (r) {
+	      return r.id == record.id;
+	    });
+	    console.log("addAppointment", _id, _this.appointments, record.id);
 	    if (_id === -1) {
 	      _this.appointments.push(record);
 	      _this.update();
 	    }
 	  };
+	
 	  this.removeAppointment = function (id) {
-	    var _id = _.findIndex(_this.appointments, { id: id });
+	    var _id = _.findIndex(_this.appointments, function (r) {
+	      return r.id == id;
+	    });
+	    console.log("removeAppointment", _id, _this.appointments, id);
 	    if (_id > -1) {
 	      _this.appointments.splice(_id, 1);
 	      _this.update();
@@ -25151,28 +25160,58 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-comments", "<h3>Comments</h3> <blockquote each=\"{opts.item.comments}\" class=\"clearfix m0 p1 border-left mb1\"> {text} <a class=\"btn btn-small border-red red right\" onclick=\"{remove}\" if=\"{account.id == currentAccount.id}\"> <i class=\"fa fa-trash-o\"></i> </a> <div class=\"h5 right-align mt1\"><strong>{account.name}</strong> <span class=\"italic\">{fromNow(date)}</span></div> </blockquote> <form name=\"form\" onsubmit=\"{submit}\" class=\"mt2\"> <textarea class=\"block col-12 mb2 field\" name=\"text\" placeholder=\"Leave your comment\"></textarea> <button class=\"btn btn-primary\">Comment</button> </form>", "", "", function (opts) {
+	riot.tag2("r-comments", "<h3>Comments</h3> <blockquote each=\"{comments}\" class=\"clearfix m0 p1 border-left mb1\"> {text} <a class=\"btn btn-small border-red red right\" onclick=\"{delete}\" if=\"{account_id == currentAccount.id}\"> <i class=\"fa fa-trash-o\"></i> </a> <div class=\"h5 right-align mt1\"><strong>{account.profile.first_name} {account.profile.last_name}</strong> <span class=\"italic\">{fromNow(created_at)}</span></div> </blockquote> <form name=\"form\" onsubmit=\"{create}\" class=\"mt2\"> <input type=\"hidden\" name=\"account_id\" value=\"{currentAccount.id}\"> <input type=\"hidden\" name=\"commentable_id\" value=\"{this.opts.item.id}\"> <input type=\"hidden\" name=\"commentable_type\" value=\"{this.opts.item.action ? 'Task' : 'Material'}\"> <textarea class=\"block col-12 mb2 field\" name=\"text\" placeholder=\"Leave your comment\"></textarea> <button class=\"btn btn-primary {busy: busy}\" __disabled=\"{busy}\">Comment</button> </form>", "", "", function (opts) {
 	  var _this = this;
 	
-	  this.submit = function (e) {
+	  this.on("mount", function () {
+	    _this.opts.api.comments.on("create.success", _this.addComment);
+	    _this.opts.api.comments.on("create.fail", _this.errorHandler);
+	    _this.opts.api.comments.on("delete.success", _this.removeComment);
+	    _this.opts.api.comments.on("delete.fail", _this.errorHandler);
+	    _this.loadResources("comments", { commentable_id: _this.opts.item.id, commentable_type: _this.opts.item.action ? "Task" : "Material" });
+	  });
+	  this.on("unmount", function () {
+	    _this.opts.api.comments.off("create.success", _this.addComment);
+	    _this.opts.api.comments.off("create.fail", _this.errorHandler);
+	    _this.opts.api.comments.off("delete.success", _this.removeComment);
+	    _this.opts.api.comments.off("delete.fail", _this.errorHandler);
+	  });
+	
+	  this.create = function (e) {
 	    e.preventDefault();
-	    _this.opts.item.comments = _this.opts.item.comments || [];
-	    _this.opts.item.comments.push({
-	      text: _this.text.value,
-	      account: { id: _this.currentAccount.id, name: "" + _this.currentAccount.profile.first_name + " " + _this.currentAccount.profile.last_name },
-	      date: new Date(),
-	      id: _this.opts.item.comments.length + 1
-	    });
-	    _this.text.value = null;
-	    _this.update();
+	
+	    var data = _this.serializeForm(_this.form);
+	
+	    if (_.isEmpty(data)) {
+	      $(_this.form).animateCss("shake");
+	      return;
+	    }
+	
+	    _this.update({ busy: true, errors: null });
+	
+	    _this.opts.api.comments.create(data);
 	  };
-	  this.remove = function (e) {
+	  this["delete"] = function (e) {
 	    e.preventDefault();
-	    var _id = _.findIndex(_this.opts.item.comments, function (c) {
-	      return c.id == e.item.id;
+	    _this.opts.api.comments["delete"](e.item.id);
+	  };
+	
+	  this.addComment = function (comment) {
+	    _this.text.value = null;
+	    var _id = _.findIndex(_this.comments, function (c) {
+	      return c.id == comment.id;
+	    });
+	    if (_id === -1) {
+	      _this.comments.push(comment);
+	    }
+	    _this.updateReset();
+	  };
+	  this.removeComment = function (id) {
+	    var _id = _.findIndex(_this.comments, function (c) {
+	      return c.id == id;
 	    });
 	    if (_id > -1) {
-	      _this.opts.item.comments.splice(_id, 1);
+	      _this.comments.splice(_id, 1);
 	      _this.update();
 	    }
 	  };
@@ -25937,62 +25976,12 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-admin-payment-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in ['fee', 'amount']}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{parseInt(record[attr]) * 0.01}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> <div each=\"{attr, i in ['due_date', 'description']}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> <div class=\"right-align\"> <button type=\"submit\" class=\"mb2 btn btn-big btn-primary {busy: busy}\">Save</button> <a if=\"{record.id && !record.approved_at}\" onclick=\"{approve}\" class=\"mb2 btn btn-big bg-green white {busy: busy}\">Approve</a> <a if=\"{record.id && record.paid_at && !record.refunded_at}\" onclick=\"{refund}\" class=\"mb2 btn btn-big bg-red white {busy: busy}\">Refund</a> </div> </form>", "", "", function (opts) {
+	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+	
+	var Pikaday = _interopRequire(__webpack_require__(134));
+	
+	riot.tag2("r-admin-payment-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <label for=\"project_id\">Project</label> <select name=\"project_id\" class=\"block col-12 mb2 field\" onchange=\"{loadProfessionals}\"> <option></option> <option each=\"{projects}\" value=\"{id}\" __selected=\"{record.project_id == id}\">#{id} | {name}</option> </select> <span if=\"{errors.project_id}\" class=\"inline-error\">{errors.project_id}</span> <label for=\"professional_id\">Professional</label> <select name=\"professional_id\" class=\"block col-12 mb2 field\" onchange=\"{loadQuotes}\"> <option></option> <option each=\"{professionals}\" value=\"{id}\" __selected=\"{record.professional_id == id}\">#{id} | {profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"quote_id\">Quote</label> <select name=\"quote_id\" class=\"block col-12 mb2 field\"> <option></option> <option each=\"{quotes}\" value=\"{id}\" __selected=\"{record.quote_id == id}\">#{id} | {total_amount}</option> </select> <span if=\"{errors.quote_id}\" class=\"inline-error\">{errors.quote_id}</span> <div each=\"{attr, i in ['fee', 'amount']}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <input class=\"block col-12 mb2 field\" name=\"{attr}\" value=\"{parseInt(record[attr]) * 0.01}\" type=\"{'number'}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> <div each=\"{attr, i in ['due_date', 'description']}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> <div if=\"{!_.isEmpty(errors)}\" id=\"error_explanation\"> <ul> <li each=\"{field, messages in errors}\">{field.humanize()} {messages.join(', ')}</li> </ul> </div> <div class=\"right-align\"> <button type=\"submit\" class=\"mb2 btn btn-big btn-primary {busy: busy}\">Save</button> <a if=\"{record.id && !record.approved_at}\" onclick=\"{approve}\" class=\"mb2 btn btn-big bg-green white {busy: busy}\">Approve</a> <a if=\"{record.id && record.paid_at && !record.refunded_at}\" onclick=\"{refund}\" class=\"mb2 btn btn-big bg-red white {busy: busy}\">Refund</a> </div> </form>", "", "", function (opts) {
 	  var _this = this;
-	
-	  this.on("mount", function () {
-	    _this.opts.api[opts.resource].on("new.fail", _this.errorHandler);
-	    _this.opts.api[opts.resource].on("show.fail", _this.errorHandler);
-	    _this.opts.api[opts.resource].on("update.fail", _this.errorHandler);
-	    _this.opts.api[opts.resource].on("new.success", _this.updateRecord);
-	    _this.opts.api[opts.resource].on("show.success", _this.updateRecord);
-	    _this.opts.api[opts.resource].on("update.success", _this.update);
-	    if (opts.id) {
-	      _this.opts.api[opts.resource].show(opts.id);
-	      history.pushState(null, null, "/app/admin/" + opts.resource + "/" + opts.id + "/edit");
-	    } else {
-	      _this.opts.api[opts.resource]["new"]();
-	      history.pushState(null, null, "/app/admin/" + opts.resource + "/new");
-	    }
-	  });
-	
-	  this.on("unmount", function () {
-	    _this.opts.api[opts.resource].off("new.fail", _this.errorHandler);
-	    _this.opts.api[opts.resource].off("show.fail", _this.errorHandler);
-	    _this.opts.api[opts.resource].off("update.fail", _this.errorHandler);
-	    _this.opts.api[opts.resource].off("new.success", _this.updateRecord);
-	    _this.opts.api[opts.resource].off("show.success", _this.updateRecord);
-	    _this.opts.api[opts.resource].off("update.success", _this.update);
-	  });
-	
-	  this.updateRecord = function (record) {
-	    _this.update({ record: record, attributes: _.keys(record) });
-	  };
-	
-	  this.submit = function (e) {
-	    if (e) e.preventDefault();
-	
-	    var data = _this.serializeForm(_this.form);
-	
-	    if (_.isEmpty(data)) {
-	      $(_this.form).animateCss("shake");
-	      return;
-	    }
-	
-	    _this.update({ busy: true, errors: null });
-	
-	    if (_this.opts.id) {
-	      _this.opts.api[opts.resource].update(opts.id, data).fail(_this.errorHandler).then(function (id) {
-	        return _this.update({ busy: false });
-	      });
-	    } else {
-	      _this.opts.api[opts.resource].create(data).fail(_this.errorHandler).then(function (record) {
-	        _this.update({ record: record, busy: false });
-	        _this.opts.id = record.id;
-	        history.pushState(null, null, "/app/admin/" + opts.resource + "/" + record.id + "/edit");
-	      });
-	    }
-	  };
 	
 	  this.approve = function (e) {
 	    e.preventDefault();
@@ -26009,6 +25998,28 @@
 	    _this.update({ busy: true, errors: null });
 	    _this.opts.api[opts.resource].refund(opts.id).fail(_this.errorHandler).then(_this.updateReset);
 	  };
+	
+	  this.loadResources("projects");
+	
+	  this.loadProfessionals = function (e) {
+	    _this.record.project_id = parseInt(e.target.value);
+	    _this.professionals = _.findWhere(_this.projects, { id: _this.record.project_id }).professionals;
+	  };
+	  this.loadQuotes = function (e) {
+	    _this.record.professional_id = parseInt(e.target.value);
+	    _this.loadResources("quotes", { professional_id: _this.record.professional_id });
+	  };
+	  this.on("mount", function () {
+	    var picker = new Pikaday({
+	      showTime: false,
+	      field: _this.due_date,
+	      onSelect: function (date) {
+	        _this.record.due_date = picker.toString();
+	        _this.update();
+	      }
+	    });
+	  });
+	  this.mixin("adminForm");
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 

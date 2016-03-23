@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160323022610) do
+ActiveRecord::Schema.define(version: 20160323212700) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -76,6 +76,18 @@ ActiveRecord::Schema.define(version: 20160323022610) do
 
   add_index "assets", ["content_type"], name: "index_assets_on_content_type", using: :btree
   add_index "assets", ["project_id"], name: "index_assets_on_project_id", using: :btree
+
+  create_table "comments", force: :cascade do |t|
+    t.integer  "account_id"
+    t.integer  "commentable_id"
+    t.string   "commentable_type"
+    t.jsonb    "data",             default: {}
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+  end
+
+  add_index "comments", ["account_id"], name: "index_comments_on_account_id", using: :btree
+  add_index "comments", ["commentable_type", "commentable_id"], name: "index_comments_on_commentable_type_and_commentable_id", using: :btree
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   default: 0, null: false
@@ -191,6 +203,7 @@ ActiveRecord::Schema.define(version: 20160323022610) do
 
   add_foreign_key "appointments", "projects"
   add_foreign_key "assets", "projects"
+  add_foreign_key "comments", "accounts"
   add_foreign_key "invitations", "projects"
   add_foreign_key "payments", "projects"
   add_foreign_key "payments", "quotes"
