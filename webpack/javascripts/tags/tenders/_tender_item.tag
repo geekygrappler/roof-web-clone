@@ -81,7 +81,7 @@
 
   this.input = (e) => {
     e.item[e.target.name] = e.target.type === 'checkbox' ? e.target.checked : (e.target.name === 'price' ? parseInt(e.target.value) * 100 : parseInt(e.target.value))
-    this.update()
+    //this.update()
     this.opts.api.tenders.trigger('update')
   }
   this.inputname = (e) => {

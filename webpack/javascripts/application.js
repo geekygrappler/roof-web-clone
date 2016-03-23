@@ -10,11 +10,14 @@ let mount = () => {
   riot.mount('r-app', {api})
   riot.route.start(true)
 }
+let showApp = () => {
+  setTimeout($('r-app').removeClass('display-none'),0)
+}
 api.sessions.one('check.fail', mount)
 api.sessions.one('check.success', () => {
-  $('r-app').removeClass('display-none')
   mount()
+  showApp()
 })
-api.sessions.on('signin.success', () => $('r-app').removeClass('display-none'))
-api.sessions.on('signup.success', () => $('r-app').removeClass('display-none'))
+api.sessions.on('signin.success', showApp)
+api.sessions.on('signup.success', showApp)
 api.sessions.check()

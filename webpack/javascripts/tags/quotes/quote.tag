@@ -68,6 +68,7 @@ import from '../../mixins/tender.js'
       })
     } else {
       this.record = {project_id: this.opts.project_id, document: {sections: []}}
+      if (this.currentAccount.isProfessional) this.record.professional_id = this.currentAccount.user_id
     }
 
     this.submit = (e) => {

@@ -65,17 +65,16 @@
 	  riot.mount("r-app", { api: api });
 	  riot.route.start(true);
 	};
+	var showApp = function () {
+	  setTimeout($("r-app").removeClass("display-none"), 0);
+	};
 	api.sessions.one("check.fail", mount);
 	api.sessions.one("check.success", function () {
-	  $("r-app").removeClass("display-none");
 	  mount();
+	  showApp();
 	});
-	api.sessions.on("signin.success", function () {
-	  return $("r-app").removeClass("display-none");
-	});
-	api.sessions.on("signup.success", function () {
-	  return $("r-app").removeClass("display-none");
-	});
+	api.sessions.on("signin.success", showApp);
+	api.sessions.on("signup.success", showApp);
 	api.sessions.check();
 
 /***/ },
@@ -25180,7 +25179,7 @@
 	
 	  this.input = function (e) {
 	    e.item[e.target.name] = e.target.type === "checkbox" ? e.target.checked : e.target.name === "price" ? parseInt(e.target.value) * 100 : parseInt(e.target.value);
-	    _this.update();
+	    //this.update()
 	    _this.opts.api.tenders.trigger("update");
 	  };
 	  this.inputname = function (e) {
@@ -25369,6 +25368,7 @@
 	    });
 	  } else {
 	    this.record = { project_id: this.opts.project_id, document: { sections: [] } };
+	    if (this.currentAccount.isProfessional) this.record.professional_id = this.currentAccount.user_id;
 	  }
 	
 	  this.submit = function (e) {
