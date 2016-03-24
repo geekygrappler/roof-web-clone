@@ -90,7 +90,8 @@
       </div>
 
       <div if="{ parent.headers.total_cost }" class="col sm-col-{ parent.headers.total_cost } col-3 center">
-        { this.formatCurrency(parent.opts.name == 'task' ? (price * quantity) : (supplied ? price * quantity : '0')) }
+        <input type="number" value="{parent.opts.name == 'task' ? (price / 100 * quantity) : (supplied ? price / 100 * quantity : '0')}"
+        step="1" min="0" class="fit field inline-input center" oninput="{ inputTotalCost }" >
       </div>
 
       <div if="{ parent.headers.supplied }" class="col sm-col-{ parent.headers.supplied } col-1 center">
@@ -119,6 +120,9 @@
     e.item.display_name = e.target.value
     this.update()
     this.opts.api.tenders.trigger('update')
+  }
+  this.inputTotalCost = (e) => {
+    $('[name=price]', this.root).val(e.target.value / e.item.quantity)
   }
 
   this.removeItem = (e) => {

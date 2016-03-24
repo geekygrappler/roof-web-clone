@@ -11,7 +11,7 @@ let mount = () => {
   riot.route.start(true)
 }
 let showApp = () => {
-  setTimeout($('r-app').removeClass('display-none'),0)
+  setTimeout(() => $('r-app').removeClass('display-none'), 0)
 }
 api.sessions.one('check.fail', mount)
 api.sessions.one('check.success', () => {
