@@ -25244,13 +25244,13 @@
 	  };
 	});
 	
-	riot.tag2("r-tender-item", "<li class=\"relative\"> <div if=\"{opts.border_cleaner}\" class=\"border-cleaner absolute\"></div> <div class=\"clearfix animate p1 border-bottom\"> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> <input type=\"text\" name=\"name\" value=\"{display_name || name}\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputname}\"> <hr class=\"sm-hide\"> </div> <div if=\"{parent.headers.quantity}\" class=\"col sm-col-{parent.headers.quantity} col-3 center\"> <input name=\"quantity\" value=\"{quantity}\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.price}\" class=\"col sm-col-{parent.headers.price} col-{parent.opts.name == 'task' ? 3 : 2} center\"> <input name=\"price\" value=\"{parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0)}\" __disabled=\"{parent.opts.name == 'material' && !supplied}\" step=\"1\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.total_cost}\" class=\"col sm-col-{parent.headers.total_cost} col-3 center\"> <input value=\"{parent.opts.name == 'task' ? (price / 100 * quantity) : (supplied ? price / 100 * quantity : '0')}\" step=\"1\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{inputTotalCost}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.supplied}\" class=\"col sm-col-{parent.headers.supplied} col-1 center\"> <input if=\"{parent.opts.name == 'material'}\" type=\"checkbox\" name=\"supplied\" __checked=\"{supplied}\" class=\"align-middle\" onchange=\"{input}\"> </div> <div if=\"{parent.headers.actions}\" class=\"col sm-col-{parent.headers.actions} col-2 center\"> <a href=\"#\" class=\"btn btn-small border-red red\" onclick=\"{removeItem}\"><i class=\"fa fa-trash-o\"></i></a> <a href=\"#\" class=\"btn btn-small border\" onclick=\"{openComments}\"><i class=\"fa fa-comment-o\"></i></a> </div> </div> </li>", "", "", function (opts) {
+	riot.tag2("r-tender-item", "<li class=\"relative\"> <div if=\"{opts.border_cleaner}\" class=\"border-cleaner absolute\"></div> <div class=\"clearfix animate p1 border-bottom\"> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> <input type=\"text\" name=\"name\" value=\"{display_name || name}\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputname}\"> <hr class=\"sm-hide\"> </div> <div if=\"{parent.headers.quantity}\" class=\"col sm-col-{parent.headers.quantity} col-3 center\"> <input name=\"quantity\" value=\"{quantity}\" step=\"1\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.price}\" class=\"col sm-col-{parent.headers.price} col-{parent.opts.name == 'task' ? 3 : 2} center\"> <input name=\"price\" value=\"{parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0)}\" __disabled=\"{parent.opts.name == 'material' && !supplied}\" step=\"1\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.total_cost}\" class=\"col sm-col-{parent.headers.total_cost} col-3 center\"> <input value=\"{parent.opts.name == 'task' ? (price / 100 * quantity) : (supplied ? price / 100 * quantity : '0')}\" step=\"1\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{inputTotalCost}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.supplied}\" class=\"col sm-col-{parent.headers.supplied} col-1 center\"> <input if=\"{parent.opts.name == 'material'}\" type=\"checkbox\" name=\"supplied\" __checked=\"{supplied}\" class=\"align-middle\" onchange=\"{input}\"> </div> <div if=\"{parent.headers.actions}\" class=\"col sm-col-{parent.headers.actions} col-2 center\"> <a href=\"#\" class=\"btn btn-small border-red red\" onclick=\"{removeItem}\"><i class=\"fa fa-trash-o\"></i></a> <a href=\"#\" class=\"btn btn-small border\" onclick=\"{openComments}\"><i class=\"fa fa-comment-o\"></i></a> </div> </div> </li>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.on("mount", function () {});
 	
 	  this.input = function (e) {
-	    e.item[e.target.name] = e.target.type === "checkbox" ? e.target.checked : e.target.name === "price" ? parseInt(e.target.value) * 100 : parseInt(e.target.value);
+	    e.item[e.target.name] = e.target.type === "checkbox" ? e.target.checked : e.target.name === "price" ? (parseInt(e.target.value) || 0) * 100 : parseInt(e.target.value) || 0;
 	    //this.update()
 	    _this.opts.api.tenders.trigger("update");
 	  };
@@ -25260,7 +25260,8 @@
 	    _this.opts.api.tenders.trigger("update");
 	  };
 	  this.inputTotalCost = function (e) {
-	    $("[name=price]", _this.root).val(e.target.value / e.item.quantity);
+	    //$('[name=price]', this.root).val()
+	    e.item.price = e.target.value * 100 / e.item.quantity;
 	  };
 	
 	  this.removeItem = function (e) {

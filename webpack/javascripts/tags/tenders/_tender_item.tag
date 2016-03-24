@@ -80,7 +80,7 @@
       </div>
 
       <div if="{ parent.headers.quantity }" class="col sm-col-{ parent.headers.quantity } col-3 center">
-        <input type="number" name="quantity" value="{ quantity }" min="0"
+        <input type="number" name="quantity" value="{ quantity }" step="1" min="0"
         class="fit field inline-input center" oninput="{ input }" />
       </div>
 
@@ -112,7 +112,7 @@
   })
 
   this.input = (e) => {
-    e.item[e.target.name] = e.target.type === 'checkbox' ? e.target.checked : (e.target.name === 'price' ? parseInt(e.target.value) * 100 : parseInt(e.target.value))
+    e.item[e.target.name] = e.target.type === 'checkbox' ? e.target.checked : (e.target.name === 'price' ? (parseInt(e.target.value) || 0) * 100 : (parseInt(e.target.value) || 0))
     //this.update()
     this.opts.api.tenders.trigger('update')
   }
@@ -122,7 +122,8 @@
     this.opts.api.tenders.trigger('update')
   }
   this.inputTotalCost = (e) => {
-    $('[name=price]', this.root).val(e.target.value / e.item.quantity)
+    //$('[name=price]', this.root).val()
+    e.item.price = e.target.value * 100 / e.item.quantity
   }
 
   this.removeItem = (e) => {
