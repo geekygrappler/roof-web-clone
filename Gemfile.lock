@@ -16,23 +16,6 @@ GIT
       activesupport (>= 4.0.0)
       mime-types (>= 1.16)
 
-PATH
-  remote: ../roof-api
-  specs:
-    roof_api (0.0.4.fix5a)
-      cancancan (~> 1.10)
-      carrierwave
-      devise
-      json-schema
-      mini_magick
-      pg
-      puma
-      rails (= 4.2.5.1)
-      rails-api
-      request_store
-      stripe
-      verbs
-
 GEM
   remote: https://rubygems.org/
   remote: https://Urx7-1GrXUKKC-1LnfGi@gem.fury.io/onurroof/
@@ -210,6 +193,19 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
+    roof_api (0.0.5)
+      cancancan (~> 1.10)
+      carrierwave
+      devise
+      json-schema
+      mini_magick
+      pg
+      puma
+      rails (= 4.2.5.1)
+      rails-api
+      request_store
+      stripe
+      verbs
     sass (3.4.21)
     sass-rails (5.0.4)
       railties (>= 4.0.0, < 5.0)
@@ -271,7 +267,7 @@ DEPENDENCIES
   puma
   rails (= 4.2.5.1)
   rails_12factor
-  roof_api!
+  roof_api (= 0.0.5)
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)
   spring
