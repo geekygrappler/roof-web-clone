@@ -42,6 +42,17 @@ appointment:
       to: 'subject.attendant'
       name: 'appointment_canceled'
       deliver_now: true
+  upcoming:
+    -
+      from: 'bot'
+      to: 'subject.host'
+      name: 'appointment_upcoming'
+      deliver_now: true
+    -
+      from: 'bot'
+      to: 'subject.attendant'
+      name: 'appointment_upcoming'
+      deliver_now: true
 
 quote:
   submit:
@@ -89,3 +100,13 @@ payment:
       from: 'actor'
       to: 'subject.customer'
       name: 'payment_refunded'
+  due:
+    -
+      from: 'bot'
+      to: 'subject.project.customers'
+      name: 'payment_due'
+  will_be_deposited:
+    -
+      from: 'bot'
+      to: 'subject.professional'
+      name: 'payment_will_be_deposited'
