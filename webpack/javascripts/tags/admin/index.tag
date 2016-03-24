@@ -6,6 +6,8 @@ import './_payment_form.tag'
 import './_account_form.tag'
 import './_lead_form.tag'
 import './_project_form.tag'
+import './_content_page_form.tag'
+import './_content_template_form.tag'
 
 <r-admin-index>
 
@@ -71,7 +73,7 @@ import './_project_form.tag'
     }
   }
   this.open = (e) => {
-    let tags = this.openAdminForm(`r-admin-${opts.resource.replace(/_/g,'-').singular()}-form`, e)
+    let tags = this.openAdminForm(`r-admin-${opts.resource.replace(/_|\//g,'-').singular()}-form`, e)
     if(!tags[0].content._tag) {
       this.openAdminForm(`r-admin-form`, e)
     }

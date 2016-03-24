@@ -4,15 +4,10 @@ class PagesController < ApplicationController
   helper_method :pathname
 
   def show
-    @page = nil #Content::Page.find_by(pathname: pathname)
+    @page = Content::Page.find_by(pathname: pathname)
     @fallback = File.read("#{Rails.root}/app/views/pages/#{pathname}.html.erb") rescue nil
     redirect_to "/404" and return if @page.nil? and @fallback.nil?
   end
-
-  # def brief
-  #   redirect_to '/app/projects/new' and return if current_account
-  #   render layout: 'brief'
-  # end
 
   def app
     render layout: 'application'

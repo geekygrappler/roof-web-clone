@@ -125,37 +125,44 @@ import './admin/index.tag'
     })
   })
 
-  if (this.currentAccount && this.currentAccount.isAdministrator) {
-    this.mixin('admin')
-
-    riot.route(`admin/*`, (resource) => {
+  // if (this.currentAccount && this.currentAccount.isAdministrator) {
+  //this.mixin('admin')
+    _.each(['content/',''], (ns) => {
+    riot.route(`admin/${ns}*`, (resource) => {
+      resource = `${ns}${resource}`
       riot.mount(this.content, 'r-admin-index', {resource: resource, api: opts.api})
     })
-    riot.route(`admin/*/new`, (resource) => {
+    riot.route(`admin/${ns}*/new`, (resource) => {
+      resource = `${ns}${resource}`
       riot.mount(this.content, 'r-admin-index', {resource: resource, api: opts.api})
 
-      let tags = this.openAdminForm(`r-admin-${resource.replace(/_/g,'-').singular()}-form`, {}, resource)
+      let tags = this.openAdminForm(`r-admin-${resource.replace(/_|\//g,'-').singular()}-form`, {}, resource)
 
       if(!tags[0].content._tag) {
         this.openAdminForm(`r-admin-form`, {}, resource)
       }
     })
-    riot.route(`admin/*/*/edit`, (resource, id) => {
+    riot.route(`admin/${ns}*/*/edit`, (resource, id) => {
+      resource = `${ns}${resource}`
       riot.mount(this.content, 'r-admin-index', {resource: resource, api: opts.api})
-      let tags = this.openAdminForm(`r-admin-${resource.replace(/_/g,'-').singular()}-form`, {item: {id: id}}, resource)
+      let tags = this.openAdminForm(`r-admin-${resource.replace(/_|\//g,'-').singular()}-form`, {item: {id: id}}, resource)
       if(!tags[0].content._tag) {
         this.openAdminForm(`r-admin-form`, {item: {id: id}}, resource)
       }
 
     })
-    riot.route(`admin/*/*`, (resource, id) => {
+    riot.route(`admin/${ns}*/*`, (resource, id) => {
+      resource = `${ns}${resource}`
       riot.mount(this.content, 'r-admin-show', {resource: resource, api: opts.api, id: id})
     })
-  }
+    })
+  // }
 
   riot.route(() => {
     riot.route(`/projects`, 'Projects', true)
   })
+
+  this.mixin('admin')
 
   </script>
 </r-app>

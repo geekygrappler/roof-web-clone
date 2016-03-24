@@ -32,6 +32,8 @@
     {"href": "/app/admin/materials", "title": "Materials"},
     {"href": "/app/admin/tasks", "title": "Tasks"},
     {"href": "/app/admin/appointments", "title": "Appointments"},
-    {"href": "/app/admin/assets", "title": "Assets"}
+    {"href": "/app/admin/assets", "title": "Assets"},
+    {"href": "/app/admin/content/templates", "title": "Content::Templates"},
+    {"href": "/app/admin/content/pages", "title": "Content::Pages"}
   ]
 }

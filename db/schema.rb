@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160323212700) do
+ActiveRecord::Schema.define(version: 20160324025002) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -88,6 +88,26 @@ ActiveRecord::Schema.define(version: 20160323212700) do
 
   add_index "comments", ["account_id"], name: "index_comments_on_account_id", using: :btree
   add_index "comments", ["commentable_type", "commentable_id"], name: "index_comments_on_commentable_type_and_commentable_id", using: :btree
+
+  create_table "content_pages", force: :cascade do |t|
+    t.string   "pathname"
+    t.text     "body"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "content_templates", force: :cascade do |t|
+    t.text     "body"
+    t.string   "path"
+    t.string   "locale"
+    t.string   "format"
+    t.string   "handler"
+    t.boolean  "partial"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "content_templates", ["path", "locale", "format", "handler", "partial"], name: "index_content_templates", unique: true, using: :btree
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   default: 0, null: false

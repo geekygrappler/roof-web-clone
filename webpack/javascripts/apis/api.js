@@ -38,7 +38,10 @@ let resources = [
   'tasks',
   'appointments',
   'assets',
-  'comments'
+  'comments',
+  
+  'content/templates',
+  'content/pages'
 ]
 resources.forEach((api) =>{
   apis[api] = riot.observable()

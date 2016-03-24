@@ -1,3 +1,6 @@
+import CodeMirror from 'codemirror/lib/codemirror'
+import 'codemirror/mode/htmlmixed/htmlmixed'
+
 riot.mixin('admin', {
   openAdminForm: function (formTag, e, resource) {
     return riot.mount('r-modal', {
@@ -72,5 +75,34 @@ riot.mixin('adminForm', {
         })
       }
     }
+  }
+})
+
+
+riot.mixin('codeMirror', {
+  init: function () {
+
+    this.on('mount',  () => {
+      let $textarea = $('textarea.code', this.root)
+      this.codeFieldName = $textarea.attr('name')
+      this.codeMirror = CodeMirror.fromTextArea($textarea[0], {
+        lineNumbers: true,
+        mode: 'htmlmixed'
+      })
+
+      this.codeMirror.on('change', (cm) => {
+        this.record[this.codeFieldName] = cm.getDoc().getValue()
+        $textarea.val(this.record[this.codeFieldName])
+      })
+    })
+
+    this.on('update', () => {
+      if (this.record && this.record[this.codeFieldName]) {
+        this.codeMirror.setValue(this.record[this.codeFieldName])
+      }
+    })
+    this.on('updated', () => {
+      this.codeMirror.refresh()
+    })
   }
 })
