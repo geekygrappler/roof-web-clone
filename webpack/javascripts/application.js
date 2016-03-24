@@ -19,5 +19,5 @@ api.sessions.one('check.success', () => {
   showApp()
 })
 api.sessions.on('signin.success', showApp)
-api.sessions.on('signup.success', showApp)
+api.registrations.on('signup.success', showApp)
 api.sessions.check()

@@ -42,11 +42,11 @@ riot.mixin('adminForm', {
       this.opts.api[this.opts.resource].off('update.success', this.update)
     })
 
-    this.updateRecord = (record) => {
+    this.updateRecord = this.updateRecord || (record) => {
       this.update({record: record, attributes: _.keys(record)})
     }
 
-    this.submit = (e) => {
+    this.submit = this.submit || (e) => {
       if (e) e.preventDefault()
 
       let data = this.serializeForm(this.form)

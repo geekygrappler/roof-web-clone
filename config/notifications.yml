@@ -7,7 +7,7 @@ lead:
       name: 'lead'
 
 account:
-  register:
+  create:
     -
       from: 'bot'
       to: 'actor'
@@ -59,7 +59,7 @@ payment:
   create:
     -
       from: 'bot'
-      to: 'subject.project.administrator'
+      to: 'subject.project.administrators'
       name: 'new_payment'
   approve:
     -
@@ -73,7 +73,7 @@ payment:
       name: 'payment_canceled'
     -
       from: 'bot'
-      to: 'subject.project.administrator'
+      to: 'subject.project.administrators'
       name: 'payment_canceled'
   pay:
     -
@@ -82,7 +82,7 @@ payment:
       name: 'payment_paid'
     -
       from: 'bot'
-      to: 'subject.project.administrator'
+      to: 'subject.project.administrators'
       name: 'payment_paid'
   refund:
     -

@@ -74,7 +74,7 @@
 	  showApp();
 	});
 	api.sessions.on("signin.success", showApp);
-	api.sessions.on("signup.success", showApp);
+	api.registrations.on("signup.success", showApp);
 	api.sessions.check();
 
 /***/ },
@@ -3125,6 +3125,12 @@
 	        break;
 	      case 404:
 	        alert(this.ERRORS[404]);
+	        break;
+	      case 412:
+	        //InvalidAuthenticityToken
+	        $.csrfToken = null;
+	        //window.reload()
+	        console.log("InvalidAuthenticityToken", xhr);
 	        break;
 	      case 500:
 	        alert(this.ERRORS[500]);
@@ -17564,11 +17570,11 @@
 	      _this.opts.api[_this.opts.resource].off("update.success", _this.update);
 	    });
 	
-	    this.updateRecord = function (record) {
+	    this.updateRecord = this.updateRecord || function (record) {
 	      _this.update({ record: record, attributes: _.keys(record) });
 	    };
 	
-	    this.submit = function (e) {
+	    this.submit = this.submit || function (e) {
 	      if (e) e.preventDefault();
 	
 	      var data = _this.serializeForm(_this.form);
@@ -20202,21 +20208,6 @@
 	    }
 	  };
 	
-	  this.stripeHandler = StripeCheckout.configure({
-	    key: "pk_test_QGae73XobbImg3jsMj81tPRA",
-	    //image: '/img/documentation/checkout/marketplace.png',
-	    locale: "auto",
-	    currency: "gbp",
-	    token: function (token) {
-	      _this.update({ busy: true });
-	      _this.opts.api.payments.pay(_this.payment.id, token.id);
-	    }
-	  });
-	  // Close Checkout on page navigation
-	  $(window).on("popstate", function () {
-	    this.stripeHandler.close();
-	  });
-	
 	  this.payPayment = function (e) {
 	    e.preventDefault();
 	    if (_this.currentAccount.paying) {
@@ -20224,12 +20215,42 @@
 	      _this.opts.api.payments.pay(e.item.id);
 	    } else {
 	      _this.payment = e.item;
-	      // Open Checkout with further options
-	      _this.stripeHandler.open({
-	        //name: 'Stripe.com',
-	        //description: '2 widgets',
-	        amount: e.item.amount
-	      });
+	
+	      // load Stripe if not loaded
+	      if (StripeCheckout) {
+	        // Open Checkout with further options
+	        _this.stripeHandler.open({
+	          //name: 'Stripe.com',
+	          //description: '2 widgets',
+	          amount: e.item.amount
+	        });
+	      } else {
+	        $.getScript("https://checkout.stripe.com/checkout.js").then(function () {
+	
+	          _this.stripeHandler = StripeCheckout.configure({
+	            key: $("meta[name=stripe-key]").attr("content"),
+	            //image: '/img/documentation/checkout/marketplace.png',
+	            locale: "auto",
+	            currency: "gbp",
+	            token: function (token) {
+	              _this.update({ busy: true });
+	              _this.opts.api.payments.pay(_this.payment.id, token.id);
+	            }
+	          });
+	
+	          // Close Checkout on page navigation
+	          $(window).on("popstate", function () {
+	            this.stripeHandler.close();
+	          });
+	
+	          // Open Checkout with further options
+	          _this.stripeHandler.open({
+	            //name: 'Stripe.com',
+	            //description: '2 widgets',
+	            amount: e.item.amount
+	          });
+	        });
+	      }
 	    }
 	  };
 	
@@ -25980,7 +26001,7 @@
 	
 	var Pikaday = _interopRequire(__webpack_require__(134));
 	
-	riot.tag2("r-admin-payment-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <label for=\"project_id\">Project</label> <select name=\"project_id\" class=\"block col-12 mb2 field\" onchange=\"{loadProfessionals}\"> <option></option> <option each=\"{projects}\" value=\"{id}\" __selected=\"{record.project_id == id}\">#{id} | {name}</option> </select> <span if=\"{errors.project_id}\" class=\"inline-error\">{errors.project_id}</span> <label for=\"professional_id\">Professional</label> <select name=\"professional_id\" class=\"block col-12 mb2 field\" onchange=\"{loadQuotes}\"> <option></option> <option each=\"{professionals}\" value=\"{id}\" __selected=\"{record.professional_id == id}\">#{id} | {profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"quote_id\">Quote</label> <select name=\"quote_id\" class=\"block col-12 mb2 field\"> <option></option> <option each=\"{quotes}\" value=\"{id}\" __selected=\"{record.quote_id == id}\">#{id} | {total_amount}</option> </select> <span if=\"{errors.quote_id}\" class=\"inline-error\">{errors.quote_id}</span> <div each=\"{attr, i in ['fee', 'amount']}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <input class=\"block col-12 mb2 field\" name=\"{attr}\" value=\"{parseInt(record[attr]) * 0.01}\" type=\"{'number'}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> <div each=\"{attr, i in ['due_date', 'description']}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> <div if=\"{!_.isEmpty(errors)}\" id=\"error_explanation\"> <ul> <li each=\"{field, messages in errors}\">{field.humanize()} {messages.join(', ')}</li> </ul> </div> <div class=\"right-align\"> <button type=\"submit\" class=\"mb2 btn btn-big btn-primary {busy: busy}\">Save</button> <a if=\"{record.id && !record.approved_at}\" onclick=\"{approve}\" class=\"mb2 btn btn-big bg-green white {busy: busy}\">Approve</a> <a if=\"{record.id && record.paid_at && !record.refunded_at}\" onclick=\"{refund}\" class=\"mb2 btn btn-big bg-red white {busy: busy}\">Refund</a> </div> </form>", "", "", function (opts) {
+	riot.tag2("r-admin-payment-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <label for=\"project_id\">Project</label> <select name=\"project_id\" class=\"block col-12 mb2 field\" onchange=\"{loadProfessionals}\"> <option></option> <option each=\"{projects}\" value=\"{id}\" __selected=\"{record.project_id == id}\">#{id} | {name}</option> </select> <span if=\"{errors.project_id}\" class=\"inline-error\">{errors.project_id}</span> <label for=\"professional_id\">Professional</label> <select name=\"professional_id\" class=\"block col-12 mb2 field\" onchange=\"{loadQuotes}\"> <option></option> <option each=\"{professionals}\" value=\"{id}\" __selected=\"{record.professional_id == id}\">#{id} | {profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"quote_id\">Quote</label> <select name=\"quote_id\" class=\"block col-12 mb2 field\" onchange=\"{setQuote}\"> <option></option> <option each=\"{quotes}\" value=\"{id}\" __selected=\"{record.quote_id == id}\">#{id} | {total_amount}</option> </select> <span if=\"{errors.quote_id}\" class=\"inline-error\">{errors.quote_id}</span> <div each=\"{attr, i in ['fee', 'amount']}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <input class=\"block col-12 mb2 field\" name=\"{attr}\" value=\"{parseInt(record[attr]) * 0.01}\" type=\"{'number'}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> <div each=\"{attr, i in ['due_date', 'description']}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> <div if=\"{!_.isEmpty(errors)}\" id=\"error_explanation\"> <ul> <li each=\"{field, messages in errors}\">{field.humanize()} {messages.join(', ')}</li> </ul> </div> <div class=\"right-align\"> <button type=\"submit\" class=\"mb2 btn btn-big btn-primary {busy: busy}\">Save</button> <a if=\"{record.id && !record.approved_at}\" onclick=\"{approve}\" class=\"mb2 btn btn-big bg-green white {busy: busy}\">Approve</a> <a if=\"{record.id && record.paid_at && !record.refunded_at}\" onclick=\"{refund}\" class=\"mb2 btn btn-big bg-red white {busy: busy}\">Refund</a> </div> </form>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.approve = function (e) {
@@ -26001,6 +26022,14 @@
 	
 	  this.loadResources("projects");
 	
+	  this.updateRecord = function (record) {
+	    _this.update({ record: record, attributes: _.keys(record) });
+	    if (_this.opts.id) {
+	      _this.loadProfessionals({ target: { value: record.project_id } });
+	      _this.loadQuotes({ target: { value: record.professional_id } });
+	    }
+	  };
+	
 	  this.loadProfessionals = function (e) {
 	    _this.record.project_id = parseInt(e.target.value);
 	    _this.professionals = _.findWhere(_this.projects, { id: _this.record.project_id }).professionals;
@@ -26009,13 +26038,17 @@
 	    _this.record.professional_id = parseInt(e.target.value);
 	    _this.loadResources("quotes", { professional_id: _this.record.professional_id });
 	  };
+	  this.setQuote = function (e) {
+	    _this.record.quote_id = parseInt(e.target.value);
+	  };
 	  this.on("mount", function () {
 	    var picker = new Pikaday({
 	      showTime: false,
 	      field: _this.due_date,
 	      onSelect: function (date) {
-	        _this.record.due_date = picker.toString();
-	        _this.update();
+	        _this.record.due_date = picker.toString()
+	        //this.update()
+	        ;
 	      }
 	    });
 	  });

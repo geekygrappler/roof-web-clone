@@ -210,23 +210,6 @@
     }
   }
 
-  this.stripeHandler = StripeCheckout.configure({
-    key: 'pk_test_QGae73XobbImg3jsMj81tPRA',
-    //image: '/img/documentation/checkout/marketplace.png',
-    locale: 'auto',
-    currency: 'gbp',
-    token: (token) => {
-      this.update({busy: true})
-      this.opts.api.payments.pay(this.payment.id, token.id)
-      // Use the token to create the charge with a server-side script.
-      // You can access the token ID with `token.id`
-    }
-  });
-  // Close Checkout on page navigation
-  $(window).on('popstate', function() {
-    this.stripeHandler.close();
-  });
-
   this.payPayment = (e) => {
     e.preventDefault()
     if (this.currentAccount.paying) {
@@ -234,12 +217,45 @@
       this.opts.api.payments.pay(e.item.id)
     } else {
       this.payment = e.item
-      // Open Checkout with further options
-      this.stripeHandler.open({
-        //name: 'Stripe.com',
-        //description: '2 widgets',
-        amount: e.item.amount
-      })
+
+      // load Stripe if not loaded
+      if (StripeCheckout) {
+        // Open Checkout with further options
+        this.stripeHandler.open({
+          //name: 'Stripe.com',
+          //description: '2 widgets',
+          amount: e.item.amount
+        })
+      } else {
+        $.getScript('https://checkout.stripe.com/checkout.js')
+        .then(() => {
+
+          this.stripeHandler = StripeCheckout.configure({
+            key: $('meta[name=stripe-key]').attr('content'),
+            //image: '/img/documentation/checkout/marketplace.png',
+            locale: 'auto',
+            currency: 'gbp',
+            token: (token) => {
+              this.update({busy: true})
+              this.opts.api.payments.pay(this.payment.id, token.id)
+              // Use the token to create the charge with a server-side script.
+              // You can access the token ID with `token.id`
+            }
+          });
+
+          // Close Checkout on page navigation
+          $(window).on('popstate', function() {
+            this.stripeHandler.close();
+          });
+
+          // Open Checkout with further options
+          this.stripeHandler.open({
+            //name: 'Stripe.com',
+            //description: '2 widgets',
+            amount: e.item.amount
+          })
+        })
+      }
     }
   }
 

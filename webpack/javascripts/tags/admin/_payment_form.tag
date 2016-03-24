@@ -21,7 +21,7 @@ import Pikaday from 'pikaday-time/pikaday'
     <span if="{errors.professional_id}" class="inline-error">{errors.professional_id}</span>
 
     <label for="quote_id">Quote</label>
-    <select name="quote_id" class="block col-12 mb2 field">
+    <select name="quote_id" class="block col-12 mb2 field" onchange="{setQuote}">
       <option></option>
       <option each="{quotes}" value="{id}" selected="{record.quote_id == id}">#{id} | {total_amount}</option>
     </select>
@@ -82,6 +82,14 @@ import Pikaday from 'pikaday-time/pikaday'
 
   this.loadResources('projects')
 
+  this.updateRecord = (record) => {
+    this.update({record: record, attributes: _.keys(record)})
+    if (this.opts.id) {
+      this.loadProfessionals({target: {value: record.project_id}})
+      this.loadQuotes({target: {value: record.professional_id}})
+    }
+  }
+
   this.loadProfessionals = (e) => {
     this.record.project_id = parseInt(e.target.value)
     this.professionals = _.findWhere(this.projects, {id: this.record.project_id}).professionals
@@ -90,13 +98,16 @@ import Pikaday from 'pikaday-time/pikaday'
     this.record.professional_id = parseInt(e.target.value)
     this.loadResources('quotes', {professional_id: this.record.professional_id})
   }
+  this.setQuote = (e) => {
+    this.record.quote_id = parseInt(e.target.value)
+  }
   this.on('mount', () => {
     let picker = new Pikaday({
       showTime: false,
       field: this.due_date,
       onSelect:  (date) => {
         this.record.due_date = picker.toString()
-        this.update()
+        //this.update()
       }
     })
   })

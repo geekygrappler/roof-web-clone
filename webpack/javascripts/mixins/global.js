@@ -44,6 +44,11 @@ riot.mixin({
     case 404:
       alert(this.ERRORS[404])
       break;
+    case 412: //InvalidAuthenticityToken
+      $.csrfToken = null
+      //window.reload()
+      console.log('InvalidAuthenticityToken', xhr)
+      break;
     case 500:
       alert(this.ERRORS[500])
       break;
