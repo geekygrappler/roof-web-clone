@@ -20114,7 +20114,66 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <p if=\"{hasNothing()}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <div if=\"{hasNothing() && currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{hasNothing() && !currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isCustomer}\"> Here is your <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Actual <strong>quotes</strong> from Professionals will appear here when they submit them. </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isProfessional}\"> Here is the the <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Click <strong>Clone</strong> button to get your copy and work on it. </p> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Tender</span> <p class=\"overflow-hidden m0 mxn2 p1 border-top\"> <a class=\"btn btn-small\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Open</a> <a class=\"btn btn-small btn-primary\" if=\"{currentAccount.isProfessional && (quotes && quotes.length == 0)}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2 mr1\">Quote</span> <div class=\"tab-nav\"> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'summary'}\" onclick=\"{changeTab}\" rel=\"summary\">Summary</a> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'payments'}\" onclick=\"{changeTab}\" rel=\"payments\">Payments</a> </div> <div class=\"tabs m0 mxn2 border-top\"> <div if=\"{activeTab == 'summary'}\" class=\"mt2\"> <div class=\"clearfix px2 mb1\" if=\"{submitted_at}\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-clock-o mr1\"></i> Submitted at:</div> <div class=\"sm-col sm-col-6\">{fromNow(submitted_at)}</div> </div> <div class=\"clearfix px2 mb1\" if=\"{accepted_at}\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-clock-o mr1\"></i> Accepted at:</div> <div class=\"sm-col sm-col-6\">{fromNow(accepted_at)}</div> </div> <div class=\"clearfix px2 mb1\"> <div class=\"sm-col sm-col-6\"><i class=\"fa fa-user mr1\"></i> Professional:</div> <div class=\"sm-col sm-col-6\">{professional.profile.first_name} {professional.profile.last_name}</div> </div> <div class=\"clearfix overflow-hidden p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Open</a> <a class=\"btn btn-small bg-darken-2\" if=\"{currentAccount.isProfessional && !accepted_at}\" onclick=\"{delete}\">Delete</a> </div> </div> <div if=\"{activeTab == 'payments'}\" class=\"mt2\"> <table class=\"table-light\"> <thead> <tr> <th>Amount</th> <th>Due Date</th> <th>Status</th> <th></th> </tr> </thead> <tbody> <tr each=\"{payments}\"> <th>{formatCurrency(amount)}</th> <th>{formatTime(due_date)}</th> <th>{status}</th> <th> <a if=\"{currentAccount.isProfessional && (status == 'payable' || status == 'waiting')}\" class=\"btn btn-small bg-red white h6 {busy: busy}\" onclick=\"{cancelPayment}\">Cancel</a> <button if=\"{currentAccount.isCustomer && status == 'payable'}\" class=\"btn btn-small bg-green white h6 {busy: busy}\" __disabled=\"{busy}\" onclick=\"{payPayment}\">Pay</button> </th> </tr> </tbody> </table> <table if=\"{payments.length > 0}\" class=\"table-light mt2\"> <thead> <tr> <th>Paid</th> <th if=\"{refunded_amount > 0}\">Refunded</th> <th if=\"{declined_amount > 0}\">Declined</th> <th if=\"{currentAccount.isProfessional}\">Approved</th> </tr> </thead> <tbody> <tr> <th>{formatCurrency(paid_amount)}</th> <th if=\"{refunded_amount > 0}\">{formatCurrency(refunded_amount)}</th> <th if=\"{declined_amount > 0}\">{formatCurrency(declined_amount)}</th> <th if=\"{currentAccount.isProfessional}\">{formatCurrency(approved_amount)}</th> </tr> </tbody> </table> <div if=\"{currentAccount.isProfessional}\" class=\"clearfix overflow-hidden p1 bg-yellow\"> <div class=\"mt1\"> <a class=\"btn btn-small bg-darken-2\" onclick=\"{openPaymentForm}\">Add Payment</a> </div> </div> </div> </div> </div> </li> </ul>", "", "", function (opts) {
+	var taskActions = __webpack_require__(156);
+	
+	riot.tag2("r-tender-summary", "<table class=\"table-light\"> <tbody> <tr each=\"{name, amount in summary}\"> <td>{name}</td> <td>{formatCurrency(amount)}</td> </tr> </tbody> </table>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.on("mount", function () {
+	    var summary = _.reduce(_.map(_this.opts.document.sections, function (section) {
+	      var tasks = _.mapObject(_.groupBy(section.tasks, "action"), function (val, key) {
+	        return itemsTotal(val, key);
+	      });
+	      var materials = itemsTotal(section.materials, "materials");
+	      return _.extend(tasks, { Materials: materials, VAT: vat(tasks) });
+	    }), function (memo, group) {
+	      _.each(group, function (val, key) {
+	        memo[key] = (memo[key] || 0) + val;
+	      });
+	      return memo;
+	    }, {});
+	    summary = sortObject(summary);
+	    _this.update({ summary: summary });
+	  });
+	  function vat(tasks) {
+	    var subTotal = _.reduce(_.values(tasks), function (m, i) {
+	      return m + i;
+	    }, 0);
+	    return subTotal * 20 / 100;
+	  }
+	  function itemsTotal(items, group) {
+	    return _.reduce(items, function (total, item) {
+	      if (group == "materials") {
+	        return total + (item.supplied ? item.price * item.quantity : 0);
+	      } else {
+	        return total + item.price * item.quantity;
+	      }
+	    }, 0);
+	  }
+	  function sortObject(o) {
+	    var sorted = {},
+	        key,
+	        a = [];
+	
+	    for (key in o) {
+	      if (o.hasOwnProperty(key)) {
+	        a.push(key);
+	      }
+	    }
+	
+	    // a.sort();
+	    a = _.sortBy(a, function (key) {
+	      return _.indexOf(_.keys(taskActions), key);
+	    });
+	
+	    for (key = 0; key < a.length; key++) {
+	      sorted[a[key]] = o[a[key]];
+	    }
+	    return sorted;
+	  }
+	});
+	
+	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <p if=\"{hasNothing()}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <div if=\"{hasNothing() && currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{hasNothing() && !currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isCustomer}\"> Here is your <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Actual <strong>quotes</strong> from Professionals will appear here when they submit them. </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isProfessional}\"> Here is the the <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Click <strong>Clone</strong> button to get your copy and work on it. </p> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Tender</span> <div class=\"m0 mxn2\"> <r-tender-summary document=\"{project.tender.document}\"></r-tender-summary> </div> <p class=\"overflow-hidden m0 mxn2 p1 border-top\"> <a class=\"btn btn-small\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Open</a> <a class=\"btn btn-small btn-primary\" if=\"{currentAccount.isProfessional && (quotes && quotes.length == 0)}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2 mr1\">Quote</span> <div class=\"tab-nav\"> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'summary'}\" onclick=\"{changeTab}\" rel=\"summary\">Summary</a> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'payments'}\" onclick=\"{changeTab}\" rel=\"payments\">Payments</a> </div> <div class=\"tabs m0 mxn2 border-top\"> <div if=\"{activeTab == 'summary'}\" class=\"mt2\"> <r-tender-summary document=\"{document}\"></r-tender-summary> <div class=\"inline-block m2 p2 border\"> <span if=\"{submitted_at}\"> <i class=\"fa fa-clock-o mr1\"></i> Submitted at: {fromNow(submitted_at)}<br> </span> <span if=\"{accepted_at}\"> <i class=\"fa fa-clock-o mr1\"></i> Accepted at: {fromNow(accepted_at)}<br> </span> <span> <i class=\"fa fa-user mr1\"></i> Professional: <strong>{professional.profile.first_name} {professional.profile.last_name}</strong> </span> </div> <div class=\"clearfix overflow-hidden p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Open</a> <a class=\"btn btn-small bg-darken-2\" if=\"{currentAccount.isProfessional && !accepted_at}\" onclick=\"{delete}\">Delete</a> </div> </div> <div if=\"{activeTab == 'payments'}\" class=\"mt2\"> <table class=\"table-light\"> <thead> <tr> <th>Amount</th> <th>Due Date</th> <th>Status</th> <th></th> </tr> </thead> <tbody> <tr each=\"{payments}\"> <td>{formatCurrency(amount)}</td> <td>{formatTime(due_date)}</td> <td>{status}</td> <td> <a if=\"{currentAccount.isProfessional && (status == 'payable' || status == 'waiting')}\" class=\"btn btn-small bg-red white h6 {busy: busy}\" onclick=\"{cancelPayment}\">Cancel</a> <button if=\"{currentAccount.isCustomer && status == 'payable'}\" class=\"btn btn-small bg-green white h6 {busy: busy}\" __disabled=\"{busy}\" onclick=\"{payPayment}\">Pay</button> </td> </tr> </tbody> </table> <table if=\"{payments.length > 0}\" class=\"table-light mt2\"> <thead> <tr> <th>Paid</th> <th if=\"{refunded_amount > 0}\">Refunded</th> <th if=\"{declined_amount > 0}\">Declined</th> <th if=\"{currentAccount.isProfessional}\">Approved</th> </tr> </thead> <tbody> <tr> <td>{formatCurrency(paid_amount)}</th> <td if=\"{refunded_amount > 0}\">{formatCurrency(refunded_amount)}</td> <td if=\"{declined_amount > 0}\">{formatCurrency(declined_amount)}</td> <td if=\"{currentAccount.isProfessional}\">{formatCurrency(approved_amount)}</td> </tr> </tbody> </table> <div if=\"{currentAccount.isProfessional}\" class=\"clearfix overflow-hidden p1 bg-yellow\"> <div class=\"mt1\"> <a class=\"btn btn-small bg-darken-2\" onclick=\"{openPaymentForm}\">Add Payment</a> </div> </div> </div> </div> </div> </li> </ul>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.activeTab = "summary";
@@ -25350,22 +25409,12 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
+	var taskActions = __webpack_require__(156);
+	
 	riot.tag2("r-tender-section", "<div data-disclosure> <div class=\"border-bottom mt2\"> <h3 class=\"inline-block mb0\"> <i data-handle class=\"cursor-pointer fa fa-{icon} mr1\" onclick=\"{changeIcon}\"></i> <input type=\"text\" class=\"field border-none\" value=\"{section.name.humanize()}\" oninput=\"{renameSection}\"> </h3> <a class=\"btn btn-small border-red red right mt2\" onclick=\"{removeSection}\"><i class=\"fa fa-trash-o\"></i></a> </div> <div data-details> <r-tender-item-group name=\"task\" task_actions=\"{taskActions}\" groupitems=\"{section.tasks_by_action}\" each=\"{group, items in section.tasks_by_action}\" headers=\"{parent.headers.task}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <r-tender-item-group name=\"material\" task_actions=\"{taskActions}\" groupitems=\"{section.materials_by_group}\" if=\"{section.materials && section.materials.length > 0}\" each=\"{group, items in section.materials_by_group}\" headers=\"{parent.headers.material}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <div class=\"clearfix mxn1 mt2\"> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"task\" auto_focus=\"{true}\" api=\"{parent.opts.api}\" icon=\"tasks\"></r-tender-item-input> </div> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"material\" api=\"{parent.opts.api}\" icon=\"shopping-basket\"></r-tender-item-input> </div> </div> </div> <h4 class=\"right-align\">Section total: {sectionTotal(section, true)}</h4> </div>", "", "", function (opts) {
 	  var _this = this;
 	
-	  this.taskActions = {
-	    "Strip out": "Strip out",
-	    "Wire and connect": "Electrics",
-	    Plumb: "Plumbing",
-	    Build: "Building",
-	    Install: "Carpentery",
-	    Tile: "Tiling",
-	    Lay: "Flooring",
-	    Prepare: "Preparation",
-	    Plaster: "Plastering",
-	    Decorate: "Decorating",
-	    Other: "Other"
-	  };
+	  this.taskActions = taskActions;
 	  this.showDisclosures = true;
 	  this.icon = "folder-open-o";
 	
@@ -26125,6 +26174,26 @@
 	  this.loadResources("accounts");
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 156 */
+/***/ function(module, exports) {
+
+	module.exports = {
+		"Strip out": "Strip out",
+		"Wire and connect": "Electrics",
+		"Plumb": "Plumbing",
+		"Build": "Building",
+		"Install": "Carpentery",
+		"Tile": "Tiling",
+		"Lay": "Flooring",
+		"Prepare": "Preparation",
+		"Plaster": "Plastering",
+		"Decorate": "Decorating",
+		"Other": "Other",
+		"Materials": "Materials",
+		"VAT": "VAT"
+	};
 
 /***/ }
 /******/ ]);

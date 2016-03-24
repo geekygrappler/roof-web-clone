@@ -1,3 +1,70 @@
+let taskActions = require("json!../../data/task_actions.json")
+
+<r-tender-summary>
+  <table class="table-light">
+    <tbody>
+      <tr each="{name, amount in summary}">
+        <td>{name}</td>
+        <td>{formatCurrency(amount)}</td>
+      </tr>
+    </tbody>
+  </table>
+  <script>
+  this.on('mount', () => {
+    var summary = _.reduce(
+      _.map(this.opts.document.sections, function (section)  {
+        var tasks = _.mapObject(_.groupBy(section.tasks, 'action'), function (val, key) {
+          return itemsTotal(val, key)
+        })
+        var materials = itemsTotal(section.materials, 'materials')
+        return _.extend(tasks, {Materials: materials, VAT: vat(tasks)})
+      })
+    , function (memo, group) {
+      _.each(group, function (val, key) {
+        memo[key] = (memo[key] || 0) + val
+      })
+      return memo
+    }, {})
+    summary = sortObject(summary)
+    this.update({summary})
+  })
+  function vat (tasks) {
+    var subTotal = _.reduce(_.values(tasks), (m,i) => m+i, 0)
+    return subTotal * 20 / 100
+  }
+  function itemsTotal (items, group) {
+    return _.reduce(items, function (total, item) {
+      if (group == 'materials') {
+        return total + (item.supplied ? item.price * item.quantity : 0)
+      } else{
+        return total + item.price * item.quantity
+      }
+    }, 0)
+  }
+  function sortObject(o) {
+    var sorted = {},
+    key, a = [];
+
+    for (key in o) {
+        if (o.hasOwnProperty(key)) {
+            a.push(key);
+        }
+    }
+
+    // a.sort();
+    a = _.sortBy(a, (key) => {
+      return _.indexOf(_.keys(taskActions), key)
+    })
+
+    for (key = 0; key < a.length; key++) {
+        sorted[a[key]] = o[a[key]];
+    }
+    return sorted;
+  }
+  </script>
+</r-tender-summary>
+
+
 <r-project-quotes>
 
   <h2 class="mt0">Quotes</h2>
@@ -28,6 +95,11 @@
       <div class="px2 border">
         <h2 class="inline-block">{ formatCurrency(project.tender.total_amount) }</h2>
         <span class="inline-block align-middle h6 mb1 px1 border pill right mt2">Tender</span>
+
+        <div class="m0 mxn2">
+        <r-tender-summary document="{project.tender.document}"></r-tender-summary>
+        </div>
+
         <p class="overflow-hidden m0 mxn2 p1 border-top">
           <a class="btn btn-small" href="/app/projects/{opts.id}/tenders/{project.tender.id}">Open</a>
           <a class="btn btn-small btn-primary" if="{currentAccount.isProfessional && (quotes && quotes.length == 0)}" onclick="{clone}">Clone</a>
@@ -50,18 +122,20 @@
 
           <div if="{activeTab == 'summary'}" class="mt2">
 
-            <div class="clearfix px2 mb1" if="{submitted_at}">
-              <div class="sm-col sm-col-6"><i class="fa fa-clock-o mr1"></i> Submitted at:</div>
-              <div class="sm-col sm-col-6">{fromNow(submitted_at)}</div>
+            <r-tender-summary document="{document}"></r-tender-summary>
+
+            <div class="inline-block m2 p2 border">
+              <span if="{submitted_at}">
+                <i class="fa fa-clock-o mr1"></i> Submitted at: {fromNow(submitted_at)}<br>
+              </span>
+              <span if="{accepted_at}">
+                <i class="fa fa-clock-o mr1"></i> Accepted at: {fromNow(accepted_at)}<br>
+              </span>
+              <span>
+                <i class="fa fa-user mr1"></i> Professional: <strong>{ professional.profile.first_name } {professional.profile.last_name }</strong>
+              </span>
             </div>
-            <div class="clearfix px2 mb1" if="{accepted_at}">
-              <div class="sm-col sm-col-6"><i class="fa fa-clock-o mr1"></i> Accepted at:</div>
-              <div class="sm-col sm-col-6">{fromNow(accepted_at)}</div>
-            </div>
-            <div class="clearfix px2 mb1">
-              <div class="sm-col sm-col-6"><i class="fa fa-user mr1"></i> Professional:</div>
-              <div class="sm-col sm-col-6">{ professional.profile.first_name } {professional.profile.last_name }</div>
-            </div>
+
             <div class="clearfix overflow-hidden p1 bg-yellow">
               <a class="btn btn-small bg-darken-2" href="/app/projects/{parent.opts.id}/quotes/{id}">Open</a>
               <a class="btn btn-small bg-darken-2" if="{currentAccount.isProfessional && !accepted_at}" onclick="{delete}">Delete</a>
@@ -78,15 +152,15 @@
               </thead>
               <tbody>
                 <tr each="{payments}">
-                  <th>{formatCurrency(amount)}</th>
-                  <th>{formatTime(due_date)}</th>
-                  <th>{status}</th>
-                  <th>
+                  <td>{formatCurrency(amount)}</td>
+                  <td>{formatTime(due_date)}</td>
+                  <td>{status}</td>
+                  <td>
                     <a if="{currentAccount.isProfessional && (status == 'payable' || status == 'waiting')}"
                     class="btn btn-small bg-red white h6 {busy: busy}" onclick="{cancelPayment}">Cancel</a>
                     <button if="{currentAccount.isCustomer && status == 'payable'}"
                     class="btn btn-small bg-green white h6 {busy: busy}" disabled="{busy}" onclick="{payPayment}">Pay</button>
-                  </th>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -102,10 +176,10 @@
               </thead>
               <tbody>
                 <tr>
-                  <th>{formatCurrency(paid_amount)}</th>
-                  <th if="{refunded_amount > 0}">{formatCurrency(refunded_amount)}</th>
-                  <th if="{declined_amount > 0}">{formatCurrency(declined_amount)}</th>
-                  <th if="{currentAccount.isProfessional}">{formatCurrency(approved_amount)}</th>
+                  <td>{formatCurrency(paid_amount)}</th>
+                  <td if="{refunded_amount > 0}">{formatCurrency(refunded_amount)}</td>
+                  <td if="{declined_amount > 0}">{formatCurrency(declined_amount)}</td>
+                  <td if="{currentAccount.isProfessional}">{formatCurrency(approved_amount)}</td>
                 </tr>
               </tbody>
             </table>

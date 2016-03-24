@@ -1,3 +1,5 @@
+let taskActions = require("json!../../data/task_actions.json")
+
 <r-tender-section>
   <div data-disclosure>
     <div class="border-bottom mt2">
@@ -43,19 +45,7 @@
   </div>
 
   <script>
-  this.taskActions = {
-   "Strip out": "Strip out",
-   "Wire and connect": "Electrics",
-   "Plumb": "Plumbing",
-   "Build": "Building",
-   "Install": "Carpentery",
-   "Tile": "Tiling",
-   "Lay": "Flooring",
-   "Prepare": "Preparation",
-   "Plaster": "Plastering",
-   "Decorate": "Decorating",
-   "Other": "Other"
-  }
+  this.taskActions = taskActions
   this.showDisclosures = true
   this.icon = 'folder-open-o'
 
