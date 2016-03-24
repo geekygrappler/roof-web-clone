@@ -20116,6 +20116,7 @@
 	  var _this = this;
 	
 	  this.activeTab = "summary";
+	
 	  this.changeTab = function (e) {
 	    e.preventDefault();
 	    _this.update({ activeTab: e.target.rel });
@@ -20138,6 +20139,7 @@
 	    opts.api.payments.on("pay.fail", _this.errorHandler);
 	    opts.api.quotes.index({ project_id: opts.id });
 	  });
+	
 	  this.on("unmount", function () {
 	    opts.api.quotes.off("index.fail", _this.errorHandler);
 	    opts.api.quotes.off("index.success", _this.updateQuote);
@@ -20152,7 +20154,8 @@
 	  });
 	
 	  this.reload = function () {
-	    return opts.api.quotes.index({ project_id: opts.id });
+	    _this.update({ busy: false });
+	    opts.api.quotes.index({ project_id: opts.id });
 	  };
 	
 	  this.updateQuote = function (quotes) {
@@ -20225,6 +20228,7 @@
 	          amount: e.item.amount
 	        });
 	      } else {
+	        _this.update({ busy: true });
 	        $.getScript("https://checkout.stripe.com/checkout.js").then(function () {
 	
 	          _this.stripeHandler = StripeCheckout.configure({

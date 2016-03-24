@@ -124,6 +124,7 @@
 
   <script>
   this.activeTab = 'summary'
+
   this.changeTab = (e) => {
     e.preventDefault()
     this.update({activeTab: e.target.rel})
@@ -146,6 +147,7 @@
     opts.api.payments.on('pay.fail', this.errorHandler)
     opts.api.quotes.index({project_id: opts.id})
   })
+
   this.on('unmount', () => {
     opts.api.quotes.off('index.fail', this.errorHandler)
     opts.api.quotes.off('index.success', this.updateQuote)
@@ -159,7 +161,10 @@
     opts.api.payments.off('pay.fail', this.errorHandler)
   })
 
-  this.reload = () => opts.api.quotes.index({project_id: opts.id})
+  this.reload = () => {
+    this.update({busy: false})
+    opts.api.quotes.index({project_id: opts.id})
+  }
 
   this.updateQuote = (quotes) => this.update({quotes})
 
@@ -227,6 +232,7 @@
           amount: e.item.amount
         })
       } else {
+        this.update({busy: true})
         $.getScript('https://checkout.stripe.com/checkout.js')
         .then(() => {
 
