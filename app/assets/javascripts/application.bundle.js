@@ -25294,12 +25294,19 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-tender-item-group", "<ul class=\"list-reset ml2 -border-left mb0 relative\"> <li> <h4 class=\"inline-block mb0 mt1 p1 border-bottom \"> <select if=\"{group.toLowerCase() == 'other'}\" onchange=\"{changeTaskAction}\"> <option each=\"{val, name in opts.task_actions}\" value=\"{val}\" __selected=\"{val == 'Other'}\">{name}</option> </select> <span if=\"{group.toLowerCase() != 'other'}\">{group.humanize()}</span> </h4> <ul class=\"list-reset ml2 border-left mb0\"> <li if=\"{drawHeader()}\" class=\"sm-show relative\"> <div class=\"clearfix p1 border-bottom\"> <div each=\"{name, width in headers}\" class=\"sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate\"> {name == 'name' ? '&nbsp;' : name.humanize()} </div> </div> </li> <r-tender-item each=\"{items}\" border_cleaner=\"{drawBorderCleaner()}\"></r-tender-item> </ul> </li> </ul> <h5 class=\"right-align\">Group total: {formatCurrency(total())}<h5>", "", "", function (opts) {
+	riot.tag2("r-tender-item-group", "<ul class=\"list-reset ml2 -border-left mb0 relative\"> <li> <h4 class=\"inline-block mb0 mt1 p1 border-bottom \"> <select if=\"{group.toLowerCase() == 'other'}\" onchange=\"{changeTaskAction}\"> <option each=\"{val, name in opts.task_actions}\" value=\"{val}\" __selected=\"{val == 'Other'}\">{name}</option> </select> <a if=\"{group.toLowerCase() != 'other'}\" onclick=\"{toggle}\" class=\"cursor-pointer\">{group.humanize()}</a> </h4> <ul class=\"list-reset ml2 border-left mb0\" if=\"{visible}\"> <li if=\"{drawHeader()}\" class=\"sm-show relative\"> <div class=\"clearfix p1 border-bottom\"> <div each=\"{name, width in headers}\" class=\"sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate\"> {name == 'name' ? '&nbsp;' : name.humanize()} </div> </div> </li> <r-tender-item each=\"{items}\" border_cleaner=\"{drawBorderCleaner()}\"></r-tender-item> </ul> </li> </ul> <h5 class=\"right-align\">Group total: {formatCurrency(total())}<h5>", "", "", function (opts) {
 	  var _this = this;
 	
 	  var itemKeys = undefined;
 	
 	  this.taskActions = opts.task_actions;
+	
+	  this.visible = true;
+	
+	  this.toggle = function (e) {
+	    e.preventDefault();
+	    _this.visible = !_this.visible;
+	  };
 	
 	  this.total = function () {
 	    return _.reduce(_this.items, function (total, item) {

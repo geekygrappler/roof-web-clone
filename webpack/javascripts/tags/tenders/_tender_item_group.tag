@@ -5,9 +5,9 @@
         <select if="{group.toLowerCase() == 'other'}" onchange="{changeTaskAction}">
           <option each="{val, name in opts.task_actions}" value="{val}" selected="{val == 'Other'}">{name}</option>
         </select>
-        <span if="{group.toLowerCase() != 'other'}">{ group.humanize() }</span>
+        <a if="{group.toLowerCase() != 'other'}" onclick="{toggle}" class="cursor-pointer">{ group.humanize() }</a>
       </h4>
-      <ul class="list-reset ml2 border-left mb0">
+      <ul class="list-reset ml2 border-left mb0" if="{visible}">
         <li if="{drawHeader()}" class="sm-show relative">
           <div class="clearfix p1 border-bottom">
             <div each="{ name, width in headers }" class="sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate">
@@ -28,6 +28,12 @@
 
   this.taskActions = opts.task_actions
 
+  this.visible = true
+
+  this.toggle = (e) => {
+    e.preventDefault()
+    this.visible = !this.visible
+  }
 
   this.total = () => {
     return _.reduce(this.items, (total, item) => {
