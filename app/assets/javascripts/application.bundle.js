@@ -20496,7 +20496,7 @@
 	
 	var Handlebars = _interopRequire(__webpack_require__(141));
 	
-	riot.tag2("r-tender-item-input", "<div class=\"relative\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Strart typing to add {modelName}\" autocomplete=\"off\"> </form> <i class=\"fa fa-plus absolute right-0 top-0 p1\"></i> </div>", "", "", function (opts) {
+	riot.tag2("r-tender-item-input", "<div class=\"relative\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Strart typing to add {opts.name}\" autocomplete=\"off\"> </form> <i class=\"fa fa-plus absolute right-0 top-0 p1\"></i> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.request({ url: "/api/" + this.opts.name.plural() }).then(function (data) {
