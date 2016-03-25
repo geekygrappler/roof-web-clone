@@ -4,35 +4,46 @@ const VAT = 20
 
 riot.mixin('tenderMixin', {
   warnUnsavedChanges: function () {
-    //if (!this.saved) return this.ERRORS.CONFIRM_UNSAVED_CHANGES
+    if (!this.saved) return this.ERRORS.CONFIRM_UNSAVED_CHANGES
   },
+  // warnUnsavedChangesPopState: function (e) {
+  //   if (!this.saved) {
+  //     //e.preventDefault()
+  //     if (window.confirm(this.ERRORS.CONFIRM_UNSAVED_CHANGES)) {
+  //       return true
+  //     } else {
+  //       e.preventDefault()
+  //       e.stopPropagation()
+  //       history.forward()
+  //       return false
+  //     }
+  //   }
+  // },
   init: function () {
     this.on('mount', () => {
       this.saved = true
       this.opts.api.tenders.on('update', this.updateTenderTotal)
-      //window.onbeforeunload = this.warnUnsavedChanges
-      // $('a[href*="/app/"]', this.root).off('click').on('click',  (e) => {
-      //   e.preventDefault()
-      //   if( this.saved || (!this.saved && window.confirm(this.ERRORS.CONFIRM_UNSAVED_CHANGES)) ) {
-      //     riot.route($(e.currentTarget).attr('href').substr(5), e.currentTarget.title, true)
-      //   }
-      // })
-      // not working
-      // window.onpopstate = () => {
-      //   if (!this.saved && !window.confirm(this.ERRORS.CONFIRM_UNSAVED_CHANGES)) {
-      //     history.forward()
-      //   }
-      // }
+      window.onbeforeunload = this.warnUnsavedChanges
+      // window.onpopstate = this.warnUnsavedChangesPopState
+      $('a[href*="/app/"]', this.root).off('click').on('click',  this.preventUnsaved)
       this.submit = _.wrap(this.submit, (_submit, e) => {
         this.saved = true
         _submit(e)
       })
     })
 
+    this.preventUnsaved = (e) => {
+      e.preventDefault()
+      if( this.saved || (!this.saved && window.confirm(this.ERRORS.CONFIRM_UNSAVED_CHANGES)) ) {
+        riot.route($(e.currentTarget).attr('href').substr(5), e.currentTarget.title, true)
+      }
+    }
+
     this.on('unmount', () => {
+      $('a[href*="/app/"]', this.root).off('click',  this.preventUnsaved)
       this.opts.api.tenders.off('update', this.updateTenderTotal)
       window.onbeforeunload = null
-      window.onpopstate = null
+      // window.onpopstate = null
     })
 
     this.updateTenderTotal = () => {

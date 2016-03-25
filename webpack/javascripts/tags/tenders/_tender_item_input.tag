@@ -5,9 +5,9 @@ import Handlebars from 'handlebars/dist/handlebars'
     <form onsubmit="{ preventSubmit }">
       <input name="query" type="text" class="block col-12 field"
       oninput="{ search }" onkeyup="{ onKey }"
-      placeholder="Strart typing to add {opts.name}" autocomplete="off" />
+      placeholder="Start typing to add {opts.name}" autocomplete="off" />
     </form>
-    <i class="fa fa-plus absolute right-0 top-0 p1"></i>
+    <i class="fa fa-plus absolute right-0 top-0 p1" onclick="{addDefaultItem}"></i>
   </div>
   <script>
 
@@ -26,12 +26,9 @@ import Handlebars from 'handlebars/dist/handlebars'
       }
     })
 
+
     $(this.query)
-    .on('typeahead:notfound', (e) => {
-      this.selectItem(
-        this.getDefaultItem($(this.query).typeahead('val'))
-      )
-    })
+    .on('typeahead:notfound', this.addDefaultItem)
     .on('typeahead:select', (e, suggestion) => {
       this.selectItem(suggestion)
     })
@@ -54,6 +51,13 @@ import Handlebars from 'handlebars/dist/handlebars'
       }
     });
   })
+
+  this.addDefaultItem = (e) => {
+    var val = $(this.query).typeahead('val')
+    if (val) {
+      this.selectItem(this.getDefaultItem(val))
+    }
+  }
 
   this.selectItem =  (item) => {
     $(this.query).typeahead('val', null)

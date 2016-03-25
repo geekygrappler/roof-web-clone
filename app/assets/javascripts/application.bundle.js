@@ -31557,36 +31557,52 @@
 	var VAT = 20;
 	
 	riot.mixin("tenderMixin", {
-	  warnUnsavedChanges: function warnUnsavedChanges() {},
+	  warnUnsavedChanges: function warnUnsavedChanges() {
+	    if (!this.saved) {
+	      return this.ERRORS.CONFIRM_UNSAVED_CHANGES;
+	    }
+	  },
+	  // warnUnsavedChangesPopState: function (e) {
+	  //   if (!this.saved) {
+	  //     //e.preventDefault()
+	  //     if (window.confirm(this.ERRORS.CONFIRM_UNSAVED_CHANGES)) {
+	  //       return true
+	  //     } else {
+	  //       e.preventDefault()
+	  //       e.stopPropagation()
+	  //       history.forward()
+	  //       return false
+	  //     }
+	  //   }
+	  // },
 	  init: function init() {
 	    var _this = this;
 	
 	    this.on("mount", function () {
 	      _this.saved = true;
 	      _this.opts.api.tenders.on("update", _this.updateTenderTotal);
-	      //window.onbeforeunload = this.warnUnsavedChanges
-	      // $('a[href*="/app/"]', this.root).off('click').on('click',  (e) => {
-	      //   e.preventDefault()
-	      //   if( this.saved || (!this.saved && window.confirm(this.ERRORS.CONFIRM_UNSAVED_CHANGES)) ) {
-	      //     riot.route($(e.currentTarget).attr('href').substr(5), e.currentTarget.title, true)
-	      //   }
-	      // })
-	      // not working
-	      // window.onpopstate = () => {
-	      //   if (!this.saved && !window.confirm(this.ERRORS.CONFIRM_UNSAVED_CHANGES)) {
-	      //     history.forward()
-	      //   }
-	      // }
+	      window.onbeforeunload = _this.warnUnsavedChanges;
+	      // window.onpopstate = this.warnUnsavedChangesPopState
+	      $("a[href*=\"/app/\"]", _this.root).off("click").on("click", _this.preventUnsaved);
 	      _this.submit = _.wrap(_this.submit, function (_submit, e) {
 	        _this.saved = true;
 	        _submit(e);
 	      });
 	    });
 	
+	    this.preventUnsaved = function (e) {
+	      e.preventDefault();
+	      if (_this.saved || !_this.saved && window.confirm(_this.ERRORS.CONFIRM_UNSAVED_CHANGES)) {
+	        riot.route($(e.currentTarget).attr("href").substr(5), e.currentTarget.title, true);
+	      }
+	    };
+	
 	    this.on("unmount", function () {
+	      $("a[href*=\"/app/\"]", _this.root).off("click", _this.preventUnsaved);
 	      _this.opts.api.tenders.off("update", _this.updateTenderTotal);
-	      window.onbeforeunload = null;
-	      window.onpopstate = null;
+	      window.onbeforeunload = null
+	      // window.onpopstate = null
+	      ;
 	    });
 	
 	    this.updateTenderTotal = function () {
@@ -31649,8 +31665,6 @@
 	    };
 	  }
 	});
-	
-	//if (!this.saved) return this.ERRORS.CONFIRM_UNSAVED_CHANGES
 	// $('[name=searchable_names]').last()[0].focus()
 
 /***/ },
@@ -31663,7 +31677,7 @@
 	
 	var Handlebars = _interopRequire(__webpack_require__(147));
 	
-	riot.tag2("r-tender-item-input", "<div class=\"relative\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Strart typing to add {opts.name}\" autocomplete=\"off\"> </form> <i class=\"fa fa-plus absolute right-0 top-0 p1\"></i> </div>", "", "", function (opts) {
+	riot.tag2("r-tender-item-input", "<div class=\"relative\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Start typing to add {opts.name}\" autocomplete=\"off\"> </form> <i class=\"fa fa-plus absolute right-0 top-0 p1\" onclick=\"{addDefaultItem}\"></i> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.request({ url: "/api/" + this.opts.name.plural() }).then(function (data) {
@@ -31681,9 +31695,7 @@
 	      }
 	    });
 	
-	    $(_this.query).on("typeahead:notfound", function (e) {
-	      _this.selectItem(_this.getDefaultItem($(_this.query).typeahead("val")));
-	    }).on("typeahead:select", function (e, suggestion) {
+	    $(_this.query).on("typeahead:notfound", _this.addDefaultItem).on("typeahead:select", function (e, suggestion) {
 	      _this.selectItem(suggestion);
 	    }).typeahead(null, {
 	      name: _this.opts.name.plural(),
@@ -31697,6 +31709,13 @@
 	      }
 	    });
 	  });
+	
+	  this.addDefaultItem = function (e) {
+	    var val = $(_this.query).typeahead("val");
+	    if (val) {
+	      _this.selectItem(_this.getDefaultItem(val));
+	    }
+	  };
 	
 	  this.selectItem = function (item) {
 	    $(_this.query).typeahead("val", null);
