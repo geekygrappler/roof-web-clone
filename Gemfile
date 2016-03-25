@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 source 'https://Urx7-1GrXUKKC-1LnfGi@gem.fury.io/onurroof/'
+#source 'https://repo.fury.io/Urx7-1GrXUKKC-1LnfGi/onurroof/'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.5.1'
@@ -13,7 +14,7 @@ gem 'puma'
 gem 'font-awesome-rails'
 gem 'active_model_serializers', github: "rails-api/active_model_serializers"
 
-gem 'roof_api', '0.0.5.fix2a'
+gem 'roof_api', '0.0.5.fix4a'
 #gem 'roof_api', path: '../roof-api'
 gem 'carrierwave', git: 'https://github.com/carrierwaveuploader/carrierwave.git'
 gem 'fog-aws'

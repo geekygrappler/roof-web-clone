@@ -29276,9 +29276,10 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-projects-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <h1 class=\"px2\">Projects <a href=\"/app/projects/new\" class=\"ml1 h5 btn btn-primary\"><i class=\"fa fa-rocket mr1\"></i> New Project</a></h1> <ul class=\"list-reset\"> <li each=\"{projects}\" class=\"p2\"> <div class=\"border p2\"> <a href=\"/app/projects/{id}\" class=\"no-decoration\"> <h3 class=\"mb3\"><img class=\"kind-ico\" riot-src=\"/images/project_types/{kind}.png\" alt=\"{name}\"> {name}</h3> </a> <div> <i class=\"fa fa-clock-o mr1\"></i> updated {fromNow(updated_at)} </div> <div if=\"{opts.api.currentAccount.isAdministrator}\" class=\"mt2 table\"> <span class=\"table-cell mr2\"> <i class=\"fa fa-user mr1\"></i> customers: <span each=\"{name, i in _.pluck(_.pluck(customers,'profile'),'first_name')}\" class=\"border rounded inline-block px1 h6\">{name}</span> </span> <span class=\"table-cell mr2\"> <i class=\"fa fa-user-md mr1\"></i> adminstrators: <span each=\"{name, i in _.pluck(_.pluck(administrators,'profile'),'first_name')}\" class=\"border rounded inline-block px1 h6\">{name}</span> </span> <span class=\"table-cell mr2\"> <i class=\"fa fa-user mr1\"></i> professionals: <span each=\"{name, i in _.pluck(_.pluck(professionals,'profile'),'first_name')}\" class=\"border rounded inline-block px1 h6\">{name}</span> </span> </div> </div> </li> </ul> </div>", "", "", function (opts) {
+	riot.tag2("r-projects-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <h1 class=\"px2\">Projects <a href=\"/app/projects/new\" class=\"ml1 h5 btn btn-primary\"><i class=\"fa fa-rocket mr1\"></i> New Project</a></h1> <ul class=\"list-reset\"> <li each=\"{projects}\" class=\"p2\"> <div class=\"border p2\"> <a href=\"/app/projects/{id}\" class=\"no-decoration\"> <h3 class=\"mb3\"><img class=\"kind-ico\" riot-src=\"/images/project_types/{kind}.png\" alt=\"{name}\"> {name}</h3> </a> <div> <i class=\"fa fa-clock-o mr1\"></i> updated {fromNow(updated_at)} </div> <div if=\"{opts.api.currentAccount.isAdministrator}\" class=\"mt2 table\"> <span class=\"table-cell mr2\"> <i class=\"fa fa-user mr1\"></i> customers: <span each=\"{name, i in _.pluck(_.pluck(customers,'profile'),'first_name')}\" class=\"border rounded inline-block px1 h6\">{name}</span> </span> <span class=\"table-cell mr2\"> <i class=\"fa fa-user-md mr1\"></i> adminstrators: <span each=\"{name, i in _.pluck(_.pluck(administrators,'profile'),'first_name')}\" class=\"border rounded inline-block px1 h6\">{name}</span> </span> <span class=\"table-cell mr2\"> <i class=\"fa fa-user mr1\"></i> professionals: <span each=\"{name, i in _.pluck(_.pluck(professionals,'profile'),'first_name')}\" class=\"border rounded inline-block px1 h6\">{name}</span> </span> </div> </div> </li> </ul> <div class=\"p1 center mb2\"> <a class=\"btn btn-small bg-blue white h5 mr1\" onclick=\"{prevPage}\">Prev</a> <span>{currentPage}</span> <a class=\"btn btn-small bg-blue white h5 ml1\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
 	  var _this = this;
 	
+	  this.currentPage = 1;
 	  this.updateProjects = function (projects) {
 	    opts.api.projects.cache.index = projects;
 	    _this.update({ projects: projects });
@@ -29286,12 +29287,22 @@
 	  this.on("mount", function () {
 	    opts.api.projects.on("index.success", _this.updateProjects);
 	    opts.api.projects.on("index.fail", _this.errorHandler);
-	    opts.api.projects.index();
+	    opts.api.projects.index({ page: _this.currentPage });
 	  });
 	  this.on("unmount", function () {
 	    opts.api.projects.off("index.success", _this.updateProjects);
 	    opts.api.projects.off("index.fail", _this.errorHandler);
 	  });
+	  this.prevPage = function (e) {
+	    e.preventDefault();
+	    _this.currentPage = Math.max(_this.currentPage - 1, 1);
+	    _this.opts.api.projects.index({ page: _this.currentPage });
+	  };
+	  this.nextPage = function (e) {
+	    e.preventDefault();
+	    // this.currentPage = Math.min(this.currentPage + 1, 0)
+	    _this.opts.api.projects.index({ page: ++_this.currentPage });
+	  };
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
@@ -36863,12 +36874,6 @@
 	
 	__webpack_require__(159);
 	
-	__webpack_require__(164);
-	
-	__webpack_require__(165);
-	
-	__webpack_require__(166);
-	
 	__webpack_require__(160);
 	
 	__webpack_require__(161);
@@ -36876,6 +36881,12 @@
 	__webpack_require__(162);
 	
 	__webpack_require__(163);
+	
+	__webpack_require__(164);
+	
+	__webpack_require__(165);
+	
+	__webpack_require__(166);
 	
 	riot.tag2("r-admin-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td each=\"{attr, value in record}\"> <div if=\"{_.isObject(value)}\" data-disclosure> <a class=\"btn btn-small h5\" data-handle>Expand</a> <pre data-details>\n                  {JSON.stringify(value, null, 2)}\n                </pre> </div> {_.isObject(value) ? null : value} </td> <td> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> <tfoot class=\"bg-darken-1\"> <tr> <th colspan=\"{headers.length}\" class=\"center\"> <a class=\"btn btn-small bg-blue white h5 mr1\" onclick=\"{prevPage}\">Prev</a> <span>{currentPage}</span> <a class=\"btn btn-small bg-blue white h5 ml1\" onclick=\"{nextPage}\">Next</a> </th> </tr> </tfoot> </table> </div> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -36888,7 +36899,7 @@
 	    _this.opts.api[opts.resource].on("index.fail", _this.errorHandler);
 	    _this.opts.api[opts.resource].on("index.success", _this.updateRecords);
 	    _this.opts.api[opts.resource].on("delete.success", _this.removeRecord);
-	    _this.opts.api[opts.resource].index();
+	    _this.opts.api[opts.resource].index({ page: _this.currentPage });
 	  });
 	
 	  this.on("unmount", function () {
@@ -37288,13 +37299,46 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-admin-lead-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\" autocomplete=\"off\"> <label for=\"first_name\">First Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"first_name\" value=\"{record['first_name']}\"> <span if=\"{errors['first_name']}\" class=\"inline-error\">{errors['first_name']}</span> <label for=\"[last_name]\">Last Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"[last_name]\" value=\"{record['last_name']}\"> <span if=\"{errors['last_name']}\" class=\"inline-error\">{errors['last_name']}</span> <label for=\"[phone_number]\">Phone Number</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"[phone_number]\" value=\"{record['phone_number']}\"> <span if=\"{errors['phone_number']}\" class=\"inline-error\">{errors['phone_number']}</span> <h3>Convert</h3> <p>Fill below fields if you want to convert Lead to a Customer, leave empty otherwise</p> <label for=\"email\">Email</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"email\" value=\"{record['email']}\" autocomplete=\"off\"> <span if=\"{errors['email']}\" class=\"inline-error\">{errors['email']}</span> <label for=\"password\">Password</label> <input class=\"block col-12 mb2 field\" type=\"password\" name=\"password\" value=\"{record['password']}\" autocomplete=\"off\"> <span if=\"{errors['password']}\" class=\"inline-error\">{errors['password']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
+	riot.tag2("r-admin-customer-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in ['profile', 'notifications']}\"> <div if=\"{attr != 'id'}\"> <label for=\"{attr}\">{attr.humanize()}</label> <textarea if=\"{_.isObject(record[attr])}\" class=\"block col-12 mb2 field fixed-height\" name=\"{attr}:object\">{JSON.stringify(record[attr], null, 2)}</textarea> <input if=\"{!_.isObject(record[attr])}\" class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
 	  this.mixin("adminForm");
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
 /* 161 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-admin-professional-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in ['profile', 'notifications']}\"> <div if=\"{attr != 'id'}\"> <label for=\"{attr}\">{attr.humanize()}</label> <textarea if=\"{_.isObject(record[attr])}\" class=\"block col-12 mb2 field fixed-height\" name=\"{attr}:object\">{JSON.stringify(record[attr], null, 2)}</textarea> <input if=\"{!_.isObject(record[attr])}\" class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
+	  this.mixin("adminForm");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 162 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-admin-administrator-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in ['profile', 'notifications']}\"> <div if=\"{attr != 'id'}\"> <label for=\"{attr}\">{attr.humanize()}</label> <textarea if=\"{_.isObject(record[attr])}\" class=\"block col-12 mb2 field fixed-height\" name=\"{attr}:object\">{JSON.stringify(record[attr], null, 2)}</textarea> <input if=\"{!_.isObject(record[attr])}\" class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
+	  this.mixin("adminForm");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 163 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-admin-lead-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\" autocomplete=\"off\"> <label for=\"first_name\">First Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"first_name\" value=\"{record['first_name']}\"> <span if=\"{errors['first_name']}\" class=\"inline-error\">{errors['first_name']}</span> <label for=\"[last_name]\">Last Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"[last_name]\" value=\"{record['last_name']}\"> <span if=\"{errors['last_name']}\" class=\"inline-error\">{errors['last_name']}</span> <label for=\"[phone_number]\">Phone Number</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"[phone_number]\" value=\"{record['phone_number']}\"> <span if=\"{errors['phone_number']}\" class=\"inline-error\">{errors['phone_number']}</span> <h3>Convert</h3> <p>Fill below fields if you want to convert Lead to a Customer, leave empty otherwise</p> <label for=\"email\">Email</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"email\" value=\"{record['email']}\" autocomplete=\"off\"> <span if=\"{errors['email']}\" class=\"inline-error\">{errors['email']}</span> <label for=\"password\">Password</label> <input class=\"block col-12 mb2 field\" type=\"password\" name=\"password\" value=\"{record['password']}\" autocomplete=\"off\"> <span if=\"{errors['password']}\" class=\"inline-error\">{errors['password']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
+	  this.mixin("adminForm");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37325,7 +37369,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 162 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37337,7 +37381,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 163 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37350,39 +37394,6 @@
 	  };
 	  this.mixin("adminForm");
 	  this.mixin("codeMirror");
-	});
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ },
-/* 164 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
-	riot.tag2("r-admin-customer-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in ['profile', 'notifications']}\"> <div if=\"{attr != 'id'}\"> <label for=\"{attr}\">{attr.humanize()}</label> <textarea if=\"{_.isObject(record[attr])}\" class=\"block col-12 mb2 field fixed-height\" name=\"{attr}:object\">{JSON.stringify(record[attr], null, 2)}</textarea> <input if=\"{!_.isObject(record[attr])}\" class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
-	  this.mixin("adminForm");
-	});
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ },
-/* 165 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
-	riot.tag2("r-admin-professional-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in ['profile', 'notifications']}\"> <div if=\"{attr != 'id'}\"> <label for=\"{attr}\">{attr.humanize()}</label> <textarea if=\"{_.isObject(record[attr])}\" class=\"block col-12 mb2 field fixed-height\" name=\"{attr}:object\">{JSON.stringify(record[attr], null, 2)}</textarea> <input if=\"{!_.isObject(record[attr])}\" class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
-	  this.mixin("adminForm");
-	});
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ },
-/* 166 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
-	riot.tag2("r-admin-administrator-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in ['profile', 'notifications']}\"> <div if=\"{attr != 'id'}\"> <label for=\"{attr}\">{attr.humanize()}</label> <textarea if=\"{_.isObject(record[attr])}\" class=\"block col-12 mb2 field fixed-height\" name=\"{attr}:object\">{JSON.stringify(record[attr], null, 2)}</textarea> <input if=\"{!_.isObject(record[attr])}\" class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
-	  this.mixin("adminForm");
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 

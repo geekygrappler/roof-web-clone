@@ -31,8 +31,14 @@
         </div>
       </li>
     </ul>
+    <div class="p1 center mb2">
+      <a class="btn btn-small bg-blue white h5 mr1" onclick="{prevPage}">Prev</a>
+      <span>{currentPage}</span>
+      <a class="btn btn-small bg-blue white h5 ml1" onclick="{nextPage}">Next</a>
+    </div>
   </div>
   <script>
+  this.currentPage = 1
   this.updateProjects = (projects) => {
     opts.api.projects.cache.index = projects
     this.update({projects})
@@ -40,12 +46,22 @@
   this.on('mount', () => {
     opts.api.projects.on('index.success', this.updateProjects)
     opts.api.projects.on('index.fail', this.errorHandler)
-    opts.api.projects.index()
+    opts.api.projects.index({page: this.currentPage})
   })
   this.on('unmount', () => {
     opts.api.projects.off('index.success', this.updateProjects)
     opts.api.projects.off('index.fail', this.errorHandler)
   })
+  this.prevPage = (e) => {
+    e.preventDefault()
+    this.currentPage = Math.max(this.currentPage - 1, 1)
+    this.opts.api.projects.index({page: this.currentPage})
+  }
+  this.nextPage = (e) => {
+    e.preventDefault()
+    // this.currentPage = Math.min(this.currentPage + 1, 0)
+    this.opts.api.projects.index({page: ++this.currentPage})
+  }
 
   </script>
 </r-projects-index>

@@ -74,7 +74,7 @@ import './_content_template_form.tag'
     this.opts.api[opts.resource].on('index.fail', this.errorHandler)
     this.opts.api[opts.resource].on('index.success', this.updateRecords)
     this.opts.api[opts.resource].on('delete.success', this.removeRecord)
-    this.opts.api[opts.resource].index()
+    this.opts.api[opts.resource].index({page: this.currentPage})
   })
 
   this.on('unmount', () => {
