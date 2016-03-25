@@ -4,6 +4,9 @@ import './_tender_form.tag'
 import './_quote_form.tag'
 import './_payment_form.tag'
 import './_account_form.tag'
+import './_customer_form.tag'
+import './_professional_form.tag'
+import './_administrator_form.tag'
 import './_lead_form.tag'
 import './_project_form.tag'
 import './_content_page_form.tag'
@@ -31,7 +34,15 @@ import './_content_template_form.tag'
         </thead>
         <tbody>
           <tr each="{ record, i in records }">
-            <td each="{ attr, value in record }">{ value }</td>
+            <td each="{ attr, value in record }">
+              <div if="{ _.isObject(value)}" data-disclosure>
+                <a class="btn btn-small h5" data-handle>Expand</a>
+                <pre data-details>
+                  {JSON.stringify(value, null, 2)}
+                </pre>
+              </div>
+              {_.isObject(value) ? null : value}
+            </td>
             <td>
               <button class="btn border btn-small mr1 mb1" onclick="{ open }">
                 <i class="fa fa-pencil"></i>
@@ -42,6 +53,15 @@ import './_content_template_form.tag'
             </td>
           </tr>
         <tbody>
+        <tfoot class="bg-darken-1">
+          <tr>
+              <th colspan="{headers.length}" class="center">
+                <a class="btn btn-small bg-blue white h5 mr1" onclick="{prevPage}">Prev</a>
+                <span>{currentPage}</span>
+                <a class="btn btn-small bg-blue white h5 ml1" onclick="{nextPage}">Next</a>
+              </th>
+          </tr>
+        </tfoot>
       </table>
     </div>
   </div>
@@ -49,6 +69,7 @@ import './_content_template_form.tag'
   this.mixin('admin')
   this.headers = []
   this.records = []
+  this.currentPage = 1
   this.on('mount', () => {
     this.opts.api[opts.resource].on('index.fail', this.errorHandler)
     this.opts.api[opts.resource].on('index.success', this.updateRecords)
@@ -61,6 +82,17 @@ import './_content_template_form.tag'
     this.opts.api[opts.resource].off('index.success', this.updateRecords)
     this.opts.api[opts.resource].off('delete.success', this.removeRecord)
   })
+
+  this.prevPage = (e) => {
+    e.preventDefault()
+    this.currentPage = Math.max(this.currentPage - 1, 1)
+    this.opts.api[opts.resource].index({page: this.currentPage})
+  }
+  this.nextPage = (e) => {
+    e.preventDefault()
+    // this.currentPage = Math.min(this.currentPage + 1, 0)
+    this.opts.api[opts.resource].index({page: ++this.currentPage})
+  }
 
   this.updateRecords = (records) => {
     this.update({records: records, headers: _.keys(records[0]) })
