@@ -17662,7 +17662,6 @@
 	      }
 	      window.onpopstate = function () {
 	        _this.closeModal();
-	        history.replaceState(null, null, "/app/admin/" + _this.opts.resource);
 	      };
 	    });
 	

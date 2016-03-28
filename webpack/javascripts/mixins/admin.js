@@ -124,7 +124,6 @@ riot.mixin('adminForm', {
       }
       window.onpopstate =  () => {
         this.closeModal()
-        history.replaceState(null, null, `/app/admin/${this.opts.resource}`)
       }
     })
 
