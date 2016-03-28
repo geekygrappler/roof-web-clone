@@ -35,7 +35,7 @@ import from '../../mixins/tender.js'
     <p>When you apply a template to a project, if there isn't Tender on the project it clones itself to project,
       if Tender exists it apply changes to project's tender
     </p>
-    <r-typeahead-input resource="projects" api="{ opts.api }" datum_tokenizer="name"></r-typeahead-input>
+    <r-typeahead-input resource="projects" api="{ opts.api }" datum_tokenizer="{['name', 'account_email']}"></r-typeahead-input>
   </div>
 
   </div>

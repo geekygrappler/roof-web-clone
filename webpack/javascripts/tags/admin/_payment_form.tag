@@ -9,17 +9,17 @@ import Pikaday from 'pikaday-time/pikaday'
     <label for="project_id">Project</label>
 
     <input type="hidden" name="project_id" value="{record.project_id}">
-    <r-typeahead-input resource="projects" api="{ opts.api }" id="{record.project_id}" datum_tokenizer="name"></r-typeahead-input>
+    <r-typeahead-input resource="projects" api="{ opts.api }" id="{record.project_id}" datum_tokenizer="{['name', 'account_email']}"></r-typeahead-input>
     <span if="{errors.project_id}" class="inline-error">{errors.project_id}</span>
 
     <label for="professional_id">Professional</label>
     <input type="hidden" name="professional_id" value="{record.professional_id}">
-    <r-typeahead-input resource="professionals" api="{ opts.api }" id="{record.professional_id}" datum_tokenizer="first_name"></r-typeahead-input>
+    <r-typeahead-input resource="professionals" api="{ opts.api }" id="{record.professional_id}" filters="{professionalFilters()}" datum_tokenizer="{['full_name']}"></r-typeahead-input>
     <span if="{errors.professional_id}" class="inline-error">{errors.professional_id}</span>
 
     <label for="quote_id">Quote</label>
     <input type="hidden" name="quote_id" value="{record.quote_id}">
-    <r-typeahead-input resource="quotes" api="{ opts.api }" id="{record.quote_id}" datum_tokenizer="id"></r-typeahead-input>
+    <r-typeahead-input resource="quotes" api="{ opts.api }" id="{record.quote_id}" filters="{quoteFilters()}" datum_tokenizer="{['id', 'status', 'amount']}"></r-typeahead-input>
     <span if="{errors.quote_id}" class="inline-error">{errors.quote_id}</span>
 
 
@@ -91,6 +91,12 @@ import Pikaday from 'pikaday-time/pikaday'
     this.record.quote_id = item.id
     this.update()
   })
+  this.quoteFilters = () => {
+    return [{name: 'project_id', value: this.record.project_id},{name: 'professional_id', value: this.record.professional_id}]
+  }
+  this.professionalFilters = () => {
+    return [{name: 'project_id', value: this.record.project_id}]
+  }
 
   this.on('mount', () => {
     let picker = new Pikaday({

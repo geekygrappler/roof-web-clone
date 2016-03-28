@@ -30,6 +30,9 @@
               {record.kind}
             </td>
             <td>
+              <a href="/app/admin/accounts/{record.account_id}/edit">{record.account_email}</a>
+            </td>
+            <td>
               <a href="/app/admin/accounts/{record.account_id}/edit">{record.account_id}</a>
             </td>
             <td>

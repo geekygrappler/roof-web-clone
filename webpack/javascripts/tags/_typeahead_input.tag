@@ -16,7 +16,7 @@ import Handlebars from 'handlebars/dist/handlebars'
       this.opts.api[this.opts.resource].index({id: this.opts.id, limit: 1})
       .fail(this.errorHandler)
       .then((records) => {
-        this.selected = records[0][this.opts.datum_tokenizer]
+        this.selected = records[0][this.opts.datum_tokenizer[0]]
         $(this.query).typeahead('val', this.selected)
       })
     }
@@ -25,12 +25,22 @@ import Handlebars from 'handlebars/dist/handlebars'
   // this.request({url: `/api/${this.opts.resource}`}).then((data) => {
 
     let source = new Bloodhound({
-      datumTokenizer: Bloodhound.tokenizers.whitespace,
+      datumTokenizer: (d) => {
+        var token = _.reduce(this.opts.datum_tokenizer, (mem, token) => `${mem} ${d[token]}`)
+        return Bloodhound.tokenizers.whitespace(token)
+      },
       queryTokenizer: Bloodhound.tokenizers.whitespace,
-      sufficient: 10,
+      sufficient: 1,
       remote: {
         url: `/api/${this.opts.resource}?query=%QUERY`,
-        wildcard: '%QUERY'
+        wildcard: '%QUERY',
+        prepare: (query, settings) => {
+          settings.url = settings.url.replace('%QUERY', query)
+          if(this.opts.filters) {
+            settings.url += "&" + _.map(this.opts.filters, filter => filter.name + '=' + filter.value).join('&')
+          }
+          return settings
+        }
       }
     })
 
@@ -44,7 +54,7 @@ import Handlebars from 'handlebars/dist/handlebars'
     .typeahead(null, {
       name: this.opts.resource,
       source: source,
-      display: this.opts.datum_tokenizer,
+      display: this.opts.datum_tokenizer[0],
       limit: 1000,
       templates: {
         empty:`
@@ -54,7 +64,7 @@ import Handlebars from 'handlebars/dist/handlebars'
         ,
         suggestion: Handlebars.compile(`
           <div class="border-bottom typeahead-item">
-            <a class="cursor-pointer p2">{{${this.opts.datum_tokenizer}}}</a>
+            <a class="cursor-pointer p2"><span class="bg-orange p1 mr1">{{${this.opts.datum_tokenizer[0]}}}</span> {{${this.opts.datum_tokenizer[1]}}}</a>
           </div>
         `)
       }

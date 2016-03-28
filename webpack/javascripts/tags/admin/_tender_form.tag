@@ -6,7 +6,7 @@ import from '../../mixins/tender.js'
   <div class="container p2">
     <label for="project_id">Project</label>
     <input type="hidden" name="project_id" value="{record.project_id}">
-    <r-typeahead-input resource="projects" api="{ opts.api }" id="{record.project_id}" datum_tokenizer="name"></r-typeahead-input>
+    <r-typeahead-input resource="projects" api="{ opts.api }" id="{record.project_id}" datum_tokenizer="{['name', 'account_email']}"></r-typeahead-input>
     <span if="{errors.project_id}" class="inline-error">{errors.project_id}</span>
 
     <r-tender-section each="{ section , i in record.document.sections }" ></r-tender-section>
@@ -35,7 +35,7 @@ import from '../../mixins/tender.js'
 
     <div if="{record.id}" class="mt4 clearfix">
       <p>Add a Professional to this Project by creating a Quote from this tender. Choosen pro will be shortlisted.</p>
-      <r-typeahead-input resource="professionals" api="{ opts.api }" datum_tokenizer="first_name"></r-typeahead-input>
+      <r-typeahead-input resource="professionals" api="{ opts.api }" datum_tokenizer="{['full_name']}"></r-typeahead-input>
     </div>
   </div>
   <script>

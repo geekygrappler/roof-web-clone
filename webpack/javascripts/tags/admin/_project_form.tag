@@ -10,7 +10,7 @@ import '../_typeahead_input.tag'
 
     <label for="account_id">Account</label>
     <input type="hidden" name="account_id" value="{record.account_id}">
-    <r-typeahead-input resource="accounts" api="{ opts.api }" id="{record.account_id}" datum_tokenizer="email"></r-typeahead-input>
+    <r-typeahead-input resource="accounts" api="{ opts.api }" id="{record.account_id}" datum_tokenizer="{['email']}"></r-typeahead-input>
     <span if="{errors.account_id}" class="inline-error">{errors.account_id}</span>
 
     <label for="name">Name</label>
