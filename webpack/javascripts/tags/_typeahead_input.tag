@@ -40,6 +40,9 @@ import Handlebars from 'handlebars/dist/handlebars'
             settings.url += "&" + _.map(this.opts.filters, filter => filter.name + '=' + filter.value).join('&')
           }
           return settings
+        },
+        transform: (data) => {
+          return data[this.opts.resource]
         }
       }
     })

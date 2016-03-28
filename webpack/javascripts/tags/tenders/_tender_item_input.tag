@@ -18,11 +18,14 @@ import Handlebars from 'handlebars/dist/handlebars'
         return Bloodhound.tokenizers.whitespace(`${d.action} ${d.group} ${d.name} ${d.tags && d.tags.join(' ')}`)
       },
       queryTokenizer: Bloodhound.tokenizers.whitespace,
-      local: data,
+      local: data[this.opts.name.plural()],
       sufficient: 10,
       remote: {
         url: `/api/${this.opts.name.plural()}?query=%QUERY`,
-        wildcard: '%QUERY'
+        wildcard: '%QUERY',
+        transform:  (data) => {
+          return data[this.opts.name.plural()]
+        }
       }
     })
 
