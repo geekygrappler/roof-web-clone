@@ -66,12 +66,19 @@ let taskActions = require("json!../../data/task_actions.json")
 
   this.tags.task.on('itemselected', (item) => {
     this.section.tasks = this.section.tasks || []
-    this.section.tasks.push(item)
-    this.update()
+    let index = _.findIndex(this.section.tasks, task => task.id == item.id )
+    if (index < 0) {
+      this.section.tasks.push(item)
+      this.update()
+    }
   })
   this.tags.material.on('itemselected', (item) => {
     this.section.materials = this.section.materials || []
-    this.section.materials.push(item)
+    let index = _.findIndex(this.section.materials, mat => mat.id == mat.id )
+    if (index < 0) {
+      this.section.materials.push(item)
+      this.update()
+    }
     this.update()
   })
 

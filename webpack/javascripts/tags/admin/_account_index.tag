@@ -30,7 +30,7 @@
               <a href="/app/admin/{record.user_type.plural().toLowerCase()}/{record.user_id}/edit">{record.user_id}</a>
             </td>
             <td>
-              <a href="/app/admin/{record.user_type.plural().toLowerCase()}/{record.user_id}/edit">{record.user_type}</a>
+              <a onclick="{impersonate}">Impersonate {record.user_type}</a>
             </td>
             <td class="nowrap">
               {formatTime(record.created_at)}
@@ -57,6 +57,10 @@
   <script>
   this.mixin('admin')
   this.mixin('adminIndex')
+  this.impersonate = (e) => {
+    e.preventDefault()
+    this.opts.api.sessions.impersonate({id: e.item.record.id})
+  }
 
   </script>
 </r-admin-account-index>

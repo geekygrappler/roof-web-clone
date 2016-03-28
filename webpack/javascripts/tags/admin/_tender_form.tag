@@ -5,10 +5,8 @@ import from '../../mixins/tender.js'
 
   <div class="container p2">
     <label for="project_id">Project</label>
-    <select name="project_id" class="block col-12 mb2 field" onchange="{setInputValue}">
-      <option></option>
-      <option each="{projects}" value="{id}" selected="{record.project_id == id}">#{id} | {name} | {customers[0].profile.first_name} {customers[0].profile.last_name}</option>
-    </select>
+    <input type="hidden" name="project_id" value="{record.project_id}">
+    <r-typeahead-input resource="projects" api="{ opts.api }" id="{record.project_id}" datum_tokenizer="name"></r-typeahead-input>
     <span if="{errors.project_id}" class="inline-error">{errors.project_id}</span>
 
     <r-tender-section each="{ section , i in record.document.sections }" ></r-tender-section>
@@ -37,21 +35,12 @@ import from '../../mixins/tender.js'
 
     <div if="{record.id}" class="mt4 clearfix">
       <p>Add a Professional to this Project by creating a Quote from this tender. Choosen pro will be shortlisted.</p>
-      <div class="sm-col sm-col-9">
-      <select name="professional_ids[]" id="professional_ids" multiple class="block col-12 mb2 field">
-        <option each="{professionals}" value="{id}">#{id} | {profile.first_name} | {profile.last_name}</option>
-      </select>
-      </div>
-      <div class="sm-col sm-col-3 px1 center white">
-        <a class="btn bg-blue {busy: busy}" onclick="{createQuote}">Create Quote!</a>
-      </div>
+      <r-typeahead-input resource="professionals" api="{ opts.api }" datum_tokenizer="first_name"></r-typeahead-input>
     </div>
   </div>
   <script>
 
     this.record = {project_id: null, document: {sections: []}}
-    this.projects = []
-    this.professionals = []
 
     this.headers = {
       task: {name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2},
@@ -73,12 +62,10 @@ import from '../../mixins/tender.js'
 
     if (opts.id) {
       this.opts.api[opts.resource].show(opts.id)
-      this.loadResources('professionals')
       history.pushState(null, null, `/app/admin/${opts.resource}/${opts.id}/edit`)
     } else {
       history.pushState(null, null, `/app/admin/${opts.resource}/new`)
     }
-    this.loadResources('projects')
 
     this.submit = (e) => {
       if (e) e.preventDefault()
@@ -90,14 +77,18 @@ import from '../../mixins/tender.js'
       if (this.opts.id) {
         this.opts.api[opts.resource].update(opts.id, this.record)
         .fail(this.errorHandler)
-        .then(id => this.update({busy:false}))
+        .then(id => {
+          this.update({busy:false})
+          this.closeModal()
+        })
       }else{
         this.opts.api[opts.resource].create(this.record)
         .fail(this.errorHandler)
         .then(record => {
           this.update({busy:false})
           this.opts.id = record.id
-          history.pushState(null, null, `/app/admin/${opts.resource}/${record.id}/edit`)
+          // history.pushState(null, null, `/app/admin/${opts.resource}/${record.id}/edit`)
+          this.closeModal()
         })
       }
     }
@@ -106,24 +97,22 @@ import from '../../mixins/tender.js'
       this.update({record: record})
     }
 
-    this.createQuote = (e) => {
-      e.preventDefault()
-
-      let ids = $(this.professional_ids).serializeJSON({parseAll: true}).professional_ids
-
-      _.each(ids, id => {
-        opts.api.quotes.create({
-          project_id: this.record.project_id,
-          tender_id: this.record.id,
-          professional_id: id
-        })
-      })
-      this.update({busy: true})
-    }
-
     this.setInputValue = (e) => {
       this.record[e.target.name] = e.target.value
     }
+
+    this.tags['r-typeahead-input'][0].on('itemselected', (item) => {
+      this.record.project_id = item.id
+    })
+
+    this.tags['r-typeahead-input'][1].on('itemselected', (item) => {
+      this.update({busy: true})
+      opts.api.quotes.create({
+        project_id: this.record.project_id,
+        tender_id: this.record.id,
+        professional_id: item.id
+      })
+    })
 
     this.mixin('tenderMixin')
 

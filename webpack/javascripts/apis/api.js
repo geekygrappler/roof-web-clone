@@ -39,7 +39,7 @@ let resources = [
   'appointments',
   'assets',
   'comments',
-  
+
   'content/templates',
   'content/pages'
 ]
@@ -177,6 +177,21 @@ apis.sessions.signout = function (creds) {
     delete apis.currentAccount
     apis.sessions.trigger('signout.success')
     window.location.href = apis.unauthenticatedRoot
+  })
+}
+apis.sessions.impersonate = function (data) {
+  return request({
+    type: 'post',
+    url: '/api/auth/impersonate',
+    data: data
+  })
+  .fail((xhr) => apis.sessions.trigger('impersonate.fail', xhr))
+  .then(() => {
+    $.csrfToken = null
+    apis.currentAccount = null
+    delete apis.currentAccount
+    apis.sessions.trigger('impersonate.success')
+    window.location.href = "/app"
   })
 }
 

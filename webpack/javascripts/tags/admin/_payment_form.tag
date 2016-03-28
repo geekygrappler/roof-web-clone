@@ -7,24 +7,19 @@ import Pikaday from 'pikaday-time/pikaday'
 
 
     <label for="project_id">Project</label>
-    <select name="project_id" class="block col-12 mb2 field" onchange="{loadProfessionals}">
-      <option></option>
-      <option each="{projects}" value="{id}" selected="{record.project_id == id}">#{id} | {name}</option>
-    </select>
+
+    <input type="hidden" name="project_id" value="{record.project_id}">
+    <r-typeahead-input resource="projects" api="{ opts.api }" id="{record.project_id}" datum_tokenizer="name"></r-typeahead-input>
     <span if="{errors.project_id}" class="inline-error">{errors.project_id}</span>
 
     <label for="professional_id">Professional</label>
-    <select name="professional_id" class="block col-12 mb2 field" onchange="{loadQuotes}">
-      <option></option>
-      <option each="{professionals}" value="{id}" selected="{record.professional_id == id}">#{id} | {profile.first_name} {profile.last_name}</option>
-    </select>
+    <input type="hidden" name="professional_id" value="{record.professional_id}">
+    <r-typeahead-input resource="professionals" api="{ opts.api }" id="{record.professional_id}" datum_tokenizer="first_name"></r-typeahead-input>
     <span if="{errors.professional_id}" class="inline-error">{errors.professional_id}</span>
 
     <label for="quote_id">Quote</label>
-    <select name="quote_id" class="block col-12 mb2 field" onchange="{setQuote}">
-      <option></option>
-      <option each="{quotes}" value="{id}" selected="{record.quote_id == id}">#{id} | {total_amount}</option>
-    </select>
+    <input type="hidden" name="quote_id" value="{record.quote_id}">
+    <r-typeahead-input resource="quotes" api="{ opts.api }" id="{record.quote_id}" datum_tokenizer="id"></r-typeahead-input>
     <span if="{errors.quote_id}" class="inline-error">{errors.quote_id}</span>
 
 
@@ -80,27 +75,20 @@ import Pikaday from 'pikaday-time/pikaday'
 
   }
 
-  this.loadResources('projects')
-
   this.updateRecord = (record) => {
     this.update({record: record, attributes: _.keys(record)})
-    if (this.opts.id) {
-      this.loadProfessionals({target: {value: record.project_id}})
-      this.loadQuotes({target: {value: record.professional_id}})
-    }
   }
 
-  this.loadProfessionals = (e) => {
-    this.record.project_id = parseInt(e.target.value)
-    this.professionals = _.findWhere(this.projects, {id: this.record.project_id}).professionals
-  }
-  this.loadQuotes = (e) => {
-    this.record.professional_id = parseInt(e.target.value)
-    this.loadResources('quotes', {professional_id: this.record.professional_id})
-  }
-  this.setQuote = (e) => {
-    this.record.quote_id = parseInt(e.target.value)
-  }
+  this.tags['r-typeahead-input'][0].on('itemselected', (item) => {
+    this.record.project_id = item.id
+  })
+  this.tags['r-typeahead-input'][1].on('itemselected', (item) => {
+    this.record.professional_id = item.id
+  })
+  this.tags['r-typeahead-input'][2].on('itemselected', (item) => {
+    this.record.quote_id = item.id
+  })
+
   this.on('mount', () => {
     let picker = new Pikaday({
       showTime: false,

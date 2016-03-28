@@ -1,5 +1,6 @@
 let options = require("json!../../data/brief.json")
 import '../projects/_option_group_input.tag'
+import '../_typeahead_input.tag'
 
 <r-admin-project-form>
 
@@ -8,11 +9,14 @@ import '../projects/_option_group_input.tag'
   <form name="form" class="edit_project" onsubmit="{ submit }" autocomplete="off">
 
     <label for="account_id">Account</label>
-    <select name="account_id" class="block col-12 mb2 field" onchange="{setInputValue}">
-      <option></option>
-      <option each="{accounts}" value="{id}" selected="{record.account_id == id}">#{id} | {user_type} | {profile.first_name} {profile.last_name}</option>
-    </select>
+    <input type="hidden" name="account_id" value="{record.account_id}">
+    <r-typeahead-input resource="accounts" api="{ opts.api }" id="{record.account_id}" datum_tokenizer="email"></r-typeahead-input>
     <span if="{errors.account_id}" class="inline-error">{errors.account_id}</span>
+
+    <label for="name">Name</label>
+    <input id="name" class="block col-12 mb2 field"
+    type="text" name="name" value="{record.name}"
+    oninput="{setValue}"/>
 
     <section class="container clearfix" data-step="1">
       <div class="container">
@@ -111,7 +115,6 @@ import '../projects/_option_group_input.tag'
   <script>
 
   this.step = 5
-  // this.record = {brief: {}, address: {}}
   this.options = options
 
   this.setProjectKind = (e) => {
@@ -119,11 +122,18 @@ import '../projects/_option_group_input.tag'
   }
 
   this.setInputValue = (e) => {
-    console.log(e.target.value)
     this.record[e.target.name] = e.target.value
   }
 
-  this.loadResources('accounts')
+  this.tags['r-typeahead-input'].on('itemselected', (item) => {
+    this.record.account_id = item.id
+  })
+
+  // this.updateRecord = (record) => {
+  //   this.update({record: record, attributes: _.keys(record)})
+  //   this.tags['r-typeahead-input'].
+  // }
+
   this.mixin('adminForm')
   </script>
 

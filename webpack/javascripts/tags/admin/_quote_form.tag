@@ -6,24 +6,18 @@ import from '../../mixins/tender.js'
   <div class="container p2">
 
     <label for="project">Project</label>
-    <select name="project_id" class="block col-12 mb2 field" onchange="{setInputValue}">
-      <option></option>
-      <option each="{projects}" value="{id}" selected="{record.project_id == id}">#{id} | {name} | {customers[0].profile.first_name} {customers[0].profile.last_name}</option>
-    </select>
+    <input type="hidden" name="project_id" value="{record.project_id}">
+    <r-typeahead-input resource="projects" api="{ opts.api }" id="{record.project_id}" datum_tokenizer="name"></r-typeahead-input>
     <span if="{errors.project}" class="inline-error">{errors.project}</span>
 
     <label for="project_id">Professional</label>
-    <select name="professional_id" class="block col-12 mb2 field" onchange="{setInputValue}">
-      <option></option>
-      <option each="{professionals}" value="{id}" selected="{record.professional_id == id}">#{id} | {profile.first_name} {profile.last_name}</option>
-    </select>
+    <input type="hidden" name="professional_id" value="{record.professional_id}">
+    <r-typeahead-input resource="professionals" api="{ opts.api }" id="{record.professional_id}" datum_tokenizer="first_name"></r-typeahead-input>
     <span if="{errors.professional_id}" class="inline-error">{errors.professional_id}</span>
 
     <label for="tender_id">Tender</label>
-    <select name="tender_id" class="block col-12 mb2 field" onchange="{setInputValue}">
-      <option></option>
-      <option each="{tenders}" value="{id}" selected="{record.tender_id == id}">#{id}</option>
-    </select>
+    <input type="hidden" name="tender_id" value="{record.tender_id}">
+    <r-typeahead-input resource="tenders" api="{ opts.api }" id="{record.tender_id}" datum_tokenizer="id"></r-typeahead-input>
     <span if="{errors.tender_id}" class="inline-error">{errors.project}</span>
 
     <r-tender-section each="{ section , i in record.document.sections }" ></r-tender-section>
@@ -72,9 +66,6 @@ import from '../../mixins/tender.js'
       this.opts.api[opts.resource].off('show.fail', this.errorHandler)
       this.opts.api[opts.resource].off('show.success', this.updateRecord)
     })
-    this.loadResources('projects')
-    this.loadResources('professionals')
-    this.loadResources('tenders')
 
     this.record = {name: null, document: {sections: []}}
     if (opts.id) {
@@ -92,14 +83,18 @@ import from '../../mixins/tender.js'
       if (this.opts.id) {
         this.opts.api[opts.resource].update(opts.id, this.record)
         .fail(this.errorHandler)
-        .then(id => this.update({busy:false}))
+        .then(id => {
+          this.update({busy:false})
+          this.closeModal()
+        })
       }else{
         this.opts.api[opts.resource].create(this.record)
         .fail(this.errorHandler)
         .then(record => {
           this.update({busy:false})
           this.opts.id = record.id
-          history.pushState(null, null, `/app/admin/${opts.resource}/${record.id}/edit`)
+          // history.pushState(null, null, `/app/admin/${opts.resource}/${record.id}/edit`)
+          this.closeModal()
         })
       }
     }
@@ -131,6 +126,16 @@ import from '../../mixins/tender.js'
     this.setInputValue = (e) => {
       this.record[e.target.name] = e.target.value
     }
+
+    this.tags['r-typeahead-input'][0].on('itemselected', (item) => {
+      this.record.project_id = item.id
+    })
+    this.tags['r-typeahead-input'][0].on('itemselected', (item) => {
+      this.record.professional_id = item.id
+    })
+    this.tags['r-typeahead-input'][0].on('itemselected', (item) => {
+      this.record.tender_id = item.id
+    })
 
     this.mixin('tenderMixin')
 

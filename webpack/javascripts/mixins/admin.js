@@ -31,7 +31,10 @@ riot.mixin('admin', {
     if(!tags[0].content._tag) {
       tags = this.openAdminForm(`r-admin-form`, options, resource)
     }
-    tags[0].on('unmount', window.onpopstate)
+    tags[0].on('unmount', () => {
+      // window.onpopstate()
+      history.pushState(null, null, `/app/admin/${resource}`)
+    })
   }
 })
 riot.mixin('adminIndex', {
@@ -41,7 +44,6 @@ riot.mixin('adminIndex', {
     this.showDisclosures = false
 
     this.on('mount', () => {
-      console.log(this.opts.resource)
       this.opts.api[this.opts.resource].on('index.fail', this.errorHandler)
       this.opts.api[this.opts.resource].on('index.success', this.updateRecords)
       this.opts.api[this.opts.resource].on('delete.success', this.removeRecord)
@@ -114,7 +116,7 @@ riot.mixin('adminForm', {
       this.opts.api[this.opts.resource].on('update.fail', this.errorHandler)
       this.opts.api[this.opts.resource].on('new.success', this.updateRecord)
       this.opts.api[this.opts.resource].on('show.success', this.updateRecord)
-      this.opts.api[this.opts.resource].on('update.success', this.update)
+      // this.opts.api[this.opts.resource].on('update.success', this.update)
       if(this.opts.id) {
         this.opts.api[this.opts.resource].show(this.opts.id)
         history.pushState(null, null, `/app/admin/${this.opts.resource}/${this.opts.id}/edit`)
@@ -124,6 +126,7 @@ riot.mixin('adminForm', {
       }
       window.onpopstate =  () => {
         this.closeModal()
+        return true
       }
     })
 
@@ -133,7 +136,7 @@ riot.mixin('adminForm', {
       this.opts.api[this.opts.resource].off('update.fail', this.errorHandler)
       this.opts.api[this.opts.resource].off('new.success', this.updateRecord)
       this.opts.api[this.opts.resource].off('show.success', this.updateRecord)
-      this.opts.api[this.opts.resource].off('update.success', this.update)
+      // this.opts.api[this.opts.resource].off('update.success', this.update)
       window.onpopstate =  null
     })
 
@@ -156,14 +159,18 @@ riot.mixin('adminForm', {
       if (this.opts.id) {
         this.opts.api[this.opts.resource].update(this.opts.id, data)
         .fail(this.errorHandler)
-        .then(id => this.update({busy:false}))
+        .then(id => {
+          this.update({busy:false})
+          this.closeModal()
+        })
       }else{
         this.opts.api[this.opts.resource].create(data)
         .fail(this.errorHandler)
         .then(record => {
           this.update({record: record, busy:false})
           this.opts.id = record.id
-          history.pushState(null, null, `/app/admin/${this.opts.resource}/${record.id}/edit`)
+          // history.pushState(null, null, `/app/admin/${this.opts.resource}/${record.id}/edit`)
+          this.closeModal()
         })
       }
     }

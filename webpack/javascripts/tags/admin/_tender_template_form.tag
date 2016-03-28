@@ -35,14 +35,7 @@ import from '../../mixins/tender.js'
     <p>When you apply a template to a project, if there isn't Tender on the project it clones itself to project,
       if Tender exists it apply changes to project's tender
     </p>
-    <div class="sm-col sm-col-9">
-    <select name="project_ids[]" id="project_ids" multiple class="block col-12 mb2 field">
-      <option each="{projects}" value="{id}">#{id} | {name} | {customers[0].profile.first_name} {customers[0].profile.last_name}</option>
-    </select>
-    </div>
-    <div class="sm-col sm-col-3 center px1 right-align">
-      <a class="block center white btn bg-blue {busy: busy}" onclick="{addToProject}">Apply to Project(s)</a>
-    </div>
+    <r-typeahead-input resource="projects" api="{ opts.api }" datum_tokenizer="name"></r-typeahead-input>
   </div>
 
   </div>
@@ -69,7 +62,6 @@ import from '../../mixins/tender.js'
 
     if (opts.id) {
       this.opts.api[opts.resource].show(opts.id)
-      this.loadResources('projects')
       history.pushState(null, null, `/app/admin/${opts.resource}/${opts.id}/edit`)
     } else {
       history.pushState(null, null, `/app/admin/${opts.resource}/new`)
@@ -84,14 +76,18 @@ import from '../../mixins/tender.js'
       if (this.opts.id) {
         this.opts.api[opts.resource].update(opts.id, this.record)
         .fail(this.errorHandler)
-        .then(id => this.update({busy:false}))
+        .then(id => {
+          this.update({busy:false})
+          this.closeModal()
+        })
       }else{
         this.opts.api[opts.resource].create(this.record)
         .fail(this.errorHandler)
         .then(record => {
           this.update({busy:false})
           this.opts.id = record.id
-          history.pushState(null, null, `/app/admin/${opts.resource}/${record.id}/edit`)
+          // history.pushState(null, null, `/app/admin/${opts.resource}/${record.id}/edit`)
+          this.closeModal()
         })
       }
     }
@@ -100,22 +96,16 @@ import from '../../mixins/tender.js'
       this.update({record: record})
     }
 
-    this.addToProject = (e) => {
-      e.preventDefault()
-
-      let ids = $(this.project_ids).serializeJSON({parseAll: true}).project_ids
-      _.each(ids, id => {
-        opts.api.tenders.create({
-          project_id: id, tender_template_id: this.record.id
-        })
-
-      })
-      this.update({busy: true})
-    }
-
     this.setInputValue = (e) => {
       this.record[e.target.name] = e.target.value
     }
+
+    this.tags['r-typeahead-input'].on('itemselected', (item) => {
+      this.update({busy: true})
+      opts.api.tenders.create({
+        project_id: item.id, tender_template_id: this.record.id
+      })
+    })
 
     this.mixin('tenderMixin')
 
