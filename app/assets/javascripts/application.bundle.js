@@ -17570,7 +17570,10 @@
 	  },
 	  renderAdminIndex: function renderAdminIndex(ns, resource, options) {
 	    options.ns = ns;
-	    options.resource = resource = "" + ns + "" + resource;
+	
+	    resource = "" + ns + "" + resource;
+	    options.resource = resource;
+	
 	    var tags = riot.mount(this.content, "r-admin-" + resource.replace(/_|\//g, "-").singular() + "-index", options);
 	    if (!tags[0]) {
 	      riot.mount(this.content, "r-admin-index", options);
@@ -17578,7 +17581,9 @@
 	  },
 	  renderAdminForm: function renderAdminForm(ns, resource, options) {
 	    options.ns = ns;
-	    options.resource = resource = "" + ns + "" + resource;
+	    if (!resource.includes(ns)) resource = "" + ns + "" + resource;
+	    options.resource = resource;
+	
 	    var tags = this.openAdminForm("r-admin-" + resource.replace(/_|\//g, "-").singular() + "-form", options, resource);
 	    if (!tags[0].content._tag) {
 	      tags = this.openAdminForm("r-admin-form", options, resource);
