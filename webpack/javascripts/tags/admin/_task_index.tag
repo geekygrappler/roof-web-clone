@@ -1,28 +1,4 @@
-import './_admin_form.tag'
-import './_tender_template_form.tag'
-import './_tender_form.tag'
-import './_quote_form.tag'
-import './_payment_form.tag'
-import './_account_form.tag'
-import './_customer_form.tag'
-import './_professional_form.tag'
-import './_administrator_form.tag'
-import './_lead_form.tag'
-import './_project_form.tag'
-import './_content_page_form.tag'
-import './_content_template_form.tag'
-
-import './_account_index.tag'
-import './_project_index.tag'
-import './_payment_index.tag'
-import './_quote_index.tag'
-import './_tender_index.tag'
-import './_tender_template_index.tag'
-import './_material_index.tag'
-import './_task_index.tag'
-
-
-<r-admin-index>
+<r-admin-task-index>
 
   <yield to="header">
     <r-header api="{opts.api}"></r-header>
@@ -44,8 +20,38 @@ import './_task_index.tag'
         </thead>
         <tbody>
           <tr each="{ record, i in records }">
-            <td each="{ attr, i in headers}">
-              {record[attr]}
+            <td>
+              {record.id}
+            </td>
+            <td>
+              {record.action}
+            </td>
+            <td>
+              {record.group}
+            </td>
+            <td>
+              {record.name}
+            </td>
+            <td>
+              {record.quantity}
+            </td>
+            <td>
+              {record.unit}
+            </td>
+            <td>
+              {formatCurrency(record.price)}
+            </td>
+            <td>
+              {record.searchable}
+            </td>
+            <td>
+              {record.tags}
+            </td>
+            <td class="nowrap">
+              {formatTime(record.created_at)}
+            </td>
+            <td class="nowrap">
+              {formatTime(record.updated_at)}
             </td>
             <td class="nowrap">
               <button class="btn border btn-small mr1 mb1" onclick="{open}">
@@ -68,4 +74,4 @@ import './_task_index.tag'
   this.mixin('adminIndex')
 
   </script>
-</r-admin-index>
+</r-admin-task-index>

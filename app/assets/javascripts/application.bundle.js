@@ -3155,8 +3155,10 @@
 	  initDomPlugins: function initDomPlugins() {
 	    $("[data-disclosure]", this.root).disclosure(this.showDisclosures);
 	    $("a[href*=\"/app/\"]", this.root).on("click", function (e) {
-	      e.preventDefault();
-	      riot.route($(e.currentTarget).attr("href").substr(5), e.currentTarget.title, true);
+	      if (!$(e.currentTarget).attr("target")) {
+	        e.preventDefault();
+	        riot.route($(e.currentTarget).attr("href").substr(5), e.currentTarget.title);
+	      }
 	    });
 	  },
 	  _showAuthModal: function _showAuthModal() {
@@ -3194,7 +3196,7 @@
 	    this.update({ busy: false, errors: null });
 	  },
 	  closeModal: function closeModal() {
-	    $("r-modal")[0]._tag.close();
+	    $("r-modal")[0] && $("r-modal")[0]._tag && $("r-modal")[0]._tag.close();
 	  }
 	});
 	// }
@@ -17546,6 +17548,23 @@
 	        attributes: []
 	      }
 	    });
+	  },
+	  renderAdminIndex: function renderAdminIndex(ns, resource, options) {
+	    options.ns = ns;
+	    options.resource = resource = "" + ns + "" + resource;
+	    var tags = riot.mount(this.content, "r-admin-" + resource.replace(/_|\//g, "-").singular() + "-index", options);
+	    if (!tags[0]) {
+	      riot.mount(this.content, "r-admin-index", options);
+	    }
+	  },
+	  renderAdminForm: function renderAdminForm(ns, resource, options) {
+	    options.ns = ns;
+	    options.resource = resource = "" + ns + "" + resource;
+	    var tags = this.openAdminForm("r-admin-" + resource.replace(/_|\//g, "-").singular() + "-form", options, resource);
+	    if (!tags[0].content._tag) {
+	      tags = this.openAdminForm("r-admin-form", options, resource);
+	    }
+	    tags[0].on("unmount", window.onpopstate);
 	  }
 	});
 	riot.mixin("adminIndex", {
@@ -17557,6 +17576,7 @@
 	    this.showDisclosures = false;
 	
 	    this.on("mount", function () {
+	      console.log(_this.opts.resource);
 	      _this.opts.api[_this.opts.resource].on("index.fail", _this.errorHandler);
 	      _this.opts.api[_this.opts.resource].on("index.success", _this.updateRecords);
 	      _this.opts.api[_this.opts.resource].on("delete.success", _this.removeRecord);
@@ -17604,10 +17624,11 @@
 	      }
 	    };
 	    this.open = function (e) {
-	      var tags = _this.openAdminForm("r-admin-" + _this.opts.resource.replace(/_|\//g, "-").singular() + "-form", e);
-	      if (!tags[0].content._tag) {
-	        _this.openAdminForm("r-admin-form", e);
-	      }
+	      // let tags = this.openAdminForm(`r-admin-${this.opts.resource.replace(/_|\//g,'-').singular()}-form`, e)
+	      // if(!tags[0].content._tag) {
+	      //   this.openAdminForm(`r-admin-form`, e)
+	      // }
+	      _this.renderAdminForm(_this.opts.ns, _this.opts.resource, e);
 	    };
 	    this.destroy = function (e) {
 	      if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
@@ -17639,6 +17660,10 @@
 	        _this.opts.api[_this.opts.resource]["new"]();
 	        history.pushState(null, null, "/app/admin/" + _this.opts.resource + "/new");
 	      }
+	      window.onpopstate = function () {
+	        _this.closeModal();
+	        history.replaceState(null, null, "/app/admin/" + _this.opts.resource);
+	      };
 	    });
 	
 	    this.on("unmount", function () {
@@ -17648,6 +17673,7 @@
 	      _this.opts.api[_this.opts.resource].off("new.success", _this.updateRecord);
 	      _this.opts.api[_this.opts.resource].off("show.success", _this.updateRecord);
 	      _this.opts.api[_this.opts.resource].off("update.success", _this.update);
+	      window.onpopstate = null;
 	    });
 	
 	    this.updateRecord = this.updateRecord || function (record) {
@@ -28890,47 +28916,25 @@
 	
 	  // if (this.currentAccount && this.currentAccount.isAdministrator) {
 	  //this.mixin('admin')
+	
 	  _.each(["content/", ""], function (ns) {
 	    riot.route("admin/" + ns + "*", function (resource) {
-	      resource = "" + ns + "" + resource;
-	      var tags = riot.mount(_this.content, "r-admin-" + resource.replace(/_|\//g, "-").singular() + "-index", { resource: resource, api: opts.api, page: 1, query: null });
-	      if (!tags[0] || !tags[0].content._tag) {
-	        riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api, page: 1, query: null });
-	      }
+	      _this.renderAdminIndex(ns, resource, { resource: resource, api: opts.api, page: 1 });
 	    });
 	    riot.route("admin/" + ns + "*/page/*", function (resource, page) {
-	      resource = "" + ns + "" + resource;
-	      var tags = riot.mount(_this.content, "r-admin-" + resource.replace(/_|\//g, "-").singular() + "-index", { resource: resource, api: opts.api, page: page, query: null });
-	      if (!tags[0] || !tags[0].content._tag) {
-	        riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api, page: page, query: null });
-	      }
+	      _this.renderAdminIndex(ns, resource, { resource: resource, api: opts.api, page: page });
 	    });
 	    riot.route("admin/" + ns + "*/search/*/page/*", function (resource, query, page) {
-	      resource = "" + ns + "" + resource;
-	      var tags = riot.mount(_this.content, "r-admin-" + resource.replace(/_|\//g, "-").singular() + "-index", { resource: resource, api: opts.api, page: page, query: query });
-	      if (!tags[0] || !tags[0].content._tag) {
-	        riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api, page: page, query: query });
-	      }
+	      _this.renderAdminIndex(ns, resource, { resource: resource, api: opts.api, page: page, query: query });
 	    });
 	
 	    riot.route("admin/" + ns + "*/new", function (resource) {
-	      resource = "" + ns + "" + resource;
-	      riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api, page: 1, query: null });
-	
-	      var tags = _this.openAdminForm("r-admin-" + resource.replace(/_|\//g, "-").singular() + "-form", {}, resource);
-	
-	      if (!tags[0].content._tag) {
-	        _this.openAdminForm("r-admin-form", {}, resource);
-	      }
+	      _this.renderAdminIndex(ns, resource, { resource: resource, api: opts.api, page: 1 });
+	      _this.renderAdminForm(ns, resource, {});
 	    });
 	    riot.route("admin/" + ns + "*/*/edit", function (resource, id) {
-	      resource = "" + ns + "" + resource;
-	      riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api, page: 1, query: null });
-	
-	      var tags = _this.openAdminForm("r-admin-" + resource.replace(/_|\//g, "-").singular() + "-form", { item: { id: id } }, resource);
-	      if (!tags[0].content._tag) {
-	        _this.openAdminForm("r-admin-form", { item: { id: id } }, resource);
-	      }
+	      _this.renderAdminIndex(ns, resource, { resource: resource, api: opts.api, page: 1 });
+	      _this.renderAdminForm(ns, resource, { item: { id: id } });
 	    });
 	  });
 	  // }
@@ -36979,9 +36983,23 @@
 	
 	__webpack_require__(166);
 	
-	//import rowTmp from './_index_row_tmp.js'
+	__webpack_require__(167);
 	
-	riot.tag2("r-admin-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td each=\"{attr, i in headers}\"> {record[attr]} </td> <td> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	__webpack_require__(168);
+	
+	__webpack_require__(169);
+	
+	__webpack_require__(170);
+	
+	__webpack_require__(171);
+	
+	__webpack_require__(172);
+	
+	__webpack_require__(173);
+	
+	__webpack_require__(174);
+	
+	riot.tag2("r-admin-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td each=\"{attr, i in headers}\"> {record[attr]} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
@@ -37388,7 +37406,6 @@
 	riot.tag2("r-admin-project-form", "<h2 class=\"center mt0 mb2\">{opts.resource.humanize()}</h2> <form name=\"form\" class=\"edit_project\" onsubmit=\"{submit}\" autocomplete=\"off\"> <label for=\"account_id\">Account</label> <select name=\"account_id\" class=\"block col-12 mb2 field\" onchange=\"{setInputValue}\"> <option></option> <option each=\"{accounts}\" value=\"{id}\" __selected=\"{record.account_id == id}\">#{id} | {user_type} | {profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors.account_id}\" class=\"inline-error\">{errors.account_id}</span> <section class=\"container clearfix\" data-step=\"1\"> <div class=\"container\"> <h2>Mission</h2> <div class=\"clearfix mxn2 border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === record.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === record.kind}\"> </a> </div> </div> </div> </section> <section class=\"container clearfix\" data-step=\"2\"> <div class=\"container\"> <h2>Helpful details</h2> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" autofocus=\"true\" oninput=\"{setValue}\">{record.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === record.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === record.brief.preferred_start}\">{value}</option> </select> </div> </div> </div> </section> <section class=\"container clearfix\" data-step=\"3\"> <div class=\"container\"> <h2>Documents and Photos</h2> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-12 px2 mb2\"> <p class=\"h2\">Upload plans, documents, site photos or any other files about your project</p> <r-files-input-with-preview name=\"assets\" record=\"{record}\"></r-files-input-with-preview> </div> </div> </div> </section> <section class=\"container clearfix\" data-step=\"4\"> <div class=\"container\"> <h2>Address</h2> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{record.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{record.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{record.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> </div> </section> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
 	  var _this = this;
 	
-	  this.mixin("adminForm");
 	  this.step = 5;
 	  // this.record = {brief: {}, address: {}}
 	  this.options = options;
@@ -37403,6 +37420,7 @@
 	  };
 	
 	  this.loadResources("accounts");
+	  this.mixin("adminForm");
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
@@ -37432,6 +37450,102 @@
 	  };
 	  this.mixin("adminForm");
 	  this.mixin("codeMirror");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 167 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-admin-account-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.email} </td> <td> <a href=\"/app/admin/{record.user_type.plural().toLowerCase()}/{record.user_id}/edit\">{record.user_id}</a> </td> <td> <a href=\"/app/admin/{record.user_type.plural().toLowerCase()}/{record.user_id}/edit\">{record.user_type}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	  this.mixin("admin");
+	  this.mixin("adminIndex");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 168 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-admin-project-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> <a href=\"/app/projects/{record.id}\" target=\"_blank\">{record.id}</a> </td> <td> {record.name} </td> <td> {record.kind} </td> <td> <a href=\"/app/admin/accounts/{record.account_id}/edit\">{record.account_id}</a> </td> <td> <a each=\"{cid in record.customers_ids}\" href=\"/app/admin/accounts/{cid}/edit\" class=\"mr1 mb1\">{cid}</a> </td> <td> <a each=\"{cid in record.shortlist_ids}\" href=\"/app/admin/accounts/{cid}/edit\" class=\"mr1 mb1\">{cid}</a> </td> <td> <a each=\"{cid in record.professionals_ids}\" href=\"/app/admin/accounts/{cid}/edit\" class=\"mr1 mb1\">{cid}</a> </td> <td> <a each=\"{cid in record.administrators_ids}\" href=\"/app/admin/accounts/{cid}/edit\" class=\"mr1 mb1\">{cid}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	  this.mixin("admin");
+	  this.mixin("adminIndex");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 169 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-admin-payment-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.status} </td> <td> {formatCurrency(record.fee)} </td> <td> {formatCurrency(record.amount)} </td> <td class=\"nowrap\"> {formatTime(record.due_date)} </td> <td class=\"nowrap\"> {record.approved_at && formatTime(record.approved_at)} </td> <td class=\"nowrap\"> {record.paid_at && formatTime(record.paid_at)} </td> <td class=\"nowrap\"> {record.canceled_at && formatTime(record.canceled_at)} </td> <td class=\"nowrap\"> {record.declined_at && formatTime(record.declined_at)} </td> <td class=\"nowrap\"> {record.refunded_at && formatTime(record.refunded_at)} </td> <td> <a href=\"/app/admin/projects/{record.project_id}/edit\">{record.project_id}</a> </td> <td> <a href=\"/app/admin/quotes/{record.quote_id}/edit\">{record.quote_id}</a> </td> <td> <a href=\"/app/admin/professionals/{record.professional_id}/edit\">{record.professional_id}</a> </td> <td> <a href=\"/app/admin/customers/{record.customer_id}/edit\">{record.customer_id}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	  this.mixin("admin");
+	  this.mixin("adminIndex");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 170 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-admin-quote-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.status} </td> <td> {formatCurrency(record.total_amount)} </td> <td> <a href=\"/app/admin/projects/{record.project_id}/edit\">{record.project_id}</a> </td> <td> <a href=\"/app/admin/professionals/{record.professional_id}/edit\">{record.professional_id}</a> </td> <td> <a href=\"/app/admin/tenders/{record.tender_id}/edit\">{record.tender_id}</a> </td> <td class=\"nowrap\"> {record.accepted_at && formatTime(record.accepted_at)} </td> <td class=\"nowrap\"> {record.submitted_at && formatTime(record.submitted_at)} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	  this.mixin("admin");
+	  this.mixin("adminIndex");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 171 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-admin-tender-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {formatCurrency(record.total_amount)} </td> <td> <a href=\"/app/admin/projects/{record.project_id}/edit\">{record.project_id}</a> </td> <td> <a href=\"/app/admin/tender_templates/{record.tender_template_id}/edit\">{record.tender_template_id}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	  this.mixin("admin");
+	  this.mixin("adminIndex");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 172 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-admin-tender-template-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.name} </td> <td> {formatCurrency(record.total_amount)} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	  this.mixin("admin");
+	  this.mixin("adminIndex");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 173 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-admin-material-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.name} </td> <td> {record.quantity} </td> <td> {formatCurrency(record.price)} </td> <td> {record.supplied} </td> <td> {record.searchable} </td> <td> {record.tags} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	  this.mixin("admin");
+	  this.mixin("adminIndex");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 174 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-admin-task-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.action} </td> <td> {record.group} </td> <td> {record.name} </td> <td> {record.quantity} </td> <td> {record.unit} </td> <td> {formatCurrency(record.price)} </td> <td> {record.searchable} </td> <td> {record.tags} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	  this.mixin("admin");
+	  this.mixin("adminIndex");
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 

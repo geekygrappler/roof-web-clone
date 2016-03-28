@@ -15,6 +15,23 @@ riot.mixin('admin', {
         attributes: []
       }
     })
+  },
+  renderAdminIndex: function (ns, resource, options) {
+    options.ns = ns
+    options.resource = resource = `${ns}${resource}`
+    var tags = riot.mount(this.content, `r-admin-${resource.replace(/_|\//g,'-').singular()}-index`, options)
+    if(!tags[0]) {
+      riot.mount(this.content, `r-admin-index`, options)
+    }
+  },
+  renderAdminForm: function  (ns, resource, options) {
+    options.ns = ns
+    options.resource = resource = `${ns}${resource}`
+    let tags = this.openAdminForm(`r-admin-${resource.replace(/_|\//g,'-').singular()}-form`, options, resource)
+    if(!tags[0].content._tag) {
+      tags = this.openAdminForm(`r-admin-form`, options, resource)
+    }
+    tags[0].on('unmount', window.onpopstate)
   }
 })
 riot.mixin('adminIndex', {
@@ -23,8 +40,8 @@ riot.mixin('adminIndex', {
     this.records = []
     this.showDisclosures = false
 
-
     this.on('mount', () => {
+      console.log(this.opts.resource)
       this.opts.api[this.opts.resource].on('index.fail', this.errorHandler)
       this.opts.api[this.opts.resource].on('index.success', this.updateRecords)
       this.opts.api[this.opts.resource].on('delete.success', this.removeRecord)
@@ -71,10 +88,11 @@ riot.mixin('adminIndex', {
       }
     }
     this.open = (e) => {
-      let tags = this.openAdminForm(`r-admin-${this.opts.resource.replace(/_|\//g,'-').singular()}-form`, e)
-      if(!tags[0].content._tag) {
-        this.openAdminForm(`r-admin-form`, e)
-      }
+      // let tags = this.openAdminForm(`r-admin-${this.opts.resource.replace(/_|\//g,'-').singular()}-form`, e)
+      // if(!tags[0].content._tag) {
+      //   this.openAdminForm(`r-admin-form`, e)
+      // }
+      this.renderAdminForm(this.opts.ns, this.opts.resource, e)
     }
     this.destroy = (e) => {
       if (window.confirm(this.ERRORS.CONFIRM_DELETE)) {
@@ -104,6 +122,10 @@ riot.mixin('adminForm', {
         this.opts.api[this.opts.resource].new()
         history.pushState(null, null, `/app/admin/${this.opts.resource}/new`)
       }
+      window.onpopstate =  () => {
+        this.closeModal()
+        history.replaceState(null, null, `/app/admin/${this.opts.resource}`)
+      }
     })
 
     this.on('unmount', () => {
@@ -113,6 +135,7 @@ riot.mixin('adminForm', {
       this.opts.api[this.opts.resource].off('new.success', this.updateRecord)
       this.opts.api[this.opts.resource].off('show.success', this.updateRecord)
       this.opts.api[this.opts.resource].off('update.success', this.update)
+      window.onpopstate =  null
     })
 
     this.updateRecord = this.updateRecord || (record) => {

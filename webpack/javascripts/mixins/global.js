@@ -70,8 +70,10 @@ riot.mixin({
   initDomPlugins: function () {
     $('[data-disclosure]', this.root).disclosure(this.showDisclosures)
     $('a[href*="/app/"]', this.root).on('click', function (e) {
-      e.preventDefault()
-      riot.route($(e.currentTarget).attr('href').substr(5), e.currentTarget.title, true)
+      if (!$(e.currentTarget).attr('target')) {
+        e.preventDefault()
+        riot.route($(e.currentTarget).attr('href').substr(5), e.currentTarget.title)
+      }
     })
   },
   _showAuthModal: function () {
@@ -104,6 +106,6 @@ riot.mixin({
     this.update({busy: false, errors: null})
   },
   closeModal: function () {
-    $('r-modal')[0]._tag.close()
+    $('r-modal')[0] && $('r-modal')[0]._tag && $('r-modal')[0]._tag.close()
   }
 })

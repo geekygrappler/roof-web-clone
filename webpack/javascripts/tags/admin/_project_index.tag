@@ -1,28 +1,4 @@
-import './_admin_form.tag'
-import './_tender_template_form.tag'
-import './_tender_form.tag'
-import './_quote_form.tag'
-import './_payment_form.tag'
-import './_account_form.tag'
-import './_customer_form.tag'
-import './_professional_form.tag'
-import './_administrator_form.tag'
-import './_lead_form.tag'
-import './_project_form.tag'
-import './_content_page_form.tag'
-import './_content_template_form.tag'
-
-import './_account_index.tag'
-import './_project_index.tag'
-import './_payment_index.tag'
-import './_quote_index.tag'
-import './_tender_index.tag'
-import './_tender_template_index.tag'
-import './_material_index.tag'
-import './_task_index.tag'
-
-
-<r-admin-index>
+<r-admin-project-index>
 
   <yield to="header">
     <r-header api="{opts.api}"></r-header>
@@ -44,8 +20,35 @@ import './_task_index.tag'
         </thead>
         <tbody>
           <tr each="{ record, i in records }">
-            <td each="{ attr, i in headers}">
-              {record[attr]}
+            <td>
+              <a href="/app/projects/{record.id}" target="_blank">{record.id}</a>
+            </td>
+            <td>
+              {record.name}
+            </td>
+            <td>
+              {record.kind}
+            </td>
+            <td>
+              <a href="/app/admin/accounts/{record.account_id}/edit">{record.account_id}</a>
+            </td>
+            <td>
+              <a each="{cid in record.customers_ids}" href="/app/admin/accounts/{cid}/edit" class="mr1 mb1">{cid}</a>
+            </td>
+            <td>
+              <a each="{cid in record.shortlist_ids}" href="/app/admin/accounts/{cid}/edit" class="mr1 mb1">{cid}</a>
+            </td>
+            <td>
+              <a each="{cid in record.professionals_ids}" href="/app/admin/accounts/{cid}/edit" class="mr1 mb1">{cid}</a>
+            </td>
+            <td>
+              <a each="{cid in record.administrators_ids}" href="/app/admin/accounts/{cid}/edit" class="mr1 mb1">{cid}</a>
+            </td>
+            <td class="nowrap">
+              {formatTime(record.created_at)}
+            </td>
+            <td class="nowrap">
+              {formatTime(record.updated_at)}
             </td>
             <td class="nowrap">
               <button class="btn border btn-small mr1 mb1" onclick="{open}">
@@ -68,4 +71,4 @@ import './_task_index.tag'
   this.mixin('adminIndex')
 
   </script>
-</r-admin-index>
+</r-admin-project-index>

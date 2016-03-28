@@ -109,7 +109,7 @@ import '../projects/_option_group_input.tag'
   </form>
 
   <script>
-  this.mixin('adminForm')
+
   this.step = 5
   // this.record = {brief: {}, address: {}}
   this.options = options
@@ -124,6 +124,7 @@ import '../projects/_option_group_input.tag'
   }
 
   this.loadResources('accounts')
+  this.mixin('adminForm')
   </script>
 
 </r-admin-project-form>
