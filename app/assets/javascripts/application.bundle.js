@@ -29390,7 +29390,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-projects-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <h1 class=\"px2\">Projects <a href=\"/app/projects/new\" class=\"ml1 h5 btn btn-primary\"><i class=\"fa fa-rocket mr1\"></i> New Project</a></h1> <ul class=\"list-reset\"> <li each=\"{projects}\" class=\"p2\"> <div class=\"border p2\"> <a href=\"/app/projects/{id}\" class=\"no-decoration\"> <h3 class=\"mb3\"><img class=\"kind-ico\" riot-src=\"/images/project_types/{kind}.png\" alt=\"{name}\"> {name}</h3> </a> <div> <i class=\"fa fa-clock-o mr1\"></i> updated {fromNow(updated_at)} </div> <div if=\"{opts.api.currentAccount.isAdministrator}\" class=\"mt2 table\"> <span class=\"table-cell mr2\"> <i class=\"fa fa-user mr1\"></i> customers: <span each=\"{name, i in _.pluck(_.pluck(customers,'profile'),'first_name')}\" class=\"border rounded inline-block px1 h6\">{name}</span> </span> <span class=\"table-cell mr2\"> <i class=\"fa fa-user-md mr1\"></i> adminstrators: <span each=\"{name, i in _.pluck(_.pluck(administrators,'profile'),'first_name')}\" class=\"border rounded inline-block px1 h6\">{name}</span> </span> <span class=\"table-cell mr2\"> <i class=\"fa fa-user mr1\"></i> professionals: <span each=\"{name, i in _.pluck(_.pluck(professionals,'profile'),'first_name')}\" class=\"border rounded inline-block px1 h6\">{name}</span> </span> </div> </div> </li> </ul> <div class=\"p1 center mb2\"> <a class=\"btn btn-small bg-blue white h5 mr1\" onclick=\"{prevPage}\">Prev</a> <span>{currentPage}</span> <a class=\"btn btn-small bg-blue white h5 ml1\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-projects-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <h1 class=\"px2\">Projects <a href=\"/app/projects/new\" class=\"ml1 h5 btn btn-primary\"><i class=\"fa fa-rocket mr1\"></i> New Project</a></h1> <ul class=\"list-reset\"> <li each=\"{projects}\" class=\"p2\"> <div class=\"border p2\"> <a href=\"/app/projects/{id}\" class=\"no-decoration\"> <h3 class=\"mb3\"><img class=\"kind-ico\" riot-src=\"/images/project_types/{kind}.png\" alt=\"{name}\"> {name}</h3> </a> <div> <i class=\"fa fa-clock-o mr1\"></i> updated {fromNow(updated_at)} </div> </div> </li> </ul> <div class=\"p1 center mb2\"> <a class=\"btn btn-small bg-blue white h5 mr1\" onclick=\"{prevPage}\">Prev</a> <span>{currentPage}</span> <a class=\"btn btn-small bg-blue white h5 ml1\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.currentPage = 1;
@@ -36571,6 +36571,7 @@
 	  this.inputTotalCost = function (e) {
 	    //$('[name=price]', this.root).val()
 	    e.item.price = e.target.value * 100 / e.item.quantity;
+	    _this.opts.api.tenders.trigger("update");
 	  };
 	
 	  this.removeItem = function (e) {

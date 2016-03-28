@@ -15,19 +15,6 @@
           <div>
             <i class="fa fa-clock-o mr1"></i> updated {fromNow(updated_at)}
           </div>
-          <div if="{opts.api.currentAccount.isAdministrator}" class="mt2 table">
-
-              <span class="table-cell mr2">
-                <i class="fa fa-user mr1"></i> customers: <span each="{name, i in _.pluck(_.pluck(customers,'profile'),'first_name')}" class="border rounded inline-block px1 h6">{name}</span>
-              </span>
-              <span class="table-cell mr2">
-                <i class="fa fa-user-md mr1"></i> adminstrators: <span each="{name, i in _.pluck(_.pluck(administrators,'profile'),'first_name')}" class="border rounded inline-block px1 h6">{name}</span>
-              </span>
-              <span class="table-cell mr2">
-                <i class="fa fa-user mr1"></i> professionals: <span each="{name, i in _.pluck(_.pluck(professionals,'profile'),'first_name')}" class="border rounded inline-block px1 h6">{name}</span>
-              </span>
-
-          </div>
         </div>
       </li>
     </ul>

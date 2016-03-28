@@ -124,6 +124,7 @@
   this.inputTotalCost = (e) => {
     //$('[name=price]', this.root).val()
     e.item.price = e.target.value * 100 / e.item.quantity
+    this.opts.api.tenders.trigger('update')
   }
 
   this.removeItem = (e) => {
