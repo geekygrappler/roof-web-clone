@@ -2708,6 +2708,10 @@
 	      apis[api].trigger("index.fail", xhr);
 	      return xhr;
 	    }).then(function (data) {
+	      if (data.meta) {
+	        apis[api].meta = data.meta;
+	        data = data[api];
+	      }
 	      apis[api].trigger("index.success", data);
 	      return data;
 	    });
@@ -17626,6 +17630,13 @@
 	        riot.route("/admin/" + _this.opts.resource + "/page/" + ++_this.opts.page);
 	      }
 	    };
+	    this.gotoPage = function (e) {
+	      if (_this.opts.query) {
+	        riot.route("/admin/" + _this.opts.resource + "/search/" + _this.opts.query + "/page/" + e.target.value);
+	      } else {
+	        riot.route("/admin/" + _this.opts.resource + "/page/" + e.target.value);
+	      }
+	    };
 	
 	    this.updateRecords = function (records) {
 	      _this.update({ headers: _.keys(records[0]), records: records });
@@ -28812,6 +28823,8 @@
 	
 	__webpack_require__(125);
 	
+	__webpack_require__(177);
+	
 	__webpack_require__(126);
 	
 	__webpack_require__(127);
@@ -28866,6 +28879,9 @@
 	  });
 	  riot.route("projects", function () {
 	    riot.mount(_this.content, "r-projects-index", { api: opts.api });
+	  });
+	  riot.route("projects/page/*", function (page) {
+	    riot.mount(_this.content, "r-projects-index", { api: opts.api, page: page });
 	  });
 	  riot.route("projects/new", function () {
 	    riot.mount(_this.content, "r-projects-brief", { api: opts.api });
@@ -29396,10 +29412,12 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-projects-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <h1 class=\"px2\">Projects <a href=\"/app/projects/new\" class=\"ml1 h5 btn btn-primary\"><i class=\"fa fa-rocket mr1\"></i> New Project</a></h1> <ul class=\"list-reset\"> <li each=\"{projects}\" class=\"p2\"> <div class=\"border p2\"> <a href=\"/app/projects/{id}\" class=\"no-decoration\"> <h3 class=\"mb3\"><img class=\"kind-ico\" riot-src=\"/images/project_types/{kind}.png\" alt=\"{name}\"> {name}</h3> </a> <div> <i class=\"fa fa-clock-o mr1\"></i> updated {fromNow(updated_at)} </div> </div> </li> </ul> <div class=\"p1 center mb2\"> <a class=\"btn btn-small bg-blue white h5 mr1\" onclick=\"{prevPage}\">Prev</a> <span>{currentPage}</span> <a class=\"btn btn-small bg-blue white h5 ml1\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-projects-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <h1 class=\"px2\">Projects <a href=\"/app/projects/new\" class=\"ml1 h5 btn btn-primary\"><i class=\"fa fa-rocket mr1\"></i> New Project</a></h1> <ul class=\"list-reset\"> <li each=\"{projects}\" class=\"p2\"> <div class=\"border p2\"> <a href=\"/app/projects/{id}\" class=\"no-decoration\"> <h3 class=\"mb3\"><img class=\"kind-ico\" riot-src=\"/images/project_types/{kind}.png\" alt=\"{name}\"> {name}</h3> </a> <div> <i class=\"fa fa-clock-o mr1\"></i> updated {fromNow(updated_at)} </div> </div> </li> </ul> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  var _this = this;
 	
-	  this.currentPage = 1;
+	  this.opts.page = this.opts.page || 1;
+	  this.opts.resource = "projects";
+	
 	  this.updateProjects = function (projects) {
 	    opts.api.projects.cache.index = projects;
 	    _this.update({ projects: projects });
@@ -29407,7 +29425,7 @@
 	  this.on("mount", function () {
 	    opts.api.projects.on("index.success", _this.updateProjects);
 	    opts.api.projects.on("index.fail", _this.errorHandler);
-	    opts.api.projects.index({ page: _this.currentPage });
+	    opts.api.projects.index({ page: _this.opts.page });
 	  });
 	  this.on("unmount", function () {
 	    opts.api.projects.off("index.success", _this.updateProjects);
@@ -29415,13 +29433,30 @@
 	  });
 	  this.prevPage = function (e) {
 	    e.preventDefault();
-	    _this.currentPage = Math.max(_this.currentPage - 1, 1);
-	    _this.opts.api.projects.index({ page: _this.currentPage });
+	    _this.opts.page = Math.max(_this.opts.page - 1, 1);
+	    // this.opts.api[opts.resource].index({page: this.opts.page})
+	    if (_this.opts.query) {
+	      riot.route("/projects/search/" + _this.opts.query + "/page/" + _this.opts.page);
+	    } else {
+	      riot.route("/projects/page/" + _this.opts.page);
+	    }
 	  };
 	  this.nextPage = function (e) {
 	    e.preventDefault();
-	    // this.currentPage = Math.min(this.currentPage + 1, 0)
-	    _this.opts.api.projects.index({ page: ++_this.currentPage });
+	    // this.opts.page = Math.min(this.opts.page + 1, 0)
+	    // this.opts.api[opts.resource].index({page: ++this.opts.page})
+	    if (_this.opts.query) {
+	      riot.route("/projects/search/" + _this.opts.page + "/page/" + ++_this.opts.page);
+	    } else {
+	      riot.route("/projects/page/" + ++_this.opts.page);
+	    }
+	  };
+	  this.gotoPage = function (e) {
+	    if (_this.opts.query) {
+	      riot.route("/projects/search/" + _this.opts.query + "/page/" + e.target.value);
+	    } else {
+	      riot.route("/projects/page/" + e.target.value);
+	    }
 	  };
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
@@ -37028,7 +37063,7 @@
 	
 	__webpack_require__(176);
 	
-	riot.tag2("r-admin-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td each=\"{attr, i in headers}\"> {record[attr]} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td each=\"{attr, i in headers}\"> {record[attr]} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
@@ -37632,7 +37667,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-admin-account-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.email} </td> <td> <a href=\"/app/admin/{record.user_type.plural().toLowerCase()}/{record.user_id}/edit\">{record.user_id}</a> </td> <td> <a onclick=\"{impersonate}\"><i class=\"fa fa-sign-in\"></i> {record.user_type}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-account-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.email} </td> <td> <a href=\"/app/admin/{record.user_type.plural().toLowerCase()}/{record.user_id}/edit\">{record.user_id}</a> </td> <td> <a onclick=\"{impersonate}\"><i class=\"fa fa-sign-in\"></i> {record.user_type}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.mixin("admin");
@@ -37650,7 +37685,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-admin-project-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> <a href=\"/app/projects/{record.id}\" target=\"_blank\">{record.id}</a> </td> <td> {record.name} </td> <td> {record.kind} </td> <td> <a href=\"/app/admin/accounts/{record.account_id}/edit\">{record.account_email}</a> </td> <td> <a href=\"/app/admin/accounts/{record.account_id}/edit\">{record.account_id}</a> </td> <td> <a each=\"{cid in record.customers_ids}\" href=\"/app/admin/accounts/{cid}/edit\" class=\"mr1 mb1\">{cid}</a> </td> <td> <a each=\"{cid in record.shortlist_ids}\" href=\"/app/admin/accounts/{cid}/edit\" class=\"mr1 mb1\">{cid}</a> </td> <td> <a each=\"{cid in record.professionals_ids}\" href=\"/app/admin/accounts/{cid}/edit\" class=\"mr1 mb1\">{cid}</a> </td> <td> <a each=\"{cid in record.administrators_ids}\" href=\"/app/admin/accounts/{cid}/edit\" class=\"mr1 mb1\">{cid}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-project-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> <a href=\"/app/projects/{record.id}\" target=\"_blank\">{record.id}</a> </td> <td> {record.name} </td> <td> {record.kind} </td> <td> <a href=\"/app/admin/accounts/{record.account_id}/edit\">{record.account_email}</a> </td> <td> <a href=\"/app/admin/accounts/{record.account_id}/edit\">{record.account_id}</a> </td> <td> <a each=\"{cid in record.customers_ids}\" href=\"/app/admin/accounts/{cid}/edit\" class=\"mr1 mb1\">{cid}</a> </td> <td> <a each=\"{cid in record.shortlist_ids}\" href=\"/app/admin/accounts/{cid}/edit\" class=\"mr1 mb1\">{cid}</a> </td> <td> <a each=\"{cid in record.professionals_ids}\" href=\"/app/admin/accounts/{cid}/edit\" class=\"mr1 mb1\">{cid}</a> </td> <td> <a each=\"{cid in record.administrators_ids}\" href=\"/app/admin/accounts/{cid}/edit\" class=\"mr1 mb1\">{cid}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
@@ -37662,7 +37697,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-admin-payment-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.status} </td> <td> {formatCurrency(record.fee)} </td> <td> {formatCurrency(record.amount)} </td> <td class=\"nowrap\"> {formatTime(record.due_date)} </td> <td class=\"nowrap\"> {record.approved_at && formatTime(record.approved_at)} </td> <td class=\"nowrap\"> {record.paid_at && formatTime(record.paid_at)} </td> <td class=\"nowrap\"> {record.canceled_at && formatTime(record.canceled_at)} </td> <td class=\"nowrap\"> {record.declined_at && formatTime(record.declined_at)} </td> <td class=\"nowrap\"> {record.refunded_at && formatTime(record.refunded_at)} </td> <td> <a href=\"/app/admin/projects/{record.project_id}/edit\">{record.project_id}</a> </td> <td> <a href=\"/app/admin/quotes/{record.quote_id}/edit\">{record.quote_id}</a> </td> <td> <a href=\"/app/admin/professionals/{record.professional_id}/edit\">{record.professional_id}</a> </td> <td> <a href=\"/app/admin/customers/{record.customer_id}/edit\">{record.customer_id}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-payment-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.status} </td> <td> {formatCurrency(record.fee)} </td> <td> {formatCurrency(record.amount)} </td> <td class=\"nowrap\"> {formatTime(record.due_date)} </td> <td class=\"nowrap\"> {record.approved_at && formatTime(record.approved_at)} </td> <td class=\"nowrap\"> {record.paid_at && formatTime(record.paid_at)} </td> <td class=\"nowrap\"> {record.canceled_at && formatTime(record.canceled_at)} </td> <td class=\"nowrap\"> {record.declined_at && formatTime(record.declined_at)} </td> <td class=\"nowrap\"> {record.refunded_at && formatTime(record.refunded_at)} </td> <td> <a href=\"/app/admin/projects/{record.project_id}/edit\">{record.project_id}</a> </td> <td> <a href=\"/app/admin/quotes/{record.quote_id}/edit\">{record.quote_id}</a> </td> <td> <a href=\"/app/admin/professionals/{record.professional_id}/edit\">{record.professional_id}</a> </td> <td> <a href=\"/app/admin/customers/{record.customer_id}/edit\">{record.customer_id}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
@@ -37674,7 +37709,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-admin-quote-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.status} </td> <td> {formatCurrency(record.total_amount)} </td> <td> <a href=\"/app/admin/projects/{record.project_id}/edit\">{record.project_id}</a> </td> <td> <a href=\"/app/admin/professionals/{record.professional_id}/edit\">{record.professional_id}</a> </td> <td> <a href=\"/app/admin/tenders/{record.tender_id}/edit\">{record.tender_id}</a> </td> <td class=\"nowrap\"> {record.accepted_at && formatTime(record.accepted_at)} </td> <td class=\"nowrap\"> {record.submitted_at && formatTime(record.submitted_at)} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-quote-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.status} </td> <td> {formatCurrency(record.total_amount)} </td> <td> <a href=\"/app/admin/projects/{record.project_id}/edit\">{record.project_id}</a> </td> <td> <a href=\"/app/admin/professionals/{record.professional_id}/edit\">{record.professional_id}</a> </td> <td> <a href=\"/app/admin/tenders/{record.tender_id}/edit\">{record.tender_id}</a> </td> <td class=\"nowrap\"> {record.accepted_at && formatTime(record.accepted_at)} </td> <td class=\"nowrap\"> {record.submitted_at && formatTime(record.submitted_at)} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
@@ -37686,7 +37721,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-admin-tender-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {formatCurrency(record.total_amount)} </td> <td> <a href=\"/app/admin/projects/{record.project_id}/edit\">{record.project_id}</a> </td> <td> <a href=\"/app/admin/tender_templates/{record.tender_template_id}/edit\">{record.tender_template_id}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-tender-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {formatCurrency(record.total_amount)} </td> <td> <a href=\"/app/admin/projects/{record.project_id}/edit\">{record.project_id}</a> </td> <td> <a href=\"/app/admin/tender_templates/{record.tender_template_id}/edit\">{record.tender_template_id}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
@@ -37698,7 +37733,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-admin-tender-template-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.name} </td> <td> {formatCurrency(record.total_amount)} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-tender-template-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.name} </td> <td> {formatCurrency(record.total_amount)} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
@@ -37710,7 +37745,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-admin-material-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.name} </td> <td> {record.quantity} </td> <td> {formatCurrency(record.price)} </td> <td> {record.supplied} </td> <td> {record.searchable} </td> <td> {record.tags} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-material-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.name} </td> <td> {record.quantity} </td> <td> {formatCurrency(record.price)} </td> <td> {record.supplied} </td> <td> {record.searchable} </td> <td> {record.tags} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
@@ -37722,7 +37757,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-admin-task-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.action} </td> <td> {record.group} </td> <td> {record.name} </td> <td> {record.quantity} </td> <td> {record.unit} </td> <td> {formatCurrency(record.price)} </td> <td> {record.searchable} </td> <td> {record.tags} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-task-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.action} </td> <td> {record.group} </td> <td> {record.name} </td> <td> {record.quantity} </td> <td> {record.unit} </td> <td> {formatCurrency(record.price)} </td> <td> {record.searchable} </td> <td> {record.tags} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
@@ -37734,19 +37769,36 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-admin-customer-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> <a href=\"/app/admin/accounts/{record.account_id}/edit\">{record.account_id}</a> </td> <td> {record.first_name} </td> <td> {record.last_name} </td> <td> {record.phone_number} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-customer-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> <a href=\"/app/admin/accounts/{record.account_id}/edit\">{record.account_id}</a> </td> <td> {record.first_name} </td> <td> {record.last_name} </td> <td> {record.phone_number} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
 	
-	riot.tag2("r-admin-professional-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> <a href=\"/app/admin/accounts/{record.account_id}/edit\">{record.account_id}</a> </td> <td> {record.first_name} </td> <td> {record.last_name} </td> <td> {record.phone_number} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-professional-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> <a href=\"/app/admin/accounts/{record.account_id}/edit\">{record.account_id}</a> </td> <td> {record.first_name} </td> <td> {record.last_name} </td> <td> {record.phone_number} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
 	
-	riot.tag2("r-admin-administrator-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> <a href=\"/app/admin/accounts/{record.account_id}/edit\">{record.account_id}</a> </td> <td> {record.first_name} </td> <td> {record.last_name} </td> <td> {record.phone_number} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-administrator-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> <a href=\"/app/admin/accounts/{record.account_id}/edit\">{record.account_id}</a> </td> <td> {record.first_name} </td> <td> {record.last_name} </td> <td> {record.phone_number} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 177 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-pagination", "<div if=\"{meta.total_pages > 1}\" class=\"center py2\"> <a if=\"{meta.has_previous_page}\" class=\"btn btn-small bg-blue white\" onclick=\"{parent.prevPage}\">Prev</a> <select onchange=\"{parent.gotoPage}\" class=\"field\"> <option each=\"{i, page in new Array(meta.total_pages)}\" __selected=\"{page == meta.current_page}\">{page}</option> </select> <a if=\"{meta.has_next_page}\" class=\"btn btn-small bg-blue white\" onclick=\"{parent.nextPage}\">Next</a> </div>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.on("update", function () {
+	    if (_this.opts.api[_this.parent.opts.resource].meta) {
+	      _this.update({ meta: _this.opts.api[_this.parent.opts.resource].meta });
+	    }
+	  });
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 

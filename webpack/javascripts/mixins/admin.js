@@ -77,6 +77,13 @@ riot.mixin('adminIndex', {
       }
 
     }
+    this.gotoPage = (e) => {
+      if(this.opts.query) {
+        riot.route(`/admin/${this.opts.resource}/search/${this.opts.query}/page/${e.target.value}`)
+      } else {
+        riot.route(`/admin/${this.opts.resource}/page/${e.target.value}`)
+      }
+    }
 
     this.updateRecords = (records) => {
       this.update({headers: _.keys(records[0]), records: records})

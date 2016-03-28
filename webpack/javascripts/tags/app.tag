@@ -4,6 +4,7 @@ import './tabs.tag'
 import './auth.tag'
 import './_invitation_accept.tag'
 import './modal.tag'
+import './_pagination.tag'
 
 import './projects/_file_input.tag'
 import './projects/_files_input_with_preview.tag'
@@ -58,6 +59,9 @@ import './admin/index.tag'
   })
   riot.route('projects', () => {
     riot.mount(this.content, 'r-projects-index', {api: opts.api})
+  })
+  riot.route('projects/page/*', (page) => {
+    riot.mount(this.content, 'r-projects-index', {api: opts.api, page: page})
   })
   riot.route('projects/new', () => {
     riot.mount(this.content, 'r-projects-brief', {api: opts.api})

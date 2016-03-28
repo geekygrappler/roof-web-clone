@@ -18,14 +18,12 @@
         </div>
       </li>
     </ul>
-    <div class="p1 center mb2">
-      <a class="btn btn-small bg-blue white h5 mr1" onclick="{prevPage}">Prev</a>
-      <span>{currentPage}</span>
-      <a class="btn btn-small bg-blue white h5 ml1" onclick="{nextPage}">Next</a>
-    </div>
+    <r-pagination></r-pagination>
   </div>
   <script>
-  this.currentPage = 1
+  this.opts.page = this.opts.page || 1
+  this.opts.resource = 'projects'
+  
   this.updateProjects = (projects) => {
     opts.api.projects.cache.index = projects
     this.update({projects})
@@ -33,7 +31,7 @@
   this.on('mount', () => {
     opts.api.projects.on('index.success', this.updateProjects)
     opts.api.projects.on('index.fail', this.errorHandler)
-    opts.api.projects.index({page: this.currentPage})
+    opts.api.projects.index({page: this.opts.page})
   })
   this.on('unmount', () => {
     opts.api.projects.off('index.success', this.updateProjects)
@@ -41,14 +39,32 @@
   })
   this.prevPage = (e) => {
     e.preventDefault()
-    this.currentPage = Math.max(this.currentPage - 1, 1)
-    this.opts.api.projects.index({page: this.currentPage})
+    this.opts.page = Math.max(this.opts.page - 1, 1)
+    // this.opts.api[opts.resource].index({page: this.opts.page})
+    if(this.opts.query) {
+      riot.route(`/projects/search/${this.opts.query}/page/${this.opts.page}`)
+    } else {
+      riot.route(`/projects/page/${this.opts.page}`)
+    }
   }
   this.nextPage = (e) => {
     e.preventDefault()
-    // this.currentPage = Math.min(this.currentPage + 1, 0)
-    this.opts.api.projects.index({page: ++this.currentPage})
+    // this.opts.page = Math.min(this.opts.page + 1, 0)
+    // this.opts.api[opts.resource].index({page: ++this.opts.page})
+    if(this.opts.query) {
+      riot.route(`/projects/search/${this.opts.page}/page/${++this.opts.page}`)
+    } else {
+      riot.route(`/projects/page/${++this.opts.page}`)
+    }
   }
+  this.gotoPage = (e) => {
+    if(this.opts.query) {
+      riot.route(`/projects/search/${this.opts.query}/page/${e.target.value}`)
+    } else {
+      riot.route(`/projects/page/${e.target.value}`)
+    }
+  }
+
 
   </script>
 </r-projects-index>

@@ -71,6 +71,10 @@ resources.forEach((api) =>{
       return xhr
     })
     .then((data) => {
+      if(data.meta) {
+        apis[api].meta = data.meta
+        data = data[api]
+      }
       apis[api].trigger('index.success', data)
       return data
     })

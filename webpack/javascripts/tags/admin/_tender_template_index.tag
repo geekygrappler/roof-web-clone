@@ -47,9 +47,7 @@
         <tbody>
       </table>
     </div>
-    <div class="center py2">
-      <a class="btn btn-small bg-blue white" onclick="{prevPage}">Prev</a> <span class="ml1 mr1 px1 inline-block border">{opts.page}</span> <a class="btn btn-small bg-blue white" onclick="{nextPage}">Next</a>
-    </div>
+    <r-pagination></r-pagination>
   </div>
   <script>
   this.mixin('admin')
