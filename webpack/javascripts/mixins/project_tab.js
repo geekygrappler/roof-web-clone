@@ -14,16 +14,16 @@ riot.mixin('projectTab', {
       opts.api.projects.on('show.fail', this.errorHandler)
       opts.api.projects.on('show.success', this.updateProject)
       // check if cached value set and display if not fetch fresh
-      if (opts.api.projects.cache.index) {
-        project = _.find(opts.api.projects.cache.index, p => p.id == project_id)
-        if (project) {
-          opts.api.projects.trigger('show.success', project)
-        }else {
-          opts.api.projects.show(project_id)
-        }
-      } else {
+      // if (opts.api.projects.cache.index) {
+      //   project = _.find(opts.api.projects.cache.index, p => p.id == project_id)
+      //   if (project) {
+      //     opts.api.projects.trigger('show.success', project)
+      //   }else {
+      //     opts.api.projects.show(project_id)
+      //   }
+      // } else {
         opts.api.projects.show(project_id)
-      }
+      // }
     })
 
     this.on('unmount', () => {

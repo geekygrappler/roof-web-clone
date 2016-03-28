@@ -29720,18 +29720,15 @@
 	      opts.api.projects.on("show.fail", _this.errorHandler);
 	      opts.api.projects.on("show.success", _this.updateProject);
 	      // check if cached value set and display if not fetch fresh
-	      if (opts.api.projects.cache.index) {
-	        project = _.find(opts.api.projects.cache.index, function (p) {
-	          return p.id == project_id;
-	        });
-	        if (project) {
-	          opts.api.projects.trigger("show.success", project);
-	        } else {
-	          opts.api.projects.show(project_id);
-	        }
-	      } else {
-	        opts.api.projects.show(project_id);
-	      }
+	      // if (opts.api.projects.cache.index) {
+	      //   project = _.find(opts.api.projects.cache.index, p => p.id == project_id)
+	      //   if (project) {
+	      //     opts.api.projects.trigger('show.success', project)
+	      //   }else {
+	      //     opts.api.projects.show(project_id)
+	      //   }
+	      // } else {
+	      opts.api.projects.show(project_id);
 	    });
 	
 	    this.on("unmount", function () {
@@ -29741,6 +29738,7 @@
 	    });
 	  }
 	});
+	// }
 
 /***/ },
 /* 134 */
@@ -36663,10 +36661,10 @@
 	
 	var taskActions = __webpack_require__(143);
 	
-	riot.tag2("r-tender-section", "<div data-disclosure> <div class=\"border-bottom mt2\"> <h3 class=\"inline-block mb0\"> <i data-handle class=\"cursor-pointer fa fa-{icon} mr1\" onclick=\"{changeIcon}\"></i> <input type=\"text\" class=\"field border-none\" value=\"{section.name.humanize()}\" oninput=\"{renameSection}\"> </h3> <a class=\"btn btn-small border-red red right mt2\" onclick=\"{removeSection}\"><i class=\"fa fa-trash-o\"></i></a> </div> <div data-details> <r-tender-item-group name=\"task\" task_actions=\"{taskActions}\" groupitems=\"{section.tasks_by_action}\" each=\"{group, items in section.tasks_by_action}\" headers=\"{parent.headers.task}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <r-tender-item-group name=\"material\" task_actions=\"{taskActions}\" groupitems=\"{section.materials_by_group}\" if=\"{section.materials && section.materials.length > 0}\" each=\"{group, items in section.materials_by_group}\" headers=\"{parent.headers.material}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <div class=\"clearfix mxn1 mt2\"> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"task\" auto_focus=\"{true}\" api=\"{parent.opts.api}\" icon=\"tasks\"></r-tender-item-input> </div> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"material\" api=\"{parent.opts.api}\" icon=\"shopping-basket\"></r-tender-item-input> </div> </div> </div> <h4 class=\"right-align\">Section total: {sectionTotal(section, true)}</h4> </div>", "", "", function (opts) {
+	riot.tag2("r-tender-section", "<div data-disclosure> <div class=\"relative border-bottom mt2\"> <h3 class=\"block overflow-hidden mb0\"> <i data-handle class=\"absolute left-0 top-0 mt1 cursor-pointer fa fa-{icon}\" onclick=\"{changeIcon}\"></i> <input type=\"text\" class=\"block col-12 field border-none tender-section-name\" value=\"{section.name.humanize()}\" oninput=\"{renameSection}\"> </h3> <a class=\"absolute right-0 top-0 btn btn-small border-red red\" onclick=\"{removeSection}\"><i class=\"fa fa-trash-o\"></i></a> </div> <div data-details> <r-tender-item-group name=\"task\" task_actions=\"{taskActions}\" groupitems=\"{section.tasks_by_action}\" each=\"{group, items in section.tasks_by_action}\" headers=\"{parent.headers.task}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <r-tender-item-group name=\"material\" task_actions=\"{taskActions}\" groupitems=\"{section.materials_by_group}\" if=\"{section.materials && section.materials.length > 0}\" each=\"{group, items in section.materials_by_group}\" headers=\"{parent.headers.material}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <div class=\"clearfix mxn1 mt2\"> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"task\" auto_focus=\"{true}\" api=\"{parent.opts.api}\" icon=\"tasks\"></r-tender-item-input> </div> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"material\" api=\"{parent.opts.api}\" icon=\"shopping-basket\"></r-tender-item-input> </div> </div> </div> <h4 class=\"right-align\">Section total: {sectionTotal(section, true)}</h4> </div>", "", "", function (opts) {
 	  var _this = this;
 	
-	  this.taskActions = taskActions;
+	  this.taskActions = _.omit(taskActions, "Materials", "VAT");
 	  this.showDisclosures = true;
 	  this.icon = "folder-open-o";
 	
@@ -37471,7 +37469,6 @@
 	
 	  var selected = false;
 	  this.on("update", function () {
-	
 	    if (_this.opts.id && !selected) {
 	      selected = true;
 	      _this.opts.api[_this.opts.resource].index({ id: _this.opts.id, limit: 1 }).fail(_this.errorHandler).then(function (records) {
@@ -37480,6 +37477,7 @@
 	      });
 	    }
 	  });
+	
 	  // this.request({url: `/api/${this.opts.resource}`}).then((data) => {
 	
 	  var source = new Bloodhound({

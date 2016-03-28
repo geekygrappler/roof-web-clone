@@ -11,7 +11,6 @@ import Handlebars from 'handlebars/dist/handlebars'
   <script>
   let selected = false
   this.on('update', () => {
-
     if (this.opts.id && !selected) {
       selected = true
       this.opts.api[this.opts.resource].index({id: this.opts.id, limit: 1})
@@ -22,6 +21,7 @@ import Handlebars from 'handlebars/dist/handlebars'
       })
     }
   })
+
   // this.request({url: `/api/${this.opts.resource}`}).then((data) => {
 
     let source = new Bloodhound({

@@ -2,13 +2,13 @@ let taskActions = require("json!../../data/task_actions.json")
 
 <r-tender-section>
   <div data-disclosure>
-    <div class="border-bottom mt2">
-      <h3 class="inline-block mb0" >
-        <i data-handle class="cursor-pointer fa fa-{ icon } mr1" onclick="{changeIcon}"></i>
-        <input type="text" class="field border-none"
+    <div class="relative border-bottom mt2">
+      <h3 class="block overflow-hidden mb0">
+        <i data-handle class="absolute left-0 top-0 mt1 cursor-pointer fa fa-{ icon }" onclick="{changeIcon}"></i>
+        <input type="text" class="block col-12 field border-none tender-section-name"
         value="{ section.name.humanize() }" oninput="{renameSection}">
       </h3>
-      <a class="btn btn-small border-red red right mt2" onclick="{removeSection}"><i class="fa fa-trash-o"></i></a>
+      <a class="absolute right-0 top-0 btn btn-small border-red red" onclick="{removeSection}"><i class="fa fa-trash-o"></i></a>
     </div>
     <div data-details>
 
@@ -45,7 +45,7 @@ let taskActions = require("json!../../data/task_actions.json")
   </div>
 
   <script>
-  this.taskActions = taskActions
+  this.taskActions = _.omit(taskActions, 'Materials', 'VAT')
   this.showDisclosures = true
   this.icon = 'folder-open-o'
 
