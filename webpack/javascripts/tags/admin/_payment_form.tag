@@ -81,12 +81,15 @@ import Pikaday from 'pikaday-time/pikaday'
 
   this.tags['r-typeahead-input'][0].on('itemselected', (item) => {
     this.record.project_id = item.id
+    this.update()
   })
   this.tags['r-typeahead-input'][1].on('itemselected', (item) => {
     this.record.professional_id = item.id
+    this.update()
   })
   this.tags['r-typeahead-input'][2].on('itemselected', (item) => {
     this.record.quote_id = item.id
+    this.update()
   })
 
   this.on('mount', () => {

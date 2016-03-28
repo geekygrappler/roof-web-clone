@@ -30,7 +30,7 @@
               <a href="/app/admin/{record.user_type.plural().toLowerCase()}/{record.user_id}/edit">{record.user_id}</a>
             </td>
             <td>
-              <a onclick="{impersonate}">Impersonate {record.user_type}</a>
+              <a onclick="{impersonate}"><i class="fa fa-sign-in"></i> {record.user_type}</a>
             </td>
             <td class="nowrap">
               {formatTime(record.created_at)}

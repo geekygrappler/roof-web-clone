@@ -129,12 +129,15 @@ import from '../../mixins/tender.js'
 
     this.tags['r-typeahead-input'][0].on('itemselected', (item) => {
       this.record.project_id = item.id
+      this.update()
     })
-    this.tags['r-typeahead-input'][0].on('itemselected', (item) => {
+    this.tags['r-typeahead-input'][1].on('itemselected', (item) => {
       this.record.professional_id = item.id
+      this.update()
     })
-    this.tags['r-typeahead-input'][0].on('itemselected', (item) => {
+    this.tags['r-typeahead-input'][2].on('itemselected', (item) => {
       this.record.tender_id = item.id
+      this.update()
     })
 
     this.mixin('tenderMixin')

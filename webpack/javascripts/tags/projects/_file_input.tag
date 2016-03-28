@@ -43,6 +43,7 @@
         .success((result, textStatus, jqXHR) => {
           let files = opts.record[opts.name] || []
           files.push(result)
+
           opts.record[opts.name] = files
 
           this.parent.update()

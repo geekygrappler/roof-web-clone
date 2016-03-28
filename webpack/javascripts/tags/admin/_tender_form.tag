@@ -103,6 +103,7 @@ import from '../../mixins/tender.js'
 
     this.tags['r-typeahead-input'][0].on('itemselected', (item) => {
       this.record.project_id = item.id
+      this.update()
     })
 
     this.tags['r-typeahead-input'][1].on('itemselected', (item) => {

@@ -20,6 +20,7 @@ import './_tender_index.tag'
 import './_tender_template_index.tag'
 import './_material_index.tag'
 import './_task_index.tag'
+import './_user_index.tag'
 
 
 <r-admin-index>
@@ -66,6 +67,5 @@ import './_task_index.tag'
   <script>
   this.mixin('admin')
   this.mixin('adminIndex')
-
   </script>
 </r-admin-index>

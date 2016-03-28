@@ -127,12 +127,61 @@ import '../_typeahead_input.tag'
 
   this.tags['r-typeahead-input'].on('itemselected', (item) => {
     this.record.account_id = item.id
+    this.update()
   })
 
-  // this.updateRecord = (record) => {
-  //   this.update({record: record, attributes: _.keys(record)})
-  //   this.tags['r-typeahead-input'].
-  // }
+  this.submit = this.submit || (e) => {
+    let assetsToAssign
+
+    if (e) e.preventDefault()
+
+    let data = this.serializeForm(this.form)
+
+    if (_.isEmpty(data)) {
+      $(this.form).animateCss('shake')
+      return
+    }
+
+    this.update({busy: true, errors: null})
+
+    if (this.opts.id) {
+      this.opts.api[this.opts.resource].update(this.opts.id, data)
+      .fail(this.errorHandler)
+      .then(id => {
+        this.update({busy:false})
+        this.closeModal()
+      })
+    }else{
+
+      // stash uploaded assets to be assigned to project
+      assetsToAssign = _.pluck(this.record.assets, 'id')
+
+      this.opts.api[this.opts.resource].create(data)
+      .fail(this.errorHandler)
+      .then(record => {
+        this.update({record: record, busy:false})
+        this.opts.id = record.id
+        // history.pushState(null, null, `/app/admin/${this.opts.resource}/${record.id}/edit`)
+
+        // got some uploads, let's assign them to project
+        if( !_.isEmpty(assetsToAssign) ) {
+          this.request({url: `/api/projects/${record.id}/assets`, type: 'post', data: {ids: assetsToAssign}})
+          .fail(() => {
+            this.update({busy:false})
+            window.alert(this.ERRORS.ASSET_ASSIGNMENT)
+            this.closeModal()
+          })
+          .then(() => {
+            this.update({busy:false})
+            this.closeModal()
+          })
+        } else {
+          this.closeModal()
+        }
+
+      })
+    }
+  }
 
   this.mixin('adminForm')
   </script>
