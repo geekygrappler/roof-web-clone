@@ -32,5 +32,5 @@ module.exports = {
       }
     ]
   },
-  externals: { jquery: "jQuery", underscore: "_" }
+  externals: { jquery: "jQuery", underscore: "_", streamtable: "StreamTable" }
 }

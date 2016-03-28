@@ -36888,18 +36888,22 @@
 	
 	__webpack_require__(166);
 	
-	riot.tag2("r-admin-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td each=\"{attr, value in record}\"> <div if=\"{_.isObject(value)}\" data-disclosure> <a class=\"btn btn-small h5\" data-handle>Expand</a> <pre data-details>\n                  {JSON.stringify(value, null, 2)}\n                </pre> </div> {_.isObject(value) ? null : value} </td> <td> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> <tfoot class=\"bg-darken-1\"> <tr> <th colspan=\"{headers.length}\" class=\"center\"> <a class=\"btn btn-small bg-blue white h5 mr1\" onclick=\"{prevPage}\">Prev</a> <span>{currentPage}</span> <a class=\"btn btn-small bg-blue white h5 ml1\" onclick=\"{nextPage}\">Next</a> </th> </tr> </tfoot> </table> </div> </div>", "", "", function (opts) {
+	//import rowTmp from './_index_row_tmp.js'
+	
+	riot.tag2("r-admin-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tbody> </table> </div> <div id=\"pagination\"></div> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.mixin("admin");
 	  this.headers = [];
 	  this.records = [];
+	  this.showDisclosures = false;
 	  this.currentPage = 1;
+	
 	  this.on("mount", function () {
 	    _this.opts.api[opts.resource].on("index.fail", _this.errorHandler);
 	    _this.opts.api[opts.resource].on("index.success", _this.updateRecords);
 	    _this.opts.api[opts.resource].on("delete.success", _this.removeRecord);
-	    _this.opts.api[opts.resource].index({ page: _this.currentPage });
+	    _this.opts.api[opts.resource].index({ page: _this.currentPage, limit: 1 });
 	  });
 	
 	  this.on("unmount", function () {
@@ -36908,20 +36912,36 @@
 	    _this.opts.api[opts.resource].off("delete.success", _this.removeRecord);
 	  });
 	
-	  this.prevPage = function (e) {
-	    e.preventDefault();
-	    _this.currentPage = Math.max(_this.currentPage - 1, 1);
-	    _this.opts.api[opts.resource].index({ page: _this.currentPage });
-	  };
-	  this.nextPage = function (e) {
-	    e.preventDefault();
-	    // this.currentPage = Math.min(this.currentPage + 1, 0)
-	    _this.opts.api[opts.resource].index({ page: ++_this.currentPage });
-	  };
+	  // this.prevPage = (e) => {
+	  //   e.preventDefault()
+	  //   this.currentPage = Math.max(this.currentPage - 1, 1)
+	  //   this.opts.api[opts.resource].index({page: this.currentPage})
+	  // }
+	  // this.nextPage = (e) => {
+	  //   e.preventDefault()
+	  //   // this.currentPage = Math.min(this.currentPage + 1, 0)
+	  //   this.opts.api[opts.resource].index({page: ++this.currentPage})
+	  // }
 	
 	  this.updateRecords = function (records) {
-	    _this.update({ records: records, headers: _.keys(records[0]) });
+	    _this.update({ headers: _.keys(records[0]) });
+	
+	    _this.st = _this.st || StreamTable("#streamtable", {
+	      view: function (record, index) {
+	        return rowTmp({ headers: _this.headers, record: record, index: index });
+	      },
+	      data_url: "/api/" + opts.resource,
+	      stream_after: 2,
+	      fetch_data_limit: 50,
+	      pagination: { container: "#pagination" },
+	      callbacks: {
+	        pagination: function () {
+	          $("[data-disclosure]", _this.root).disclosure(false);
+	        }
+	      }
+	    }, records);
 	  };
+	
 	  this.removeRecord = function (id) {
 	    var _id = _.findIndex(_this.records, function (r) {
 	      return r.id === id;
@@ -36944,7 +36964,7 @@
 	  };
 	  this.search = function (e) {
 	    e.preventDefault();
-	    _this.opts.api[opts.resource].index({ query: _this.query.value });
+	    _this.opts.api[opts.resource].index({ query: _this.query.value, page: _this.currentPage = 1 });
 	  };
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
