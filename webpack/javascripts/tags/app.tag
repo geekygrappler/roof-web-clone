@@ -128,33 +128,52 @@ import './admin/index.tag'
   // if (this.currentAccount && this.currentAccount.isAdministrator) {
   //this.mixin('admin')
     _.each(['content/',''], (ns) => {
-    riot.route(`admin/${ns}*`, (resource) => {
-      resource = `${ns}${resource}`
-      riot.mount(this.content, 'r-admin-index', {resource: resource, api: opts.api})
-    })
-    riot.route(`admin/${ns}*/new`, (resource) => {
-      resource = `${ns}${resource}`
-      riot.mount(this.content, 'r-admin-index', {resource: resource, api: opts.api})
+      riot.route(`admin/${ns}*`, (resource) => {
+        resource = `${ns}${resource}`
+        var tags = riot.mount(this.content, `r-admin-${resource.replace(/_|\//g,'-').singular()}-index`, {resource: resource, api: opts.api, page: 1, query: null})
+        if(!tags[0] || !tags[0].content._tag) {
+          riot.mount(this.content, `r-admin-index`, {resource: resource, api: opts.api, page: 1, query: null})
+        }
+      })
+      riot.route(`admin/${ns}*/page/*`, (resource, page) => {
+        resource = `${ns}${resource}`
+        var tags = riot.mount(this.content, `r-admin-${resource.replace(/_|\//g,'-').singular()}-index`, {resource: resource, api: opts.api, page: page, query: null})
+        if(!tags[0] || !tags[0].content._tag) {
+          riot.mount(this.content, 'r-admin-index', {resource: resource, api: opts.api, page: page, query: null})
+        }
+      })
+      riot.route(`admin/${ns}*/search/*/page/*`, (resource, query, page) => {
+        resource = `${ns}${resource}`
+        var tags = riot.mount(this.content, `r-admin-${resource.replace(/_|\//g,'-').singular()}-index`, {resource: resource, api: opts.api, page: page, query: query})
+        if(!tags[0] || !tags[0].content._tag) {
+          riot.mount(this.content, 'r-admin-index', {resource: resource, api: opts.api, page: page, query: query})
+        }
+      })
 
-      let tags = this.openAdminForm(`r-admin-${resource.replace(/_|\//g,'-').singular()}-form`, {}, resource)
+      riot.route(`admin/${ns}*/new`, (resource) => {
+        resource = `${ns}${resource}`
+        riot.mount(this.content, 'r-admin-index', {resource: resource, api: opts.api, page: 1, query: null})
 
-      if(!tags[0].content._tag) {
-        this.openAdminForm(`r-admin-form`, {}, resource)
-      }
-    })
-    riot.route(`admin/${ns}*/*/edit`, (resource, id) => {
-      resource = `${ns}${resource}`
-      riot.mount(this.content, 'r-admin-index', {resource: resource, api: opts.api})
-      let tags = this.openAdminForm(`r-admin-${resource.replace(/_|\//g,'-').singular()}-form`, {item: {id: id}}, resource)
-      if(!tags[0].content._tag) {
-        this.openAdminForm(`r-admin-form`, {item: {id: id}}, resource)
-      }
+        var tags = this.openAdminForm(`r-admin-${resource.replace(/_|\//g,'-').singular()}-form`, {}, resource)
 
-    })
-    riot.route(`admin/${ns}*/*`, (resource, id) => {
-      resource = `${ns}${resource}`
-      riot.mount(this.content, 'r-admin-show', {resource: resource, api: opts.api, id: id})
-    })
+        if(!tags[0].content._tag) {
+          this.openAdminForm(`r-admin-form`, {}, resource)
+        }
+      })
+      riot.route(`admin/${ns}*/*/edit`, (resource, id) => {
+        resource = `${ns}${resource}`
+        riot.mount(this.content, 'r-admin-index', {resource: resource, api: opts.api, page: 1, query: null})
+
+        let tags = this.openAdminForm(`r-admin-${resource.replace(/_|\//g,'-').singular()}-form`, {item: {id: id}}, resource)
+        if(!tags[0].content._tag) {
+          this.openAdminForm(`r-admin-form`, {item: {id: id}}, resource)
+        }
+
+      })
+      // riot.route(`admin/${ns}*/*`, (resource, id) => {
+      //   resource = `${ns}${resource}`
+      //   riot.mount(this.content, 'r-admin-show', {resource: resource, api: opts.api, id: id})
+      // })
     })
   // }
 

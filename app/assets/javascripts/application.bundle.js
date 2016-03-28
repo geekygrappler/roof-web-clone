@@ -17548,7 +17548,79 @@
 	    });
 	  }
 	});
+	riot.mixin("adminIndex", {
+	  init: function init() {
+	    var _this = this;
 	
+	    this.headers = [];
+	    this.records = [];
+	    this.showDisclosures = false;
+	
+	    this.on("mount", function () {
+	      _this.opts.api[_this.opts.resource].on("index.fail", _this.errorHandler);
+	      _this.opts.api[_this.opts.resource].on("index.success", _this.updateRecords);
+	      _this.opts.api[_this.opts.resource].on("delete.success", _this.removeRecord);
+	      _this.opts.api[_this.opts.resource].index({ page: _this.opts.page, query: _this.opts.query });
+	    });
+	
+	    this.on("unmount", function () {
+	      _this.opts.api[_this.opts.resource].off("index.fail", _this.errorHandler);
+	      _this.opts.api[_this.opts.resource].off("index.success", _this.updateRecords);
+	      _this.opts.api[_this.opts.resource].off("delete.success", _this.removeRecord);
+	    });
+	
+	    this.prevPage = function (e) {
+	      e.preventDefault();
+	      _this.opts.page = Math.max(_this.opts.page - 1, 1);
+	      // this.opts.api[opts.resource].index({page: this.currentPage})
+	      if (_this.opts.query) {
+	        riot.route("/admin/" + _this.opts.resource + "/search/" + _this.opts.query + "/page/" + _this.opts.page);
+	      } else {
+	        riot.route("/admin/" + _this.opts.resource + "/page/" + _this.opts.page);
+	      }
+	    };
+	    this.nextPage = function (e) {
+	      e.preventDefault();
+	      // this.currentPage = Math.min(this.currentPage + 1, 0)
+	      // this.opts.api[opts.resource].index({page: ++this.currentPage})
+	      if (_this.opts.query) {
+	        riot.route("/admin/" + _this.opts.resource + "/search/" + _this.opts.query + "/page/" + ++_this.opts.page);
+	      } else {
+	        riot.route("/admin/" + _this.opts.resource + "/page/" + ++_this.opts.page);
+	      }
+	    };
+	
+	    this.updateRecords = function (records) {
+	      _this.update({ headers: _.keys(records[0]), records: records });
+	    };
+	
+	    this.removeRecord = function (id) {
+	      var _id = _.findIndex(_this.records, function (r) {
+	        return r.id === id;
+	      });
+	      if (_id > -1) {
+	        _this.records.splice(_id, 1);
+	        _this.update();
+	      }
+	    };
+	    this.open = function (e) {
+	      var tags = _this.openAdminForm("r-admin-" + _this.opts.resource.replace(/_|\//g, "-").singular() + "-form", e);
+	      if (!tags[0].content._tag) {
+	        _this.openAdminForm("r-admin-form", e);
+	      }
+	    };
+	    this.destroy = function (e) {
+	      if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
+	        _this.opts.api[_this.opts.resource]["delete"](e.item.record.id);
+	      }
+	    };
+	    this.search = function (e) {
+	      e.preventDefault();
+	      // this.opts.api[opts.resource].index({query: this.query.value, page: (this.currentPage = 1)})
+	      riot.route("/admin/" + _this.opts.resource + "/search/" + _this.query.value + "/page/1");
+	    };
+	  }
+	});
 	riot.mixin("adminForm", {
 	  init: function init() {
 	    var _this = this;
@@ -28821,11 +28893,29 @@
 	  _.each(["content/", ""], function (ns) {
 	    riot.route("admin/" + ns + "*", function (resource) {
 	      resource = "" + ns + "" + resource;
-	      riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api });
+	      var tags = riot.mount(_this.content, "r-admin-" + resource.replace(/_|\//g, "-").singular() + "-index", { resource: resource, api: opts.api, page: 1, query: null });
+	      if (!tags[0] || !tags[0].content._tag) {
+	        riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api, page: 1, query: null });
+	      }
 	    });
+	    riot.route("admin/" + ns + "*/page/*", function (resource, page) {
+	      resource = "" + ns + "" + resource;
+	      var tags = riot.mount(_this.content, "r-admin-" + resource.replace(/_|\//g, "-").singular() + "-index", { resource: resource, api: opts.api, page: page, query: null });
+	      if (!tags[0] || !tags[0].content._tag) {
+	        riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api, page: page, query: null });
+	      }
+	    });
+	    riot.route("admin/" + ns + "*/search/*/page/*", function (resource, query, page) {
+	      resource = "" + ns + "" + resource;
+	      var tags = riot.mount(_this.content, "r-admin-" + resource.replace(/_|\//g, "-").singular() + "-index", { resource: resource, api: opts.api, page: page, query: query });
+	      if (!tags[0] || !tags[0].content._tag) {
+	        riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api, page: page, query: query });
+	      }
+	    });
+	
 	    riot.route("admin/" + ns + "*/new", function (resource) {
 	      resource = "" + ns + "" + resource;
-	      riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api });
+	      riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api, page: 1, query: null });
 	
 	      var tags = _this.openAdminForm("r-admin-" + resource.replace(/_|\//g, "-").singular() + "-form", {}, resource);
 	
@@ -28835,15 +28925,12 @@
 	    });
 	    riot.route("admin/" + ns + "*/*/edit", function (resource, id) {
 	      resource = "" + ns + "" + resource;
-	      riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api });
+	      riot.mount(_this.content, "r-admin-index", { resource: resource, api: opts.api, page: 1, query: null });
+	
 	      var tags = _this.openAdminForm("r-admin-" + resource.replace(/_|\//g, "-").singular() + "-form", { item: { id: id } }, resource);
 	      if (!tags[0].content._tag) {
 	        _this.openAdminForm("r-admin-form", { item: { id: id } }, resource);
 	      }
-	    });
-	    riot.route("admin/" + ns + "*/*", function (resource, id) {
-	      resource = "" + ns + "" + resource;
-	      riot.mount(_this.content, "r-admin-show", { resource: resource, api: opts.api, id: id });
 	    });
 	  });
 	  // }
@@ -28854,6 +28941,10 @@
 	
 	  this.mixin("admin");
 	});
+	// riot.route(`admin/${ns}*/*`, (resource, id) => {
+	//   resource = `${ns}${resource}`
+	//   riot.mount(this.content, 'r-admin-show', {resource: resource, api: opts.api, id: id})
+	// })
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
@@ -36890,82 +36981,9 @@
 	
 	//import rowTmp from './_index_row_tmp.js'
 	
-	riot.tag2("r-admin-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tbody> </table> </div> <div id=\"pagination\"></div> </div>", "", "", function (opts) {
-	  var _this = this;
-	
+	riot.tag2("r-admin-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td each=\"{attr, i in headers}\"> {record[attr]} </td> <td> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <div class=\"center py2\"> <a class=\"btn btn-small bg-blue white\" onclick=\"{prevPage}\">Prev</a> <span class=\"ml1 mr1 px1 inline-block border\">{opts.page}</span> <a class=\"btn btn-small bg-blue white\" onclick=\"{nextPage}\">Next</a> </div> </div>", "", "", function (opts) {
 	  this.mixin("admin");
-	  this.headers = [];
-	  this.records = [];
-	  this.showDisclosures = false;
-	  this.currentPage = 1;
-	
-	  this.on("mount", function () {
-	    _this.opts.api[opts.resource].on("index.fail", _this.errorHandler);
-	    _this.opts.api[opts.resource].on("index.success", _this.updateRecords);
-	    _this.opts.api[opts.resource].on("delete.success", _this.removeRecord);
-	    _this.opts.api[opts.resource].index({ page: _this.currentPage, limit: 1 });
-	  });
-	
-	  this.on("unmount", function () {
-	    _this.opts.api[opts.resource].off("index.fail", _this.errorHandler);
-	    _this.opts.api[opts.resource].off("index.success", _this.updateRecords);
-	    _this.opts.api[opts.resource].off("delete.success", _this.removeRecord);
-	  });
-	
-	  // this.prevPage = (e) => {
-	  //   e.preventDefault()
-	  //   this.currentPage = Math.max(this.currentPage - 1, 1)
-	  //   this.opts.api[opts.resource].index({page: this.currentPage})
-	  // }
-	  // this.nextPage = (e) => {
-	  //   e.preventDefault()
-	  //   // this.currentPage = Math.min(this.currentPage + 1, 0)
-	  //   this.opts.api[opts.resource].index({page: ++this.currentPage})
-	  // }
-	
-	  this.updateRecords = function (records) {
-	    _this.update({ headers: _.keys(records[0]) });
-	
-	    _this.st = _this.st || StreamTable("#streamtable", {
-	      view: function (record, index) {
-	        return rowTmp({ headers: _this.headers, record: record, index: index });
-	      },
-	      data_url: "/api/" + opts.resource,
-	      stream_after: 2,
-	      fetch_data_limit: 50,
-	      pagination: { container: "#pagination" },
-	      callbacks: {
-	        pagination: function () {
-	          $("[data-disclosure]", _this.root).disclosure(false);
-	        }
-	      }
-	    }, records);
-	  };
-	
-	  this.removeRecord = function (id) {
-	    var _id = _.findIndex(_this.records, function (r) {
-	      return r.id === id;
-	    });
-	    if (_id > -1) {
-	      _this.records.splice(_id, 1);
-	      _this.update();
-	    }
-	  };
-	  this.open = function (e) {
-	    var tags = _this.openAdminForm("r-admin-" + opts.resource.replace(/_|\//g, "-").singular() + "-form", e);
-	    if (!tags[0].content._tag) {
-	      _this.openAdminForm("r-admin-form", e);
-	    }
-	  };
-	  this.destroy = function (e) {
-	    if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
-	      _this.opts.api[opts.resource]["delete"](e.item.record.id);
-	    }
-	  };
-	  this.search = function (e) {
-	    e.preventDefault();
-	    _this.opts.api[opts.resource].index({ query: _this.query.value, page: _this.currentPage = 1 });
-	  };
+	  this.mixin("adminIndex");
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 

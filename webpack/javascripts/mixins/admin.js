@@ -17,7 +17,77 @@ riot.mixin('admin', {
     })
   }
 })
+riot.mixin('adminIndex', {
+  init: function () {
+    this.headers = []
+    this.records = []
+    this.showDisclosures = false
 
+
+    this.on('mount', () => {
+      this.opts.api[this.opts.resource].on('index.fail', this.errorHandler)
+      this.opts.api[this.opts.resource].on('index.success', this.updateRecords)
+      this.opts.api[this.opts.resource].on('delete.success', this.removeRecord)
+      this.opts.api[this.opts.resource].index({page: this.opts.page, query: this.opts.query})
+    })
+
+    this.on('unmount', () => {
+      this.opts.api[this.opts.resource].off('index.fail', this.errorHandler)
+      this.opts.api[this.opts.resource].off('index.success', this.updateRecords)
+      this.opts.api[this.opts.resource].off('delete.success', this.removeRecord)
+    })
+
+    this.prevPage = (e) => {
+      e.preventDefault()
+      this.opts.page = Math.max(this.opts.page - 1, 1)
+      // this.opts.api[opts.resource].index({page: this.currentPage})
+      if(this.opts.query) {
+        riot.route(`/admin/${this.opts.resource}/search/${this.opts.query}/page/${this.opts.page}`)
+      } else {
+        riot.route(`/admin/${this.opts.resource}/page/${this.opts.page}`)
+      }
+    }
+    this.nextPage = (e) => {
+      e.preventDefault()
+      // this.currentPage = Math.min(this.currentPage + 1, 0)
+      // this.opts.api[opts.resource].index({page: ++this.currentPage})
+      if(this.opts.query) {
+        riot.route(`/admin/${this.opts.resource}/search/${this.opts.query}/page/${++this.opts.page}`)
+      } else {
+        riot.route(`/admin/${this.opts.resource}/page/${++this.opts.page}`)
+      }
+
+    }
+
+    this.updateRecords = (records) => {
+      this.update({headers: _.keys(records[0]), records: records})
+    }
+
+    this.removeRecord = (id) => {
+      let _id = _.findIndex(this.records, r => r.id === id )
+      if (_id > -1) {
+        this.records.splice(_id, 1)
+        this.update()
+      }
+    }
+    this.open = (e) => {
+      let tags = this.openAdminForm(`r-admin-${this.opts.resource.replace(/_|\//g,'-').singular()}-form`, e)
+      if(!tags[0].content._tag) {
+        this.openAdminForm(`r-admin-form`, e)
+      }
+    }
+    this.destroy = (e) => {
+      if (window.confirm(this.ERRORS.CONFIRM_DELETE)) {
+        this.opts.api[this.opts.resource].delete(e.item.record.id)
+      }
+    }
+    this.search = (e) => {
+      e.preventDefault()
+      // this.opts.api[opts.resource].index({query: this.query.value, page: (this.currentPage = 1)})
+      riot.route(`/admin/${this.opts.resource}/search/${this.query.value}/page/1`)
+    }
+  }
+})
 riot.mixin('adminForm', {
   init: function () {
     this.on('mount', () => {
