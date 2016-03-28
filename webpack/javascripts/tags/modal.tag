@@ -12,7 +12,7 @@
   </div>
 
   <script>
-  riot.mount(this.content, this.opts.content, this.opts.contentOpts)
+  this.contentTags = riot.mount(this.content, this.opts.content, this.opts.contentOpts)
 
   // auth modal? let's auto close it when it's done
   if(this.opts.content == 'r-auth') {
@@ -23,7 +23,7 @@
   this.close = (e) => {
     if (e) e.preventUpdate = true
     $(this.body)
-    .on('transitionend', this.unmount.bind(true))
+    .on('transitionend',this.unmount.bind(true))
     .addClass('out')
   }
 
@@ -36,6 +36,9 @@
 
   this.on('unmount', () => {
     $('body').removeClass('overflow-hidden')
+  })
+  this.on('before-unmount', () => {
+    _.each(this.contentTags, tag => tag.unmount())
   })
   </script>
 </r-modal>

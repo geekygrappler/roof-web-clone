@@ -29268,7 +29268,7 @@
 	riot.tag2("r-modal", "<div name=\"body\" class=\"black modal-body out\"> <div class=\"fixed left-0 top-0 right-0 bottom-0 z4 overflow-auto bg-darken-4\"> <div class=\"relative {opts.classes || 'sm-col-6 sm-px3 px1 py3 mt4 mb4'} mx-auto bg-white modal-container\"> <a if=\"{!opts.persisted}\" class=\"absolute btn btn-small right-0 top-0 mr1 mt1\" onclick=\"{close}\"> <i class=\"fa fa-times\"></i> </a> <div name=\"content\"></div> </div> </div> </div>", "", "", function (opts) {
 	  var _this = this;
 	
-	  riot.mount(this.content, this.opts.content, this.opts.contentOpts);
+	  this.contentTags = riot.mount(this.content, this.opts.content, this.opts.contentOpts);
 	
 	  // auth modal? let's auto close it when it's done
 	  if (this.opts.content == "r-auth") {
@@ -29294,6 +29294,11 @@
 	
 	  this.on("unmount", function () {
 	    $("body").removeClass("overflow-hidden");
+	  });
+	  this.on("before-unmount", function () {
+	    _.each(_this.contentTags, function (tag) {
+	      return tag.unmount();
+	    });
 	  });
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
@@ -31565,10 +31570,10 @@
 		"Build": "Building",
 		"Install": "Carpentery",
 		"Tile": "Tiling",
-		"Lay": "Flooring",
 		"Prepare": "Preparation",
 		"Plaster": "Plastering",
 		"Decorate": "Decorating",
+		"Lay": "Flooring",
 		"Other": "Other",
 		"Materials": "Materials",
 		"VAT": "VAT"
@@ -31685,33 +31690,8 @@
 	      return this.ERRORS.CONFIRM_UNSAVED_CHANGES;
 	    }
 	  },
-	  // warnUnsavedChangesPopState: function (e) {
-	  //   if (!this.saved) {
-	  //     //e.preventDefault()
-	  //     if (window.confirm(this.ERRORS.CONFIRM_UNSAVED_CHANGES)) {
-	  //       return true
-	  //     } else {
-	  //       e.preventDefault()
-	  //       e.stopPropagation()
-	  //       history.forward()
-	  //       return false
-	  //     }
-	  //   }
-	  // },
 	  init: function init() {
 	    var _this = this;
-	
-	    this.on("mount", function () {
-	      _this.saved = true;
-	      _this.opts.api.tenders.on("update", _this.updateTenderTotal);
-	      window.onbeforeunload = _this.warnUnsavedChanges;
-	      // window.onpopstate = this.warnUnsavedChangesPopState
-	      $("a[href*=\"/app/\"]", _this.root).off("click").on("click", _this.preventUnsaved);
-	      _this.submit = _.wrap(_this.submit, function (_submit, e) {
-	        _this.saved = true;
-	        _submit(e);
-	      });
-	    });
 	
 	    this.preventUnsaved = function (e) {
 	      e.preventDefault();
@@ -31720,19 +31700,36 @@
 	      }
 	    };
 	
+	    this.setUnsaved = function () {
+	      console.log("unsaved");
+	      _this.saved = false;
+	    };
+	
+	    this.on("mount", function () {
+	      _this.saved = true;
+	      _this.opts.api.tenders.on("update", _this.updateTenderTotal);
+	      window.onbeforeunload = _this.warnUnsavedChanges;
+	      $("a[href*=\"/app/\"]", _this.root).off("click").on("click", _this.preventUnsaved);
+	      _this.submit = _.wrap(_this.submit, function (_submit, e) {
+	        _this.saved = true;
+	        _submit(e);
+	      });
+	
+	      $(_this.root).bind("input", "input", _this.setUnsaved);
+	    });
+	
 	    this.on("unmount", function () {
 	      $("a[href*=\"/app/\"]", _this.root).off("click", _this.preventUnsaved);
 	      _this.opts.api.tenders.off("update", _this.updateTenderTotal);
-	      window.onbeforeunload = null
-	      // window.onpopstate = null
-	      ;
+	      window.onbeforeunload = null;
+	      $(_this.root).unbind("input", "input", _this.setUnsaved);
 	    });
 	
 	    this.updateTenderTotal = function () {
-	      _this.saved = false;
 	      _this.tenderTotal();
 	      _this.update();
 	    };
+	
 	    this.addSection = function (e) {
 	      e.preventDefault();
 	      if (_.isEmpty(_this.sectionName.value)) {

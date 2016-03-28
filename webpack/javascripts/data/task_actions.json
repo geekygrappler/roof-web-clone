@@ -5,10 +5,10 @@
  "Build": "Building",
  "Install": "Carpentery",
  "Tile": "Tiling",
- "Lay": "Flooring",
  "Prepare": "Preparation",
  "Plaster": "Plastering",
  "Decorate": "Decorating",
+ "Lay": "Flooring",
  "Other": "Other",
  "Materials": "Materials",
  "VAT": "VAT"
