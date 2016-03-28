@@ -136,7 +136,7 @@ import './admin/index.tag'
         this.renderAdminIndex(ns, resource, {resource: resource, api: opts.api, page: page})
       })
       riot.route(`admin/${ns}*/search/*/page/*`, (resource, query, page) => {
-        this.renderAdminIndex(ns, resource, {resource: resource, api: opts.api, page: page, query: query})
+        this.renderAdminIndex(ns, resource, {resource: resource, api: opts.api, page: page, query: decodeURIComponent(query)})
       })
 
       riot.route(`admin/${ns}*/new`, (resource) => {

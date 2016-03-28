@@ -28925,7 +28925,7 @@
 	      _this.renderAdminIndex(ns, resource, { resource: resource, api: opts.api, page: page });
 	    });
 	    riot.route("admin/" + ns + "*/search/*/page/*", function (resource, query, page) {
-	      _this.renderAdminIndex(ns, resource, { resource: resource, api: opts.api, page: page, query: query });
+	      _this.renderAdminIndex(ns, resource, { resource: resource, api: opts.api, page: page, query: decodeURIComponent(query) });
 	    });
 	
 	    riot.route("admin/" + ns + "*/new", function (resource) {
