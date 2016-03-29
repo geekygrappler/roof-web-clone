@@ -144,11 +144,11 @@ import './admin/index.tag'
       })
 
       riot.route(`admin/${ns}*/new`, (resource) => {
-        this.renderAdminIndex(ns, resource, {resource: resource, api: opts.api, page: 1})
+        //this.renderAdminIndex(ns, resource, {resource: resource, api: opts.api, page: 1})
         this.renderAdminForm(ns, resource, {})
       })
       riot.route(`admin/${ns}*/*/edit`, (resource, id) => {
-        this.renderAdminIndex(ns, resource, {resource: resource, api: opts.api, page: 1})
+        //this.renderAdminIndex(ns, resource, {resource: resource, api: opts.api, page: 1})
         this.renderAdminForm(ns, resource, {item: {id: id}})
       })
       // riot.route(`admin/${ns}*/*`, (resource, id) => {

@@ -3,22 +3,28 @@ import 'codemirror/mode/htmlmixed/htmlmixed'
 
 riot.mixin('admin', {
   openAdminForm: function (formTag, e, resource) {
-    return riot.mount('r-modal', {
-      content: formTag,
-      persisted: false,
-      api: this.opts.api,
+    // return riot.mount('r-modal', {
+    //   content: formTag,
+    //   persisted: false,
+    //   api: this.opts.api,
+    //   classes: 'sm-col-11 p2 mt2 mb2',
+    //   contentOpts: {
+    //     resource: this.opts.resource || resource,
+    //     id: e.item && (e.item.id || e.item.record && e.item.record.id),
+    //     api: this.opts.api,
+    //     attributes: []
+    //   }
+    // })
+
+    return riot.mount($('[name=content]')[0], formTag, {
       classes: 'sm-col-11 p2 mt2 mb2',
-      contentOpts: {
-        resource: this.opts.resource || resource,
-        id: e.item && (e.item.id || e.item.record && e.item.record.id),
-        api: this.opts.api,
-        attributes: []
-      }
+      resource: this.opts.resource || resource,
+      id: e.item && (e.item.id || e.item.record && e.item.record.id),
+      api: this.opts.api
     })
   },
   renderAdminIndex: function (ns, resource, options) {
     options.ns = ns
-
 
     resource = `${ns}${resource}`
     options.resource = resource
@@ -34,13 +40,14 @@ riot.mixin('admin', {
     options.resource = resource
 
     let tags = this.openAdminForm(`r-admin-${resource.replace(/_|\//g,'-').singular()}-form`, options, resource)
-    if(!tags[0].content._tag) {
+    // if(!tags[0].content._tag) {
+    if(!tags[0]){
       tags = this.openAdminForm(`r-admin-form`, options, resource)
     }
-    tags[0].on('unmount', () => {
+    //tags[0].on('unmount', () => {
       // window.onpopstate()
-      history.pushState(null, null, `/app/admin/${resource}`)
-    })
+    //  history.pushState(null, null, `/app/admin/${resource}`)
+    //})
   }
 })
 riot.mixin('adminIndex', {
@@ -107,7 +114,9 @@ riot.mixin('adminIndex', {
       // if(!tags[0].content._tag) {
       //   this.openAdminForm(`r-admin-form`, e)
       // }
-      this.renderAdminForm(this.opts.ns, this.opts.resource, e)
+      //this.renderAdminForm(this.opts.ns, this.opts.resource, e)
+      var id = e.item && (e.item.id || e.item.record && e.item.record.id)
+      riot.route(`/admin/${this.opts.resource}/${id ? id + '/edit' : 'new'}`)
     }
     this.destroy = (e) => {
       if (window.confirm(this.ERRORS.CONFIRM_DELETE)) {
@@ -132,15 +141,15 @@ riot.mixin('adminForm', {
       // this.opts.api[this.opts.resource].on('update.success', this.update)
       if(this.opts.id) {
         this.opts.api[this.opts.resource].show(this.opts.id)
-        history.pushState(null, null, `/app/admin/${this.opts.resource}/${this.opts.id}/edit`)
+        //history.pushState(null, null, `/app/admin/${this.opts.resource}/${this.opts.id}/edit`)
       } else {
         this.opts.api[this.opts.resource].new()
-        history.pushState(null, null, `/app/admin/${this.opts.resource}/new`)
+        //history.pushState(null, null, `/app/admin/${this.opts.resource}/new`)
       }
-      window.onpopstate =  () => {
-        this.closeModal()
-        return true
-      }
+      // window.onpopstate =  () => {
+      //   this.closeModal()
+      //   return true
+      // }
     })
 
     this.on('unmount', () => {
@@ -150,7 +159,7 @@ riot.mixin('adminForm', {
       this.opts.api[this.opts.resource].off('new.success', this.updateRecord)
       this.opts.api[this.opts.resource].off('show.success', this.updateRecord)
       // this.opts.api[this.opts.resource].off('update.success', this.update)
-      window.onpopstate =  null
+      //window.onpopstate =  null
     })
 
     this.updateRecord = this.updateRecord || (record) => {
@@ -174,7 +183,7 @@ riot.mixin('adminForm', {
         .fail(this.errorHandler)
         .then(id => {
           this.update({busy:false})
-          this.closeModal()
+          //this.closeModal()
         })
       }else{
         this.opts.api[this.opts.resource].create(data)
@@ -183,7 +192,7 @@ riot.mixin('adminForm', {
           this.update({record: record, busy:false})
           this.opts.id = record.id
           // history.pushState(null, null, `/app/admin/${this.opts.resource}/${record.id}/edit`)
-          this.closeModal()
+          //this.closeModal()
         })
       }
     }

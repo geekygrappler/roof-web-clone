@@ -6,7 +6,7 @@ class PagesController < ApplicationController
   def show
     @page = Content::Page.find_by(pathname: pathname)
     @fallback = File.read("#{Rails.root}/app/views/pages/#{pathname}.html.erb") rescue nil
-    redirect_to "/404" and return if @page.nil? and @fallback.nil?
+    redirect_to "/pages/404" and return if @page.nil? and @fallback.nil?
   end
 
   def app

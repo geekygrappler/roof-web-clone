@@ -1,9 +1,15 @@
 import from '../../mixins/tender.js'
 
 <r-admin-tender-form>
+  <yield to="header">
+    <r-header api="{opts.api}"></r-header>
+  </yield>
 
 
   <div class="container p2">
+
+    <h2 class="center mt0 mb2">{opts.id ? 'Editing' : 'Creating'} { opts.resource.singular().humanize() }</h2>
+    
     <label for="project_id">Project</label>
     <input type="hidden" name="project_id" value="{record.project_id}">
     <r-typeahead-input resource="projects" api="{ opts.api }" id="{record.project_id}" datum_tokenizer="{['name', 'account_email']}"></r-typeahead-input>

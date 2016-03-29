@@ -2,8 +2,13 @@ import from '../../mixins/tender.js'
 
 <r-admin-quote-form>
 
+  <yield to="header">
+    <r-header api="{opts.api}"></r-header>
+  </yield>
 
   <div class="container p2">
+
+    <h2 class="center mt0 mb2">{opts.id ? 'Editing' : 'Creating'} { opts.resource.singular().humanize() }</h2>
 
     <label for="project">Project</label>
     <input type="hidden" name="project_id" value="{record.project_id}">

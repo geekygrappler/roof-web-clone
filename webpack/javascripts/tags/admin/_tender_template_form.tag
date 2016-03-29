@@ -1,9 +1,14 @@
 import from '../../mixins/tender.js'
 
 <r-admin-tender-template-form>
-
+  <yield to="header">
+    <r-header api="{opts.api}"></r-header>
+  </yield>
 
   <div class="container p2">
+
+    <h2 class="center mt0 mb2">{opts.id ? 'Editing' : 'Creating'} { opts.resource.singular().humanize() }</h2>
+    
     <h1><input type="text" name="name" value="{ record.name }"
       class="block col-12 field" placeholder="Name" oninput="{setInputValue}"/></h1>
 
