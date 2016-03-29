@@ -8,7 +8,7 @@ import from '../../mixins/tender.js'
   <div class="container p2">
 
     <h2 class="center mt0 mb2">{opts.id ? 'Editing' : 'Creating'} { opts.resource.singular().humanize() }</h2>
-    
+
     <h1><input type="text" name="name" value="{ record.name }"
       class="block col-12 field" placeholder="Name" oninput="{setInputValue}"/></h1>
 
@@ -23,7 +23,10 @@ import from '../../mixins/tender.js'
       </div>
     </form>
 
-    <h3 class="right-align m0 py3">Estimated total: { tenderTotal() }</h3>
+    <div class="py3">
+    <h4 class="right-align m0"><label><input type="checkbox" onchange="{toggleVat}" checked="{record.document.include_vat}" class="mr1">VAT {tenderVat()}</label></h4>
+    <h3 class="right-align m0">Estimated total{ record.document.include_vat ? '(Inc. VAT)' : ''}: { tenderTotal() }</h3>
+    </div>
 
     <form name="form" onsubmit="{ submit }" class="right-align">
 

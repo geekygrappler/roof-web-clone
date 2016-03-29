@@ -8,6 +8,8 @@ riot.mixin('tenderMixin', {
   },
   init: function () {
 
+    this.includeVat = false
+
     this.preventUnsaved = (e) => {
       e.preventDefault()
       if( this.saved || (!this.saved && window.confirm(this.ERRORS.CONFIRM_UNSAVED_CHANGES)) ) {
@@ -16,7 +18,6 @@ riot.mixin('tenderMixin', {
     }
 
     this.setUnsaved = () => {
-      console.log('unsaved')
       this.saved = false
     }
 
@@ -45,7 +46,7 @@ riot.mixin('tenderMixin', {
       this.tenderTotal()
       this.update()
     }
-    
+
     this.addSection = (e) => {
       e.preventDefault()
       if (_.isEmpty(this.sectionName.value)) {
@@ -84,13 +85,26 @@ riot.mixin('tenderMixin', {
         return [itemTotal, materialTotal]
       }
     }
+    this.tenderVat = () => {
+      return this.formatCurrency( this.record.document.include_vat ?
+        _.reduce(this.record.document.sections, (total, section) => {
+          var [itemTotal , materialTotal] = this.sectionTotal(section)
+
+          return (total + (itemTotal * 20 / 100))
+        }, 0) : 0 )
+    }
     this.tenderTotal = () => {
       return this.formatCurrency(
         _.reduce(this.record.document.sections, (total, section) => {
-          let [itemTotal , materialTotal] = this.sectionTotal(section)
-          return (total + itemTotal + (itemTotal * 20 / 100) + materialTotal)
+          var [itemTotal , materialTotal] = this.sectionTotal(section)
+
+          return (total + itemTotal + materialTotal + (this.record.document.include_vat ? (itemTotal * 20 / 100) : 0))
         }, 0)
       )
+    }
+    this.toggleVat = (e) => {
+      this.record.document.include_vat = !this.record.document.include_vat
+      // this.update()
     }
   }
 })

@@ -20,7 +20,10 @@ import from '../../mixins/tender.js'
       </div>
     </form>
 
-    <h3 class="right-align m0 py3">Estimated total: { tenderTotal() }</h3>
+    <div class="py3">
+    <h4 class="right-align m0"><label><input type="checkbox" onchange="{toggleVat}" checked="{record.document.include_vat}" class="mr1">VAT {tenderVat()}</label></h4>
+    <h3 class="right-align m0">Total{ record.document.include_vat ? '(Inc. VAT)' : ''}: { tenderTotal() }</h3>
+    </div>
 
     <form name="form" onsubmit="{ submit }" class="right-align">
 

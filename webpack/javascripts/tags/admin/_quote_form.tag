@@ -36,7 +36,10 @@ import from '../../mixins/tender.js'
       </div>
     </form>
 
-    <h3 class="right-align m0 py3">Estimated total: { tenderTotal() }</h3>
+    <div class="py3">
+    <h4 class="right-align m0"><label><input type="checkbox" onchange="{toggleVat}" checked="{record.document.include_vat}" class="mr1">VAT {tenderVat()}</label></h4>
+    <h3 class="right-align m0">Total{ record.document.include_vat ? '(Inc. VAT)' : ''}: { tenderTotal() }</h3>
+    </div>
 
     <form name="form" onsubmit="{ submit }" class="right-align">
 
@@ -49,10 +52,10 @@ import from '../../mixins/tender.js'
       <button type="submit" class="btn btn-primary btn-big {busy: busy}">Save</button>
 
       <a if="{record.id}" class="btn bg-green white btn-big {busy: busy}" onclick="{submitQuote}">Submit</a>
-      <a if="{record.id}"
+      <button if="{record.id}"
       class="btn bg-red btn-big {busy: busy}" onclick="{acceptQuote}" disabled="{record.accepted_at}">
       {record.accepted_at ? 'Accepted' : 'Accept'} <span if="{record.accepted_at}">{fromNow(record.accepted_at)}</span>
-      </a>
+      </button>
 
     </form>
   </div>

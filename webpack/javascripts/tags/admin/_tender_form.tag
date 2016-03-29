@@ -9,7 +9,7 @@ import from '../../mixins/tender.js'
   <div class="container p2">
 
     <h2 class="center mt0 mb2">{opts.id ? 'Editing' : 'Creating'} { opts.resource.singular().humanize() }</h2>
-    
+
     <label for="project_id">Project</label>
     <input type="hidden" name="project_id" value="{record.project_id}">
     <r-typeahead-input resource="projects" api="{ opts.api }" id="{record.project_id}" datum_tokenizer="{['name', 'account_email']}"></r-typeahead-input>
@@ -26,7 +26,10 @@ import from '../../mixins/tender.js'
       </div>
     </form>
 
-    <h3 class="right-align m0 py3">Estimated total: { tenderTotal() }</h3>
+    <div class="py3">
+    <h4 class="right-align m0"><label><input type="checkbox" onchange="{toggleVat}" checked="{record.document.include_vat}" class="mr1">VAT {tenderVat()}</label></h4>
+    <h3 class="right-align m0">Estimated total{ record.document.include_vat ? '(Inc. VAT)' : ''}: { tenderTotal() }</h3>
+    </div>
 
     <form name="form" onsubmit="{ submit }" class="right-align">
 
