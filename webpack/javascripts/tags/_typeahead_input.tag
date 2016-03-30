@@ -1,7 +1,7 @@
 import Handlebars from 'handlebars/dist/handlebars'
 
 <r-typeahead-input>
-  <div class="relative">
+  <div class="relative inline-block">
     <form onsubmit="{ preventSubmit }">
       <input name="query" type="text" class="block col-12 mb2 field"
       oninput="{ search }" onkeyup="{ onKey }"
@@ -11,7 +11,7 @@ import Handlebars from 'handlebars/dist/handlebars'
   <script>
   let selected = false
   this.on('update', () => {
-    if (this.opts.id && !selected) {
+    if (this.isMounted && this.opts.id && !selected) {
       selected = true
       this.opts.api[this.opts.resource].index({id: this.opts.id, limit: 1})
       .fail(this.errorHandler)

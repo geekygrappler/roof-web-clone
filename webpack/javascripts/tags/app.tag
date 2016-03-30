@@ -63,6 +63,9 @@ import './admin/index.tag'
   riot.route('projects/page/*', (page) => {
     riot.mount(this.content, 'r-projects-index', {api: opts.api, page: page})
   })
+  riot.route(`projects/search/*/page/*`, ( query, page) => {
+    riot.mount(this.content, 'r-projects-index', {api: opts.api, page: page, query: decodeURIComponent(query)})
+  })
   riot.route('projects/new', () => {
     riot.mount(this.content, 'r-projects-brief', {api: opts.api})
   })

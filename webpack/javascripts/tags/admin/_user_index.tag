@@ -27,6 +27,9 @@
               <a href="/app/admin/accounts/{record.account_id}/edit">{record.account_id}</a>
             </td>
             <td>
+              {record.full_name}
+            </td>
+            <td>
               {record.first_name}
             </td>
             <td>
@@ -88,6 +91,9 @@
             </td>
             <td>
               <a href="/app/admin/accounts/{record.account_id}/edit">{record.account_id}</a>
+            </td>
+            <td>
+              {record.full_name}
             </td>
             <td>
               {record.first_name}
@@ -152,6 +158,9 @@
             </td>
             <td>
               <a href="/app/admin/accounts/{record.account_id}/edit">{record.account_id}</a>
+            </td>
+            <td>
+              {record.full_name}
             </td>
             <td>
               {record.first_name}

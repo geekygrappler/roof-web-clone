@@ -51,7 +51,7 @@
               {record.refunded_at && formatTime(record.refunded_at)}
             </td>
             <td>
-              <a href="/app/admin/projects/{record.project_id}/edit">{record.project_id}</a>
+              <a href="/app/projects/{record.project_id}">{record.project_id}</a>
             </td>
             <td>
               <a href="/app/admin/quotes/{record.quote_id}/edit">{record.quote_id}</a>

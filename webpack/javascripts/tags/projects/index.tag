@@ -6,6 +6,9 @@
   </yield>
   <div class="container">
     <h1 class="px2">Projects <a href="/app/projects/new" class="ml1 h5 btn btn-primary"><i class="fa fa-rocket mr1"></i> New Project</a></h1>
+    <form class="px2" onsubmit="{ search }">
+      <input type="text" name="query" class="block mb2 col-12 field" placeholder="Search { opts.resource }" />
+    </form>
     <ul class="list-reset">
       <li each="{projects}" class="p2">
         <div class="border p2">
@@ -23,7 +26,7 @@
   <script>
   this.opts.page = this.opts.page || 1
   this.opts.resource = 'projects'
-  
+
   this.updateProjects = (projects) => {
     opts.api.projects.cache.index = projects
     this.update({projects})
@@ -31,7 +34,7 @@
   this.on('mount', () => {
     opts.api.projects.on('index.success', this.updateProjects)
     opts.api.projects.on('index.fail', this.errorHandler)
-    opts.api.projects.index({page: this.opts.page})
+    opts.api.projects.index({page: this.opts.page, query: this.opts.query})
   })
   this.on('unmount', () => {
     opts.api.projects.off('index.success', this.updateProjects)
@@ -64,7 +67,11 @@
       riot.route(`/projects/page/${e.target.value}`)
     }
   }
-
+  this.search = (e) => {
+    e.preventDefault()
+    // this.opts.api[opts.resource].index({query: this.query.value, page: (this.currentPage = 1)})
+    riot.route(`/projects/search/${this.query.value}/page/1`)
+  }
 
   </script>
 </r-projects-index>

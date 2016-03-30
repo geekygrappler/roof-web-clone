@@ -7,7 +7,9 @@ import from '../../mixins/tender.js'
   </yield>
 
   <div class="container p2 {readonly: isReadonly()}">
-    <h1><a class="btn btn-small h6 btn-outline orange" href="/app/projects/{record.project_id}"><i class="fa fa-chevron-left"></i> Back to Project</a> { opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Quote ' + opts.id : 'New Quote' }</h1>
+    <h1><a class="btn btn-small h6 btn-outline orange" href="/app/projects/{record.project_id}"><i class="fa fa-chevron-left"></i> Back to Project</a>
+      { opts.id ? getTitle() : 'New Quote' }
+    </h1>
 
     <div if="{currentAccount.isAdministrator}">
     <label for="project_id">Professional</label>
@@ -58,6 +60,22 @@ import from '../../mixins/tender.js'
     </form>
   </div>
   <script>
+
+    this.getTitle = () => {
+      // (opts.readonly ? 'Showing' : 'Editing') + ' Quote ' + opts.id
+      if(this.title) {
+        return this.title
+      } else {
+        this.opts.api.projects.show(this.record.project_id).then((project) => {
+          var byOrFor = this.currentAccount.isCustomer ?
+            ' by ' + (this.record.professional.profile.first_name + ' ' + this.record.professional.profile.last_name) :
+            ' for ' + (project.customers[0].profile.first_name + ' ' + project.customers[0].profile.last_name)
+          this.title = ' Quote' + byOrFor
+          this.update()
+          return this.title
+        })
+      }
+    }
 
     this.headers = {
       task: {name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2},

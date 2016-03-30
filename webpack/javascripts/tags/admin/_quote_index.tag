@@ -30,7 +30,16 @@
               {formatCurrency(record.total_amount)}
             </td>
             <td>
-              <a href="/app/admin/projects/{record.project_id}/edit">{record.project_id}</a>
+              {formatCurrency(record.paid_amount)}
+            </td>
+            <td>
+              {formatCurrency(record.refunded_amount)}
+            </td>
+            <td>
+              {formatCurrency(record.approved_amount)}
+            </td>
+            <td>
+              <a href="/app/projects/{record.project_id}">{record.project_id}</a>
             </td>
             <td>
               <a href="/app/admin/professionals/{record.professional_id}/edit">{record.professional_id}</a>

@@ -33,7 +33,7 @@ import '../../mixins/team_tab.js'
         <p class="overflow-hidden">
           <div><i class="fa fa-phone"></i> { profile.phone_number }</div>
           <div><i class="fa fa-envelope"></i> { email }</div>
-          <div if="{profile.website}"><i  class="fa fa-world"></i>{ profile.website }</div>
+          <div if="{profile.website}"><i  class="fa fa-world"></i><a href="{ profile.website }" target="_blank">{ profile.website }</a></div>
         </p>
       </div>
       <div if="{currentAccount.isAdministrator}">
@@ -49,7 +49,7 @@ import '../../mixins/team_tab.js'
         <p class="overflow-hidden">
           <div><i class="fa fa-phone"></i> { profile.phone_number }</div>
           <div><i class="fa fa-envelope"></i> { email }</div>
-          <div if="{profile.website}"><i  class="fa fa-world"></i>{ profile.website }</div>
+          <div if="{profile.website}"><i  class="fa fa-world"></i><a href="{ profile.website }" target="_blank">{ profile.website }</a></div>
         </p>
       </div>
       <div if="{currentAccount.isAdministrator}">
@@ -78,7 +78,7 @@ import '../../mixins/team_tab.js'
 
 
   <div class="clearfix mxn1">
-    <div class="sm-col sm-col-6 px1 mb2">
+    <div class="sm-col sm-col-12 px1 mb2">
       <form name="form" class="sm-col-12 px2 border" onsubmit="{submit}">
         <h3><i class="fa fa-paper-plane-o"></i> Invite a new member</h3>
         <div class="clearfix">

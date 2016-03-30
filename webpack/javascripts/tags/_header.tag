@@ -1,6 +1,7 @@
 let links = require("json!../data/header.json")
 
 <r-admin-menu>
+  <r-typeahead-input if="{currentAccount.isAdministrator}" resource="accounts" api="{ opts.api }" id="{currentAccount.impersonating ?  currentAccount.user_id : null}" datum_tokenizer="{['email']}"></r-typeahead-input>
   <div class="relative inline-block" data-disclosure>
     <button type="button" class="btn btn-primary">
       Menu &#9662;
@@ -12,12 +13,19 @@ let links = require("json!../data/header.json")
   </div>
   <script>
   this.items = links['AdministratorLinks']
+  this.tags['r-typeahead-input'].on('itemselected', (item) => {
+    this.opts.api.sessions.impersonate({id: item.id})
+  })
   </script>
 </r-admin-menu>
 
 <r-header>
-  <header class="container {'bg-red': currentAccount && currentAccount.impersonating}">
-    <div>
+  <header class="{
+    'bg-red': currentAccount && currentAccount.impersonating && currentAccount.isProfessional,
+    'bg-yellow': currentAccount && currentAccount.impersonating && currentAccount.isCustomer,
+    'bg-blue': currentAccount && currentAccount.impersonating && currentAccount.isAdministrator
+  }">
+    <div class="container">
       <nav class="relative clearfix black h5">
         <div class="left">
           <a href="/app/projects" class="btn py2"black><img src="/images/logos/black.svg" class="logo--small" /></a>

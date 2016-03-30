@@ -12,12 +12,17 @@ let taskActions = require("json!../../data/task_actions.json")
   <script>
   this.on('mount', () => {
     var summary = _.reduce(
-      _.map(this.opts.document.sections, function (section)  {
+      _.map(this.opts.document.sections, (section)  => {
         var tasks = _.mapObject(_.groupBy(section.tasks, 'action'), function (val, key) {
           return itemsTotal(val, key)
         })
         var materials = itemsTotal(section.materials, 'materials')
-        return _.extend(tasks, {Materials: materials, VAT: vat(tasks)})
+        if (this.opts.document.include_vat) {
+          return _.extend(tasks, {Materials: materials, VAT: vat(tasks)})
+        } else {
+          return _.extend(tasks, {Materials: materials})
+        }
+
       })
     , function (memo, group) {
       _.each(group, function (val, key) {
@@ -53,7 +58,7 @@ let taskActions = require("json!../../data/task_actions.json")
 
     // a.sort();
     a = _.sortBy(a, (key) => {
-      return _.indexOf(_.keys(taskActions), key)
+      return _.indexOf(_.values(taskActions), key)
     })
 
     for (key = 0; key < a.length; key++) {

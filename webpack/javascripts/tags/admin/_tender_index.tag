@@ -27,7 +27,7 @@
               {formatCurrency(record.total_amount)}
             </td>
             <td>
-              <a href="/app/admin/projects/{record.project_id}/edit">{record.project_id}</a>
+              <a href="/app/projects/{record.project_id}">{record.project_id}</a>
             </td>
             <td>
               <a href="/app/admin/tender_templates/{record.tender_template_id}/edit">{record.tender_template_id}</a>
