@@ -176,7 +176,7 @@ namespace :migrate do
           name: row[:title],
           kind: row[:project_type].present? && Project.kinds.include?(row[:project_type].downcase) ? row[:project_type].downcase : 'other',
           brief: {
-            :description => row[:description] || "Please update description",
+            :description => row[:job_description] || "Please update description",
             :budget => row[:budget],
             :preferred_start => row[:preferred_start],
             :ownership => meta[:owner],
