@@ -15,8 +15,22 @@
           <a href="/app/projects/{id}" class="no-decoration">
             <h3 class="mb3"><img class="kind-ico" src="/images/project_types/{kind}.png" alt="{name}"> {name}</h3>
           </a>
-          <div>
+          <div class="mb1">
             <i class="fa fa-clock-o mr1"></i> updated {fromNow(updated_at)}
+          </div>
+          <div class="clearfix">
+            <div class="sm-col sm-col-3 ">
+              <span each="{acc in customers}" class="px1 border border-yellow mr1 mb1 h6 inline-block truncate">{acc.full_name}</span>
+            </div>
+            <div class="sm-col sm-col-3 ">
+              <span each="{acc in shortlist}" class="px1 border border-orange mr1 mb1 h6 inline-block truncate">{acc.full_name}</span>
+            </div>
+            <div class="sm-col sm-col-3">
+              <span each="{acc in professionals}" class="px1 border border-red mr1 mb1 h6 inline-block truncate">{acc.full_name} *</span>
+            </div>
+            <div class="sm-col sm-col-3 ">
+              <span each="{acc in administrators}" class="px1 border border-blue mr1 mb1 h6 inline-block truncate">{acc.full_name}</span>
+            </div>
           </div>
         </div>
       </li>

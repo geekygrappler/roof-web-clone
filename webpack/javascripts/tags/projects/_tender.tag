@@ -12,6 +12,10 @@
     </div>
   </p>
 
+  <virtual if="{currentAccount.isAdministrator}">
+    Apply tender template <r-typeahead-input resource="tender_templates" api="{ opts.api }" datum_tokenizer="{['name']}"></r-typeahead-input>
+  </virtual>
+
   <ul class="list-reset mxn1">
 
     <li if="{project.tender}" class="block p1 sm-col-12 align-top">
@@ -46,6 +50,19 @@
       riot.route(`/projects/${quote.project_id}/quotes/${quote.id}`)
     })
   }
+
+  this.tags['r-typeahead-input'].on('itemselected', (item) => {
+    opts.api.tenders.create({
+      project_id: this.opts.id, tender_template_id: item.id
+    })
+    .fail(this.errorHandler)
+    .then((tender) => {
+      if(this.project) {
+        this.project.tender = tender
+      }
+      this.update()
+    })
+  })
 
   this.mixin('projectTab')
   </script>

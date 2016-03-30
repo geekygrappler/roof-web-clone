@@ -11,6 +11,8 @@
         <td>{formatTime(due_date)}</td>
         <td>{status}</td>
         <td>
+          <a if="{currentAccount.isAdministrator && (status == 'waiting')}"
+          class="btn btn-small bg-red white h6" href="/app/admin/payments/{id}/edit" target="_blank">Edit</a>
           <a if="{currentAccount.isProfessional && (status == 'payable' || status == 'waiting')}"
           class="btn btn-small bg-red white h6 {busy: busy}" onclick="{cancelPayment}">Cancel</a>
           <button if="{currentAccount.isCustomer && status == 'payable'}"
