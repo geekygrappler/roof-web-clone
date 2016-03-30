@@ -14,7 +14,7 @@
       <table id="streamtable" class="table-light bg-white">
         <thead class="bg-darken-1">
           <tr>
-              <th each="{ attr, i in headers }" class="nowrap">{ attr.humanize() }</th>
+              <th each="{ attr, i in _.omit(headers, 'customers_ids', 'shortlist_ids', 'professionals_ids', 'administrators_ids') }" class="nowrap">{ attr.humanize() }</th>
               <th></th>
           </tr>
         </thead>
@@ -30,28 +30,25 @@
               {record.kind}
             </td>
             <td>
-              <a href="/app/admin/accounts/{record.account_id}/edit">{record.account_email}</a>
-            </td>
-            <td>
               <a href="/app/admin/accounts/{record.account_id}/edit">{record.account_id}</a>
-            </td>
-            <td>
-              <a each="{cid in record.customers_ids}" href="/app/admin/accounts/{cid}/edit" class="mr1 mb1">{cid}</a>
-            </td>
-            <td>
-              <a each="{cid in record.shortlist_ids}" href="/app/admin/accounts/{cid}/edit" class="mr1 mb1">{cid}</a>
-            </td>
-            <td>
-              <a each="{cid in record.professionals_ids}" href="/app/admin/accounts/{cid}/edit" class="mr1 mb1">{cid}</a>
-            </td>
-            <td>
-              <a each="{cid in record.administrators_ids}" href="/app/admin/accounts/{cid}/edit" class="mr1 mb1">{cid}</a>
             </td>
             <td class="nowrap">
               {formatTime(record.created_at)}
             </td>
             <td class="nowrap">
               {formatTime(record.updated_at)}
+            </td>
+            <td>
+              <a each="{acc in record.customers}" href="/app/admin/accounts/{acc.id}/edit" class="mr1 mb1">{acc.full_name}</a>
+            </td>
+            <td>
+              <a each="{acc in record.shortlist}" href="/app/admin/accounts/{acc.id}/edit" class="mr1 mb1">{acc.full_name}</a>
+            </td>
+            <td>
+              <a each="{acc in record.professionals}" href="/app/admin/accounts/{acc.id}/edit" class="mr1 mb1">{acc.full_name}</a>
+            </td>
+            <td>
+              <a each="{acc in record.administrators}" href="/app/admin/accounts/{acc.id}/edit" class="mr1 mb1">{acc.full_name}</a>
             </td>
             <td class="nowrap">
               <button class="btn border btn-small mr1 mb1" onclick="{open}">

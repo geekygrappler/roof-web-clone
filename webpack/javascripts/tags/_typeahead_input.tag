@@ -67,7 +67,7 @@ import Handlebars from 'handlebars/dist/handlebars'
         ,
         suggestion: Handlebars.compile(`
           <div class="border-bottom typeahead-item">
-            <a class="cursor-pointer p2"><span class="bg-orange p1 mr1">{{${this.opts.datum_tokenizer[0]}}}</span> {{${this.opts.datum_tokenizer[1]}}}</a>
+            <a class="cursor-pointer p2">${_.map(this.opts.datum_tokenizer, (t, i) => i == 0 ? '{{'+t+'}}' : '<span class="bg-orange p1 h6">{{'+t+'}}</span>').join(' ')}</a>
           </div>
         `)
       }

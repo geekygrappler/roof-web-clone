@@ -88,7 +88,7 @@ import from '../../mixins/tender.js'
         .fail(this.errorHandler)
         .then(id => {
           this.update({busy:false})
-          this.closeModal()
+          //this.closeModal()
         })
       }else{
         this.opts.api[opts.resource].create(this.record)
@@ -96,8 +96,8 @@ import from '../../mixins/tender.js'
         .then(record => {
           this.update({busy:false})
           this.opts.id = record.id
-          // history.pushState(null, null, `/app/admin/${opts.resource}/${record.id}/edit`)
-          this.closeModal()
+          history.pushState(null, null, `/app/admin/${opts.resource}/${record.id}/edit`)
+          //this.closeModal()
         })
       }
     }

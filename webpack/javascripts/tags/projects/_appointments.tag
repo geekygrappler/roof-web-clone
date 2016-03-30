@@ -1,5 +1,74 @@
 import Pikaday from 'pikaday-time/pikaday'
 
+<r-project-appointments>
+  <div class="sm-col-12 px2 border">
+    <h3><i class="fa fa-calendar-o"></i> Appointments</h3>
+
+
+    <a class="h6 btn btn-small btn-primary mb2" onclick="{openAppointmentModal}"><i class="fa fa-calendar-check-o"></i> Arrange Appointment</a>
+
+    <dl each="{appointments}" class="{gray: isPast(time)}">
+      <dt class="left">
+        <i class="fa fa-{'thumbs-o-up': isPast(time), 'hand-o-right': isFuture(time)}"></i>
+      </dt>
+      <dd>
+        <h4>At {formatTime(time)}</h4>
+        <div><strong>Host:</strong> {host.profile.first_name} {host.profile.last_name}</div>
+        <div><strong>Attendant:</strong> {attendant.profile.first_name} {attendant.profile.last_name}</div>
+        <a if="{isFuture(time)}" class="btn btn-small h6 bg-maroon white mt1" onclick="{cancelAppointment}"><i class="fa fa-ban"></i> Cancel</a>
+      </dd>
+    </dl>
+
+  </div>
+
+  <script>
+  this.on('mount', () => {
+    opts.api.appointments.on('create.success', this.addAppointment)
+    opts.api.appointments.on('delete.success', this.removeAppointment)
+    this.loadResources('appointments', {project_id: this.opts.record.id})
+  })
+
+  this.on('unmount', () => {
+    opts.api.appointments.off('create.success', this.addAppointment)
+    opts.api.appointments.off('delete.success', this.removeAppointment)
+  })
+  // this.on('update', () => {
+  //   if(this.opts.record && this.opts.record.id && !this.appointments) {
+  //    this.loadResources('appointments', {project_id: this.opts.record.id})
+  //   }
+  // })
+  this.openAppointmentModal = (e) => {
+    e.preventDefault()
+    riot.mount('r-modal', {
+      content: 'r-appointment-form',
+      persisted: false,
+      api: opts.api,
+      contentOpts: {api: opts.api, project: this.opts.record}
+    })
+  }
+  this.cancelAppointment = (e) => {
+    e.preventDefault()
+    opts.api.appointments.delete(e.item.id)
+    .fail(this.errorHandler)
+  }
+  this.addAppointment = (record) => {
+    let _id = _.findIndex(this.appointments, r => r.id == record.id)
+    if (_id === -1) {
+      this.appointments.push(record)
+      this.update()
+    }
+  }
+
+  this.removeAppointment = (id) => {
+    let _id = _.findIndex(this.appointments, r => r.id == id)
+    if(_id > -1) {
+      this.appointments.splice(_id, 1)
+      this.update()
+    }
+  }
+  </script>
+</r-project-appointments>
+
 <r-appointment-form>
   <h2 class="center mt0 mb2">Arrange an Appointment</h2>
   <form name="form" class="sm-col-12 left-align" action="/api/appointments" onsubmit="{submit}">

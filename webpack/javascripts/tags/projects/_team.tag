@@ -1,3 +1,4 @@
+import '../../mixins/team_tab.js'
 <r-project-team>
 
   <h2 class="mt0">Team</h2>
@@ -69,112 +70,13 @@
     </div>
 
     <div if="{project.professionals.length > 0}" class="sm-col sm-col-6 px1 mb2">
-      <div class="sm-col-12 px2 border">
-        <h3><i class="fa fa-calendar-o"></i> Appointments</h3>
-
-
-        <a class="h6 btn btn-small btn-primary mb2" onclick="{openAppointmentModal}"><i class="fa fa-calendar-check-o"></i> Arrange Appointment</a>
-
-        <dl each="{appointments}" class="{gray: isPast(time)}">
-          <dt class="left">
-            <i class="fa fa-{'thumbs-o-up': isPast(time), 'hand-o-right': isFuture(time)}"></i>
-          </dt>
-          <dd>
-            <h4>At {formatTime(time)}</h4>
-            <div><strong>Host:</strong> {host.profile.first_name} {host.profile.last_name}</div>
-            <div><strong>Attendant:</strong> {attendant.profile.first_name} {attendant.profile.last_name}</div>
-            <a if="{isFuture(time)}" class="btn btn-small h6 bg-maroon white mt1" onclick="{cancelAppointment}"><i class="fa fa-ban"></i> Cancel</a>
-          </dd>
-        </dl>
-
-      </div>
+      <r-project-appointments record="{project}"></r-project-appointments>
     </div>
   </div>
 
 
   <script>
-  this.isPast = (time) => {
-    return new Date(time.split(' ')[0]) < new Date()
-  }
-  this.isFuture = (time) => {
-    return new Date(time.split(' ')[0]) >= new Date()
-  }
+  this.mixin('teamTab')
   this.mixin('projectTab')
-
-  this.on('mount', () => {
-    opts.api.appointments.on('create.success', this.addAppointment)
-    opts.api.appointments.on('delete.success', this.removeAppointment)
-  })
-  this.on('unmount', () => {
-    opts.api.appointments.off('create.success', this.addAppointment)
-    opts.api.appointments.off('delete.success', this.removeAppointment)
-  })
-
-  this.on('update', () => {
-    if(this.project && !this.appointments) {
-      this.loadResources('appointments', {project_id: this.project.id})
-    }
-  })
-
-  this.getName = function () {
-    return this.id !== this.currentAccount.id ? this.fullName() : 'You'
-  }
-  this.fullName = function () {
-    return `${this.profile.first_name} ${this.profile.last_name}`
-  }
-
-  this.submit = (e) => {
-
-    e.preventDefault()
-
-    let data = this.serializeForm(this.form)
-
-    if (_.isEmpty(data)) {
-      $(this.form).animateCss('shake')
-      return
-    }
-
-    this.update({busy: true, errors: null})
-
-    this.opts.api.invitations.invite(data)
-    .fail(this.errorHandler)
-    .then(invitation => {
-      this.update({busy:false})
-      this.form.reset()
-    })
-
-  }
-
-  this.openAppointmentModal = (e) => {
-    e.preventDefault()
-    riot.mount('r-modal', {
-      content: 'r-appointment-form',
-      persisted: false,
-      api: opts.api,
-      contentOpts: {api: opts.api, project: this.project}
-    })
-  }
-  this.cancelAppointment = (e) => {
-    e.preventDefault()
-    opts.api.appointments.delete(e.item.id)
-    .fail(this.errorHandler)
-  }
-  this.addAppointment = (record) => {
-    let _id = _.findIndex(this.appointments, r => r.id == record.id)
-    console.log('addAppointment', _id, this.appointments, record.id)
-    if (_id === -1) {
-      this.appointments.push(record)
-      this.update()
-    }
-  }
-
-  this.removeAppointment = (id) => {
-    let _id = _.findIndex(this.appointments, r => r.id == id)
-    console.log('removeAppointment', _id, this.appointments, id)
-    if(_id > -1) {
-      this.appointments.splice(_id, 1)
-      this.update()
-    }
-  }
   </script>
 </r-project-team>

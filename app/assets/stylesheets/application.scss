@@ -184,6 +184,8 @@ r-tender-item-group .border-left {
   width:100%;
   border: 1px solid $border-color;
   background-color: $white;
+  max-height: 400px;
+  overflow: auto;
 }
 .tt-cursor {
   background-color: $yellow;

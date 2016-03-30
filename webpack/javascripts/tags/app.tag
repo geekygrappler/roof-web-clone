@@ -149,7 +149,15 @@ import './admin/index.tag'
       })
       riot.route(`admin/${ns}*/*/edit`, (resource, id) => {
         //this.renderAdminIndex(ns, resource, {resource: resource, api: opts.api, page: 1})
-        this.renderAdminForm(ns, resource, {item: {id: id}})
+        if(resource === 'projects') {
+          riot.route(`/admin/projects/${id}/edit/overview`, 'Overview', true)
+        } else {
+          this.renderAdminForm(ns, resource, {item: {id: id}})
+        }
+      })
+      riot.route(`admin/projects/*/edit/*`, (id, tab) => {
+        //this.renderAdminIndex(ns, resource, {resource: resource, api: opts.api, page: 1})
+        this.renderAdminForm('', 'projects', {tab: `r-admin-project-form-${tab}`, item: {id: id}})
       })
       // riot.route(`admin/${ns}*/*`, (resource, id) => {
       //   resource = `${ns}${resource}`

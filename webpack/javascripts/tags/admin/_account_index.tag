@@ -27,6 +27,9 @@
               {record.email}
             </td>
             <td>
+              {record.full_name}
+            </td>
+            <td>
               <a href="/app/admin/{record.user_type.plural().toLowerCase()}/{record.user_id}/edit">{record.user_id}</a>
             </td>
             <td>

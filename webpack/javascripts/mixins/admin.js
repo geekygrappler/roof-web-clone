@@ -2,7 +2,7 @@ import CodeMirror from 'codemirror/lib/codemirror'
 import 'codemirror/mode/htmlmixed/htmlmixed'
 
 riot.mixin('admin', {
-  openAdminForm: function (formTag, e, resource) {
+  openAdminForm: function (formTag, options, resource) {
     // return riot.mount('r-modal', {
     //   content: formTag,
     //   persisted: false,
@@ -19,8 +19,9 @@ riot.mixin('admin', {
     return riot.mount($('[name=content]')[0], formTag, {
       classes: 'sm-col-11 p2 mt2 mb2',
       resource: this.opts.resource || resource,
-      id: e.item && (e.item.id || e.item.record && e.item.record.id),
-      api: this.opts.api
+      id: options.item && (options.item.id || options.item.record && options.item.record.id),
+      api: this.opts.api,
+      tab: options.tab
     })
   },
   renderAdminIndex: function (ns, resource, options) {
@@ -191,7 +192,7 @@ riot.mixin('adminForm', {
         .then(record => {
           this.update({record: record, busy:false})
           this.opts.id = record.id
-          // history.pushState(null, null, `/app/admin/${this.opts.resource}/${record.id}/edit`)
+          history.pushState(null, null, `/app/admin/${this.opts.resource}/${record.id}/edit`)
           //this.closeModal()
         })
       }
