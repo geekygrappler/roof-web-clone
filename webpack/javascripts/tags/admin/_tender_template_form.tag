@@ -81,6 +81,18 @@ import from '../../mixins/tender.js'
       this.update({busy: true, errors: null})
       this.record.name = this.name.value
 
+      _.map(this.record.document.sections, (sec) => {
+        if (_.isEmpty(sec.materials)) {
+          sec.materials = null
+          delete sec.materials
+        }
+        if (_.isEmpty(sec.tasks)) {
+          sec.tasks = null
+          delete sec.tasks
+        }
+        return sec
+      })
+
       if (this.opts.id) {
         this.opts.api[opts.resource].update(opts.id, this.record)
         .fail(this.errorHandler)

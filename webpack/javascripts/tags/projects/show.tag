@@ -6,6 +6,7 @@ import './_appointments.tag'
 import './_team.tag'
 import './_payment_form.tag'
 import './_quotes.tag'
+import './_tender.tag'
 
 <r-projects-show>
   <yield to="header">
@@ -29,6 +30,7 @@ import './_quotes.tag'
     {href: `/app/projects/${opts.id}/brief`, name: 'brief', tag: 'r-project-brief'},
     {href: `/app/projects/${opts.id}/docs`, name: 'docs', tag: 'r-project-docs'},
     {href: `/app/projects/${opts.id}/team`, name: 'team', tag: 'r-project-team'},
+    {href: `/app/projects/${opts.id}/tender`, name: 'tender', tag: 'r-project-tender'},
     {href: `/app/projects/${opts.id}/quotes`, name: 'quotes', tag: 'r-project-quotes'}
   ]
   if(this.currentAccount && this.currentAccount.isProfessional) {
@@ -36,6 +38,7 @@ import './_quotes.tag'
       {href: `/app/projects/${opts.id}/overview`, name: 'overview', tag: 'r-project-overview'},
       {href: `/app/projects/${opts.id}/docs`, name: 'docs', tag: 'r-project-docs'},
       {href: `/app/projects/${opts.id}/team`, name: 'team', tag: 'r-project-team'},
+      {href: `/app/projects/${opts.id}/tender`, name: 'tender', tag: 'r-project-tender'},
       {href: `/app/projects/${opts.id}/quotes`, name: 'quotes', tag: 'r-project-quotes'}
     ]
   }

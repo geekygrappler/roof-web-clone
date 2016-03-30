@@ -49,7 +49,7 @@ import from '../../mixins/tender.js'
   </div>
   <script>
 
-    this.record = {project_id: null, document: {sections: []}}
+    this.record = {project_id: this.opts.project_id, document: {sections: []}}
 
     this.headers = {
       task: {name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2},
@@ -80,6 +80,18 @@ import from '../../mixins/tender.js'
       if (e) e.preventDefault()
 
       this.record.project_id = this.project_id.value
+
+      _.map(this.record.document.sections, (sec) => {
+        if (_.isEmpty(sec.materials)) {
+          sec.materials = null
+          delete sec.materials
+        }
+        if (_.isEmpty(sec.tasks)) {
+          sec.tasks = null
+          delete sec.tasks
+        }
+        return sec
+      })
 
       this.update({busy: true, errors: null})
 

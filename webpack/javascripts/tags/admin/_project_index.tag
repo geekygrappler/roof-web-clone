@@ -14,7 +14,7 @@
       <table id="streamtable" class="table-light bg-white">
         <thead class="bg-darken-1">
           <tr>
-              <th each="{ attr, i in _.omit(headers, 'customers_ids', 'shortlist_ids', 'professionals_ids', 'administrators_ids') }" class="nowrap">{ attr.humanize() }</th>
+              <th each="{ attr, i in headers }" class="nowrap">{ attr.humanize() }</th>
               <th></th>
           </tr>
         </thead>
@@ -51,9 +51,9 @@
               <a each="{acc in record.administrators}" href="/app/admin/accounts/{acc.id}/edit" class="mr1 mb1">{acc.full_name}</a>
             </td>
             <td class="nowrap">
-              <button class="btn border btn-small mr1 mb1" onclick="{open}">
+              <a class="btn border btn-small mr1 mb1" href="/app/projects/{record.id}" target="_blank">
                 <i class="fa fa-pencil"></i>
-              </button>
+              </a>
               <button class="btn btn-small border-red red mb1" onclick="{destroy}">
                 <i class="fa fa-trash-o"></i>
               </button>
@@ -65,6 +65,12 @@
     <r-pagination></r-pagination>
   </div>
   <script>
+
+  this.updateRecords = (records) => {
+    var headers = _.filter(_.keys(records[0]), h => ['customers', 'shortlist', 'professionals', 'administrators'].indexOf(h) == -1)
+    this.update({headers: headers, records: records})
+  }
+
   this.mixin('admin')
   this.mixin('adminIndex')
   </script>

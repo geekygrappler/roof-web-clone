@@ -6,8 +6,20 @@ import from '../../mixins/tender.js'
     <r-header api="{opts.api}"></r-header>
   </yield>
 
-  <div class="container p2 {readonly: opts.readonly}">
+  <div class="container p2 {readonly: isReadonly()}">
     <h1><a class="btn btn-small h6 btn-outline orange" href="/app/projects/{record.project_id}"><i class="fa fa-chevron-left"></i> Back to Project</a> { opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Quote ' + opts.id : 'New Quote' }</h1>
+
+    <div if="{currentAccount.isAdministrator}">
+    <label for="project_id">Professional</label>
+    <input type="hidden" name="professional_id" value="{record.professional_id}">
+    <r-typeahead-input resource="professionals" api="{ opts.api }" id="{record.professional_id}" filters="{professionalFilters()}" datum_tokenizer="{['full_name']}"></r-typeahead-input>
+    <span if="{errors.professional_id}" class="inline-error">{errors.professional_id}</span>
+
+    <label for="tender_id">Tender</label>
+    <input type="hidden" name="tender_id" value="{record.tender_id}">
+    <r-typeahead-input resource="tenders" api="{ opts.api }" id="{record.tender_id}" filters="{tenderFilters()}" datum_tokenizer="{['id', 'total_amount']}"></r-typeahead-input>
+    <span if="{errors.tender_id}" class="inline-error">{errors.project}</span>
+    </div>
 
     <r-tender-section each="{ section , i in record.document.sections }" ></r-tender-section>
 
@@ -34,7 +46,7 @@ import from '../../mixins/tender.js'
       </div>
 
 
-      <button if="{opts.id && !currentAccount.isProfessional}"
+      <button if="{opts.id && !currentAccount.isProfessional && record.submitted_at}"
       class="btn btn-primary btn-big {busy: busy}" onclick="{acceptQuote}" disabled="{record.accepted_at}">
       {record.accepted_at ? 'Accepted' : 'Accept'} <span if="{record.accepted_at}">{fromNow(record.accepted_at)}</span>
       </button>
@@ -50,6 +62,11 @@ import from '../../mixins/tender.js'
     this.headers = {
       task: {name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2},
       material: {name: 5, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2}
+    }
+
+    this.isReadonly = () => {
+      console.log('isReadonly', this.opts.readonly)
+      return this.opts.readonly
     }
 
     if(opts.readonly){
@@ -79,6 +96,18 @@ import from '../../mixins/tender.js'
 
       this.update({busy: true, errors: null})
 
+      _.map(this.record.document.sections, (sec) => {
+        if (_.isEmpty(sec.materials)) {
+          sec.materials = null
+          delete sec.materials
+        }
+        if (_.isEmpty(sec.tasks)) {
+          sec.tasks = null
+          delete sec.tasks
+        }
+        return sec
+      })
+
       if (this.opts.id) {
         this.opts.api.quotes.update(opts.id, this.record)
         .fail(this.errorHandler)
@@ -89,13 +118,15 @@ import from '../../mixins/tender.js'
         .then(record => {
           this.update({busy:false})
           this.opts.id = record.id
-          history.pushState(null, null, `/app/projects/${record.project_id}/quotes/${record.id}`)
+          window.location.href = `/app/projects/${record.project_id}/quotes/${record.id}`
         })
       }
     }
 
     this.updateQuote = (record) => {
-      this.opts.readonly = !!record.accepted_at
+      if(!this.currentAccount.isAdministrator) {
+        this.opts.readonly = !!record.accepted_at
+      }
       this.update({record: record})
     }
 
@@ -117,6 +148,21 @@ import from '../../mixins/tender.js'
         .fail(this.errorHandler)
         .then(id => this.update({busy:false}))
       }
+    }
+
+    this.tags['r-typeahead-input'][0].on('itemselected', (item) => {
+      this.record.professional_id = item.id
+      this.update()
+    })
+    this.tags['r-typeahead-input'][1].on('itemselected', (item) => {
+      this.record.tender_id = item.id
+      this.update()
+    })
+    this.professionalFilters = () => {
+      return [{name: 'project_id', value: this.record.project_id}]
+    }
+    this.tenderFilters = () => {
+      return [{name: 'project_id', value: this.record.project_id}]
     }
 
     this.mixin('tenderMixin')

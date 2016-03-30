@@ -75,7 +75,8 @@ import from '../../mixins/tender.js'
       this.opts.api[opts.resource].off('show.success', this.updateRecord)
     })
 
-    this.record = {name: null, document: {sections: []}}
+    this.record = {project_id: this.opts.project_id, document: {sections: []}}
+
     if (opts.id) {
       this.opts.api[opts.resource].show(opts.id)
       history.pushState(null, null, `/app/admin/${opts.resource}/${opts.id}/edit`)
@@ -87,6 +88,18 @@ import from '../../mixins/tender.js'
       if (e) e.preventDefault()
 
       this.update({busy: true, errors: null})
+
+      _.map(this.record.document.sections, (sec) => {
+        if (_.isEmpty(sec.materials)) {
+          sec.materials = null
+          delete sec.materials
+        }
+        if (_.isEmpty(sec.tasks)) {
+          sec.tasks = null
+          delete sec.tasks
+        }
+        return sec
+      })
 
       if (this.opts.id) {
         this.opts.api[opts.resource].update(opts.id, this.record)

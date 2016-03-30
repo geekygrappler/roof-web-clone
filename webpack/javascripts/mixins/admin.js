@@ -21,7 +21,8 @@ riot.mixin('admin', {
       resource: this.opts.resource || resource,
       id: options.item && (options.item.id || options.item.record && options.item.record.id),
       api: this.opts.api,
-      tab: options.tab
+      tab: options.tab,
+      project_id: options.project_id
     })
   },
   renderAdminIndex: function (ns, resource, options) {
@@ -99,11 +100,11 @@ riot.mixin('adminIndex', {
       }
     }
 
-    this.updateRecords = (records) => {
+    this.updateRecords = this.updateRecords || (records) => {
       this.update({headers: _.keys(records[0]), records: records})
     }
 
-    this.removeRecord = (id) => {
+    this.removeRecord = this.removeRecord || (id) => {
       let _id = _.findIndex(this.records, r => r.id === id )
       if (_id > -1) {
         this.records.splice(_id, 1)

@@ -28,6 +28,7 @@ module RoofWeb
     # config.middleware.use Rack::Session::Cookie
     config.assets.initialize_on_precompile = false
     config.active_job.queue_adapter = :delayed_job
+    config.action_dispatch.perform_deep_munge = false
   end
 end
 

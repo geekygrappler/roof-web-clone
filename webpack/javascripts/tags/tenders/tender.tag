@@ -83,6 +83,20 @@ import './_tender_section.tag'
 
       this.update({busy: true, errors: null})
 
+
+      _.map(this.record.document.sections, (sec) => {
+        if (_.isEmpty(sec.materials)) {
+          sec.materials = null
+          delete sec.materials
+        }
+        if (_.isEmpty(sec.tasks)) {
+          sec.tasks = null
+          delete sec.tasks
+        }
+        return sec
+      })
+
+
       if (this.opts.id) {
         this.opts.api.tenders.update(opts.id, this.record)
         .fail(this.errorHandler)
@@ -93,7 +107,7 @@ import './_tender_section.tag'
         .then(record => {
           this.update({busy:false})
           this.opts.id = record.id
-          history.pushState(null, null, `/app/projects/${record.project_id}/tenders/${record.id}`)
+          window.location.href = `/app/projects/${record.project_id}/tenders/${record.id}`
         })
       }
     }

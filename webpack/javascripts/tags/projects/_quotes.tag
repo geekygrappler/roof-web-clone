@@ -1,111 +1,23 @@
-let taskActions = require("json!../../data/task_actions.json")
 
-<r-tender-summary>
-  <table class="table-light">
-    <tbody>
-      <tr each="{name, amount in summary}">
-        <td>{name}</td>
-        <td>{formatCurrency(amount)}</td>
-      </tr>
-    </tbody>
-  </table>
-  <script>
-  this.on('mount', () => {
-    var summary = _.reduce(
-      _.map(this.opts.document.sections, function (section)  {
-        var tasks = _.mapObject(_.groupBy(section.tasks, 'action'), function (val, key) {
-          return itemsTotal(val, key)
-        })
-        var materials = itemsTotal(section.materials, 'materials')
-        return _.extend(tasks, {Materials: materials, VAT: vat(tasks)})
-      })
-    , function (memo, group) {
-      _.each(group, function (val, key) {
-        memo[key] = (memo[key] || 0) + val
-      })
-      return memo
-    }, {})
-    summary = sortObject(summary)
-    this.update({summary})
-  })
-  function vat (tasks) {
-    var subTotal = _.reduce(_.values(tasks), (m,i) => m+i, 0)
-    return subTotal * 20 / 100
-  }
-  function itemsTotal (items, group) {
-    return _.reduce(items, function (total, item) {
-      if (group == 'materials') {
-        return total + (item.supplied ? item.price * item.quantity : 0)
-      } else{
-        return total + item.price * item.quantity
-      }
-    }, 0)
-  }
-  function sortObject(o) {
-    var sorted = {},
-    key, a = [];
-
-    for (key in o) {
-        if (o.hasOwnProperty(key)) {
-            a.push(key);
-        }
-    }
-
-    // a.sort();
-    a = _.sortBy(a, (key) => {
-      return _.indexOf(_.keys(taskActions), key)
-    })
-
-    for (key = 0; key < a.length; key++) {
-        sorted[a[key]] = o[a[key]];
-    }
-    return sorted;
-  }
-  </script>
-</r-tender-summary>
-
+import './_tender_summary.tag'
+import './_project_payments.tag'
 
 <r-project-quotes>
 
   <h2 class="mt0">Quotes</h2>
 
-  <p if="{hasNothing()}">
-    Hmm, it seems we are still working on your tender and it will show up here when it's ready.
-    You can speed up the process by creating a tender document and we will be notified about it.
-    <div if="{hasNothing() && currentAccount.isProfessional}" class="mt2">
-      <a class="btn btn-primary" href="/app/projects/{opts.id}/quotes/new">Create a Quote</a>
-    </div>
-    <div if="{hasNothing() && !currentAccount.isProfessional}" class="mt2">
-      <a class="btn btn-primary" href="/app/projects/{opts.id}/tenders/new">Create a Tender Document</a>
-    </div>
-  </p>
+  <div if="{_.isEmpty(this.quotes) && !currentAccount.isCustomer}" class="mt2">
+    <p>There is no quote yet</p>
+    <a class="btn btn-primary mb2" href="/app/projects/{opts.id}/quotes/new">Create a Quote</a>
+  </div>
 
-  <p if="{ !_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isCustomer}">
-    Here is your <a href="/app/projects/{opts.id}/tenders/${project.tender.id}">Tender Document</a>.
-    Actual <strong>quotes</strong> from Professionals will appear here when they submit them.
-  </p>
-  <p if="{ !_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isProfessional}">
-    Here is the the <a href="/app/projects/{opts.id}/tenders/${project.tender.id}">Tender Document</a>.
-    Click <strong>Clone</strong> button to get your copy and work on it.
-  </p>
+  <div if="{_.isEmpty(this.quotes) && currentAccount.isCustomer}" class="mt2">
+    <p>There is no quote submitted yet</p>
+  </div>
+
+  <a if="{!_.isEmpty(this.quotes) && currentAccount.isAdministrator}" class="btn btn-primary mb2" href="/app/projects/{opts.id}/quotes/new">Create a Quote</a>
 
   <ul class="list-reset mxn1">
-
-    <li if="{project.tender}" class="block p1 sm-col-12 align-top">
-      <div class="px2 border">
-        <h2 class="inline-block">{ formatCurrency(project.tender.total_amount) }</h2>
-        <span class="inline-block align-middle h6 mb1 px1 border pill right mt2">Tender</span>
-
-        <div class="m0 mxn2">
-        <r-tender-summary document="{project.tender.document}"></r-tender-summary>
-        </div>
-
-        <p class="overflow-hidden m0 mxn2 p1 border-top">
-          <a class="btn btn-small" href="/app/projects/{opts.id}/tenders/{project.tender.id}">Open</a>
-          <a class="btn btn-small btn-primary" if="{currentAccount.isProfessional && (quotes && quotes.length == 0)}" onclick="{clone}">Clone</a>
-        </p>
-      </div>
-    </li>
 
     <li each="{quotes}" class="block p1 sm-col-12 align-top">
       <div class="px2 border clearfix">
@@ -138,57 +50,13 @@ let taskActions = require("json!../../data/task_actions.json")
 
             <div class="clearfix overflow-hidden p1 bg-yellow">
               <a class="btn btn-small bg-darken-2" href="/app/projects/{parent.opts.id}/quotes/{id}">Open</a>
-              <a class="btn btn-small bg-darken-2" if="{currentAccount.isProfessional && !accepted_at}" onclick="{delete}">Delete</a>
+              <a class="btn btn-small bg-darken-2" if="{!currentAccount.isCustomer && !accepted_at}" onclick="{delete}">Delete</a>
             </div>
 
           </div>
 
           <div if="{activeTab == 'payments'}" class="mt2">
-            <table class="table-light">
-              <thead>
-                <tr>
-                  <th>Amount</th> <th>Due Date</th> <th>Status</th> <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr each="{payments}">
-                  <td>{formatCurrency(amount)}</td>
-                  <td>{formatTime(due_date)}</td>
-                  <td>{status}</td>
-                  <td>
-                    <a if="{currentAccount.isProfessional && (status == 'payable' || status == 'waiting')}"
-                    class="btn btn-small bg-red white h6 {busy: busy}" onclick="{cancelPayment}">Cancel</a>
-                    <button if="{currentAccount.isCustomer && status == 'payable'}"
-                    class="btn btn-small bg-green white h6 {busy: busy}" disabled="{busy}" onclick="{payPayment}">Pay</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-
-            <table if="{payments.length > 0}" class="table-light mt2">
-              <thead>
-                <tr>
-                  <th>Paid</th>
-                  <th if="{refunded_amount > 0}">Refunded</th>
-                  <th if="{declined_amount > 0}">Declined</th>
-                  <th if="{currentAccount.isProfessional}">Approved</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{formatCurrency(paid_amount)}</th>
-                  <td if="{refunded_amount > 0}">{formatCurrency(refunded_amount)}</td>
-                  <td if="{declined_amount > 0}">{formatCurrency(declined_amount)}</td>
-                  <td if="{currentAccount.isProfessional}">{formatCurrency(approved_amount)}</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div if="{currentAccount.isProfessional}" class="clearfix overflow-hidden p1 bg-yellow">
-              <div class="mt1">
-                <a class="btn btn-small bg-darken-2" onclick="{openPaymentForm}">Add Payment</a>
-              </div>
-            </div>
+            <r-project-payments api="{opts.api}" quote="{this}"></r-project-payments>
           </div>
         </div>
 
@@ -204,21 +72,11 @@ let taskActions = require("json!../../data/task_actions.json")
     this.update({activeTab: e.target.rel})
   }
 
-  this.hasNothing = () => {
-    return _.isEmpty(this.project.tender) && _.isEmpty(this.quotes)
-  }
-
   this.on('mount', () => {
     opts.api.quotes.on('index.fail', this.errorHandler)
     opts.api.quotes.on('index.success', this.updateQuote)
     opts.api.quotes.on('create.success', this.addQuote)
     opts.api.quotes.on('delete.success', this.removeQuote)
-
-    opts.api.payments.on('create.success', this.addPayment)
-    opts.api.payments.on('cancel.success', this.removePayment)
-    opts.api.payments.on('cancel.fail', this.errorHandler)
-    opts.api.payments.on('pay.success', this.reload)
-    opts.api.payments.on('pay.fail', this.errorHandler)
     opts.api.quotes.index({project_id: opts.id})
   })
 
@@ -227,18 +85,7 @@ let taskActions = require("json!../../data/task_actions.json")
     opts.api.quotes.off('index.success', this.updateQuote)
     opts.api.quotes.off('create.success', this.addQuote)
     opts.api.quotes.off('delete.success', this.removeQuote)
-
-    opts.api.payments.off('create.success', this.addPayment)
-    opts.api.payments.off('cancel.success', this.removePayment)
-    opts.api.payments.off('cancel.fail', this.errorHandler)
-    opts.api.payments.off('pay.success', this.reload)
-    opts.api.payments.off('pay.fail', this.errorHandler)
   })
-
-  this.reload = () => {
-    this.update({busy: false})
-    opts.api.quotes.index({project_id: opts.id})
-  }
 
   this.updateQuote = (quotes) => this.update({quotes})
 
@@ -256,103 +103,11 @@ let taskActions = require("json!../../data/task_actions.json")
     this.update()
   }
 
-  this.clone = (e) => {
-    e.preventDefault()
-    opts.api.quotes.create({
-      project_id: opts.id,
-      tender_id: this.project.tender.id,
-      professional_id: this.currentAccount.user_id
-    })
-  }
-
   this.delete = (e) => {
     e.preventDefault()
     if (window.confirm(this.ERRORS.CONFIRM_DELETE)) {
       opts.api.quotes.delete(e.item.id)
     }
-  }
-
-  this.openPaymentForm = (e) => {
-    e.preventDefault()
-    riot.mount('r-modal', {
-      content: 'r-payment-form',
-      persisted: false,
-      api: opts.api,
-      contentOpts: {api: opts.api, quote: e.item}
-    })
-  }
-
-  this.cancelPayment = (e) => {
-    e.preventDefault()
-    if (window.confirm(this.ERRORS.CONFIRM_DELETE)) {
-      opts.api.payments.cancel(e.item.id)
-    }
-  }
-
-  this.payPayment = (e) => {
-    e.preventDefault()
-    if (this.currentAccount.paying) {
-      this.update({busy: true})
-      this.opts.api.payments.pay(e.item.id)
-    } else {
-      this.payment = e.item
-
-      // load Stripe if not loaded
-      if (StripeCheckout) {
-        // Open Checkout with further options
-        this.stripeHandler.open({
-          //name: 'Stripe.com',
-          //description: '2 widgets',
-          amount: e.item.amount
-        })
-      } else {
-        this.update({busy: true})
-        $.getScript('https://checkout.stripe.com/checkout.js')
-        .then(() => {
-
-          this.stripeHandler = StripeCheckout.configure({
-            key: $('meta[name=stripe-key]').attr('content'),
-            //image: '/img/documentation/checkout/marketplace.png',
-            locale: 'auto',
-            currency: 'gbp',
-            token: (token) => {
-              this.update({busy: true})
-              this.opts.api.payments.pay(this.payment.id, token.id)
-              // Use the token to create the charge with a server-side script.
-              // You can access the token ID with `token.id`
-            }
-          });
-
-          // Close Checkout on page navigation
-          $(window).on('popstate', function() {
-            this.stripeHandler.close();
-          });
-
-          // Open Checkout with further options
-          this.stripeHandler.open({
-            //name: 'Stripe.com',
-            //description: '2 widgets',
-            amount: e.item.amount
-          })
-        })
-      }
-    }
-  }
-
-  this.addPayment = (payment) => {
-    var quote = _.findWhere(this.quotes, {id: payment.quote_id})
-    if (quote && !_.findWhere(quote.payments, {id: payment.id})) {
-      quote.payments.push(payment)
-    }
-    this.update()
-  }
-
-  this.removePayment = (id) => {
-    _.each(this.quotes, (quote) => {
-      var _id = _.findIndex(quote.payments, p => p.id === id)
-      if (_id > -1) quote.payments.splice(_id, 1)
-    })
-    this.update()
   }
 
   this.mixin('projectTab')

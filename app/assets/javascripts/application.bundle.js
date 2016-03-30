@@ -17573,7 +17573,8 @@
 	      resource: this.opts.resource || resource,
 	      id: options.item && (options.item.id || options.item.record && options.item.record.id),
 	      api: this.opts.api,
-	      tab: options.tab
+	      tab: options.tab,
+	      project_id: options.project_id
 	    });
 	  },
 	  renderAdminIndex: function renderAdminIndex(ns, resource, options) {
@@ -17652,11 +17653,11 @@
 	      }
 	    };
 	
-	    this.updateRecords = function (records) {
+	    this.updateRecords = this.updateRecords || function (records) {
 	      _this.update({ headers: _.keys(records[0]), records: records });
 	    };
 	
-	    this.removeRecord = function (id) {
+	    this.removeRecord = this.removeRecord || function (id) {
 	      var _id = _.findIndex(_this.records, function (r) {
 	        return r.id === id;
 	      });
@@ -28851,13 +28852,13 @@
 	
 	__webpack_require__(133);
 	
-	__webpack_require__(146);
+	__webpack_require__(149);
 	
-	__webpack_require__(154);
+	__webpack_require__(157);
 	
-	__webpack_require__(155);
+	__webpack_require__(158);
 	
-	__webpack_require__(156);
+	__webpack_require__(159);
 	
 	riot.tag2("r-app", "<yield from=\"header\"></yield> <div name=\"content\"></div>", "", "", function (opts) {
 	  var _this = this;
@@ -28922,11 +28923,12 @@
 	    });
 	  });
 	  riot.route("projects/*/tenders/*", function (project_id, id) {
+	    console.log(_this.currentAccount.isAdministrator);
 	    riot.mount(_this.content, "r-tenders-form", {
 	      api: opts.api,
 	      project_id: project_id,
 	      id: id,
-	      readonly: opts.api.currentAccount && opts.api.currentAccount.isProfessional
+	      readonly: _this.currentAccount && _this.currentAccount.isProfessional
 	    });
 	  });
 	  riot.route("projects/*/quotes/new", function (project_id) {
@@ -28936,12 +28938,12 @@
 	    });
 	  });
 	  riot.route("projects/*/quotes/*", function (project_id, id) {
-	
+	    console.log(_this.currentAccount && _this.currentAccount.isCustomer);
 	    riot.mount(_this.content, "r-quotes-form", {
 	      api: opts.api,
 	      project_id: project_id,
 	      id: id,
-	      readonly: opts.api.currentAccount && opts.api.currentAccount.isCustomer
+	      readonly: _this.currentAccount && _this.currentAccount.isCustomer
 	    });
 	  });
 	
@@ -28991,9 +28993,15 @@
 	        _this.renderAdminForm(ns, resource, { item: { id: id } });
 	      }
 	    });
+	
 	    riot.route("admin/projects/*/edit/*", function (id, tab) {
 	      //this.renderAdminIndex(ns, resource, {resource: resource, api: opts.api, page: 1})
 	      _this.renderAdminForm("", "projects", { tab: "r-admin-project-form-" + tab, item: { id: id } });
+	    });
+	
+	    riot.route("admin/projects/*/*/new", function (project_id, resource) {
+	      //this.renderAdminIndex(ns, resource, {resource: resource, api: opts.api, page: 1})
+	      _this.renderAdminForm("", resource, { project_id: project_id });
 	    });
 	  });
 	  // }
@@ -29768,10 +29776,12 @@
 	
 	__webpack_require__(144);
 	
+	__webpack_require__(148);
+	
 	riot.tag2("r-projects-show", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <div class=\"py3 px2\"> <div class=\"clearfix mxn2\"> <r-subnav links=\"{subnavLinks}\" tab=\"{opts.tab}\"></r-subnav> <div class=\"sm-col sm-col-9 sm-px2\"> <r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\" content_opts=\"{opts.contentOpts}\"></r-tabs> </div> </div> </div> </div>", "", "", function (opts) {
-	  this.subnavLinks = [{ href: "/app/projects/" + opts.id + "/overview", name: "overview", tag: "r-project-overview" }, { href: "/app/projects/" + opts.id + "/brief", name: "brief", tag: "r-project-brief" }, { href: "/app/projects/" + opts.id + "/docs", name: "docs", tag: "r-project-docs" }, { href: "/app/projects/" + opts.id + "/team", name: "team", tag: "r-project-team" }, { href: "/app/projects/" + opts.id + "/quotes", name: "quotes", tag: "r-project-quotes" }];
+	  this.subnavLinks = [{ href: "/app/projects/" + opts.id + "/overview", name: "overview", tag: "r-project-overview" }, { href: "/app/projects/" + opts.id + "/brief", name: "brief", tag: "r-project-brief" }, { href: "/app/projects/" + opts.id + "/docs", name: "docs", tag: "r-project-docs" }, { href: "/app/projects/" + opts.id + "/team", name: "team", tag: "r-project-team" }, { href: "/app/projects/" + opts.id + "/tender", name: "tender", tag: "r-project-tender" }, { href: "/app/projects/" + opts.id + "/quotes", name: "quotes", tag: "r-project-quotes" }];
 	  if (this.currentAccount && this.currentAccount.isProfessional) {
-	    this.subnavLinks = [{ href: "/app/projects/" + opts.id + "/overview", name: "overview", tag: "r-project-overview" }, { href: "/app/projects/" + opts.id + "/docs", name: "docs", tag: "r-project-docs" }, { href: "/app/projects/" + opts.id + "/team", name: "team", tag: "r-project-team" }, { href: "/app/projects/" + opts.id + "/quotes", name: "quotes", tag: "r-project-quotes" }];
+	    this.subnavLinks = [{ href: "/app/projects/" + opts.id + "/overview", name: "overview", tag: "r-project-overview" }, { href: "/app/projects/" + opts.id + "/docs", name: "docs", tag: "r-project-docs" }, { href: "/app/projects/" + opts.id + "/team", name: "team", tag: "r-project-team" }, { href: "/app/projects/" + opts.id + "/tender", name: "tender", tag: "r-project-tender" }, { href: "/app/projects/" + opts.id + "/quotes", name: "quotes", tag: "r-project-quotes" }];
 	  }
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
@@ -31304,7 +31314,62 @@
 	
 	__webpack_require__(142);
 	
-	riot.tag2("r-project-team", "<h2 class=\"mt0\">Team</h2> <p>Here is the team of your project. You can arrange site visits with professionals here or invite other members such as family members or your own builders. </p> <ul class=\"list-reset clearfix mxn1\"> <li each=\"{project.customers}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-lime navy right mt2\">Customer</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> </p> </div> </li> <li each=\"{project.professionals}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-aqua blue white right mt2\">Professional</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> <div if=\"{profile.website}\"><i class=\"fa fa-world\"></i>{profile.website}</div> </p> </div> </li> <li each=\"{project.administrators}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Admin</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> </p> </div> </li> </ul> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-6 px1 mb2\"> <form name=\"form\" class=\"sm-col-12 px2 border\" onsubmit=\"{submit}\"> <h3><i class=\"fa fa-paper-plane-o\"></i> Invite a new member</h3> <div class=\"clearfix\"> <label class=\"inline-block col col-6 mb2 truncate\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Customer\">Customer </label> <label class=\"inline-block col col-6 mb2 truncate\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Professional\">Professional </label> </div> <span class=\"inline-error block\" if=\"{errors['invitee_attributes.user_type']}\">{errors['invitee_attributes.user_type']}</span> <input name=\"invitee_attributes[email]\" class=\"col-12 mb2 field\" placeholder=\"Email\" type=\"email\"> <span class=\"inline-error\" if=\"{errors['invitee_attributes.email']}\">{errors['invitee_attributes.email']}</span> <input type=\"hidden\" name=\"inviter_id\" value=\"{opts.api.currentAccount.id}\"> <input type=\"hidden\" name=\"project_id\" value=\"{opts.id}\"> <div class=\"right-align\"> <button type=\"submit\" class=\"btn btn-primary mb2 {busy: busy}\">Invite</button> </div> </form> </div> <div if=\"{project.professionals.length > 0}\" class=\"sm-col sm-col-6 px1 mb2\"> <r-project-appointments record=\"{project}\"></r-project-appointments> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-project-team", "<h2 class=\"mt0\">Team</h2> <r-typeahead-input if=\"{currentAccount.isAdministrator}\" resource=\"accounts\" api=\"{opts.api}\" datum_tokenizer=\"{['full_name', 'email', 'user_type']}\"></r-typeahead-input> <p>Here is the team of your project. You can arrange site visits with professionals here or invite other members such as family members or your own builders. </p> <ul class=\"list-reset clearfix mxn1\"> <li each=\"{project.customers}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-lime navy right mt2\">Customer</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> </p> </div> <div if=\"{currentAccount.isAdministrator}\"> <a onclick=\"{removeCustomer}\" class=\"btn btn-small bg-red white\">Remove</a> <a onclick=\"{impersonate}\" class=\"btn btn-small bg-red white\">Impersonate</a> </div> </li> <li each=\"{project.shortlist}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-aqua blue white right mt2\">Professional</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> <div if=\"{profile.website}\"><i class=\"fa fa-world\"></i>{profile.website}</div> </p> </div> <div if=\"{currentAccount.isAdministrator}\"> <a onclick=\"{removeShortlist}\" class=\"btn btn-small bg-red white\">Remove</a> <a onclick=\"{impersonate}\" class=\"btn btn-small bg-red white\">Impersonate</a> </div> </li> <li each=\"{project.professionals}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-aqua blue white right mt2\">Professional *</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> <div if=\"{profile.website}\"><i class=\"fa fa-world\"></i>{profile.website}</div> </p> </div> <div if=\"{currentAccount.isAdministrator}\"> <a onclick=\"{removeProfessional}\" class=\"btn btn-small bg-red white\">Remove</a> <a onclick=\"{impersonate}\" class=\"btn btn-small bg-red white\">Impersonate</a> </div> </li> <li each=\"{project.administrators}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Admin</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> </p> </div> <div if=\"{currentAccount.isAdministrator}\"> <a onclick=\"{removeAdministrator}\" class=\"btn btn-small bg-red white\">Remove</a> <a onclick=\"{impersonate}\" class=\"btn btn-small bg-red white\">Impersonate</a> </div> </li> </ul> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-6 px1 mb2\"> <form name=\"form\" class=\"sm-col-12 px2 border\" onsubmit=\"{submit}\"> <h3><i class=\"fa fa-paper-plane-o\"></i> Invite a new member</h3> <div class=\"clearfix\"> <label class=\"inline-block col col-6 mb2 truncate\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Customer\">Customer </label> <label class=\"inline-block col col-6 mb2 truncate\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Professional\">Professional </label> </div> <span class=\"inline-error block\" if=\"{errors['invitee_attributes.user_type']}\">{errors['invitee_attributes.user_type']}</span> <input name=\"invitee_attributes[email]\" class=\"col-12 mb2 field\" placeholder=\"Email\" type=\"email\"> <span class=\"inline-error\" if=\"{errors['invitee_attributes.email']}\">{errors['invitee_attributes.email']}</span> <input type=\"hidden\" name=\"inviter_id\" value=\"{opts.api.currentAccount.id}\"> <input type=\"hidden\" name=\"project_id\" value=\"{opts.id}\"> <div class=\"right-align\"> <button type=\"submit\" class=\"btn btn-primary mb2 {busy: busy}\">Invite</button> </div> </form> </div> <div if=\"{project.professionals.length > 0}\" class=\"sm-col sm-col-6 px1 mb2\"> <r-project-appointments record=\"{project}\"></r-project-appointments> </div> </div>", "", "", function (opts) {
+	  var _this = this;
+	
+	  if (this.currentAccount.isAdministrator) {
+	    this.tags["r-typeahead-input"].on("itemselected", function (item) {
+	      var coll = item.user_type.plural().toLowerCase();
+	      coll = coll == "professionals" ? "shortlist" : coll;
+	      if (_this.project["" + coll + "_ids"].indexOf(item.id) < 0) {
+	        _this.project["" + coll + "_ids"].push(item.id);
+	        _this.opts.api.projects.update(_this.project.id, _this.project).fail(_this.errorHandler).then(function () {
+	          $(_this.tags["r-typeahead-input"].query).typeahead("val", null);
+	          _this.opts.api.projects.show(_this.project.id);
+	        });
+	      }
+	    });
+	    this.removeCustomer = function (e) {
+	      _this.removeFromMembership("customers_ids", "customers", e);
+	    };
+	    this.removeShortlist = function (e) {
+	      _this.removeFromMembership("shortlist_ids", "shortlist", e);
+	    };
+	    this.removeProfessional = function (e) {
+	      _this.removeFromMembership("professionals_ids", "professionals", e);
+	    };
+	    this.removeAdministrator = function (e) {
+	      _this.removeFromMembership("administrators_ids", "administrators", e);
+	    };
+	    this.removeFromMembership = function (id_coll, coll, e) {
+	      var index;
+	      e.preventDefault();
+	      // confirm
+	      if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
+	        // find index
+	        index = _this.project[id_coll].indexOf(e.item.id);
+	        if (index > -1) {
+	          // remove from id list and push updates to api
+	          _this.project[id_coll].splice(index, 1);
+	          if (_this.project[id_coll] == null) _this.project[id_coll] = [];
+	          _this.opts.api.projects.update(_this.project.id, _this.project).fail(_this.errorHandler).then(function () {
+	            // remove from visible list when api returns success
+	            index = _.findIndex(_this.project[coll], function (c) {
+	              return c.id == e.item.id;
+	            });
+	            _this.project[coll].splice(index, 1);
+	            // update DOM view
+	            _this.update();
+	          });
+	        }
+	      }
+	    };
+	    this.impersonate = function (e) {
+	      e.preventDefault();
+	      _this.opts.api.sessions.impersonate({ id: e.item.id });
+	    };
+	  }
+	
 	  this.mixin("teamTab");
 	  this.mixin("projectTab");
 	});
@@ -31427,7 +31492,73 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	var taskActions = __webpack_require__(145);
+	__webpack_require__(145);
+	
+	__webpack_require__(147);
+	
+	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <div if=\"{_.isEmpty(this.quotes) && !currentAccount.isCustomer}\" class=\"mt2\"> <p>There is no quote yet</p> <a class=\"btn btn-primary mb2\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{_.isEmpty(this.quotes) && currentAccount.isCustomer}\" class=\"mt2\"> <p>There is no quote submitted yet</p> </div> <a if=\"{!_.isEmpty(this.quotes) && currentAccount.isAdministrator}\" class=\"btn btn-primary mb2\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> <ul class=\"list-reset mxn1\"> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2 mr1\">Quote</span> <div class=\"tab-nav\"> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'summary'}\" onclick=\"{changeTab}\" rel=\"summary\">Summary</a> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'payments'}\" onclick=\"{changeTab}\" rel=\"payments\">Payments</a> </div> <div class=\"tabs m0 mxn2 border-top\"> <div if=\"{activeTab == 'summary'}\" class=\"mt2\"> <r-tender-summary document=\"{document}\"></r-tender-summary> <div class=\"inline-block m2 p2 border\"> <span if=\"{submitted_at}\"> <i class=\"fa fa-clock-o mr1\"></i> Submitted at: {fromNow(submitted_at)}<br> </span> <span if=\"{accepted_at}\"> <i class=\"fa fa-clock-o mr1\"></i> Accepted at: {fromNow(accepted_at)}<br> </span> <span> <i class=\"fa fa-user mr1\"></i> Professional: <strong>{professional.profile.first_name} {professional.profile.last_name}</strong> </span> </div> <div class=\"clearfix overflow-hidden p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Open</a> <a class=\"btn btn-small bg-darken-2\" if=\"{!currentAccount.isCustomer && !accepted_at}\" onclick=\"{delete}\">Delete</a> </div> </div> <div if=\"{activeTab == 'payments'}\" class=\"mt2\"> <r-project-payments api=\"{opts.api}\" quote=\"{this}\"></r-project-payments> </div> </div> </div> </li> </ul>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.activeTab = "summary";
+	
+	  this.changeTab = function (e) {
+	    e.preventDefault();
+	    _this.update({ activeTab: e.target.rel });
+	  };
+	
+	  this.on("mount", function () {
+	    opts.api.quotes.on("index.fail", _this.errorHandler);
+	    opts.api.quotes.on("index.success", _this.updateQuote);
+	    opts.api.quotes.on("create.success", _this.addQuote);
+	    opts.api.quotes.on("delete.success", _this.removeQuote);
+	    opts.api.quotes.index({ project_id: opts.id });
+	  });
+	
+	  this.on("unmount", function () {
+	    opts.api.quotes.off("index.fail", _this.errorHandler);
+	    opts.api.quotes.off("index.success", _this.updateQuote);
+	    opts.api.quotes.off("create.success", _this.addQuote);
+	    opts.api.quotes.off("delete.success", _this.removeQuote);
+	  });
+	
+	  this.updateQuote = function (quotes) {
+	    return _this.update({ quotes: quotes });
+	  };
+	
+	  this.addQuote = function (quote) {
+	    _this.quotes = _this.quotes || [];
+	    if (!_.findWhere(_this.quotes, { id: quote.id })) {
+	      _this.quotes.push(quote);
+	    }
+	    _this.update();
+	  };
+	
+	  this.removeQuote = function (id) {
+	    var _id = _.findIndex(_this.quotes, function (q) {
+	      return q.id === id;
+	    });
+	    if (_id > -1) _this.quotes.splice(_id, 1);
+	    _this.update();
+	  };
+	
+	  this["delete"] = function (e) {
+	    e.preventDefault();
+	    if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
+	      opts.api.quotes["delete"](e.item.id);
+	    }
+	  };
+	
+	  this.mixin("projectTab");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 145 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	var taskActions = __webpack_require__(146);
 	
 	riot.tag2("r-tender-summary", "<table class=\"table-light\"> <tbody> <tr each=\"{name, amount in summary}\"> <td>{name}</td> <td>{formatCurrency(amount)}</td> </tr> </tbody> </table>", "", "", function (opts) {
 	  var _this = this;
@@ -31485,179 +31616,10 @@
 	    return sorted;
 	  }
 	});
-	
-	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <p if=\"{hasNothing()}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <div if=\"{hasNothing() && currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{hasNothing() && !currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isCustomer}\"> Here is your <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Actual <strong>quotes</strong> from Professionals will appear here when they submit them. </p> <p if=\"{!_.isEmpty(project.tender) && _.isEmpty(quotes) && currentAccount.isProfessional}\"> Here is the the <a href=\"/app/projects/{opts.id}/tenders/${project.tender.id}\">Tender Document</a>. Click <strong>Clone</strong> button to get your copy and work on it. </p> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Tender</span> <div class=\"m0 mxn2\"> <r-tender-summary document=\"{project.tender.document}\"></r-tender-summary> </div> <p class=\"overflow-hidden m0 mxn2 p1 border-top\"> <a class=\"btn btn-small\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Open</a> <a class=\"btn btn-small btn-primary\" if=\"{currentAccount.isProfessional && (quotes && quotes.length == 0)}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2 mr1\">Quote</span> <div class=\"tab-nav\"> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'summary'}\" onclick=\"{changeTab}\" rel=\"summary\">Summary</a> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'payments'}\" onclick=\"{changeTab}\" rel=\"payments\">Payments</a> </div> <div class=\"tabs m0 mxn2 border-top\"> <div if=\"{activeTab == 'summary'}\" class=\"mt2\"> <r-tender-summary document=\"{document}\"></r-tender-summary> <div class=\"inline-block m2 p2 border\"> <span if=\"{submitted_at}\"> <i class=\"fa fa-clock-o mr1\"></i> Submitted at: {fromNow(submitted_at)}<br> </span> <span if=\"{accepted_at}\"> <i class=\"fa fa-clock-o mr1\"></i> Accepted at: {fromNow(accepted_at)}<br> </span> <span> <i class=\"fa fa-user mr1\"></i> Professional: <strong>{professional.profile.first_name} {professional.profile.last_name}</strong> </span> </div> <div class=\"clearfix overflow-hidden p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Open</a> <a class=\"btn btn-small bg-darken-2\" if=\"{currentAccount.isProfessional && !accepted_at}\" onclick=\"{delete}\">Delete</a> </div> </div> <div if=\"{activeTab == 'payments'}\" class=\"mt2\"> <table class=\"table-light\"> <thead> <tr> <th>Amount</th> <th>Due Date</th> <th>Status</th> <th></th> </tr> </thead> <tbody> <tr each=\"{payments}\"> <td>{formatCurrency(amount)}</td> <td>{formatTime(due_date)}</td> <td>{status}</td> <td> <a if=\"{currentAccount.isProfessional && (status == 'payable' || status == 'waiting')}\" class=\"btn btn-small bg-red white h6 {busy: busy}\" onclick=\"{cancelPayment}\">Cancel</a> <button if=\"{currentAccount.isCustomer && status == 'payable'}\" class=\"btn btn-small bg-green white h6 {busy: busy}\" __disabled=\"{busy}\" onclick=\"{payPayment}\">Pay</button> </td> </tr> </tbody> </table> <table if=\"{payments.length > 0}\" class=\"table-light mt2\"> <thead> <tr> <th>Paid</th> <th if=\"{refunded_amount > 0}\">Refunded</th> <th if=\"{declined_amount > 0}\">Declined</th> <th if=\"{currentAccount.isProfessional}\">Approved</th> </tr> </thead> <tbody> <tr> <td>{formatCurrency(paid_amount)}</th> <td if=\"{refunded_amount > 0}\">{formatCurrency(refunded_amount)}</td> <td if=\"{declined_amount > 0}\">{formatCurrency(declined_amount)}</td> <td if=\"{currentAccount.isProfessional}\">{formatCurrency(approved_amount)}</td> </tr> </tbody> </table> <div if=\"{currentAccount.isProfessional}\" class=\"clearfix overflow-hidden p1 bg-yellow\"> <div class=\"mt1\"> <a class=\"btn btn-small bg-darken-2\" onclick=\"{openPaymentForm}\">Add Payment</a> </div> </div> </div> </div> </div> </li> </ul>", "", "", function (opts) {
-	  var _this = this;
-	
-	  this.activeTab = "summary";
-	
-	  this.changeTab = function (e) {
-	    e.preventDefault();
-	    _this.update({ activeTab: e.target.rel });
-	  };
-	
-	  this.hasNothing = function () {
-	    return _.isEmpty(_this.project.tender) && _.isEmpty(_this.quotes);
-	  };
-	
-	  this.on("mount", function () {
-	    opts.api.quotes.on("index.fail", _this.errorHandler);
-	    opts.api.quotes.on("index.success", _this.updateQuote);
-	    opts.api.quotes.on("create.success", _this.addQuote);
-	    opts.api.quotes.on("delete.success", _this.removeQuote);
-	
-	    opts.api.payments.on("create.success", _this.addPayment);
-	    opts.api.payments.on("cancel.success", _this.removePayment);
-	    opts.api.payments.on("cancel.fail", _this.errorHandler);
-	    opts.api.payments.on("pay.success", _this.reload);
-	    opts.api.payments.on("pay.fail", _this.errorHandler);
-	    opts.api.quotes.index({ project_id: opts.id });
-	  });
-	
-	  this.on("unmount", function () {
-	    opts.api.quotes.off("index.fail", _this.errorHandler);
-	    opts.api.quotes.off("index.success", _this.updateQuote);
-	    opts.api.quotes.off("create.success", _this.addQuote);
-	    opts.api.quotes.off("delete.success", _this.removeQuote);
-	
-	    opts.api.payments.off("create.success", _this.addPayment);
-	    opts.api.payments.off("cancel.success", _this.removePayment);
-	    opts.api.payments.off("cancel.fail", _this.errorHandler);
-	    opts.api.payments.off("pay.success", _this.reload);
-	    opts.api.payments.off("pay.fail", _this.errorHandler);
-	  });
-	
-	  this.reload = function () {
-	    _this.update({ busy: false });
-	    opts.api.quotes.index({ project_id: opts.id });
-	  };
-	
-	  this.updateQuote = function (quotes) {
-	    return _this.update({ quotes: quotes });
-	  };
-	
-	  this.addQuote = function (quote) {
-	    _this.quotes = _this.quotes || [];
-	    if (!_.findWhere(_this.quotes, { id: quote.id })) {
-	      _this.quotes.push(quote);
-	    }
-	    _this.update();
-	  };
-	
-	  this.removeQuote = function (id) {
-	    var _id = _.findIndex(_this.quotes, function (q) {
-	      return q.id === id;
-	    });
-	    if (_id > -1) _this.quotes.splice(_id, 1);
-	    _this.update();
-	  };
-	
-	  this.clone = function (e) {
-	    e.preventDefault();
-	    opts.api.quotes.create({
-	      project_id: opts.id,
-	      tender_id: _this.project.tender.id,
-	      professional_id: _this.currentAccount.user_id
-	    });
-	  };
-	
-	  this["delete"] = function (e) {
-	    e.preventDefault();
-	    if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
-	      opts.api.quotes["delete"](e.item.id);
-	    }
-	  };
-	
-	  this.openPaymentForm = function (e) {
-	    e.preventDefault();
-	    riot.mount("r-modal", {
-	      content: "r-payment-form",
-	      persisted: false,
-	      api: opts.api,
-	      contentOpts: { api: opts.api, quote: e.item }
-	    });
-	  };
-	
-	  this.cancelPayment = function (e) {
-	    e.preventDefault();
-	    if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
-	      opts.api.payments.cancel(e.item.id);
-	    }
-	  };
-	
-	  this.payPayment = function (e) {
-	    e.preventDefault();
-	    if (_this.currentAccount.paying) {
-	      _this.update({ busy: true });
-	      _this.opts.api.payments.pay(e.item.id);
-	    } else {
-	      _this.payment = e.item;
-	
-	      // load Stripe if not loaded
-	      if (StripeCheckout) {
-	        // Open Checkout with further options
-	        _this.stripeHandler.open({
-	          //name: 'Stripe.com',
-	          //description: '2 widgets',
-	          amount: e.item.amount
-	        });
-	      } else {
-	        _this.update({ busy: true });
-	        $.getScript("https://checkout.stripe.com/checkout.js").then(function () {
-	
-	          _this.stripeHandler = StripeCheckout.configure({
-	            key: $("meta[name=stripe-key]").attr("content"),
-	            //image: '/img/documentation/checkout/marketplace.png',
-	            locale: "auto",
-	            currency: "gbp",
-	            token: function (token) {
-	              _this.update({ busy: true });
-	              _this.opts.api.payments.pay(_this.payment.id, token.id);
-	            }
-	          });
-	
-	          // Close Checkout on page navigation
-	          $(window).on("popstate", function () {
-	            this.stripeHandler.close();
-	          });
-	
-	          // Open Checkout with further options
-	          _this.stripeHandler.open({
-	            //name: 'Stripe.com',
-	            //description: '2 widgets',
-	            amount: e.item.amount
-	          });
-	        });
-	      }
-	    }
-	  };
-	
-	  this.addPayment = function (payment) {
-	    var quote = _.findWhere(_this.quotes, { id: payment.quote_id });
-	    if (quote && !_.findWhere(quote.payments, { id: payment.id })) {
-	      quote.payments.push(payment);
-	    }
-	    _this.update();
-	  };
-	
-	  this.removePayment = function (id) {
-	    _.each(_this.quotes, function (quote) {
-	      var _id = _.findIndex(quote.payments, function (p) {
-	        return p.id === id;
-	      });
-	      if (_id > -1) quote.payments.splice(_id, 1);
-	    });
-	    _this.update();
-	  };
-	
-	  this.mixin("projectTab");
-	});
-	// Use the token to create the charge with a server-side script.
-	// You can access the token ID with `token.id`
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 145 */
+/* 146 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -31677,20 +31639,168 @@
 	};
 
 /***/ },
-/* 146 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(147);
+	riot.tag2("r-project-payments", "<table class=\"table-light\"> <thead> <tr> <th>Amount</th> <th>Due Date</th> <th>Status</th> <th></th> </tr> </thead> <tbody> <tr each=\"{payments}\"> <td>{formatCurrency(amount)}</td> <td>{formatTime(due_date)}</td> <td>{status}</td> <td> <a if=\"{currentAccount.isProfessional && (status == 'payable' || status == 'waiting')}\" class=\"btn btn-small bg-red white h6 {busy: busy}\" onclick=\"{cancelPayment}\">Cancel</a> <button if=\"{currentAccount.isCustomer && status == 'payable'}\" class=\"btn btn-small bg-green white h6 {busy: busy}\" __disabled=\"{busy}\" onclick=\"{payPayment}\">Pay</button> </td> </tr> </tbody> </table> <table if=\"{payments.length > 0}\" class=\"table-light mt2\"> <thead> <tr> <th>Paid</th> <th if=\"{quote.refunded_amount > 0}\">Refunded</th> <th if=\"{quote.declined_amount > 0}\">Declined</th> <th if=\"{currentAccount.isProfessional}\">Approved</th> </tr> </thead> <tbody> <tr> <td>{formatCurrency(quote.paid_amount)}</th> <td if=\"{refunded_amount > 0}\">{formatCurrency(quote.refunded_amount)}</td> <td if=\"{declined_amount > 0}\">{formatCurrency(quote.declined_amount)}</td> <td if=\"{currentAccount.isProfessional}\">{formatCurrency(quote.approved_amount)}</td> </tr> </tbody> </table> <div if=\"{currentAccount.isProfessional}\" class=\"clearfix overflow-hidden p1 bg-yellow\"> <div class=\"mt1\"> <a class=\"btn btn-small bg-darken-2\" onclick=\"{openPaymentForm}\">Add Payment</a> </div> </div>", "", "", function (opts) {
+	  var _this = this;
 	
-	__webpack_require__(148);
+	  this.on("mount", function () {
+	
+	    opts.api.payments.on("create.success", _this.addPayment);
+	    opts.api.payments.on("cancel.success", _this.removePayment);
+	    opts.api.payments.on("cancel.fail", _this.errorHandler);
+	    opts.api.payments.on("pay.success", _this.reload);
+	    opts.api.payments.on("pay.fail", _this.errorHandler);
+	  });
+	
+	  this.on("unmount", function () {
+	
+	    opts.api.payments.off("create.success", _this.addPayment);
+	    opts.api.payments.off("cancel.success", _this.removePayment);
+	    opts.api.payments.off("cancel.fail", _this.errorHandler);
+	    opts.api.payments.off("pay.success", _this.reload);
+	    opts.api.payments.off("pay.fail", _this.errorHandler);
+	  });
+	
+	  this.on("before-mount", function () {
+	    _this.quote = _this.opts.quote;
+	    _this.loadResources("payments", { quote_id: _this.quote.id });
+	  });
+	
+	  this.reload = function () {
+	    _this.update({ busy: false });
+	    _this.opts.api.quotes.index({ project_id: opts.id });
+	  };
+	
+	  this.openPaymentForm = function (e) {
+	    e.preventDefault();
+	    riot.mount("r-modal", {
+	      content: "r-payment-form",
+	      persisted: false,
+	      api: opts.api,
+	      contentOpts: { api: opts.api, quote: _this.quote }
+	    });
+	  };
+	
+	  this.cancelPayment = function (e) {
+	    e.preventDefault();
+	    if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
+	      opts.api.payments.cancel(e.item.id);
+	    }
+	  };
+	
+	  this.payPayment = function (e) {
+	    e.preventDefault();
+	    if (_this.currentAccount.paying) {
+	      _this.update({ busy: true });
+	      _this.opts.api.payments.pay(e.item.id);
+	    } else {
+	      _this.payment = e.item;
+	
+	      // load Stripe if not loaded
+	      if (typeof window.StripeCheckout !== "undefined" || window.StripeCheckout != null) {
+	        // Open Checkout with further options
+	        _this.stripeHandler.open({
+	          //name: 'Stripe.com',
+	          //description: '2 widgets',
+	          amount: e.item.amount
+	        });
+	      } else {
+	        _this.update({ busy: true });
+	        $.getScript("https://checkout.stripe.com/checkout.js").then(function () {
+	
+	          _this.stripeHandler = StripeCheckout.configure({
+	            key: $("meta[name=stripe-key]").attr("content"),
+	            //image: '/img/documentation/checkout/marketplace.png',
+	            locale: "auto",
+	            currency: "gbp",
+	            token: function (token) {
+	              _this.update({ busy: true });
+	              _this.opts.api.payments.pay(_this.payment.id, token.id);
+	            },
+	            closed: function () {
+	              _this.update({ busy: false });
+	            }
+	          });
+	
+	          // Close Checkout on page navigation
+	          $(window).on("popstate", function () {
+	            this.stripeHandler.close();
+	            this.update({ busy: false });
+	          });
+	
+	          // Open Checkout with further options
+	          _this.stripeHandler.open({
+	            //name: 'Stripe.com',
+	            //description: '2 widgets',
+	            amount: e.item.amount
+	          });
+	        });
+	      }
+	    }
+	  };
+	
+	  this.addPayment = function (payment) {
+	    if (!_.findWhere(_this.payments, { id: payment.id })) {
+	      _this.payments.push(payment);
+	    }
+	    _this.update();
+	  };
+	
+	  this.removePayment = function (id) {
+	    var _id = _.findIndex(_this.payments, function (p) {
+	      return p.id === id;
+	    });
+	    if (_id > -1) _this.payments.splice(_id, 1);
+	    _this.update();
+	  };
+	});
+	// Use the token to create the charge with a server-side script.
+	// You can access the token ID with `token.id`
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 148 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-project-tender", "<h2 class=\"mt0\">Tender</h2> <p if=\"{_.isEmpty(this.project.tender)}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. You can speed up the process by creating a tender document and we will be notified about it. <div if=\"{hasNothing() && !currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> </p> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Tender</span> <div class=\"m0 mxn2\"> <r-tender-summary document=\"{project.tender.document}\"></r-tender-summary> </div> <p class=\"overflow-hidden m0 mxn2 p1 border-top\"> <a class=\"btn btn-small\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Open</a> <a class=\"btn btn-small btn-primary\" if=\"{currentAccount.isProfessional}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> </ul>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.clone = function (e) {
+	    e.preventDefault();
+	    opts.api.quotes.create({
+	      project_id: _this.opts.id,
+	      tender_id: _this.project.tender.id,
+	      professional_id: _this.currentAccount.user_id
+	    }).fail(_this.errorHandler).then(function (quote) {
+	      riot.route("/projects/" + quote.project_id + "/quotes/" + quote.id);
+	    });
+	  };
+	
+	  this.mixin("projectTab");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 149 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	__webpack_require__(150);
 	
-	__webpack_require__(152);
+	__webpack_require__(151);
 	
 	__webpack_require__(153);
+	
+	__webpack_require__(155);
+	
+	__webpack_require__(156);
 	
 	riot.tag2("r-tenders-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1> {opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Tender ' + opts.id : 'New Tender'}</h1> <a class=\"mb1 btn btn-small h6 btn-outline orange\" href=\"/app/projects/{project.id}\"> <i class=\"fa fa-chevron-left\"></i> Back to Project </a> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal()}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{!currentAccount.isProfessional}\" type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{currentAccount.isProfessional}\" onclick=\"{cloneTender}\" class=\"btn btn-primary btn-big {busy: busy}\">Clone</a> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -31732,6 +31842,18 @@
 	
 	    _this.update({ busy: true, errors: null });
 	
+	    _.map(_this.record.document.sections, function (sec) {
+	      if (_.isEmpty(sec.materials)) {
+	        sec.materials = null;
+	        delete sec.materials;
+	      }
+	      if (_.isEmpty(sec.tasks)) {
+	        sec.tasks = null;
+	        delete sec.tasks;
+	      }
+	      return sec;
+	    });
+	
 	    if (_this.opts.id) {
 	      _this.opts.api.tenders.update(opts.id, _this.record).fail(_this.errorHandler).then(function (id) {
 	        return _this.update({ busy: false });
@@ -31740,7 +31862,7 @@
 	      _this.opts.api.tenders.create(_this.record).fail(_this.errorHandler).then(function (record) {
 	        _this.update({ busy: false });
 	        _this.opts.id = record.id;
-	        history.pushState(null, null, "/app/projects/" + record.project_id + "/tenders/" + record.id);
+	        window.location.href = "/app/projects/" + record.project_id + "/tenders/" + record.id;
 	      });
 	    }
 	  };
@@ -31768,7 +31890,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 147 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -31903,14 +32025,14 @@
 	// $('[name=searchable_names]').last()[0].focus()
 
 /***/ },
-/* 148 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 	
-	var Handlebars = _interopRequire(__webpack_require__(149));
+	var Handlebars = _interopRequire(__webpack_require__(152));
 	
 	riot.tag2("r-tender-item-input", "<div class=\"relative\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Start typing to add {opts.name}\" autocomplete=\"off\"> </form> <i class=\"fa fa-plus absolute right-0 top-0 p1\" onclick=\"{addDefaultItem}\"></i> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -31993,7 +32115,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 149 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*!
@@ -36606,12 +36728,12 @@
 	;
 
 /***/ },
-/* 150 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(151);
+	__webpack_require__(154);
 	
 	riot.tag2("r-tender-item", "<li class=\"relative\"> <div if=\"{opts.border_cleaner}\" class=\"border-cleaner absolute\"></div> <div class=\"clearfix animate p1 border-bottom\"> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> <input type=\"text\" name=\"name\" value=\"{display_name || name}\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputname}\"> <hr class=\"sm-hide\"> </div> <div if=\"{parent.headers.quantity}\" class=\"col sm-col-{parent.headers.quantity} col-3 center\"> <input name=\"quantity\" value=\"{quantity}\" step=\"1\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.price}\" class=\"col sm-col-{parent.headers.price} col-{parent.opts.name == 'task' ? 3 : 2} center\"> <input name=\"price\" value=\"{parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0)}\" __disabled=\"{parent.opts.name == 'material' && !supplied}\" step=\"1\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.total_cost}\" class=\"col sm-col-{parent.headers.total_cost} col-3 center\"> <input value=\"{parent.opts.name == 'task' ? (price / 100 * quantity) : (supplied ? price / 100 * quantity : '0')}\" step=\"1\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{inputTotalCost}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.supplied}\" class=\"col sm-col-{parent.headers.supplied} col-1 center\"> <input if=\"{parent.opts.name == 'material'}\" type=\"checkbox\" name=\"supplied\" __checked=\"{supplied}\" class=\"align-middle\" onchange=\"{input}\"> </div> <div if=\"{parent.headers.actions}\" class=\"col sm-col-{parent.headers.actions} col-2 center\"> <a href=\"#\" class=\"btn btn-small border-red red\" onclick=\"{removeItem}\"><i class=\"fa fa-trash-o\"></i></a> <a href=\"#\" class=\"btn btn-small border\" onclick=\"{openComments}\"><i class=\"fa fa-comment-o\"></i></a> </div> </div> </li>", "", "", function (opts) {
 	  var _this = this;
@@ -36659,7 +36781,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 151 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -36723,7 +36845,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 152 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -36779,12 +36901,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 153 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	var taskActions = __webpack_require__(145);
+	var taskActions = __webpack_require__(146);
 	
 	riot.tag2("r-tender-section", "<div data-disclosure> <div class=\"relative border-bottom mt2\"> <h3 class=\"block overflow-hidden mb0\"> <i data-handle class=\"absolute left-0 top-0 mt1 cursor-pointer fa fa-{icon}\" onclick=\"{changeIcon}\"></i> <input type=\"text\" class=\"block col-12 field border-none tender-section-name\" value=\"{section.name.humanize()}\" oninput=\"{renameSection}\"> </h3> <a class=\"absolute right-0 top-0 btn btn-small border-red red\" onclick=\"{removeSection}\"><i class=\"fa fa-trash-o\"></i></a> </div> <div data-details> <r-tender-item-group name=\"task\" task_actions=\"{taskActions}\" groupitems=\"{section.tasks_by_action}\" each=\"{group, items in section.tasks_by_action}\" headers=\"{parent.headers.task}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <r-tender-item-group name=\"material\" task_actions=\"{taskActions}\" groupitems=\"{section.materials_by_group}\" if=\"{section.materials && section.materials.length > 0}\" each=\"{group, items in section.materials_by_group}\" headers=\"{parent.headers.material}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <div class=\"clearfix mxn1 mt2\"> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"task\" auto_focus=\"{true}\" api=\"{parent.opts.api}\" icon=\"tasks\"></r-tender-item-input> </div> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"material\" api=\"{parent.opts.api}\" icon=\"shopping-basket\"></r-tender-item-input> </div> </div> </div> <h4 class=\"right-align\">Section total: {sectionTotal(section, true)}</h4> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -36852,19 +36974,24 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 154 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(147);
+	__webpack_require__(150);
 	
-	riot.tag2("r-quotes-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1><a class=\"btn btn-small h6 btn-outline orange\" href=\"/app/projects/{record.project_id}\"><i class=\"fa fa-chevron-left\"></i> Back to Project</a> {opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Quote ' + opts.id : 'New Quote'}</h1> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal()}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{opts.id && !currentAccount.isProfessional}\" class=\"btn btn-primary btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </button> <virtual if=\"{!opts.readonly && !currentAccount.isCustomer}\"> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{opts.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> </virtual> </form> </div>", "", "", function (opts) {
+	riot.tag2("r-quotes-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: isReadonly()}\"> <h1><a class=\"btn btn-small h6 btn-outline orange\" href=\"/app/projects/{record.project_id}\"><i class=\"fa fa-chevron-left\"></i> Back to Project</a> {opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Quote ' + opts.id : 'New Quote'}</h1> <div if=\"{currentAccount.isAdministrator}\"> <label for=\"project_id\">Professional</label> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" id=\"{record.professional_id}\" filters=\"{professionalFilters()}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"tender_id\">Tender</label> <input type=\"hidden\" name=\"tender_id\" value=\"{record.tender_id}\"> <r-typeahead-input resource=\"tenders\" api=\"{opts.api}\" id=\"{record.tender_id}\" filters=\"{tenderFilters()}\" datum_tokenizer=\"{['id', 'total_amount']}\"></r-typeahead-input> <span if=\"{errors.tender_id}\" class=\"inline-error\">{errors.project}</span> </div> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal()}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{opts.id && !currentAccount.isProfessional && record.submitted_at}\" class=\"btn btn-primary btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </button> <virtual if=\"{!opts.readonly && !currentAccount.isCustomer}\"> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{opts.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> </virtual> </form> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.headers = {
 	    task: { name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2 },
 	    material: { name: 5, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2 }
+	  };
+	
+	  this.isReadonly = function () {
+	    console.log("isReadonly", _this.opts.readonly);
+	    return _this.opts.readonly;
 	  };
 	
 	  if (opts.readonly) {
@@ -36894,6 +37021,18 @@
 	
 	    _this.update({ busy: true, errors: null });
 	
+	    _.map(_this.record.document.sections, function (sec) {
+	      if (_.isEmpty(sec.materials)) {
+	        sec.materials = null;
+	        delete sec.materials;
+	      }
+	      if (_.isEmpty(sec.tasks)) {
+	        sec.tasks = null;
+	        delete sec.tasks;
+	      }
+	      return sec;
+	    });
+	
 	    if (_this.opts.id) {
 	      _this.opts.api.quotes.update(opts.id, _this.record).fail(_this.errorHandler).then(function (id) {
 	        return _this.update({ busy: false });
@@ -36902,13 +37041,15 @@
 	      _this.opts.api.quotes.create(_this.record).fail(_this.errorHandler).then(function (record) {
 	        _this.update({ busy: false });
 	        _this.opts.id = record.id;
-	        history.pushState(null, null, "/app/projects/" + record.project_id + "/quotes/" + record.id);
+	        window.location.href = "/app/projects/" + record.project_id + "/quotes/" + record.id;
 	      });
 	    }
 	  };
 	
 	  this.updateQuote = function (record) {
-	    _this.opts.readonly = !!record.accepted_at;
+	    if (!_this.currentAccount.isAdministrator) {
+	      _this.opts.readonly = !!record.accepted_at;
+	    }
 	    _this.update({ record: record });
 	  };
 	
@@ -36932,12 +37073,27 @@
 	    }
 	  };
 	
+	  this.tags["r-typeahead-input"][0].on("itemselected", function (item) {
+	    _this.record.professional_id = item.id;
+	    _this.update();
+	  });
+	  this.tags["r-typeahead-input"][1].on("itemselected", function (item) {
+	    _this.record.tender_id = item.id;
+	    _this.update();
+	  });
+	  this.professionalFilters = function () {
+	    return [{ name: "project_id", value: _this.record.project_id }];
+	  };
+	  this.tenderFilters = function () {
+	    return [{ name: "project_id", value: _this.record.project_id }];
+	  };
+	
 	  this.mixin("tenderMixin");
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 155 */
+/* 158 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37105,16 +37261,10 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 156 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
-	__webpack_require__(157);
-	
-	__webpack_require__(158);
-	
-	__webpack_require__(159);
 	
 	__webpack_require__(160);
 	
@@ -37132,11 +37282,11 @@
 	
 	__webpack_require__(167);
 	
+	__webpack_require__(168);
+	
 	__webpack_require__(169);
 	
 	__webpack_require__(170);
-	
-	__webpack_require__(171);
 	
 	__webpack_require__(172);
 	
@@ -37154,6 +37304,12 @@
 	
 	__webpack_require__(179);
 	
+	__webpack_require__(180);
+	
+	__webpack_require__(181);
+	
+	__webpack_require__(182);
+	
 	riot.tag2("r-admin-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td each=\"{attr, i in headers}\"> {record[attr]} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
@@ -37161,7 +37317,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 157 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37172,12 +37328,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 158 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(147);
+	__webpack_require__(150);
 	
 	riot.tag2("r-admin-tender-template-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <h1><input type=\"text\" name=\"name\" value=\"{record.name}\" class=\"block col-12 field\" placeholder=\"Name\" oninput=\"{setInputValue}\"></h1> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal()}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>When you apply a template to a project, if there isn't Tender on the project it clones itself to project, if Tender exists it apply changes to project's tender </p> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> </div> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -37215,6 +37371,18 @@
 	    _this.update({ busy: true, errors: null });
 	    _this.record.name = _this.name.value;
 	
+	    _.map(_this.record.document.sections, function (sec) {
+	      if (_.isEmpty(sec.materials)) {
+	        sec.materials = null;
+	        delete sec.materials;
+	      }
+	      if (_.isEmpty(sec.tasks)) {
+	        sec.tasks = null;
+	        delete sec.tasks;
+	      }
+	      return sec;
+	    });
+	
 	    if (_this.opts.id) {
 	      _this.opts.api[opts.resource].update(opts.id, _this.record).fail(_this.errorHandler).then(function (id) {
 	        _this.update({ busy: false });
@@ -37250,17 +37418,17 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 159 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(147);
+	__webpack_require__(150);
 	
 	riot.tag2("r-admin-tender-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <label for=\"project_id\">Project</label> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" id=\"{record.project_id}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> <span if=\"{errors.project_id}\" class=\"inline-error\">{errors.project_id}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal()}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>Add a Professional to this Project by creating a Quote from this tender. Choosen pro will be shortlisted.</p> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> </div> </div>", "", "", function (opts) {
 	  var _this = this;
 	
-	  this.record = { project_id: null, document: { sections: [] } };
+	  this.record = { project_id: this.opts.project_id, document: { sections: [] } };
 	
 	  this.headers = {
 	    task: { name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2 },
@@ -37291,6 +37459,18 @@
 	    if (e) e.preventDefault();
 	
 	    _this.record.project_id = _this.project_id.value;
+	
+	    _.map(_this.record.document.sections, function (sec) {
+	      if (_.isEmpty(sec.materials)) {
+	        sec.materials = null;
+	        delete sec.materials;
+	      }
+	      if (_.isEmpty(sec.tasks)) {
+	        sec.tasks = null;
+	        delete sec.tasks;
+	      }
+	      return sec;
+	    });
 	
 	    _this.update({ busy: true, errors: null });
 	
@@ -37336,12 +37516,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 160 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(147);
+	__webpack_require__(150);
 	
 	riot.tag2("r-admin-quote-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <label for=\"project\">Project</label> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" id=\"{record.project_id}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> <span if=\"{errors.project}\" class=\"inline-error\">{errors.project}</span> <label for=\"project_id\">Professional</label> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" id=\"{record.professional_id}\" filters=\"{professionalFilters()}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"tender_id\">Tender</label> <input type=\"hidden\" name=\"tender_id\" value=\"{record.tender_id}\"> <r-typeahead-input resource=\"tenders\" api=\"{opts.api}\" id=\"{record.tender_id}\" filters=\"{tenderFilters()}\" datum_tokenizer=\"{['id', 'total_amount']}\"></r-typeahead-input> <span if=\"{errors.tender_id}\" class=\"inline-error\">{errors.project}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal()}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{record.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> <button if=\"{record.id}\" class=\"btn bg-red btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </button> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -37360,7 +37540,8 @@
 	    _this.opts.api[opts.resource].off("show.success", _this.updateRecord);
 	  });
 	
-	  this.record = { name: null, document: { sections: [] } };
+	  this.record = { project_id: this.opts.project_id, document: { sections: [] } };
+	
 	  if (opts.id) {
 	    this.opts.api[opts.resource].show(opts.id);
 	    history.pushState(null, null, "/app/admin/" + opts.resource + "/" + opts.id + "/edit");
@@ -37372,6 +37553,18 @@
 	    if (e) e.preventDefault();
 	
 	    _this.update({ busy: true, errors: null });
+	
+	    _.map(_this.record.document.sections, function (sec) {
+	      if (_.isEmpty(sec.materials)) {
+	        sec.materials = null;
+	        delete sec.materials;
+	      }
+	      if (_.isEmpty(sec.tasks)) {
+	        sec.tasks = null;
+	        delete sec.tasks;
+	      }
+	      return sec;
+	    });
 	
 	    if (_this.opts.id) {
 	      _this.opts.api[opts.resource].update(opts.id, _this.record).fail(_this.errorHandler).then(function (id) {
@@ -37440,7 +37633,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 161 */
+/* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37507,7 +37700,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 162 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37518,7 +37711,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 163 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37529,7 +37722,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 164 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37540,7 +37733,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 165 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37551,7 +37744,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 166 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37562,26 +37755,18 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 167 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(142);
-	
 	var options = __webpack_require__(131);
+	
+	__webpack_require__(171);
 	
 	__webpack_require__(137);
 	
-	__webpack_require__(168);
-	
-	__webpack_require__(139);
-	
-	riot.tag2("r-admin-project-form-overview", "<h2 class=\"mt0\">{record.name}</h2> <hr> <h3>Description</h3> <p>{record.brief.description}</p> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-6 px1\"> <h3>Budget</h3> <p if=\"{record.brief.budget}\">{record.brief.budget}</p> <p if=\"{!record.brief.budget && !currentAccount.isProfessional}\"> You have not set a project budget yet (<a href=\"/app/projects/{record.id}/brief\">add one</a>) </p> <p if=\"{!record.brief.budget && currentAccount.isProfessional}\"> N/A </p> </div> <div class=\"sm-col sm-col-6 px1\"> <h3>Preferred Start date</h3> <p if=\"{record.brief.preferred_start}\">{record.brief.preferred_start}</p> <p if=\"{!record.brief.preferred_start && !currentAccount.isProfessional}\"> You have not defined a start date yet (<a href=\"/app/projects/{record.id}/brief\">set now</a>) </p> <p if=\"{!record.brief.preferred_start && currentAccount.isProfessional}\"> N/A </p> </div> </div> <h3>Address</h3> <address if=\"{!isAllValuesEmpty(record.address)}\" class=\"mb3\"> {record.address.street_address} {record.address.city}, {record.address.postcode} </address> <p if=\"{isAllValuesEmpty(record.address) && !currentAccount.isProfessional}\"> You have not defined the address yet (<a href=\"/app/projects/{record.id}/brief\">fix now</a>) </p> <p if=\"{isAllValuesEmpty(record.address) && currentAccount.isProfessional}\"> N/A </p> </div>", "", "", function (opts) {
-	  this.mixin("adminForm");
-	});
-	
-	riot.tag2("r-admin-project-form-brief", "<form name=\"form\" class=\"edit_project\" onsubmit=\"{submit}\" autocomplete=\"off\"> <label for=\"account_id\">Account</label> <input type=\"hidden\" name=\"account_id\" value=\"{record.account_id}\"> <r-typeahead-input resource=\"accounts\" api=\"{opts.api}\" id=\"{record.account_id}\" datum_tokenizer=\"{['email']}\"></r-typeahead-input> <span if=\"{errors.account_id}\" class=\"inline-error\">{errors.account_id}</span> <label for=\"name\">Name</label> <input id=\"name\" class=\"block col-12 mb2 field\" type=\"text\" name=\"name\" value=\"{record.name}\" oninput=\"{setValue}\"> <section class=\"container clearfix\" data-step=\"1\"> <div class=\"container\"> <h2>Mission</h2> <div class=\"clearfix border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === record.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === record.kind}\"> </a> </div> </div> </div> </section> <section class=\"container clearfix\" data-step=\"2\"> <div class=\"container\"> <h2>Helpful details</h2> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" autofocus=\"true\" oninput=\"{setValue}\">{record.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === record.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === record.brief.preferred_start}\">{value}</option> </select> </div> </div> </div> </section> <section class=\"container clearfix\" data-step=\"4\"> <div class=\"container\"> <h2>Address</h2> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{record.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{record.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{record.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> </div> </section> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
+	riot.tag2("r-admin-project-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form name=\"form\" class=\"edit_project\" onsubmit=\"{submit}\" autocomplete=\"off\"> <label for=\"account_id\">Account</label> <input type=\"hidden\" name=\"account_id\" value=\"{record.account_id}\"> <r-typeahead-input resource=\"accounts\" api=\"{opts.api}\" id=\"{record.account_id}\" datum_tokenizer=\"{['email']}\"></r-typeahead-input> <span if=\"{errors.account_id}\" class=\"inline-error\">{errors.account_id}</span> <label for=\"name\">Name</label> <input id=\"name\" class=\"block col-12 mb2 field\" type=\"text\" name=\"name\" value=\"{record.name}\" oninput=\"{setValue}\"> <section class=\"container clearfix\" data-step=\"1\"> <div class=\"container\"> <h2>Mission</h2> <div class=\"clearfix border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === record.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === record.kind}\"> </a> </div> </div> </div> </section> <section class=\"container clearfix\" data-step=\"2\"> <div class=\"container\"> <h2>Helpful details</h2> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" autofocus=\"true\" oninput=\"{setValue}\">{record.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === record.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === record.brief.preferred_start}\">{value}</option> </select> </div> </div> </div> </section> <section class=\"container clearfix\" data-step=\"4\"> <div class=\"container\"> <h2>Address</h2> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{record.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{record.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{record.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> </div> </section> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.step = 5;
@@ -37642,69 +37827,6 @@
 	  };
 	  this.mixin("adminForm");
 	});
-	
-	riot.tag2("r-admin-project-form-docs", "<h2 class=\"mt0\">Documents and Photos</h2> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-12 px2 mb2\"> <p class=\"h2\">Upload plans, documents, site photos or any other files about your project</p> <r-files-input-with-preview name=\"assets\" record=\"{record}\"></r-files-input-with-preview> </div> </div>", "", "", function (opts) {
-	  this.mixin("adminForm");
-	});
-	
-	riot.tag2("r-admin-project-form-team", "<h2 class=\"mt0\">Team</h2> <r-typeahead-input resource=\"accounts\" api=\"{opts.api}\" datum_tokenizer=\"{['full_name', 'email', 'user_type']}\"></r-typeahead-input> <ul class=\"list-reset clearfix mxn1\"> <li each=\"{record.customers}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-lime navy right mt2\">Customer</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> </p> </div> <a onclick=\"{removeCustomer}\" class=\"btn btn-small bg-red white\">Remove</a> </li> <li each=\"{record.shortlist}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-aqua blue white right mt2\">Professional</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> <div if=\"{profile.website}\"><i class=\"fa fa-world\"></i>{profile.website}</div> </p> </div> <a onclick=\"{removeShortlist}\" class=\"btn btn-small bg-red white\">Remove</a> </li> <li each=\"{record.professionals}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-aqua blue white right mt2\">Professional</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> <div if=\"{profile.website}\"><i class=\"fa fa-world\"></i>{profile.website}</div> </p> </div> <a onclick=\"{removeProfessional}\" class=\"btn btn-small bg-red white\">Remove</a> </li> <li each=\"{record.administrators}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Admin</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> </p> </div> <a onclick=\"{removeAdministrator}\" class=\"btn btn-small bg-red white\">Remove</a> </li> </ul> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-6 px1 mb2\"> <form name=\"form\" class=\"sm-col-12 px2 border\" onsubmit=\"{submit}\"> <h3><i class=\"fa fa-paper-plane-o\"></i> Invite a new member</h3> <div class=\"clearfix\"> <label class=\"inline-block col col-6 mb2 truncate\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Customer\">Customer </label> <label class=\"inline-block col col-6 mb2 truncate\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Professional\">Professional </label> </div> <span class=\"inline-error block\" if=\"{errors['invitee_attributes.user_type']}\">{errors['invitee_attributes.user_type']}</span> <input name=\"invitee_attributes[email]\" class=\"col-12 mb2 field\" placeholder=\"Email\" type=\"email\"> <span class=\"inline-error\" if=\"{errors['invitee_attributes.email']}\">{errors['invitee_attributes.email']}</span> <input type=\"hidden\" name=\"inviter_id\" value=\"{opts.api.currentAccount.id}\"> <input type=\"hidden\" name=\"project_id\" value=\"{opts.id}\"> <div class=\"right-align\"> <button type=\"submit\" class=\"btn btn-primary mb2 {busy: busy}\">Invite</button> </div> </form> </div> <div if=\"{record.professionals.length > 0}\" class=\"sm-col sm-col-6 px1 mb2\"> <r-project-appointments record=\"{record}\"></r-project-appointments> </div> </div>", "", "", function (opts) {
-	  var _this = this;
-	
-	  this.tags["r-typeahead-input"].on("itemselected", function (item) {
-	    var coll = item.user_type.plural().toLowerCase();
-	    coll = coll == "professionals" ? "shortlist" : coll;
-	    if (_this.record["" + coll + "_ids"].indexOf(item.id) < 0) {
-	      _this.record["" + coll + "_ids"].push(item.id);
-	      _this.opts.api.projects.update(_this.record.id, _this.record).fail(_this.errorHandler).then(function () {
-	        $(_this.tags["r-typeahead-input"].query).typeahead("val", null);
-	        _this.opts.api.projects.show(_this.record.id);
-	      });
-	    }
-	  });
-	  this.removeCustomer = function (e) {
-	    _this.removeFromMembership("customers_ids", "customers", e);
-	  };
-	  this.removeShortlist = function (e) {
-	    _this.removeFromMembership("shortlist_ids", "shortlist", e);
-	  };
-	  this.removeProfessional = function (e) {
-	    _this.removeFromMembership("professionals_ids", "professionals", e);
-	  };
-	  this.removeAdministrator = function (e) {
-	    _this.removeFromMembership("administrators_ids", "administrators", e);
-	  };
-	  this.removeFromMembership = function (id_coll, coll, e) {
-	    var index;
-	    e.preventDefault();
-	    // confirm
-	    if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
-	      // find index
-	      index = _this.record[id_coll].indexOf(e.item.id);
-	      if (index > -1) {
-	        // remove from id list and push updates to api
-	        _this.record[id_coll].splice(index, 1);
-	        _this.opts.api.projects.update(_this.record.id, _this.record).fail(_this.errorHandler).then(function () {
-	          // remove from visible list when api returns success
-	          index = _.findIndex(_this.record[coll], function (c) {
-	            return c.id == e.item.id;
-	          });
-	          _this.record[coll].splice(index, 1);
-	          // update DOM view
-	          _this.update();
-	        });
-	      }
-	    }
-	  };
-	  this.mixin("teamTab");
-	  this.mixin("adminForm");
-	});
-	
-	riot.tag2("r-admin-project-form-quotes", "", "", "", function (opts) {});
-	
-	riot.tag2("r-admin-project-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <div class=\"py3 px2\"> <div class=\"clearfix mxn2\"> <r-subnav links=\"{subnavLinks}\" tab=\"{opts.tab}\"></r-subnav> <div class=\"sm-col sm-col-9 sm-px2\"> <r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\" resource=\"{opts.resource}\" content_opts=\"{opts.contentOpts}\"> </r-tabs> </div> </div> </div> </div>", "", "", function (opts) {
-	  this.opts.contentOpts = _.extend(this.opts.contentOpts || {}, this.opts);
-	  this.subnavLinks = [{ href: "/app/admin/projects/" + opts.id + "/edit/overview", name: "overview", tag: "r-admin-project-form-overview" }, { href: "/app/admin/projects/" + opts.id + "/edit/brief", name: "brief", tag: "r-admin-project-form-brief" }, { href: "/app/admin/projects/" + opts.id + "/edit/docs", name: "docs", tag: "r-admin-project-form-docs" }, { href: "/app/admin/projects/" + opts.id + "/edit/team", name: "team", tag: "r-admin-project-form-team" }, { href: "/app/admin/projects/" + opts.id + "/edit/quotes", name: "quotes", tag: "r-admin-project-form-quotes" }];
-	});
 	//this.closeModal()
 	//this.closeModal()
 	//this.closeModal()
@@ -37713,14 +37835,14 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 168 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 	
-	var Handlebars = _interopRequire(__webpack_require__(149));
+	var Handlebars = _interopRequire(__webpack_require__(152));
 	
 	riot.tag2("r-typeahead-input", "<div class=\"relative\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 mb2 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Start typing to search {opts.resource}\" autocomplete=\"off\"> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -37799,7 +37921,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 169 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37811,7 +37933,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 170 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37828,7 +37950,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 171 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37846,48 +37968,21 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 172 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
-	riot.tag2("r-admin-project-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in _.omit(headers, 'customers_ids', 'shortlist_ids', 'professionals_ids', 'administrators_ids')}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> <a href=\"/app/projects/{record.id}\" target=\"_blank\">{record.id}</a> </td> <td> {record.name} </td> <td> {record.kind} </td> <td> <a href=\"/app/admin/accounts/{record.account_id}/edit\">{record.account_id}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td> <a each=\"{acc in record.customers}\" href=\"/app/admin/accounts/{acc.id}/edit\" class=\"mr1 mb1\">{acc.full_name}</a> </td> <td> <a each=\"{acc in record.shortlist}\" href=\"/app/admin/accounts/{acc.id}/edit\" class=\"mr1 mb1\">{acc.full_name}</a> </td> <td> <a each=\"{acc in record.professionals}\" href=\"/app/admin/accounts/{acc.id}/edit\" class=\"mr1 mb1\">{acc.full_name}</a> </td> <td> <a each=\"{acc in record.administrators}\" href=\"/app/admin/accounts/{acc.id}/edit\" class=\"mr1 mb1\">{acc.full_name}</a> </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
-	  this.mixin("admin");
-	  this.mixin("adminIndex");
-	});
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ },
-/* 173 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
-	riot.tag2("r-admin-payment-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.status} </td> <td> {formatCurrency(record.fee)} </td> <td> {formatCurrency(record.amount)} </td> <td class=\"nowrap\"> {formatTime(record.due_date)} </td> <td class=\"nowrap\"> {record.approved_at && formatTime(record.approved_at)} </td> <td class=\"nowrap\"> {record.paid_at && formatTime(record.paid_at)} </td> <td class=\"nowrap\"> {record.canceled_at && formatTime(record.canceled_at)} </td> <td class=\"nowrap\"> {record.declined_at && formatTime(record.declined_at)} </td> <td class=\"nowrap\"> {record.refunded_at && formatTime(record.refunded_at)} </td> <td> <a href=\"/app/admin/projects/{record.project_id}/edit\">{record.project_id}</a> </td> <td> <a href=\"/app/admin/quotes/{record.quote_id}/edit\">{record.quote_id}</a> </td> <td> <a href=\"/app/admin/professionals/{record.professional_id}/edit\">{record.professional_id}</a> </td> <td> <a href=\"/app/admin/customers/{record.customer_id}/edit\">{record.customer_id}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
-	  this.mixin("admin");
-	  this.mixin("adminIndex");
-	});
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ },
-/* 174 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
-	riot.tag2("r-admin-quote-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.status} </td> <td> {formatCurrency(record.total_amount)} </td> <td> <a href=\"/app/admin/projects/{record.project_id}/edit\">{record.project_id}</a> </td> <td> <a href=\"/app/admin/professionals/{record.professional_id}/edit\">{record.professional_id}</a> </td> <td> <a href=\"/app/admin/tenders/{record.tender_id}/edit\">{record.tender_id}</a> </td> <td class=\"nowrap\"> {record.accepted_at && formatTime(record.accepted_at)} </td> <td class=\"nowrap\"> {record.submitted_at && formatTime(record.submitted_at)} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
-	  this.mixin("admin");
-	  this.mixin("adminIndex");
-	});
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ },
 /* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-admin-tender-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {formatCurrency(record.total_amount)} </td> <td> <a href=\"/app/admin/projects/{record.project_id}/edit\">{record.project_id}</a> </td> <td> <a href=\"/app/admin/tender_templates/{record.tender_template_id}/edit\">{record.tender_template_id}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-project-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> <a href=\"/app/projects/{record.id}\" target=\"_blank\">{record.id}</a> </td> <td> {record.name} </td> <td> {record.kind} </td> <td> <a href=\"/app/admin/accounts/{record.account_id}/edit\">{record.account_id}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td> <a each=\"{acc in record.customers}\" href=\"/app/admin/accounts/{acc.id}/edit\" class=\"mr1 mb1\">{acc.full_name}</a> </td> <td> <a each=\"{acc in record.shortlist}\" href=\"/app/admin/accounts/{acc.id}/edit\" class=\"mr1 mb1\">{acc.full_name}</a> </td> <td> <a each=\"{acc in record.professionals}\" href=\"/app/admin/accounts/{acc.id}/edit\" class=\"mr1 mb1\">{acc.full_name}</a> </td> <td> <a each=\"{acc in record.administrators}\" href=\"/app/admin/accounts/{acc.id}/edit\" class=\"mr1 mb1\">{acc.full_name}</a> </td> <td class=\"nowrap\"> <a class=\"btn border btn-small mr1 mb1\" href=\"/app/projects/{record.id}\" target=\"_blank\"> <i class=\"fa fa-pencil\"></i> </a> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.updateRecords = function (records) {
+	    var headers = _.filter(_.keys(records[0]), function (h) {
+	      return ["customers", "shortlist", "professionals", "administrators"].indexOf(h) == -1;
+	    });
+	    _this.update({ headers: headers, records: records });
+	  };
+	
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
@@ -37899,7 +37994,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-admin-tender-template-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.name} </td> <td> {formatCurrency(record.total_amount)} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-payment-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.status} </td> <td> {formatCurrency(record.fee)} </td> <td> {formatCurrency(record.amount)} </td> <td class=\"nowrap\"> {formatTime(record.due_date)} </td> <td class=\"nowrap\"> {record.approved_at && formatTime(record.approved_at)} </td> <td class=\"nowrap\"> {record.paid_at && formatTime(record.paid_at)} </td> <td class=\"nowrap\"> {record.canceled_at && formatTime(record.canceled_at)} </td> <td class=\"nowrap\"> {record.declined_at && formatTime(record.declined_at)} </td> <td class=\"nowrap\"> {record.refunded_at && formatTime(record.refunded_at)} </td> <td> <a href=\"/app/admin/projects/{record.project_id}/edit\">{record.project_id}</a> </td> <td> <a href=\"/app/admin/quotes/{record.quote_id}/edit\">{record.quote_id}</a> </td> <td> <a href=\"/app/admin/professionals/{record.professional_id}/edit\">{record.professional_id}</a> </td> <td> <a href=\"/app/admin/customers/{record.customer_id}/edit\">{record.customer_id}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
@@ -37911,7 +38006,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-admin-material-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.name} </td> <td> {record.quantity} </td> <td> {formatCurrency(record.price)} </td> <td> {record.supplied} </td> <td> {record.searchable} </td> <td> {record.tags} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-quote-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.status} </td> <td> {formatCurrency(record.total_amount)} </td> <td> <a href=\"/app/admin/projects/{record.project_id}/edit\">{record.project_id}</a> </td> <td> <a href=\"/app/admin/professionals/{record.professional_id}/edit\">{record.professional_id}</a> </td> <td> <a href=\"/app/admin/tenders/{record.tender_id}/edit\">{record.tender_id}</a> </td> <td class=\"nowrap\"> {record.accepted_at && formatTime(record.accepted_at)} </td> <td class=\"nowrap\"> {record.submitted_at && formatTime(record.submitted_at)} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
@@ -37923,7 +38018,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-admin-task-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.action} </td> <td> {record.group} </td> <td> {record.name} </td> <td> {record.quantity} </td> <td> {record.unit} </td> <td> {formatCurrency(record.price)} </td> <td> {record.searchable} </td> <td> {record.tags} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-tender-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {formatCurrency(record.total_amount)} </td> <td> <a href=\"/app/admin/projects/{record.project_id}/edit\">{record.project_id}</a> </td> <td> <a href=\"/app/admin/tender_templates/{record.tender_template_id}/edit\">{record.tender_template_id}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
@@ -37931,6 +38026,42 @@
 
 /***/ },
 /* 179 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-admin-tender-template-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.name} </td> <td> {formatCurrency(record.total_amount)} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
+	  this.mixin("admin");
+	  this.mixin("adminIndex");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 180 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-admin-material-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.name} </td> <td> {record.quantity} </td> <td> {formatCurrency(record.price)} </td> <td> {record.supplied} </td> <td> {record.searchable} </td> <td> {record.tags} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
+	  this.mixin("admin");
+	  this.mixin("adminIndex");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 181 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-admin-task-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.action} </td> <td> {record.group} </td> <td> {record.name} </td> <td> {record.quantity} </td> <td> {record.unit} </td> <td> {formatCurrency(record.price)} </td> <td> {record.searchable} </td> <td> {record.tags} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
+	  this.mixin("admin");
+	  this.mixin("adminIndex");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";

@@ -86,11 +86,12 @@ import './admin/index.tag'
     })
   })
   riot.route('projects/*/tenders/*', (project_id, id) => {
+    console.log(this.currentAccount.isAdministrator)
     riot.mount(this.content, 'r-tenders-form', {
       api: opts.api,
       project_id: project_id,
       id: id,
-      readonly: (opts.api.currentAccount && opts.api.currentAccount.isProfessional)
+      readonly: (this.currentAccount && this.currentAccount.isProfessional)
     })
   })
   riot.route('projects/*/quotes/new', (project_id) => {
@@ -100,12 +101,12 @@ import './admin/index.tag'
     })
   })
   riot.route('projects/*/quotes/*', (project_id, id) => {
-
+    console.log(this.currentAccount && this.currentAccount.isCustomer)
     riot.mount(this.content, 'r-quotes-form', {
       api: opts.api,
       project_id: project_id,
       id: id,
-      readonly: (opts.api.currentAccount && opts.api.currentAccount.isCustomer)
+      readonly: (this.currentAccount && this.currentAccount.isCustomer)
     })
   })
 
@@ -155,9 +156,15 @@ import './admin/index.tag'
           this.renderAdminForm(ns, resource, {item: {id: id}})
         }
       })
+
       riot.route(`admin/projects/*/edit/*`, (id, tab) => {
         //this.renderAdminIndex(ns, resource, {resource: resource, api: opts.api, page: 1})
         this.renderAdminForm('', 'projects', {tab: `r-admin-project-form-${tab}`, item: {id: id}})
+      })
+
+      riot.route(`admin/projects/*/*/new`, (project_id, resource) => {
+        //this.renderAdminIndex(ns, resource, {resource: resource, api: opts.api, page: 1})
+        this.renderAdminForm('', resource, {project_id: project_id})
       })
       // riot.route(`admin/${ns}*/*`, (resource, id) => {
       //   resource = `${ns}${resource}`
