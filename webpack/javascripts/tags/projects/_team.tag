@@ -22,7 +22,7 @@ import '../../mixins/team_tab.js'
       </div>
       <div if="{currentAccount.isAdministrator}">
         <a onclick="{removeCustomer}" class="btn btn-small bg-red white">Remove</a>
-        <a onclick="{impersonate}" class="btn btn-small bg-red white">Impersonate</a>
+        <a onclick="{impersonate}" class="btn btn-small bg-maroon white">Impersonate</a>
       </div>
     </li>
 
@@ -38,7 +38,7 @@ import '../../mixins/team_tab.js'
       </div>
       <div if="{currentAccount.isAdministrator}">
         <a onclick="{removeShortlist}" class="btn btn-small bg-red white">Remove</a>
-        <a onclick="{impersonate}" class="btn btn-small bg-red white">Impersonate</a>
+        <a onclick="{impersonate}" class="btn btn-small bg-maroon white">Impersonate</a>
       </div>
     </li>
 
@@ -54,7 +54,7 @@ import '../../mixins/team_tab.js'
       </div>
       <div if="{currentAccount.isAdministrator}">
         <a onclick="{removeProfessional}" class="btn btn-small bg-red white">Remove</a>
-        <a onclick="{impersonate}" class="btn btn-small bg-red white">Impersonate</a>
+        <a onclick="{impersonate}" class="btn btn-small bg-maroon white">Impersonate</a>
       </div>
     </li>
 
@@ -69,7 +69,7 @@ import '../../mixins/team_tab.js'
       </div>
       <div if="{currentAccount.isAdministrator}">
         <a onclick="{removeAdministrator}" class="btn btn-small bg-red white">Remove</a>
-        <a onclick="{impersonate}" class="btn btn-small bg-red white">Impersonate</a>
+        <a onclick="{impersonate}" class="btn btn-small bg-maroon white">Impersonate</a>
       </div>
     </li>
 

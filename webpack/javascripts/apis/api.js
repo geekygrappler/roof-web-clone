@@ -206,7 +206,7 @@ apis.sessions.impersonate = function (data) {
     window.location.href = "/app"
   })
 }
-apis.sessions.stop_impersonate = function () {
+apis.sessions.stopImpersonate = function () {
   return request({
     type: 'delete',
     url: '/api/auth/impersonate'

@@ -2,10 +2,10 @@
 
   <h2 class="mt0">Tender</h2>
 
-  <p if="{_.isEmpty(this.project.tender)}">
+  <p if="{_.isEmpty(project.tender)}">
     Hmm, it seems we are still working on your tender and it will show up here when it's ready.
     You can speed up the process by creating a tender document and we will be notified about it.
-    <div if="{hasNothing() && !currentAccount.isProfessional}" class="mt2">
+    <div if="{_.isEmpty(project.tender) && !currentAccount.isProfessional}" class="mt2">
       <a class="btn btn-primary" href="/app/projects/{opts.id}/tenders/new">Create a Tender Document</a>
     </div>
   </p>

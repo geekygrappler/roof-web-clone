@@ -26,6 +26,7 @@ let links = require("json!../data/header.json")
           <r-admin-menu if="{currentAccount.isAdministrator}"></r-admin-menu>
           <virtual if="{currentAccount.impersonating}">
             <span class="btn py2 silver cursor-default">{currentAccount.email}</span>
+            <a class="btn btn-narrow" onclick="{stopImpersonate}">STOP</a>
           </virtual>
           <span if="{!currentAccount.impersonating}" class="btn py2 silver cursor-default">{currentAccount.user_type[0]}</span>
           <a each="{items}" href="{href}" class="btn py2">{title}</a>
@@ -49,6 +50,10 @@ let links = require("json!../data/header.json")
     </div>
   </header>
   <script>
+  this.stopImpersonate = (e) => {
+    e.preventDefault()
+    this.opts.api.sessions.stopImpersonate()
+  }
   this.items = links[opts.api.currentAccount ? opts.api.currentAccount.user_type : 'Guest']
   </script>
 </r-header>
