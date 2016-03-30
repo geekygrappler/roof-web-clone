@@ -147,10 +147,18 @@ apis.sessions.check = function () {
   })
   .then((data) => {
     $.csrfToken = null
-    apis.currentAccount = new Account(data)
-    //riot.route(apis.authenticatedRoot)
-    apis.sessions.trigger('check.success', data)
-    return data
+    if (data.account) {
+        apis.currentAccount = new Account(data.account)
+        apis.currentAccount.impersonating = data.impersonator_id ? true : false
+        //riot.route(apis.authenticatedRoot)
+        apis.sessions.trigger('check.success', data.account)
+        return data.account
+    } else {
+      apis.currentAccount = new Account(data)
+      //riot.route(apis.authenticatedRoot)
+      apis.sessions.trigger('check.success', data)
+      return data
+    }
   })
 }
 apis.sessions.signin = function (creds) {
@@ -195,6 +203,20 @@ apis.sessions.impersonate = function (data) {
     apis.currentAccount = null
     delete apis.currentAccount
     apis.sessions.trigger('impersonate.success')
+    window.location.href = "/app"
+  })
+}
+apis.sessions.stop_impersonate = function () {
+  return request({
+    type: 'delete',
+    url: '/api/auth/impersonate'
+  })
+  .fail((xhr) => apis.sessions.trigger('stop_impersonate.fail', xhr))
+  .then(() => {
+    $.csrfToken = null
+    apis.currentAccount = null
+    delete apis.currentAccount
+    apis.sessions.trigger('stop_impersonate.success')
     window.location.href = "/app"
   })
 }

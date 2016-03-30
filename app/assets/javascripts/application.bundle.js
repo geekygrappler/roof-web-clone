@@ -2774,10 +2774,18 @@
 	    apis.sessions.trigger("check.fail", xhr);
 	  }).then(function (data) {
 	    $.csrfToken = null;
-	    apis.currentAccount = new Account(data);
-	    //riot.route(apis.authenticatedRoot)
-	    apis.sessions.trigger("check.success", data);
-	    return data;
+	    if (data.account) {
+	      apis.currentAccount = new Account(data.account);
+	      apis.currentAccount.impersonating = data.impersonator_id ? true : false;
+	      //riot.route(apis.authenticatedRoot)
+	      apis.sessions.trigger("check.success", data.account);
+	      return data.account;
+	    } else {
+	      apis.currentAccount = new Account(data);
+	      //riot.route(apis.authenticatedRoot)
+	      apis.sessions.trigger("check.success", data);
+	      return data;
+	    }
 	  });
 	};
 	apis.sessions.signin = function (creds) {
@@ -2822,6 +2830,20 @@
 	    apis.currentAccount = null;
 	    delete apis.currentAccount;
 	    apis.sessions.trigger("impersonate.success");
+	    window.location.href = "/app";
+	  });
+	};
+	apis.sessions.stop_impersonate = function () {
+	  return request({
+	    type: "delete",
+	    url: "/api/auth/impersonate"
+	  }).fail(function (xhr) {
+	    return apis.sessions.trigger("stop_impersonate.fail", xhr);
+	  }).then(function () {
+	    $.csrfToken = null;
+	    apis.currentAccount = null;
+	    delete apis.currentAccount;
+	    apis.sessions.trigger("stop_impersonate.success");
 	    window.location.href = "/app";
 	  });
 	};
@@ -29030,7 +29052,7 @@
 	  this.items = links.AdministratorLinks;
 	});
 	
-	riot.tag2("r-header", "<header class=\"container\"> <div> <nav class=\"relative clearfix black h5\"> <div class=\"left\"> <a href=\"/app/projects\" class=\"btn py2\" black><img src=\"/images/logos/black.svg\" class=\"logo--small\"></a> </div> <div class=\"right py1 sm-show mr1\"> <r-admin-menu if=\"{currentAccount.isAdministrator}\"></r-admin-menu> <span class=\"btn py2 silver cursor-default\">{currentAccount.user_type[0]}</span> <a each=\"{items}\" href=\"{href}\" class=\"btn py2\">{title}</a> </div> <div class=\"right sm-hide py1 mr1\"> <div class=\"inline-block\" data-disclosure> <div data-details class=\"fixed top-0 right-0 bottom-0 left-0\"></div> <a class=\"btn py2 m0\"> <span class=\"md-hide\"> <i class=\"fa fa-bars\"></i> </span> </a> <div data-details class=\"absolute left-0 right-0 nowrap bg-white black mt1\"> <ul class=\"h5 list-reset py1 mb0\"> <li each=\"{items}\"><a href=\"{href}\" class=\"btn block\">{title}</a></li> </ul> </div> </div> </div> </nav> </div> </header>", "", "", function (opts) {
+	riot.tag2("r-header", "<header class=\"container {'bg-red': currentAccount && currentAccount.impersonating}\"> <div> <nav class=\"relative clearfix black h5\"> <div class=\"left\"> <a href=\"/app/projects\" class=\"btn py2\" black><img src=\"/images/logos/black.svg\" class=\"logo--small\"></a> </div> <div class=\"right py1 sm-show mr1\"> <r-admin-menu if=\"{currentAccount.isAdministrator}\"></r-admin-menu> <virtual if=\"{currentAccount.impersonating}\"> <span class=\"btn py2 silver cursor-default\">{currentAccount.email}</span> </virtual> <span if=\"{!currentAccount.impersonating}\" class=\"btn py2 silver cursor-default\">{currentAccount.user_type[0]}</span> <a each=\"{items}\" href=\"{href}\" class=\"btn py2\">{title}</a> </div> <div class=\"right sm-hide py1 mr1\"> <div class=\"inline-block\" data-disclosure> <div data-details class=\"fixed top-0 right-0 bottom-0 left-0\"></div> <a class=\"btn py2 m0\"> <span class=\"md-hide\"> <i class=\"fa fa-bars\"></i> </span> </a> <div data-details class=\"absolute left-0 right-0 nowrap bg-white black mt1\"> <ul class=\"h5 list-reset py1 mb0\"> <li each=\"{items}\"><a href=\"{href}\" class=\"btn block\">{title}</a></li> </ul> </div> </div> </div> </nav> </div> </header>", "", "", function (opts) {
 	  this.items = links[opts.api.currentAccount ? opts.api.currentAccount.user_type : "Guest"];
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))

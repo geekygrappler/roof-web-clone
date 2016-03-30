@@ -16,7 +16,7 @@ let links = require("json!../data/header.json")
 </r-admin-menu>
 
 <r-header>
-  <header class="container">
+  <header class="container {'bg-red': currentAccount && currentAccount.impersonating}">
     <div>
       <nav class="relative clearfix black h5">
         <div class="left">
@@ -24,7 +24,10 @@ let links = require("json!../data/header.json")
         </div>
         <div class="right py1 sm-show mr1">
           <r-admin-menu if="{currentAccount.isAdministrator}"></r-admin-menu>
-          <span class="btn py2 silver cursor-default">{currentAccount.user_type[0]}</span>
+          <virtual if="{currentAccount.impersonating}">
+            <span class="btn py2 silver cursor-default">{currentAccount.email}</span>
+          </virtual>
+          <span if="{!currentAccount.impersonating}" class="btn py2 silver cursor-default">{currentAccount.user_type[0]}</span>
           <a each="{items}" href="{href}" class="btn py2">{title}</a>
         </div>
         <div class="right sm-hide py1 mr1">
