@@ -11,6 +11,7 @@ namespace :migrate do
       #confirmed_at,confirmation_sent_at,referral_email,first_name,last_name,phone_number,
       #slug,address_1,address_2,city,country,postcode
       row = row.to_hash
+      row[:phone_number] = "0#{row[:phone_number]}"
       acc = Account.create({
         email: row[:email],
         password: 'password',
@@ -217,7 +218,23 @@ namespace :migrate do
     #id,job_id,file_id,type,created_at,updated_at,file_filename,file_size,file_content_type
     CSV.foreach("#{Rails.root}/db/migration/assets.csv", {headers: true, header_converters: :symbol, converters: :all}) do |row|
       row = row.to_hash
-      # Asset.create(project_id: row[:job_id], file: , file_size: row[:file_size], content_type: row[:file_content_type])
+      # only valid files
+      if row[:job_id] && row[:file_content_type]
+        if project = Project.where("data->'migration' @> ?", {id: row[:job_id]}.to_json).first
+          Asset.create({
+            project_id: project.id,
+            file: row[:file_filename],
+            file_size: row[:file_size],
+            content_type: row[:file_content_type],
+            migration: {
+              id: row[:id],
+              type: row[:type],
+              job_id: row[:job_id],
+              file_id: row[:file_id]
+            }
+          })
+        end
+      end
     end
   end
 
@@ -409,6 +426,8 @@ namespace :migrate do
   #
   #   end
   # end
+
+
 
 
   task :leads => :environment do
