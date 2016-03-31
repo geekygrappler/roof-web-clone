@@ -1,4 +1,5 @@
 require 'csv'
+require 'refile/s3'
 
 namespace :migrate do
 
@@ -469,6 +470,40 @@ namespace :migrate do
       end
       p.save
     }
+  end
+
+  task :upload_asset_files => :environment do
+    require "refile/s3"
+    require 'tempfile'
+
+    aws = {
+      access_key_id: ENV['AWS_ACCESS_KEY_ID'] || 'AKIAIZOAUQL6CQ6GOLJQ',
+      secret_access_key: ENV['AWS_SECRET_ACCESS_KEY'] || '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',
+      region: ENV['FOG_REGION'] || 'eu-west-1',
+      bucket: ENV['FOG_DIRECTORY'] || 'production-1roof',
+    }
+    Refile.cache = Refile::S3.new(prefix: "cache", max_size: 5.megabytes, **aws)
+    Refile.store = Refile::S3.new(prefix: "store", max_size: 5.megabytes, **aws)
+
+    Asset.where.not(meta: nil).each do |asset|
+      if asset.migration['file_id']
+        ext = {
+          "image/png" => '.png',
+          "application/pdf" => '.pdf',
+          "image/jpeg" => '.jpg',
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" => '.docx',
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" => '.xlsx'
+        }[asset.content_type]
+        file = Tempfile.new([asset.id, ext], :encoding => 'ascii-8bit')
+        file.write(Refile.store.get(asset.migration['file_id']).read)
+        file.rewind
+        asset.file = file
+        asset.save!
+        file.close
+        file.unlink
+        puts "DONE!"
+      end
+    end
   end
 
   task :all => [:administrators, :customers, :professionals, :projects, :assets, :shortlists, :tender_templates, :tenders, :quotes, :payments, :leads, :bot, :"jobs:clear"]

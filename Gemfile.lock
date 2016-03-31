@@ -8,6 +8,14 @@ GIT
       railties (>= 4.0)
 
 GIT
+  remote: git://github.com/refile/refile-mini_magick.git
+  revision: 9c74f7b61c794837a02af3f21d1be96286b7ce4d
+  specs:
+    refile-mini_magick (0.2.0)
+      mini_magick (~> 4.0)
+      refile (~> 0.5)
+
+GIT
   remote: https://github.com/carrierwaveuploader/carrierwave.git
   revision: a2c93fe1a9d3a3f60d1662e5ec34fdba7bf2b304
   specs:
@@ -57,6 +65,12 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.3.8)
     arel (6.0.3)
+    aws-sdk (2.2.31)
+      aws-sdk-resources (= 2.2.31)
+    aws-sdk-core (2.2.31)
+      jmespath (~> 1.0)
+    aws-sdk-resources (2.2.31)
+      aws-sdk-core (= 2.2.31)
     bcrypt (3.1.11)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
@@ -119,6 +133,8 @@ GEM
       domain_name (~> 0.5)
     i18n (0.7.0)
     ipaddress (0.8.0)
+    jmespath (1.2)
+      json (>= 1.8.1)
     jquery-rails (4.1.1)
       rails-dom-testing (>= 1, < 3)
       railties (>= 4.2.0)
@@ -149,6 +165,8 @@ GEM
     pg (0.18.4)
     puma (3.2.0)
     rack (1.6.4)
+    rack-protection (1.5.3)
+      rack
     rack-test (0.6.3)
       rack (>= 1.0)
     rails (4.2.5.1)
@@ -186,6 +204,13 @@ GEM
     rake (11.1.1)
     rdoc (4.2.2)
       json (~> 1.4)
+    refile (0.6.2)
+      mime-types
+      rest-client (~> 1.8)
+      sinatra (~> 1.4.5)
+    refile-s3 (0.2.0)
+      aws-sdk (~> 2.0)
+      refile (~> 0.6.0)
     request_store (1.3.0)
     responders (2.1.2)
       railties (>= 4.2.0, < 5.1)
@@ -217,6 +242,10 @@ GEM
     sdoc (0.4.1)
       json (~> 1.7, >= 1.7.7)
       rdoc (~> 4.0)
+    sinatra (1.4.7)
+      rack (~> 1.5)
+      rack-protection (~> 1.4)
+      tilt (>= 1.3, < 3)
     slack-notifier (1.5.1)
     spring (1.6.4)
     sprockets (3.5.2)
@@ -269,6 +298,9 @@ DEPENDENCIES
   puma
   rails (= 4.2.5.1)
   rails_12factor
+  refile (~> 0.6.2)
+  refile-mini_magick!
+  refile-s3
   roof_api (= 0.0.5.fix14a)
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)

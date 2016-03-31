@@ -21,6 +21,10 @@ gem 'fog-aws'
 gem 'rails_12factor'
 gem 'delayed_job_active_record'
 gem 'clockwork'
+# only for migration
+gem 'refile', '~> 0.6.2', require: "refile/rails"
+gem 'refile-mini_magick', github: 'refile/refile-mini_magick'
+gem 'refile-s3'
 
 group :development, :test do
   gem 'byebug'
