@@ -8,6 +8,8 @@
 
   <form if="{!lead}" name="form" class="sm-col-12 left-align" action="/api/leads" onsubmit="{submit}">
 
+    <input type="hidden" name="meta[source]" value="brief_callback" />
+
     <h2 class="center mt0 mb2">A 1Roof expert will get in touch soon to talk about your project
       and help you with any questions or concerns you may have.
     </h2>

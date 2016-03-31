@@ -3238,9 +3238,28 @@
 	  },
 	  closeModal: function closeModal() {
 	    $("r-modal")[0] && $("r-modal")[0]._tag && $("r-modal")[0]._tag.close();
+	  },
+	  gaSend: function gaSend() {
+	    var params = Array.prototype.slice.call(arguments);
+	    params.unshift("send");
+	    console.log(params);
+	  },
+	  sendGALeadConfirmationConversion: function sendGALeadConfirmationConversion() {
+	    var google_conversion_id = 913725911;
+	    var google_conversion_language = "en";
+	    var google_conversion_format = "3";
+	    var google_conversion_color = "ffffff";
+	    var google_conversion_label = "VbuCCK7d7WIQ17PZswM";
+	    var google_remarketing_only = false;
+	    return $.getScript("//www.googleadservices.com/pagead/conversion.js").then(function () {
+	      var image = new Image();
+	      image.src = "//www.googleadservices.com/pagead/conversion/913725911/?label=VbuCCK7d7WIQ17PZswM&amp;guid=ON&amp;script=0";
+	      return image;
+	    });
 	  }
 	});
 	// }
+	//ga.apply(ga, params)
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
@@ -28882,6 +28901,8 @@
 	
 	__webpack_require__(159);
 	
+	__webpack_require__(160);
+	
 	riot.tag2("r-app", "<yield from=\"header\"></yield> <div name=\"content\"></div>", "", "", function (opts) {
 	  var _this = this;
 	
@@ -28916,6 +28937,12 @@
 	      contentOpts: { tab: "r-signup", api: opts.api }
 	    });
 	  });
+	  riot.route("leads/new..", function () {
+	    console.log(riot.route.query());
+	    riot.mount(_this.content, "r-lead", { api: opts.api, query: riot.route.query() });
+	    riot.mount("r-leads-form", { api: opts.api, query: riot.route.query() });
+	    $("r-app").removeClass("display-none");
+	  });
 	  riot.route("projects", function () {
 	    riot.mount(_this.content, "r-projects-index", { api: opts.api });
 	  });
@@ -28948,7 +28975,6 @@
 	    });
 	  });
 	  riot.route("projects/*/tenders/*", function (project_id, id) {
-	    console.log(_this.currentAccount.isAdministrator);
 	    riot.mount(_this.content, "r-tenders-form", {
 	      api: opts.api,
 	      project_id: project_id,
@@ -28963,7 +28989,6 @@
 	    });
 	  });
 	  riot.route("projects/*/quotes/*", function (project_id, id) {
-	    console.log(_this.currentAccount && _this.currentAccount.isCustomer);
 	    riot.mount(_this.content, "r-quotes-form", {
 	      api: opts.api,
 	      project_id: project_id,
@@ -29567,7 +29592,7 @@
 	
 	__webpack_require__(132);
 	
-	riot.tag2("r-projects-brief", "<yield if=\"{!opts.api.currentAccount}\" to=\"header\"> <header class=\"container\"> <nav class=\"relative clearfix {step > 0 ? 'black' : 'white'} h5\"> <div class=\"left\"> <a href=\"/\" class=\"btn py2\"><img riot-src=\"/images/logos/{step > 0 ? 'black' : 'white'}.svg\" class=\"logo--small\"></a> </div> </nav> </header> </yield> <yield if=\"{opts.api.currentAccount}\" to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <section if=\"{!opts.api.currentAccount}\" class=\"absolute col-12 center px2 py2 white {out: step != 0}\" data-step=\"0\"> <div class=\"container\"> <h1 class=\"h1 h1-responsive sm-mt4 mb1\">Thanks for getting started!</h1> <p class=\"h3 sm-col-6 mx-auto mb2\">The next few questions will create your brief :)</p> <div><button class=\"btn btn-big btn-primary mb3\" onclick=\"{start}\">Ok, Got it</button></div> <p>Or <button class=\"h5 btn btn-narrow btn-outline white ml1 mr1\" onclick=\"{showArrangeCallbackModal}\">Arrange a callback</button> to speak with a human</p> </div> </section> <form name=\"form\" action=\"/api/projects\" onsubmit=\"{submit}\"> <section class=\"absolute col-12 center px2 py2 {out: step != 1}\" data-step=\"1\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Mission</h1> <div class=\"clearfix mxn2 border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === project.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === project.kind}\"> </a> </div> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 2}\" data-step=\"2\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Helpful details</h1> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" autofocus=\"true\" oninput=\"{setValue}\">{project.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === project.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === project.brief.preferred_start}\">{value}</option> </select> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb4\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb4\" onclick=\"{nextStep}\">Continue</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 3}\" data-step=\"3\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Documents and Photos</h1> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-12 px2 mb2\"> <p class=\"h2\">Upload plans, documents, site photos or any other files about your project</p> <r-files-input-with-preview name=\"assets\" record=\"{project}\"></r-files-input-with-preview> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb1\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb1\" onclick=\"{nextStep}\">Continue</a> </div> <div class=\"right-align mb4\"> <a onclick=\"{parent.nextStep}\">Skip for now</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 4}\" data-step=\"4\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Address</h1> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{project.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{project.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{project.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb1\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb1\" onclick=\"{nextStep}\">Continue</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 5}\" data-step=\"5\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Project Summary</h1> <div class=\"clearfix p3 border mb3\"> <p class=\"h3 mt0\"> You are planning a <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--project-type\">{project.kind}</span></strong> <span show=\"{!_.isEmpty(_.compact(_.values(project.address)))}\" class=\"summary--address-container\">at <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--address\"><span each=\"{name, add in project.address}\">{add}, </span></span></strong></span>. The basic overview of the brief is: <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--description\">{project.brief.description}</span></strong>. <br> <span show=\"{project.brief.budget}\" class=\"summary--budget-container\">You have a budget of <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--budget\">{project.brief.budget}</span></strong></span> <span show=\"{project.brief.preferred_start}\" class=\"summary--start-date-container\">and would like to start <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--start-date\">{project.brief.preferred_start}</span></strong>.</span> </p> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb4\" onclick=\"{prevStep}\">Back</a> <button class=\"btn btn-big btn-primary mb4 {busy: busy}\" type=\"submit\">Correct! Make it happen</button> </div> </div> </section> </form>", "", "", function (opts) {
+	riot.tag2("r-projects-brief", "<yield if=\"{!opts.api.currentAccount}\" to=\"header\"> <header class=\"container\"> <nav class=\"relative clearfix {step > 0 ? 'black' : 'white'} h5\"> <div class=\"left\"> <a href=\"/\" class=\"btn py2\"><img riot-src=\"/images/logos/{step > 0 ? 'black' : 'white'}.svg\" class=\"logo--small\"></a> </div> </nav> </header> </yield> <yield if=\"{opts.api.currentAccount}\" to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <section if=\"{!opts.api.currentAccount}\" class=\"absolute col-12 center px2 py2 white {out: step != 0}\" data-step=\"0\"> <div class=\"container\"> <h1 class=\"h1 h1-responsive sm-mt4 mb1\">Thanks for getting started!</h1> <p class=\"h3 sm-col-6 mx-auto mb2\">The next few questions will create your brief :)</p> <div><button class=\"btn btn-big btn-primary mb3\" onclick=\"{start}\">Ok, Got it</button></div> <p>Or <button class=\"h5 btn btn-narrow btn-outline white ml1 mr1\" onclick=\"{showArrangeCallbackModal}\">Arrange a callback</button> to speak with a human</p> </div> </section> <form name=\"form\" action=\"/api/projects\" onsubmit=\"{submit}\"> <section class=\"absolute col-12 center px2 py2 {out: step != 1}\" data-step=\"1\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Mission</h1> <div class=\"clearfix mxn2 border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === project.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === project.kind}\"> </a> </div> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 2}\" data-step=\"2\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Helpful details</h1> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" autofocus=\"true\" oninput=\"{setValue}\">{project.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === project.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === project.brief.preferred_start}\">{value}</option> </select> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb4\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb4\" onclick=\"{nextStep}\">Continue</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 3}\" data-step=\"3\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Documents and Photos</h1> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-12 px2 mb2\"> <p class=\"h2\">Upload plans, documents, site photos or any other files about your project</p> <r-files-input-with-preview name=\"assets\" record=\"{project}\"></r-files-input-with-preview> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb1\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb1\" onclick=\"{nextStep}\">Continue</a> </div> <div class=\"right-align mb4\"> <a onclick=\"{nextStep}\">Skip for now</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 4}\" data-step=\"4\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Address</h1> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{project.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{project.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{project.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb1\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb1\" onclick=\"{nextStep}\">Continue</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 5}\" data-step=\"5\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Project Summary</h1> <div class=\"clearfix p3 border mb3\"> <p class=\"h3 mt0\"> You are planning a <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--project-type\">{project.kind}</span></strong> <span show=\"{!_.isEmpty(_.compact(_.values(project.address)))}\" class=\"summary--address-container\">at <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--address\"><span each=\"{name, add in project.address}\">{add}, </span></span></strong></span>. The basic overview of the brief is: <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--description\">{project.brief.description}</span></strong>. <br> <span show=\"{project.brief.budget}\" class=\"summary--budget-container\">You have a budget of <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--budget\">{project.brief.budget}</span></strong></span> <span show=\"{project.brief.preferred_start}\" class=\"summary--start-date-container\">and would like to start <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--start-date\">{project.brief.preferred_start}</span></strong>.</span> </p> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb4\" onclick=\"{prevStep}\">Back</a> <button class=\"btn btn-big btn-primary mb4 {busy: busy}\" type=\"submit\">Correct! Make it happen</button> </div> </div> </section> </form>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.step = opts.api.currentAccount ? 1 : 0;
@@ -29577,10 +29602,12 @@
 	  // after user authorized herself
 	  if (!opts.api.currentAccount) {
 	    opts.api.sessions.one("signin.success", function () {
-	      return _this.submit();
+	      _this.gaSend("event", "brief", "login", "Sign in");
+	      _this.submit();
 	    });
 	    opts.api.registrations.one("signup.success", function () {
-	      return _this.submit();
+	      _this.gaSend("event", "brief", "login", "Sign up");
+	      _this.submit();
 	    });
 	  }
 	
@@ -29600,10 +29627,14 @@
 	      return $(".logo--small").attr("src", $(".logo--small").attr("data-src-black"));
 	    }, 300);
 	    _this.update({ step: 1 });
+	    _this.gaSend("event", "brief", "start", "Ok, Got it");
 	  };
 	
 	  this.setProjectKind = function (e) {
 	    _this.project.kind = e.item.value;
+	
+	    _this.gaSendForStep(e);
+	
 	    _this.update({ step: 2 });
 	  };
 	
@@ -29613,7 +29644,12 @@
 	
 	  this.nextStep = function (e) {
 	    e.preventDefault();
-	    if (_this.validateStep()) _this.update({ step: _this.step + 1 });
+	    if (_this.validateStep()) {
+	
+	      _this.gaSendForStep(e);
+	
+	      _this.update({ step: _this.step + 1 });
+	    }
 	  };
 	
 	  this.prevStep = function (e) {
@@ -29623,7 +29659,7 @@
 	
 	  this.validateStep = function () {
 	    var hasError = undefined,
-	        $requireds = $("[data-step=" + _this.step + "] [required]");
+	        $requireds = $("[data-step=" + _this.step + "] [required]", _this.root);
 	    if ($requireds.length > 0) {
 	      hasError = _.isEmpty(_.compact(_.map($requireds, function (el) {
 	        var empty = _.isEmpty(el.value);
@@ -29658,18 +29694,17 @@
 	
 	      _this.opts.api.projects.create(project).fail(_this.errorHandler).then(function (project) {
 	
+	        _this.gaSend("event", "brief", "summary", "Correct, Make it happen");
+	
 	        // no assets? go to project page immediately
 	        if (_.isEmpty(assetsToAssign)) {
-	          _this.update({ busy: false });
-	          riot.route("/projects/" + project.id);
+	          _this.redirect(project);
 	        } else {
 	          _this.request({ url: "/api/projects/" + project.id + "/assets", type: "post", data: { ids: assetsToAssign } }).fail(function () {
-	            _this.update({ busy: false });
 	            window.alert(_this.ERRORS.ASSET_ASSIGNMENT);
-	            riot.route("/projects/" + project.id);
+	            _this.redirect(project);
 	          }).then(function () {
-	            _this.update({ busy: false });
-	            riot.route("/projects/" + project.id);
+	            _this.redirect(project);
 	          });
 	        }
 	      });
@@ -29678,15 +29713,6 @@
 	    }
 	  };
 	
-	  // this.showAuthModal = () => {
-	  //   riot.mount('r-modal', {
-	  //     content: 'r-auth',
-	  //     persisted: false,
-	  //     api: opts.api,
-	  //     contentOpts: {tab: 'r-signup', api: opts.api}
-	  //   })
-	  // }
-	
 	  this.showArrangeCallbackModal = function () {
 	    riot.mount("r-modal", {
 	      content: "r-arrange-callback",
@@ -29694,6 +29720,21 @@
 	      api: opts.api,
 	      contentOpts: { api: opts.api }
 	    });
+	    _this.gaSend("event", "brief", "start", "Arrange a callback");
+	  };
+	
+	  this.redirect = function (project) {
+	
+	    _this.sendGALeadConfirmationConversion().then(function (image) {
+	      image.onload = function () {
+	        _this.update({ busy: false });
+	        riot.route("/projects/" + project.id);
+	      };
+	    });
+	  };
+	
+	  this.gaSendForStep = function (e) {
+	    _this.gaSend("event", "brief", $("[data-step=" + _this.step + "] h1", _this.root).text().toLowerCase(), $(e.currentTarget).text().replace(/\n/g, "").replace(/^\s+/, "").replace(/\s+$/, ""));
 	  };
 	});
 	// got some uploads, let's assign them to project
@@ -29779,7 +29820,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-arrange-callback", "<div if=\"{lead}\" class=\"center\"> <h1 class=\"mt0\">Your callback has been successfully arranged.</h2> <p class=\"h3 sm-col-6 mx-auto mb2\">Thanks for your interest! We will get back to you very shortly.</p> <a href=\"/\" class=\"btn btn-primary gray\">Take me home</a> </div> <form if=\"{!lead}\" name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/leads\" onsubmit=\"{submit}\"> <h2 class=\"center mt0 mb2\">A 1Roof expert will get in touch soon to talk about your project and help you with any questions or concerns you may have. </h2> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"first_name\">First Name *</label> <input id=\"first_name\" class=\"block col-12 mb2 field\" type=\"text\" name=\"first_name\" autofocus=\"true\"> <span if=\"{errors.first_name}\" class=\"inline-error\">{errors.first_name}</span> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"last_name\">First Name *</label> <input id=\"last_name\" class=\"block col-12 mb2 field\" type=\"text\" name=\"last_name\"> <span if=\"{errors.last_name}\" class=\"inline-error\">{errors.last_name}</span> </div> </div> <label for=\"phone_number\">Phone Number *</label> <input id=\"phone_number\" class=\"block col-12 mb2 field\" type=\"tel\" name=\"phone_number\"> <span if=\"{errors.phone_number}\" class=\"inline-error\">{errors.phone_number}</span> <button class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\" type=\"submit\">Arrange a Callback</button> </form>", "", "", function (opts) {
+	riot.tag2("r-arrange-callback", "<div if=\"{lead}\" class=\"center\"> <h1 class=\"mt0\">Your callback has been successfully arranged.</h2> <p class=\"h3 sm-col-6 mx-auto mb2\">Thanks for your interest! We will get back to you very shortly.</p> <a href=\"/\" class=\"btn btn-primary gray\">Take me home</a> </div> <form if=\"{!lead}\" name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/leads\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"meta[source]\" value=\"brief_callback\"> <h2 class=\"center mt0 mb2\">A 1Roof expert will get in touch soon to talk about your project and help you with any questions or concerns you may have. </h2> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"first_name\">First Name *</label> <input id=\"first_name\" class=\"block col-12 mb2 field\" type=\"text\" name=\"first_name\" autofocus=\"true\"> <span if=\"{errors.first_name}\" class=\"inline-error\">{errors.first_name}</span> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"last_name\">First Name *</label> <input id=\"last_name\" class=\"block col-12 mb2 field\" type=\"text\" name=\"last_name\"> <span if=\"{errors.last_name}\" class=\"inline-error\">{errors.last_name}</span> </div> </div> <label for=\"phone_number\">Phone Number *</label> <input id=\"phone_number\" class=\"block col-12 mb2 field\" type=\"tel\" name=\"phone_number\"> <span if=\"{errors.phone_number}\" class=\"inline-error\">{errors.phone_number}</span> <button class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\" type=\"submit\">Arrange a Callback</button> </form>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.submit = function (e) {
@@ -37168,6 +37209,32 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
+	riot.tag2("r-leads-form", "<form class=\"sm-col-7 md-col-5 left-align mx-auto mb4 p3 bg-lighten-4 black border adwords-form\" name=\"form\" onsubmit=\"{submit}\"> <h4 class=\"mt0 mb2 center\">Arrange a free phone consultation</h4> <input type=\"hidden\" name=\"meta[source]\" value=\"adwords\"> <input type=\"hidden\" name=\"meta[glcid]\" value=\"{opts.query.gclid}\"> <input type=\"hidden\" name=\"meta[utm_referrer]\" value=\"{opts.query.utm_referrer}\"> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"first_name\">First Name *</label> <input id=\"first_name\" class=\"block col-12 mb2 field\" type=\"text\" name=\"first_name\" __autofocus=\"{opts.autofocus}\"> <span if=\"{errors.first_name}\" class=\"inline-error\">{errors.first_name}</span> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"last_name\">First Name *</label> <input id=\"last_name\" class=\"block col-12 mb2 field\" type=\"text\" name=\"last_name\"> <span if=\"{errors.last_name}\" class=\"inline-error\">{errors.last_name}</span> </div> </div> <label for=\"phone_number\">Phone Number *</label> <input id=\"phone_number\" class=\"block col-12 mb2 field\" type=\"tel\" name=\"phone_number\"> <span if=\"{errors.phone_number}\" class=\"inline-error\">{errors.phone_number}</span> <p class=\"h6 mb2\">We never pass your details to 3rd parties.</p> <label for=\"person_project_type\">Project type</label> <select class=\"block col-12 field mb2\" name=\"meta[project_kind]\"> <option value=\"renovation\">Renovation</option> <option value=\"loft conversion\">Loft Conversion</option> <option value=\"extension\">Extension</option> <option value=\"basement conversion\">Basement Conversion</option> <option value=\"kitchen renovation\">Kitchen Renovation</option> <option value=\"bathroom Renovation\">Bathroom Renovation</option> <option value=\"redecoration\">Redecoration</option> <option value=\"new build\">New Build</option> </select> <button name=\"button\" type=\"submit\" class=\"block col-12 btn btn-big btn-primary\">Arrange a Callback</button> </form>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.submit = function (e) {
+	    var data = _this.serializeForm(_this.form);
+	
+	    _this.update({ busy: true, errors: null });
+	
+	    opts.api.leads.create(data).fail(_this.errorHandler).then(function (lead) {
+	      _this.update({ lead: lead, busy: false });
+	      _this.sendGALeadConfirmationConversion().then(function () {
+	        window.location.href = "/pages/thank-you";
+	      });
+	    });
+	  };
+	});
+	
+	riot.tag2("r-lead", "<yield to=\"header\"> <header class=\"white bg-gray bg-cover bg-center\" style=\"background-image: url(/assets/home/bg1_blur-e5c75336b83fc12f32299970aa6dde8b3fd0ea2f2227329fabd88b019a2da107.jpg)\"> <div class=\"container\"> <div class=\"center px2 clearfix\"> <div class=\"center mt2\"> <img src=\"/images/logos/black.svg\" class=\"logo--medium\"> </div> <h1 class=\"h1 h2-responsive mt1 mb1\">Get your project off to the perfect start by speaking to an expert</h1> <p class=\"sm-col-10 mx-auto mb3 h3\">We will help answer any questions you have and advise you on the next steps.</p> <r-leads-form autofocus=\"true\" query=\"{opts.query}\"></r-leads-form> </div> </div> </header> </yield>", "", "", function (opts) {});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 159 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 	
 	var Pikaday = _interopRequire(__webpack_require__(140));
@@ -37331,12 +37398,10 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 159 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
-	__webpack_require__(160);
 	
 	__webpack_require__(161);
 	
@@ -37358,7 +37423,7 @@
 	
 	__webpack_require__(170);
 	
-	__webpack_require__(172);
+	__webpack_require__(171);
 	
 	__webpack_require__(173);
 	
@@ -37380,6 +37445,8 @@
 	
 	__webpack_require__(182);
 	
+	__webpack_require__(183);
+	
 	riot.tag2("r-admin-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap\">{attr.humanize()}</th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td each=\"{attr, i in headers}\"> {record[attr]} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
@@ -37387,7 +37454,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 160 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37398,7 +37465,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 161 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37488,7 +37555,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 162 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37586,7 +37653,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 163 */
+/* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37703,7 +37770,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 164 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37770,7 +37837,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 165 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37781,7 +37848,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 166 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37792,7 +37859,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 167 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37803,7 +37870,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 168 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37814,7 +37881,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 169 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37825,14 +37892,14 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 170 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	var options = __webpack_require__(131);
 	
-	__webpack_require__(171);
+	__webpack_require__(172);
 	
 	__webpack_require__(137);
 	
@@ -37905,7 +37972,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 171 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -37991,7 +38058,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 172 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -38003,7 +38070,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 173 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -38020,7 +38087,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 174 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -38038,7 +38105,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 175 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -38059,7 +38126,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 176 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -38071,7 +38138,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 177 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -38083,7 +38150,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 178 */
+/* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -38095,7 +38162,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 179 */
+/* 180 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -38107,7 +38174,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 180 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -38119,7 +38186,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 181 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -38131,7 +38198,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 182 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";

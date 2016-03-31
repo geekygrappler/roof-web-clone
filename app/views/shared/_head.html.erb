@@ -7,4 +7,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta http-equiv="cleartype" content="on">
 <meta name="stripe-key" content="<%= Rails.application.secrets.stripe['publishable_key'] %>">
+<meta name="keywords" content="planning a renovation, Renovation costs london, planning permission, Building regulations, Do I need an architect, Conservation area regs, How to budget a renovation/extensin etc, How long does planning permission take, Buying house at auction, House auction london, party wall agreements, renovation specialists, loft conversion specialists, extension specialists, extension specialists west london, project manage a building job, architects fees, project managers fees, best builders, dig down and out, side return, rear extension, basement excavation, How to choose the right builders, How to choose an architect, How long does a renovation take">
 <%= csrf_meta_tags %>
+<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-56140935-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','//connect.facebook.net/en_US/fbevents.js');
+fbq('init', '764910060319707');
+fbq('track', "PageView");
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=764910060319707&ev=PageView&noscript=1"/></noscript>
+<% if Rails.env.production? %>
+<script type="text/javascript">
+window._chatlio = window._chatlio||[];
+!function(){ var t=document.getElementById("chatlio-widget-embed");if(t&&window.React&&_chatlio.init)return void _chatlio.init(t,React);for(var e=function(t){return function(){_chatlio.push([t].concat(arguments)) }},i=["configure","identify","track","show","hide","isShown","isOnline"],a=0;a<i.length;a++)_chatlio[i[a]]||(_chatlio[i[a]]=e(i[a]));var n=document.createElement("script"),c=document.getElementsByTagName("script")[0];n.id="chatlio-widget-embed",n.src="https://w.chatlio.com/w.chatlio-widget.js",n.async=!0,n.setAttribute("data-embed-version","2.0");
+  n.setAttribute('data-widget-id','ff651f85-85e5-437e-508a-c12e86c9f15f');
+  c.parentNode.insertBefore(n,c);
+}();
+</script>
+<% end %>

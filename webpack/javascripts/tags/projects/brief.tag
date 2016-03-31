@@ -94,7 +94,7 @@ import '../arrange_callback.tag'
         <a class="btn btn-big btn-primary mb1" onclick="{ nextStep }">Continue</a>
       </div>
       <div class="right-align mb4">
-        <a onclick="{ parent.nextStep }">Skip for now</a>
+        <a onclick="{ nextStep }">Skip for now</a>
       </div>
     </div>
   </section>
@@ -158,8 +158,14 @@ import '../arrange_callback.tag'
   // listen signup/signin events if not logged in as we need to resubmit form
   // after user authorized herself
   if (!opts.api.currentAccount) {
-    opts.api.sessions.one('signin.success', () => this.submit())
-    opts.api.registrations.one('signup.success', () => this.submit())
+    opts.api.sessions.one('signin.success', () => {
+      this.gaSend('event', 'brief', 'login', 'Sign in')
+      this.submit()
+    })
+    opts.api.registrations.one('signup.success', () => {
+      this.gaSend('event', 'brief', 'login', 'Sign up')
+      this.submit()
+    })
   }
 
   this.on('mount', () => {
@@ -176,10 +182,14 @@ import '../arrange_callback.tag'
     $("body").toggleClass('no-transition bg-gray')
     setTimeout(()=> $(".logo--small").attr('src', $(".logo--small").attr('data-src-black')), 300)
     this.update({step: 1})
+    this.gaSend('event', 'brief', 'start', 'Ok, Got it')
   }
 
   this.setProjectKind = (e) => {
     this.project.kind = e.item.value
+
+    this.gaSendForStep(e)
+
     this.update({step: 2})
   }
 
@@ -189,7 +199,13 @@ import '../arrange_callback.tag'
 
   this.nextStep = (e) => {
     e.preventDefault()
-    if (this.validateStep()) this.update({step: this.step + 1})
+    if (this.validateStep()) {
+
+      this.gaSendForStep(e)
+
+      this.update({step: this.step + 1})
+
+    }
   }
 
   this.prevStep = (e) => {
@@ -198,7 +214,7 @@ import '../arrange_callback.tag'
   }
 
   this.validateStep = () => {
-    let hasError, $requireds = $(`[data-step=${this.step}] [required]`)
+    let hasError, $requireds = $(`[data-step=${this.step}] [required]`, this.root)
     if ($requireds.length > 0) {
       hasError = _.isEmpty(_.compact(_.map($requireds, el => {
         let empty = _.isEmpty(el.value)
@@ -227,6 +243,7 @@ import '../arrange_callback.tag'
 
       this.update({busy: true, errors: null})
 
+
       // stash uploaded assets to be assigned to project
       assetsToAssign = _.pluck(this.project.assets, 'id')
 
@@ -234,22 +251,21 @@ import '../arrange_callback.tag'
       .fail(this.errorHandler)
       .then(project => {
 
+        this.gaSend('event', 'brief', 'summary', 'Correct, Make it happen')
+
         // no assets? go to project page immediately
         if( _.isEmpty(assetsToAssign) ) {
-          this.update({busy:false})
-          riot.route(`/projects/${project.id}`)
-
+          this.redirect(project)
         // got some uploads, let's assign them to project
         } else {
           this.request({url: `/api/projects/${project.id}/assets`, type: 'post', data: {ids: assetsToAssign}})
           .fail(() => {
-            this.update({busy:false})
             window.alert(this.ERRORS.ASSET_ASSIGNMENT)
-            riot.route(`/projects/${project.id}`)
+            this.redirect(project)
           })
           .then(() => {
-            this.update({busy:false})
-            riot.route(`/projects/${project.id}`)
+            this.redirect(project)
+
           })
         }
       })
@@ -258,15 +274,6 @@ import '../arrange_callback.tag'
     }
   }
 
-  // this.showAuthModal = () => {
-  //   riot.mount('r-modal', {
-  //     content: 'r-auth',
-  //     persisted: false,
-  //     api: opts.api,
-  //     contentOpts: {tab: 'r-signup', api: opts.api}
-  //   })
-  // }
-
   this.showArrangeCallbackModal = () => {
     riot.mount('r-modal', {
       content: 'r-arrange-callback',
@@ -274,6 +281,24 @@ import '../arrange_callback.tag'
       api: opts.api,
       contentOpts: {api: opts.api}
     })
+    this.gaSend( 'event', 'brief', 'start', 'Arrange a callback')
+  }
+
+  this.redirect = (project) => {
+
+    this.sendGALeadConfirmationConversion().then((image) => {
+      image.onload = () => {
+        this.update({busy:false})
+        riot.route(`/projects/${project.id}`)
+      }
+    })
+  }
+
+  this.gaSendForStep = (e) => {
+    this.gaSend( 'event', 'brief',
+      $(`[data-step=${this.step}] h1`, this.root).text().toLowerCase(),
+      $(e.currentTarget).text().replace(/\n/g,'').replace(/^\s+/,'').replace(/\s+$/,'')
+    )
   }
 
   </script>

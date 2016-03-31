@@ -14,6 +14,7 @@ import './projects/show.tag'
 
 import './tenders/tender.tag'
 import './quotes/quote.tag'
+import './leads/lead.tag'
 
 import './settings.tag'
 
@@ -57,6 +58,12 @@ import './admin/index.tag'
       contentOpts: {tab: 'r-signup', api: opts.api}
     })
   })
+  riot.route('leads/new..', () => {
+    console.log(riot.route.query())
+    riot.mount(this.content, 'r-lead', {api: opts.api, query: riot.route.query()})
+    riot.mount('r-leads-form', {api: opts.api, query: riot.route.query()})
+    $('r-app').removeClass('display-none')
+  })
   riot.route('projects', () => {
     riot.mount(this.content, 'r-projects-index', {api: opts.api})
   })
@@ -89,7 +96,6 @@ import './admin/index.tag'
     })
   })
   riot.route('projects/*/tenders/*', (project_id, id) => {
-    console.log(this.currentAccount.isAdministrator)
     riot.mount(this.content, 'r-tenders-form', {
       api: opts.api,
       project_id: project_id,
@@ -104,7 +110,6 @@ import './admin/index.tag'
     })
   })
   riot.route('projects/*/quotes/*', (project_id, id) => {
-    console.log(this.currentAccount && this.currentAccount.isCustomer)
     riot.mount(this.content, 'r-quotes-form', {
       api: opts.api,
       project_id: project_id,

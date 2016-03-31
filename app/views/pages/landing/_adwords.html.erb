@@ -1,0 +1,69 @@
+<!-- Benefits section -->
+<section class="container center px2 py4">
+  <a name="benefits"></a>
+  <h1 class="h1-responsive mt0 mb4">What 1ROOF does for you</h1>
+  <div class="clearfix">
+    <%= render partial: 'pages/landing/components/benefit', locals: {
+      image: 'benefits/project_hub1_dk.png',
+      title: 'Creates the<br>perfect brief',
+      description: 'Saves you time!'
+    } %>
+    <%#= render partial: 'pages/landing/components/benefit', locals: {
+      image: 'benefits/advice_dk.png',
+      title: 'Expert Advice',
+      description: 'helps you create a brief'
+    } %>
+    <%#= render partial: 'pages/landing/components/benefit', locals: {
+      image: 'benefits/handpicked_pros_dk.png',
+      title: 'Handpicked Pros',
+      description: 'all vetted and insured'
+    } %>
+    <%= render partial: 'pages/landing/components/benefit', locals: {
+      image: 'benefits/quotes_dk.png',
+      title: 'Gets competitive<br>quotes',
+      description: 'Saves you money!'
+    } %>
+    <%#= render partial: 'pages/landing/components/benefit', locals: {
+      image: 'benefits/material_discounts_dk.png',
+      title: 'Material Discounts',
+      description: 'from top suppliers'
+    } %>
+    <%= render partial: 'pages/landing/components/benefit', locals: {
+      image: 'benefits/payment_schedule_dk.png',
+      title: 'Manages safe<br>payment',
+      description: 'Saves you stress!'
+    } %>
+  </div>
+</section>
+
+<!-- Recommendations Section -->
+<section class="center">
+  <a name="recommendations"></a>
+  <h1 class="h1-responsive px2 py4">Happy People</h1>
+  <div class="clearfix">
+    <%= render partial: 'pages/landing/components/recommendation_2', locals: {
+      image: 'recommendations/living.jpg',
+      name: 'Nigel',
+      project_type: 'Redecoration',
+      comment: "I found Sam through 1ROOF who did a great job with my renovation. Everything went extremely smoothly."
+    }%>
+    <%= render partial: 'pages/landing/components/recommendation_2', locals: {
+      image: 'recommendations/bathroom.jpg',
+      name: 'Zosia',
+      project_type: 'Kitchen Refurb',
+      comment: "Not having to worry about payment meant that everyone got on much better. I will always 1ROOF now!"
+    }%>
+    <%= render partial: 'pages/landing/components/recommendation_2', locals: {
+      image: 'recommendations/kitchen.jpg',
+      name: 'Richard',
+      project_type: 'Loft conversion',
+      comment: "It was nice to have all the plans stored nice and neatly online so you always know what's going on."
+    }%>
+  </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="container center px2 py4">
+  <h1 class="h1-responsive px2 py4">Get in touch now</h1>
+  <r-leads-form query="{opts.query}"></r-leads-form>
+</section>

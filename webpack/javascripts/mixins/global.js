@@ -107,5 +107,24 @@ riot.mixin({
   },
   closeModal: function () {
     $('r-modal')[0] && $('r-modal')[0]._tag && $('r-modal')[0]._tag.close()
+  },
+  gaSend: function () {
+    var params = Array.prototype.slice.call(arguments)
+    params.unshift('send')
+    console.log(params)
+    //ga.apply(ga, params)
+  },
+  sendGALeadConfirmationConversion: function () {
+    var google_conversion_id = 913725911;
+    var google_conversion_language = "en";
+    var google_conversion_format = "3";
+    var google_conversion_color = "ffffff";
+    var google_conversion_label = "VbuCCK7d7WIQ17PZswM";
+    var google_remarketing_only = false;
+    return $.getScript('//www.googleadservices.com/pagead/conversion.js').then( () => {
+      var image = new Image()
+      image.src = '//www.googleadservices.com/pagead/conversion/913725911/?label=VbuCCK7d7WIQ17PZswM&amp;guid=ON&amp;script=0'
+      return image
+    })
   }
 })
