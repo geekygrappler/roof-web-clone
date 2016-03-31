@@ -427,9 +427,6 @@ namespace :migrate do
   #   end
   # end
 
-
-
-
   task :leads => :environment do
     #id,quote_id,amount,fee_percentage,is_paid,paid_at,payment_summary,
     #created_at,updated_at,reference,due_date,approved,slug,token
@@ -453,7 +450,28 @@ namespace :migrate do
     end
   end
 
-  task :all => [:administrators, :customers, :professionals, :projects, :assets, :shortlists, :tender_templates, :tenders, :quotes, :payments, :leads, :"jobs:clear"]
+  task :bot => :environment do
+    Account.create(email: 'bot@1roof.com', password: 'password', user_attributes: {type: 'Administrator', profile: {first_name: 'Bot', last_name: 'Roof', phone_number: '1roof.com'}})
+  end
+
+  task :fix_project_type => :environment do
+    Project.all.map{ |p|
+      if p.name.downcase.include?('bathroom')
+        p.kind = 'bathroom'
+      elsif p.name.downcase.include?('kitchen')
+        p.kind = 'kitchen'
+      elsif p.name.downcase.include?('extension')
+        p.kind = 'extension'
+      elsif p.name.downcase.include?('renovation')
+        p.kind = 'renovation'
+      elsif p.name.downcase.include?('redecoration')
+        p.kind = 'redecoration'
+      end
+      p.save
+    }
+  end
+
+  task :all => [:administrators, :customers, :professionals, :projects, :assets, :shortlists, :tender_templates, :tenders, :quotes, :payments, :leads, :bot, :"jobs:clear"]
 end
 
 

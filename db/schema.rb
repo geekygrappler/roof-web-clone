@@ -42,9 +42,9 @@ ActiveRecord::Schema.define(version: 20160331112208) do
     t.string   "actor_type"
     t.integer  "subject_id"
     t.string   "subject_type"
-    t.jsonb    "data"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.jsonb    "data",         default: {}
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
   end
 
   add_index "activities", ["actor_type", "actor_id"], name: "index_activities_on_actor_type_and_actor_id", using: :btree
