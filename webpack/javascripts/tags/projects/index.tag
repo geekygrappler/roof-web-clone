@@ -22,10 +22,10 @@
             <div class="sm-col sm-col-3 ">
               <span each="{acc in customers}" class="px1 border border-yellow mr1 mb1 h6 inline-block truncate">{acc.full_name}</span>
             </div>
-            <div class="sm-col sm-col-3 ">
+            <div class="sm-col sm-col-3 " if="{!currentAccount.isProfessional}">
               <span each="{acc in shortlist}" class="px1 border border-orange mr1 mb1 h6 inline-block truncate">{acc.full_name}</span>
             </div>
-            <div class="sm-col sm-col-3">
+            <div class="sm-col sm-col-3" if="{!currentAccount.isProfessional}">
               <span each="{acc in professionals}" class="px1 border border-red mr1 mb1 h6 inline-block truncate">{acc.full_name} *</span>
             </div>
             <div class="sm-col sm-col-3 ">
