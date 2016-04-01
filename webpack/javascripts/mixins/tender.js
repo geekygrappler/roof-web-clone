@@ -66,9 +66,11 @@ riot.mixin('tenderMixin', {
     this.removeSection = (e) => {
       e.preventDefault()
       if (window.confirm(this.ERRORS.CONFIRM_DELETE)) {
-        let index = _.findIndex(this.record.document.sections, s => s.id == e.item.id)
-        this.record.document.sections.splice(index, 1)
-        this.update()
+        var index = _.findIndex(this.record.document.sections, s => s.id == e.item.section.id)
+        if (index > -1) {
+          this.record.document.sections.splice(index, 1)
+          this.update()
+        }
       }
     }
     this.sectionTotal = (section, formatted = false) => {

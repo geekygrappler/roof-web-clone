@@ -32066,10 +32066,12 @@
 	      e.preventDefault();
 	      if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
 	        var index = _.findIndex(_this.record.document.sections, function (s) {
-	          return s.id == e.item.id;
+	          return s.id == e.item.section.id;
 	        });
-	        _this.record.document.sections.splice(index, 1);
-	        _this.update();
+	        if (index > -1) {
+	          _this.record.document.sections.splice(index, 1);
+	          _this.update();
+	        }
 	      }
 	    };
 	    this.sectionTotal = function (section) {
