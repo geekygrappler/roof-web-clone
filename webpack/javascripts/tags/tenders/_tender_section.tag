@@ -5,7 +5,7 @@ let taskActions = require("json!../../data/task_actions.json")
     <div class="relative border-bottom mt2">
       <h3 class="block overflow-hidden mb0">
         <i data-handle class="absolute left-0 top-0 mt1 cursor-pointer fa fa-{ icon }" onclick="{changeIcon}"></i>
-        <input type="text" class="block col-12 field border-none tender-section-name"
+        <input type="text" class="block col-12 field border-none tender-section-name h3"
         value="{ section.name.humanize() }" oninput="{renameSection}">
       </h3>
       <a class="absolute right-0 top-0 btn btn-small border-red red" onclick="{removeSection}"><i class="fa fa-trash-o"></i></a>
@@ -41,16 +41,16 @@ let taskActions = require("json!../../data/task_actions.json")
       </div>
 
     </div>
-    <h4 class="right-align">{section.name}: { sectionTotal(section, true) }</h4>
+    <h3 class="right-align">{section.name}: { sectionTotal(section, true) }</h3>
   </div>
 
   <script>
   this.taskActions = _.omit(taskActions, 'Materials', 'VAT')
   this.showDisclosures = true
-  this.icon = 'folder-open-o'
+  this.icon = 'plus-square-o'
 
   this.changeIcon = (e) => {
-    this.icon = $('[data-details]', this.root).hasClass('display-none') ? 'folder-open-o' : 'folder-o'
+    this.icon = $('[data-details]', this.root).hasClass('display-none') ? 'plus-square-o' : 'minus-square-o'
   }
 
   this.on('update', () => {

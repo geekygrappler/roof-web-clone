@@ -14,7 +14,7 @@ gem 'puma'
 gem 'font-awesome-rails'
 gem 'active_model_serializers', github: "rails-api/active_model_serializers"
 
-gem 'roof_api', '0.0.5.fix14a'
+gem 'roof_api', '0.0.5.fix15a'
 #gem 'roof_api', path: '../roof-api'
 gem 'carrierwave', git: 'https://github.com/carrierwaveuploader/carrierwave.git'
 gem 'fog-aws'
@@ -22,9 +22,7 @@ gem 'rails_12factor'
 gem 'delayed_job_active_record'
 gem 'clockwork'
 # only for migration
-gem 'refile', '~> 0.6.2', require: "refile/rails"
-gem 'refile-mini_magick', github: 'refile/refile-mini_magick'
-gem 'refile-s3'
+
 
 group :development, :test do
   gem 'byebug'

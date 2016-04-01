@@ -250,10 +250,11 @@ apis.registrations.update = function (id, data) {
   })
 }
 
-apis.quotes.submit = function (id) {
+apis.quotes.submit = function (id, data) {
   return request({
     url: `/api/quotes/${id}/submit`,
-    type: 'put'
+    type: 'put',
+    data: {quote: data}
   })
   .fail((xhr) => {
     apis.quotes.trigger('update.fail', xhr)

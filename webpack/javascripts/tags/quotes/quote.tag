@@ -6,10 +6,19 @@ import from '../../mixins/tender.js'
     <r-header api="{opts.api}"></r-header>
   </yield>
 
-  <div class="container p2 {readonly: isReadonly()}">
-    <h1><a class="btn btn-small h6 btn-outline orange" href="/app/projects/{record.project_id}"><i class="fa fa-chevron-left"></i> Back to Project</a>
-      { opts.id ? getTitle() : 'New Quote' }
-    </h1>
+  <div class="container p2 {readonly: isReadonly()} border">
+    <div class="clearfix">
+      <div class="left mb4 overflow-hidden">
+        <h1 class="mb0">{ opts.id ? getTitle() : 'New Quote' }</h1>
+        <a class="btn btn-small h6 btn-outline orange" href="/app/projects/{record.project_id}"><i class="fa fa-chevron-left"></i> Back to Project</a>
+      </div>
+      <div class="right h5 mt3 align-right">
+        <div>Created at: {formatTime(record.created_at)}</div>
+        <div if="{record.submitted_at}">Submitted at: {formatTime(record.submitted_at)}</div>
+        <div if="{record.accepted_at}">Accepted at: {formatTime(record.accepted_at)}</div>
+      </div>
+    </div>
+
 
     <div if="{currentAccount.isAdministrator}">
     <label for="project_id">Professional</label>
@@ -20,7 +29,21 @@ import from '../../mixins/tender.js'
     <label for="tender_id">Tender</label>
     <input type="hidden" name="tender_id" value="{record.tender_id}">
     <r-typeahead-input resource="tenders" api="{ opts.api }" id="{record.tender_id}" filters="{tenderFilters()}" datum_tokenizer="{['id', 'total_amount']}"></r-typeahead-input>
-    <span if="{errors.tender_id}" class="inline-error">{errors.project}</span>
+    <span if="{errors.tender_id}" class="inline-error">{errors.tender_id}</span>
+    </div>
+
+    <div class="clearfix mb4">
+      <div class="sm-col sm-col-6">
+        <h4>From</h4>
+        <address>
+          {record.professional.profile.first_name} {record.professional.profile.last_name}<br>
+          <virtual if="{!isAllValuesEmpty(record.professional.address)}">
+            {record.professional.address.street_address}<br>
+            {record.professional.address.postcode}, {record.professional.address.city}<br>
+            {record.professional.address.country}
+          </virtual>
+        </address>
+      </div>
     </div>
 
     <r-tender-section each="{ section , i in record.document.sections }" ></r-tender-section>
@@ -39,7 +62,27 @@ import from '../../mixins/tender.js'
     <h3 class="right-align m0">Total{ record.document.include_vat ? '(Inc. VAT)' : ''}: { tenderTotal() }</h3>
     </div>
 
-    <form name="form" onsubmit="{ submit }" class="right-align">
+    <form name="form" onsubmit="{ submit }">
+
+      <div class="clearfix mxn2">
+        <div class="sm-col sm-col-6 px2">
+        <label>Insurance Amount</label>
+        <select name="insurance_amount" class="block col-12 field mb2" onchange="{setVal}">
+          <option>Select</option>
+          <option each="{_, i in new Array(19)}" key="0" value="{(i+1)}" selected="{record.insurance_amount == (i+1)}">{(i+1) + ' Million'}</option>
+        </select>
+        </div>
+        <div class="sm-col sm-col-6 px2">
+        <label>Guarantee Length</label>
+        <select name="guarantee_length" class="block col-12 field mb2" onchange="{setVal}">
+          <option>Select</option>
+          <option each="{_, i in new Array(19)}" key="0" value="{(i+1)}" selected="{record.guarantee_length == (i+1)}">{(i+1) + (i > 0 ? ' Years' : ' Year')}</option>
+        </select>
+        </div>
+      </div>
+
+      <label>Summary</label>
+      <textarea type="text" name="summary" placeholder="Summary" class="block col-12 field mb2" oninput="{setVal}">{record.summary}</textarea>
 
       <div if="{errors}" id="error_explanation" class="left-align">
         <ul>
@@ -47,16 +90,18 @@ import from '../../mixins/tender.js'
         </ul>
       </div>
 
+      <div class="right-align">
+        <button if="{opts.id && !currentAccount.isProfessional && record.submitted_at}"
+        class="btn btn-primary btn-big {busy: busy}" onclick="{acceptQuote}" disabled="{record.accepted_at}">
+        {record.accepted_at ? 'Accepted' : 'Accept'} <span if="{record.accepted_at}">{fromNow(record.accepted_at)}</span>
+        </button>
 
-      <button if="{opts.id && !currentAccount.isProfessional && record.submitted_at}"
-      class="btn btn-primary btn-big {busy: busy}" onclick="{acceptQuote}" disabled="{record.accepted_at}">
-      {record.accepted_at ? 'Accepted' : 'Accept'} <span if="{record.accepted_at}">{fromNow(record.accepted_at)}</span>
-      </button>
+        <virtual if="{!opts.readonly && !currentAccount.isCustomer}">
+          <button type="submit" class="btn btn-primary btn-big {busy: busy}">Save</button>
+          <a if="{opts.id}" class="btn bg-green white btn-big {busy: busy}" onclick="{submitQuote}">Submit</a>
+        </virtual>
+      </div>
 
-      <virtual if="{!opts.readonly && !currentAccount.isCustomer}">
-        <button type="submit" class="btn btn-primary btn-big {busy: busy}">Save</button>
-        <a if="{opts.id}" class="btn bg-green white btn-big {busy: busy}" onclick="{submitQuote}">Submit</a>
-      </virtual>
     </form>
   </div>
   <script>
@@ -83,7 +128,6 @@ import from '../../mixins/tender.js'
     }
 
     this.isReadonly = () => {
-      console.log('isReadonly', this.opts.readonly)
       return this.opts.readonly
     }
 
@@ -107,6 +151,10 @@ import from '../../mixins/tender.js'
     } else {
       this.record = {project_id: this.opts.project_id, document: {sections: []}}
       if (this.currentAccount.isProfessional) this.record.professional_id = this.currentAccount.user_id
+    }
+
+    this.setVal = (e) => {
+      this.record[e.target.name] = e.target.value
     }
 
     this.submit = (e) => {
@@ -152,7 +200,7 @@ import from '../../mixins/tender.js'
       if (this.opts.id) {
         if (e) e.preventDefault()
         this.update({busy: true})
-        this.opts.api.quotes.submit(this.opts.id)
+        this.opts.api.quotes.submit(this.opts.id, this.record)
         .fail(this.errorHandler)
         .then(id => this.update({busy:false}))
       }

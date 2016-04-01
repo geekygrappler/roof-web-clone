@@ -1,11 +1,13 @@
-<r-tender-item-group>
-  <ul class="list-reset ml2 -border-left mb0 relative">
+<r-tender-item-group class="{last: drawBorderCleaner()}">
+  <ul class="list-reset ml2 mb0 relative">
     <li>
       <h4 class="inline-block mb0 mt1 p1 border-bottom ">
-        <select if="{group.toLowerCase() == 'other'}" onchange="{changeTaskAction}">
+        <!--<select if="{group.toLowerCase() == 'other'}" onchange="{changeTaskAction}">
           <option each="{val, name in opts.task_actions}" value="{val}" selected="{val == 'Other'}">{name}</option>
-        </select>
-        <a if="{group.toLowerCase() != 'other'}" onclick="{toggle}" class="cursor-pointer">{ group.humanize() }</a>
+        </select>-->
+        <a onclick="{toggle}" class="cursor-pointer">
+          <i class="fa fa-{ icon } mr1"></i> { group.humanize() }
+        </a>
       </h4>
       <ul class="list-reset ml2 border-left mb0" if="{visible}">
         <li if="{drawHeader()}" class="sm-show relative">
@@ -21,7 +23,7 @@
       </ul>
     </li>
   </ul>
-  <h5 class="right-align">{formatCurrency(total())}<h5>
+  <h5 class="right-align mb0">{formatCurrency(total())}</h5>
 
   <script>
   let itemKeys
@@ -30,9 +32,16 @@
 
   this.visible = true
 
+  this.icon = 'plus-square-o'
+
+  this.changeIcon = (e) => {
+    this.icon = this.visible ? 'plus-square-o' : 'minus-square-o'
+  }
+
   this.toggle = (e) => {
     e.preventDefault()
     this.visible = !this.visible
+    this.changeIcon(e)
   }
 
   this.total = () => {

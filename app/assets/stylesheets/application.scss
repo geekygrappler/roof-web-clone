@@ -174,7 +174,20 @@ nav a:hover {
   display: none
 }
 
-r-tender-item-group .border-bottom, r-tender-section .border-bottom {
+r-tender-item-group {
+  display: block;
+      display: block;
+      border-left: 1px dashed $silver;
+}
+r-tender-item-group.last ul ul::before {
+  content: " ";
+  border: 4px solid white;
+  position: absolute;
+  height: 100%;
+  left: -1.25rem;
+}
+r-tender-item-group .border-bottom,
+r-tender-section .border-bottom {
   border-bottom-style: dashed;
 }
 r-tender-item-group .border-left {

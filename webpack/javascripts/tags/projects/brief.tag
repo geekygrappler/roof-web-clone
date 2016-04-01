@@ -145,7 +145,7 @@ import '../arrange_callback.tag'
       </div>
       <div class="right-align">
         <a class="btn btn-big mb4" onclick="{ prevStep }">Back</a>
-        <button class="btn btn-big btn-primary mb4 {busy: busy}" type="submit">Correct! Make it happen</button>
+        <button class="btn btn-big btn-primary mb4 {busy: busy}" disabled="{busy}" type="submit">Correct! Make it happen</button>
       </div>
     </div>
   </section>
