@@ -21,7 +21,7 @@
       </ul>
     </li>
   </ul>
-  <h5 class="right-align">Group total: {formatCurrency(total())}<h5>
+  <h5 class="right-align">{formatCurrency(total())}<h5>
 
   <script>
   let itemKeys

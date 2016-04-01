@@ -41,7 +41,7 @@ let taskActions = require("json!../../data/task_actions.json")
       </div>
 
     </div>
-    <h4 class="right-align">Section total: { sectionTotal(section, true) }</h4>
+    <h4 class="right-align">{section.name}: { sectionTotal(section, true) }</h4>
   </div>
 
   <script>

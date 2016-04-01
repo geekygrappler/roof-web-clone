@@ -140,6 +140,13 @@ nav a:hover {
   &.align-left{
     text-align: left;
   }
+  &.price {
+    text-indent: 0.5rem
+  }
+}
+.fa-gbp.absolute{
+  margin-top: 0.25rem;
+  color: $teal;
 }
 
 .btn.busy {

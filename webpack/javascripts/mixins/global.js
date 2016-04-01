@@ -16,7 +16,7 @@ riot.mixin({
     'ASSET_ASSIGNMENT': 'We got your brief, but unfortunately your files lost on the way to us',
     'BLANK': 'cannot be blank',
     'CONFIRM_DELETE': 'Are you sure to delete?',
-    'CONFIRM_UNSAVED_CHANGES': 'You have unsaved changes!'
+    'CONFIRM_UNSAVED_CHANGES': 'You have unsaved changes!, if you click OK they will be lost, click cancel to keep them.'
   },
   init: function () {
     if (this.parent && this.parent.opts.api) this.opts.api = this.parent.opts.api
