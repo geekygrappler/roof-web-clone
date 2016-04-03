@@ -32,7 +32,7 @@ import Handlebars from 'handlebars/dist/handlebars'
       queryTokenizer: Bloodhound.tokenizers.whitespace,
       sufficient: 1,
       remote: {
-        url: `/api/${this.opts.resource}?query=%QUERY`,
+        url: `/api/${this.opts.resource}?limit=100&query=%QUERY`,
         wildcard: '%QUERY',
         prepare: (query, settings) => {
           settings.url = settings.url.replace('%QUERY', query)

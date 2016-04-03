@@ -479,6 +479,12 @@ namespace :migrate do
     }
   end
 
+  task :fix_total_amounts => :environment do
+    Quote.all.map{|o| o.save(validate: false)}
+    Tender.all.map{|o| o.save(validate: false)}
+    TenderTemplate.all.map{|o| o.save(validate: false)}
+  end
+
 
 
   task :all => [:administrators, :customers, :professionals, :projects, :assets, :shortlists, :tender_templates, :tenders, :quotes, :payments, :leads, :bot, :"jobs:clear"]

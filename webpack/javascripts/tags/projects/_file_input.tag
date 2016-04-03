@@ -38,6 +38,8 @@
       url: '/api/assets',
       dropZone: $('.dropzone', this.parent.root),
       add: (e, data) => {
+        this.parent.update({busy: true})
+        
         // not a new project? then assign assets directly to it
         if (opts.record.id) data.formData = {'asset[project_id]': opts.record.id}
 
@@ -54,7 +56,7 @@
             reader = null; // do not leak memory
             file = null;
           }
-          console.log(file)
+
           if (file.type.startsWith('image')) {
             reader.readAsDataURL(file)
           } else {
@@ -62,7 +64,7 @@
             files.push(result)
           }
           opts.record[opts.name] = files
-          this.parent.update()
+          this.parent.update({busy: false})
         })
         .error((jqXHR, textStatus, errorThrown) => {
           console.error('upload err', textStatus)

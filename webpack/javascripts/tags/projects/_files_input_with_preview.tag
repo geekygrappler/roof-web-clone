@@ -3,7 +3,7 @@
 
     <r-file-input name="{ opts.name }" record="{ opts.record }" data-accept="{ opts.data_accept }" accept="{ opts.accept }"></r-file-input>
 
-    <div class="border center dropzone">
+    <div class="border center dropzone {busy: busy}">
       <i class="fa fa-plus fa-2x mt3"></i>
       <p>Drag and drop your documents here or click to select</p>
     </div>
@@ -15,6 +15,7 @@
             <a class="cursor-zoom" href="{ asset.file.url }" target="_blank">
             <img src="{ asset.content_type.indexOf('image') > -1 ? asset.file.thumb.url : asset.file.cover.url }"/>
             </a>
+            <br><span>{filename(asset.file.url)}</span>
             <br><a class="btn btn-small" onclick="{ destroy }" ><i class="fa fa-times"></i></a>
         </div>
       </div>
@@ -23,6 +24,7 @@
   </div>
 
   <script>
+
   this.destroy = (e) => {
     if (window.confirm(this.ERRORS.CONFIRM_DELETE)) {
 

@@ -13,7 +13,7 @@ import Pikaday from 'pikaday-time/pikaday'
     <label for="project_id">Project</label>
 
     <input type="hidden" name="project_id" value="{record.project_id}">
-    <r-typeahead-input resource="projects" api="{ opts.api }" id="{record.project_id}" datum_tokenizer="{['name', 'account_email']}"></r-typeahead-input>
+    <r-typeahead-input resource="projects" api="{ opts.api }" id="{record.project_id}" datum_tokenizer="{['name', 'customers.0.full_name']}"></r-typeahead-input>
     <span if="{errors.project_id}" class="inline-error">{errors.project_id}</span>
 
     <label for="professional_id">Professional</label>
@@ -67,7 +67,11 @@ import Pikaday from 'pikaday-time/pikaday'
     this.update({busy: true, errors: null})
     this.opts.api[opts.resource].approve(opts.id, data)
     .fail(this.errorHandler)
-    .then(this.updateReset)
+    .then(id => {
+      this.record.fee = data.fee * 100
+      this.record.amount = data.amount * 100
+      this.updateReset()
+    })
   }
 
   this.refund = (e) => {

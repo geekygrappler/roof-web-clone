@@ -58,6 +58,10 @@ riot.mixin({
     }
     return xhr
   },
+  filename: function (url) {
+    let names = url.split('/')
+    return names[names.length - 1]
+  },
   formatCurrency: function (number) {
     return numeral(number / 100).format('$0,0.00');
   },

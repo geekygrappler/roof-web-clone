@@ -103,7 +103,9 @@ import from '../../mixins/tender.js'
 
         <virtual if="{!opts.readonly && !currentAccount.isCustomer}">
           <button type="submit" class="btn btn-primary btn-big {busy: busy}">Save</button>
-          <a if="{opts.id}" class="btn bg-green white btn-big {busy: busy}" onclick="{submitQuote}">Submit</a>
+          <a if="{opts.id}" class="btn bg-green white btn-big {busy: busy}" onclick="{submitQuote}">
+            {record.submitted_at ? 'Submitted' : 'Submit'} <span if="{record.submitted_at}">{fromNow(record.submitted_at)}</span>
+          </a>
         </virtual>
       </div>
 
@@ -207,7 +209,10 @@ import from '../../mixins/tender.js'
         this.update({busy: true})
         this.opts.api.quotes.submit(this.opts.id, this.record)
         .fail(this.errorHandler)
-        .then(id => this.update({busy:false}))
+        .then(id => {
+          this.record.submitted_at = new Date()
+          this.update({busy:false})
+        })
       }
     }
 
