@@ -2,9 +2,7 @@
   <ul class="list-reset ml2 mb0 relative">
     <li>
       <h4 class="inline-block mb0 mt1 p1 border-bottom ">
-        <!--<select if="{group.toLowerCase() == 'other'}" onchange="{changeTaskAction}">
-          <option each="{val, name in opts.task_actions}" value="{val}" selected="{val == 'Other'}">{name}</option>
-        </select>-->
+
         <a onclick="{toggle}" class="cursor-pointer">
           <i class="fa fa-{ icon } mr1"></i> { group.humanize() }
         </a>
@@ -67,11 +65,6 @@
     if (this.isMounted) {
       return itemKeys.indexOf(this.group) == itemKeys.length - 1
     }
-  }
-
-  this.changeTaskAction = (e) => {
-    _.map(this.items, item => item.action = e.target.value)
-    this.update()
   }
 
   this.headers = this.opts.headers

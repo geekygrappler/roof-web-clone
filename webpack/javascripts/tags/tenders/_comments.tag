@@ -11,9 +11,10 @@
 
 
   <form name="form" onsubmit="{create}" class="mt2">
+    <input type="hidden" name="project_id" value="{opts.project.id}" >
     <input type="hidden" name="account_id" value="{currentAccount.id}" >
-    <input type="hidden" name="commentable_id" value="{this.opts.item.id}" >
-    <input type="hidden" name="commentable_type" value="{this.opts.item.action ? 'Task' : 'Material'}" >
+    <input type="hidden" name="commentable_id" value="{opts.item.id}" >
+    <input type="hidden" name="commentable_type" value="{opts.item.action ? 'Task' : 'Material'}" >
     <textarea class="block col-12 mb2 field" name="text" placeholder="Leave your comment"></textarea>
     <button class="btn btn-primary {busy: busy}" disabled="{busy}">Comment</button>
   </form>

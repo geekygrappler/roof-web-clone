@@ -67,22 +67,27 @@ import from '../../mixins/tender.js'
       <div class="clearfix mxn2">
         <div class="sm-col sm-col-6 px2">
         <label>Insurance Amount</label>
-        <select name="insurance_amount" class="block col-12 field mb2" onchange="{setVal}">
+
+        <select name="insurance_amount" class="block col-12 field mb2" onchange="{setVal}" if="{!currentAccount.isCustomer}">
           <option>Select</option>
           <option each="{_, i in new Array(19)}" key="0" value="{(i+1)}" selected="{record.insurance_amount == (i+1)}">{(i+1) + ' Million'}</option>
         </select>
+        <p if="{currentAccount.isCustomer}">{record.insurance_amount ?  record.insurance_amount + ' Million' : 'N/A'}</p>
         </div>
+
         <div class="sm-col sm-col-6 px2">
         <label>Guarantee Length</label>
-        <select name="guarantee_length" class="block col-12 field mb2" onchange="{setVal}">
+        <select name="guarantee_length" class="block col-12 field mb2" onchange="{setVal}" if="{!currentAccount.isCustomer}">
           <option>Select</option>
           <option each="{_, i in new Array(19)}" key="0" value="{(i+1)}" selected="{record.guarantee_length == (i+1)}">{(i+1) + (i > 0 ? ' Years' : ' Year')}</option>
         </select>
+        <p if="{currentAccount.isCustomer}">{record.guarantee_length ? record.guarantee_length + ' Years' : 'N/A'} </p>
         </div>
       </div>
 
       <label>Summary</label>
-      <textarea type="text" name="summary" placeholder="Summary" class="block col-12 field mb2" oninput="{setVal}">{record.summary}</textarea>
+      <textarea type="text" name="summary" placeholder="Summary" class="block col-12 field mb2" oninput="{setVal}" if="{!currentAccount.isCustomer}">{record.summary}</textarea>
+      <p if="{currentAccount.isCustomer}">{record.summary ? record.summary : 'N/A'}</p>
 
       <div if="{errors}" id="error_explanation" class="left-align">
         <ul>

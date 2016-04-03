@@ -5,6 +5,9 @@ import './_comments.tag'
     <div if="{opts.border_cleaner}" class="border-cleaner absolute"></div>
     <div class="clearfix animate p1 border-bottom">
       <div if="{ parent.headers.name }" class="sm-col sm-col-{ parent.headers.name } mb1 sm-mb0">
+        <select if="{action.toLowerCase() == 'other'}" onchange="{changeTaskAction}">
+          <option each="{val, name in parent.opts.task_actions}" value="{val}" selected="{val == 'Other'}">{name}</option>
+        </select>
         <input type="text" name="name" value="{ display_name || name }"
         class="fit field inline-input align-left col-12" oninput="{ inputname }" />
         <hr class="sm-hide">
@@ -16,12 +19,12 @@ import './_comments.tag'
       </div>
 
       <div if="{ parent.headers.price }" class="col sm-col-{ parent.headers.price } col-{parent.opts.name == 'task' ? 3 : 2} center relative">
-        <i class="fa fa-gbp absolute left-0 top-0 z1 m1"></i><input type="number" name="price" value="{ parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0) }"
+        <i class="fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white"></i><input type="number" name="price" value="{ parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0) }"
         disabled="{ parent.opts.name == 'material' && !supplied }" step="1" min="0" class="fit field inline-input center price" oninput="{ input }" />
       </div>
 
       <div if="{ parent.headers.total_cost }" class="col sm-col-{ parent.headers.total_cost } col-3 center relative">
-        <i class="fa fa-gbp absolute left-0 top-0 z1 m1"></i><input type="number" value="{parent.opts.name == 'task' ? (price / 100 * quantity) : (supplied ? price / 100 * quantity : '0')}"
+        <i class="fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white"></i><input type="number" value="{parent.opts.name == 'task' ? (price / 100 * quantity) : (supplied ? price / 100 * quantity : '0')}"
         step="1" min="0" class="fit field inline-input center price" oninput="{ inputTotalCost }" >
       </div>
 
@@ -32,12 +35,13 @@ import './_comments.tag'
 
       <div if="{ parent.headers.actions }" class="col sm-col-{ parent.headers.actions } col-2 center">
         <a href="#" class="btn btn-small border-red red" onclick="{ removeItem }"><i class="fa fa-trash-o"></i></a>
-        <a href="#" class="btn btn-small border" onclick="{ openComments }"><i class="fa fa-comment-o"></i></a>
+        <a href="#" if="{parent && parent.parent && parent.parent.record.id}" class="btn btn-small border" onclick="{ openComments }"><i class="fa fa-comment-o"></i></a>
       </div>
     </div>
   </li>
 
   <script>
+
   this.on('mount', () => {
     // $('.animate', this.root).animateCss('bounceIn')
   })
@@ -74,8 +78,16 @@ import './_comments.tag'
       content: 'r-comments',
       persisted: false,
       api: opts.api,
-      contentOpts: {api: opts.api, commentable: this.parent.parent.record, item: e.item}
+      contentOpts: {api: opts.api, project: this.parent.parent.record, item: e.item}
     })
   }
+
+  this.changeTaskAction = (e) => {
+    e.item.action = e.target.value
+    this.update()
+    this.parent.update()
+    this.opts.api.tenders.trigger('update')
+  }
+
   </script>
 </r-tender-item>

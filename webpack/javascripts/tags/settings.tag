@@ -16,21 +16,55 @@ import Pikaday from 'pikaday-time/pikaday'
   </form>
 
   <script>
-  this.notifications = [
-    'added_to_professionals',
-    'appointment_canceled',
-    'lead',
-    'new_appointment',
-    'new_payment',
-    'new_project',
-    'payment_approved',
-    'payment_canceled',
-    'payment_paid',
-    'payment_refunded',
-    'quote_accepted',
-    'quote_submitted',
-    'welcome'
-  ]
+  if (this.currentAccount.isCustomer) {
+    this.notifications = [
+      'added_to_professionals',
+      'appointment_canceled',
+      'appointment_upcoming',
+      'new_appointment',
+      'new_payment',
+      'new_project',
+      'payment_canceled',
+      'payment_refunded',
+      'payment_due',
+      'quote_submitted',
+      'welcome',
+      'new_comment'
+    ]
+  } else if (this.currentAccount.isProfessional) {
+    this.notifications = [
+      'added_to_professionals',
+      'appointment_canceled',
+      'new_appointment',
+      'new_payment',
+      'new_project',
+      'payment_approved',
+      'payment_canceled',
+      'payment_paid',
+      'quote_accepted',
+      'quote_submitted',
+      'welcome',
+      'new_comment'
+    ]
+  } else {
+    this.notifications = [
+      'added_to_professionals',
+      'appointment_canceled',
+      'lead',
+      'new_appointment',
+      'new_payment',
+      'new_project',
+      'payment_approved',
+      'payment_canceled',
+      'payment_paid',
+      'payment_refunded',
+      'quote_accepted',
+      'quote_submitted',
+      'welcome',
+      'new_comment'
+    ]
+  }
+
   this.submit = (e) => {
 
     e.preventDefault()

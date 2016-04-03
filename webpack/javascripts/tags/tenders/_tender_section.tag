@@ -25,7 +25,7 @@ let taskActions = require("json!../../data/task_actions.json")
         name="material"
         task_actions="{taskActions}"
         groupitems="{section.materials_by_group}"
-        if="{ section.materials && section.materials.length > 0 }"
+        show="{ section.materials && section.materials.length > 0 }"
         each="{ group, items in section.materials_by_group }"
         headers="{ parent.headers.material }"
         onitemremoved="{ removeItem }">
@@ -67,7 +67,7 @@ let taskActions = require("json!../../data/task_actions.json")
   this.tags.task.on('itemselected', (item) => {
     this.section.tasks = this.section.tasks || []
     let index = _.findIndex(this.section.tasks, task => task.id == item.id )
-    if (index < 0) {
+    if (index < 0 || typeof item.id === 'undefined') {
       this.section.tasks.push(item)
       this.update()
     }
@@ -75,11 +75,10 @@ let taskActions = require("json!../../data/task_actions.json")
   this.tags.material.on('itemselected', (item) => {
     this.section.materials = this.section.materials || []
     let index = _.findIndex(this.section.materials, mat => mat.id == mat.id )
-    if (index < 0) {
+    if (index < 0 || typeof item.id === 'undefined') {
       this.section.materials.push(item)
       this.update()
     }
-    this.update()
   })
 
   this.removeItem = (e, name) => {

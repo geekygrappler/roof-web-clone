@@ -132,3 +132,18 @@ payment:
       from: 'bot'
       to: 'subject.professional'
       name: 'payment_will_be_deposited'
+
+comment:
+  create:
+    -
+      from: 'bot'
+      to: 'subject.project.customers'
+      name: 'new_comment'
+    -
+      from: 'bot'
+      to: 'subject.project.administrators'
+      name: 'new_comment'
+    -
+      from: 'bot'
+      to: 'subject.project.professionals'
+      name: 'new_comment'
