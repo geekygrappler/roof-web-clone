@@ -26,6 +26,7 @@
 
     // // fetch FileList object
     var files = e.dataTransfer && e.dataTransfer.files.length > 0 ? e.dataTransfer.files : e.currentTarget.files
+
     this.uploader.fileupload('add', {
       files: files
     })
@@ -39,13 +40,28 @@
       add: (e, data) => {
         // not a new project? then assign assets directly to it
         if (opts.record.id) data.formData = {'asset[project_id]': opts.record.id}
+
         data.submit()
         .success((result, textStatus, jqXHR) => {
+
           let files = opts.record[opts.name] || []
-          files.push(result)
-
+          var file = _.last(data.files)
+          var reader = new FileReader()
+          reader.onload =  (_e) => {
+            result.file.thumb.url = _e.target.result
+            files.push(result)
+            this.parent.update()
+            reader = null; // do not leak memory
+            file = null;
+          }
+          console.log(file)
+          if (file.type.startsWith('image')) {
+            reader.readAsDataURL(file)
+          } else {
+            result.file.cover.url = "/images/file-document-icon.png"
+            files.push(result)
+          }
           opts.record[opts.name] = files
-
           this.parent.update()
         })
         .error((jqXHR, textStatus, errorThrown) => {

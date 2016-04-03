@@ -29453,6 +29453,7 @@
 	
 	    // // fetch FileList object
 	    var files = e.dataTransfer && e.dataTransfer.files.length > 0 ? e.dataTransfer.files : e.currentTarget.files;
+	
 	    _this.uploader.fileupload("add", {
 	      files: files
 	    });
@@ -29466,12 +29467,27 @@
 	      add: function (e, data) {
 	        // not a new project? then assign assets directly to it
 	        if (opts.record.id) data.formData = { "asset[project_id]": opts.record.id };
+	
 	        data.submit().success(function (result, textStatus, jqXHR) {
+	
 	          var files = opts.record[opts.name] || [];
-	          files.push(result);
-	
+	          var file = _.last(data.files);
+	          var reader = new FileReader();
+	          reader.onload = function (_e) {
+	            result.file.thumb.url = _e.target.result;
+	            files.push(result);
+	            _this.parent.update();
+	            reader = null; // do not leak memory
+	            file = null;
+	          };
+	          console.log(file);
+	          if (file.type.startsWith("image")) {
+	            reader.readAsDataURL(file);
+	          } else {
+	            result.file.cover.url = "/images/file-document-icon.png";
+	            files.push(result);
+	          }
 	          opts.record[opts.name] = files;
-	
 	          _this.parent.update();
 	        }).error(function (jqXHR, textStatus, errorThrown) {
 	          console.error("upload err", textStatus);
