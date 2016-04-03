@@ -28,7 +28,7 @@
 
   this.taskActions = opts.task_actions
 
-  this.visible = true
+  this.visible = false
 
   this.icon = 'plus-square-o'
 

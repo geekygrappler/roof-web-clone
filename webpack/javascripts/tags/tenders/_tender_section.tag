@@ -46,7 +46,7 @@ let taskActions = require("json!../../data/task_actions.json")
 
   <script>
   this.taskActions = _.omit(taskActions, 'Materials', 'VAT')
-  this.showDisclosures = true
+  //this.showDisclosures = true
   this.icon = 'plus-square-o'
 
   this.changeIcon = (e) => {

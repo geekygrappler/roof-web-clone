@@ -5,11 +5,11 @@ import './_comments.tag'
     <div if="{opts.border_cleaner}" class="border-cleaner absolute"></div>
     <div class="clearfix animate p1 border-bottom">
       <div if="{ parent.headers.name }" class="sm-col sm-col-{ parent.headers.name } mb1 sm-mb0">
+        <input type="text" name="name" value="{ display_name || name }"
+        class="fit field inline-input align-left col-12" oninput="{ inputname }" />
         <select if="{action.toLowerCase() == 'other'}" onchange="{changeTaskAction}">
           <option each="{val, name in parent.opts.task_actions}" value="{val}" selected="{val == 'Other'}">{name}</option>
         </select>
-        <input type="text" name="name" value="{ display_name || name }"
-        class="fit field inline-input align-left col-12" oninput="{ inputname }" />
         <hr class="sm-hide">
       </div>
 
