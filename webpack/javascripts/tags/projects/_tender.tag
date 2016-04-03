@@ -21,7 +21,6 @@
     <li if="{project.tender}" class="block p1 sm-col-12 align-top">
       <div class="px2 border">
         <h2 class="inline-block">{ formatCurrency(project.tender.total_amount) }</h2>
-        <span class="inline-block align-middle h6 mb1 px1 border pill right mt2">Tender</span>
 
         <div class="m0 mxn2">
         <r-tender-summary document="{project.tender.document}"></r-tender-summary>

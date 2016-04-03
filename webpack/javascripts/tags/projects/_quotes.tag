@@ -21,8 +21,20 @@ import './_project_payments.tag'
 
     <li each="{quotes}" class="block p1 sm-col-12 align-top">
       <div class="px2 border clearfix">
-        <h2 class="inline-block">{ formatCurrency(total_amount) }</h2>
-        <span class="inline-block align-middle h6 mb1 px1 border pill right mt2 mr1">Quote</span>
+        <h2 class="inline-block mb4">{ formatCurrency(total_amount) }</h2>
+
+
+        <div class="inline-block mt2 p2 border right">
+          <span if="{submitted_at}">
+            <i class="fa fa-clock-o mr1"></i> Submitted at: {fromNow(submitted_at)}<br>
+          </span>
+          <span if="{accepted_at}">
+            <i class="fa fa-clock-o mr1"></i> Accepted at: {fromNow(accepted_at)}<br>
+          </span>
+          <span>
+            <i class="fa fa-user mr1"></i> Professional: <strong>{ professional.profile.first_name } {professional.profile.last_name }</strong>
+          </span>
+        </div>
 
         <div class="tab-nav">
           <a class="btn btn-narrow border-left border-top border-right {active: activeTab == 'summary'}"
@@ -36,18 +48,6 @@ import './_project_payments.tag'
 
             <r-tender-summary document="{document}"></r-tender-summary>
 
-            <div class="inline-block m2 p2 border">
-              <span if="{submitted_at}">
-                <i class="fa fa-clock-o mr1"></i> Submitted at: {fromNow(submitted_at)}<br>
-              </span>
-              <span if="{accepted_at}">
-                <i class="fa fa-clock-o mr1"></i> Accepted at: {fromNow(accepted_at)}<br>
-              </span>
-              <span>
-                <i class="fa fa-user mr1"></i> Professional: <strong>{ professional.profile.first_name } {professional.profile.last_name }</strong>
-              </span>
-            </div>
-
             <div class="clearfix overflow-hidden p1 bg-yellow">
               <a class="btn btn-small bg-darken-2" href="/app/projects/{parent.opts.id}/quotes/{id}">Open</a>
               <a class="btn btn-small bg-darken-2" if="{!currentAccount.isCustomer && !accepted_at}" onclick="{delete}">Delete</a>
@@ -56,8 +56,9 @@ import './_project_payments.tag'
           </div>
 
           <div if="{activeTab == 'payments'}" class="mt2">
-            <r-project-payments api="{opts.api}" quote="{this}"></r-project-payments>
+            <r-project-payments api="{opts.api}" quote="{this}" payment_id="{parent.opts.payment_id}"></r-project-payments>
           </div>
+
         </div>
 
       </div>
@@ -65,11 +66,16 @@ import './_project_payments.tag'
   </ul>
 
   <script>
-  this.activeTab = 'summary'
+
+  this.activeTab = this.opts.tab || 'summary'
 
   this.changeTab = (e) => {
     e.preventDefault()
     this.update({activeTab: e.target.rel})
+    history.pushState(null,null,
+      this.activeTab == 'summary' ? window.location.href.replace('payments', 'quotes') :
+      window.location.href.replace('quotes','payments')
+    )
   }
 
   this.on('mount', () => {
@@ -77,7 +83,7 @@ import './_project_payments.tag'
     opts.api.quotes.on('index.success', this.updateQuote)
     opts.api.quotes.on('create.success', this.addQuote)
     opts.api.quotes.on('delete.success', this.removeQuote)
-    opts.api.quotes.index({project_id: opts.id})
+    opts.api.quotes.index({project_id: opts.id, id: opts.quote_id})
   })
 
   this.on('unmount', () => {

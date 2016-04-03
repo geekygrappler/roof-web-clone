@@ -1,4 +1,5 @@
 <r-project-payments>
+
   <table class="table-light">
     <thead>
       <tr>
@@ -6,7 +7,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr each="{payments}">
+      <tr each="{payments}" class="{id} {'bg-yellow': id == parent.opts.payment_id}">
         <td>{formatCurrency(amount)}</td>
         <td>{formatTime(due_date)}</td>
         <td>{status}</td>
@@ -46,6 +47,7 @@
       <a class="btn btn-small bg-darken-2" onclick="{openPaymentForm}">Add Payment</a>
     </div>
   </div>
+
   <script>
 
   this.on('mount', () => {
@@ -70,8 +72,15 @@
   })
 
   this.on('before-mount', () => {
-    this.quote = this.opts.quote
-    this.loadResources('payments', {quote_id: this.quote.id})
+    if(this.opts.quote_id) {
+      // this.quote = this.opts.quote
+      this.opts.api.quotes.show(this.opts.quote_id).then(quote => this.update({quote}))
+      this.loadResources('payments', {quote_id: this.opts.quote_id})
+
+    } else {
+      this.quote = this.opts.quote
+      this.loadResources('payments', {quote_id: this.quote.id})
+    }
   })
 
   this.reload = () => {

@@ -28963,6 +28963,17 @@
 	  riot.route("projects/*", function (id) {
 	    riot.route("/projects/" + id + "/overview", "Overview", true);
 	  });
+	  riot.route("projects/*/payments", function (id) {
+	    riot.mount(_this.content, "r-projects-show", {
+	      api: opts.api,
+	      id: id,
+	      tab: "r-project-quotes",
+	      contentOpts: {
+	        id: id,
+	        tab: "payments"
+	      }
+	    });
+	  });
 	  riot.route("projects/*/*", function (id, tab) {
 	    riot.mount(_this.content, "r-projects-show", {
 	      api: opts.api,
@@ -28991,6 +29002,32 @@
 	    riot.mount(_this.content, "r-quotes-form", {
 	      api: opts.api,
 	      project_id: project_id
+	    });
+	  });
+	
+	  riot.route("projects/*/quotes/*/payments", function (project_id, quote_id) {
+	    riot.mount(_this.content, "r-projects-show", {
+	      api: opts.api,
+	      id: project_id,
+	      tab: "r-project-quotes",
+	      contentOpts: {
+	        id: project_id,
+	        tab: "payments",
+	        quote_id: quote_id
+	      }
+	    });
+	  });
+	  riot.route("projects/*/quotes/*/payments/*", function (project_id, quote_id, id) {
+	    riot.mount(_this.content, "r-projects-show", {
+	      api: opts.api,
+	      id: project_id,
+	      tab: "r-project-quotes",
+	      contentOpts: {
+	        id: project_id,
+	        tab: "payments",
+	        payment_id: id,
+	        quote_id: quote_id
+	      }
 	    });
 	  });
 	  riot.route("projects/*/quotes/*", function (project_id, id) {
@@ -31597,14 +31634,15 @@
 	
 	__webpack_require__(147);
 	
-	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <div if=\"{_.isEmpty(this.quotes) && !currentAccount.isCustomer}\" class=\"mt2\"> <p>There is no quote yet</p> <a class=\"btn btn-primary mb2\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{_.isEmpty(this.quotes) && currentAccount.isCustomer}\" class=\"mt2\"> <p>There is no quote submitted yet</p> </div> <a if=\"{!_.isEmpty(this.quotes) && currentAccount.isAdministrator}\" class=\"btn btn-primary mb2\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> <ul class=\"list-reset mxn1\"> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block\">{formatCurrency(total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2 mr1\">Quote</span> <div class=\"tab-nav\"> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'summary'}\" onclick=\"{changeTab}\" rel=\"summary\">Summary</a> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'payments'}\" onclick=\"{changeTab}\" rel=\"payments\">Payments</a> </div> <div class=\"tabs m0 mxn2 border-top\"> <div if=\"{activeTab == 'summary'}\" class=\"mt2\"> <r-tender-summary document=\"{document}\"></r-tender-summary> <div class=\"inline-block m2 p2 border\"> <span if=\"{submitted_at}\"> <i class=\"fa fa-clock-o mr1\"></i> Submitted at: {fromNow(submitted_at)}<br> </span> <span if=\"{accepted_at}\"> <i class=\"fa fa-clock-o mr1\"></i> Accepted at: {fromNow(accepted_at)}<br> </span> <span> <i class=\"fa fa-user mr1\"></i> Professional: <strong>{professional.profile.first_name} {professional.profile.last_name}</strong> </span> </div> <div class=\"clearfix overflow-hidden p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Open</a> <a class=\"btn btn-small bg-darken-2\" if=\"{!currentAccount.isCustomer && !accepted_at}\" onclick=\"{delete}\">Delete</a> </div> </div> <div if=\"{activeTab == 'payments'}\" class=\"mt2\"> <r-project-payments api=\"{opts.api}\" quote=\"{this}\"></r-project-payments> </div> </div> </div> </li> </ul>", "", "", function (opts) {
+	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <div if=\"{_.isEmpty(this.quotes) && !currentAccount.isCustomer}\" class=\"mt2\"> <p>There is no quote yet</p> <a class=\"btn btn-primary mb2\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{_.isEmpty(this.quotes) && currentAccount.isCustomer}\" class=\"mt2\"> <p>There is no quote submitted yet</p> </div> <a if=\"{!_.isEmpty(this.quotes) && currentAccount.isAdministrator}\" class=\"btn btn-primary mb2\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> <ul class=\"list-reset mxn1\"> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block mb4\">{formatCurrency(total_amount)}</h2> <div class=\"inline-block mt2 p2 border right\"> <span if=\"{submitted_at}\"> <i class=\"fa fa-clock-o mr1\"></i> Submitted at: {fromNow(submitted_at)}<br> </span> <span if=\"{accepted_at}\"> <i class=\"fa fa-clock-o mr1\"></i> Accepted at: {fromNow(accepted_at)}<br> </span> <span> <i class=\"fa fa-user mr1\"></i> Professional: <strong>{professional.profile.first_name} {professional.profile.last_name}</strong> </span> </div> <div class=\"tab-nav\"> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'summary'}\" onclick=\"{changeTab}\" rel=\"summary\">Summary</a> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'payments'}\" onclick=\"{changeTab}\" rel=\"payments\">Payments</a> </div> <div class=\"tabs m0 mxn2 border-top\"> <div if=\"{activeTab == 'summary'}\" class=\"mt2\"> <r-tender-summary document=\"{document}\"></r-tender-summary> <div class=\"clearfix overflow-hidden p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Open</a> <a class=\"btn btn-small bg-darken-2\" if=\"{!currentAccount.isCustomer && !accepted_at}\" onclick=\"{delete}\">Delete</a> </div> </div> <div if=\"{activeTab == 'payments'}\" class=\"mt2\"> <r-project-payments api=\"{opts.api}\" quote=\"{this}\" payment_id=\"{parent.opts.payment_id}\"></r-project-payments> </div> </div> </div> </li> </ul>", "", "", function (opts) {
 	  var _this = this;
 	
-	  this.activeTab = "summary";
+	  this.activeTab = this.opts.tab || "summary";
 	
 	  this.changeTab = function (e) {
 	    e.preventDefault();
 	    _this.update({ activeTab: e.target.rel });
+	    history.pushState(null, null, _this.activeTab == "summary" ? window.location.href.replace("payments", "quotes") : window.location.href.replace("quotes", "payments"));
 	  };
 	
 	  this.on("mount", function () {
@@ -31612,7 +31650,7 @@
 	    opts.api.quotes.on("index.success", _this.updateQuote);
 	    opts.api.quotes.on("create.success", _this.addQuote);
 	    opts.api.quotes.on("delete.success", _this.removeQuote);
-	    opts.api.quotes.index({ project_id: opts.id });
+	    opts.api.quotes.index({ project_id: opts.id, id: opts.quote_id });
 	  });
 	
 	  this.on("unmount", function () {
@@ -31749,7 +31787,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-project-payments", "<table class=\"table-light\"> <thead> <tr> <th>Amount</th> <th>Due Date</th> <th>Status</th> <th></th> </tr> </thead> <tbody> <tr each=\"{payments}\"> <td>{formatCurrency(amount)}</td> <td>{formatTime(due_date)}</td> <td>{status}</td> <td> <a if=\"{currentAccount.isAdministrator && (status == 'waiting')}\" class=\"btn btn-small bg-red white h6\" href=\"/app/admin/payments/{id}/edit\" target=\"_blank\">Edit</a> <a if=\"{currentAccount.isProfessional && (status == 'payable' || status == 'waiting')}\" class=\"btn btn-small bg-red white h6 {busy: busy}\" onclick=\"{cancelPayment}\">Cancel</a> <button if=\"{currentAccount.isCustomer && status == 'payable'}\" class=\"btn btn-small bg-green white h6 {busy: busy}\" __disabled=\"{busy}\" onclick=\"{payPayment}\">Pay</button> </td> </tr> </tbody> </table> <table if=\"{payments.length > 0}\" class=\"table-light mt2\"> <thead> <tr> <th>Paid</th> <th if=\"{quote.refunded_amount > 0}\">Refunded</th> <th if=\"{quote.declined_amount > 0}\">Declined</th> <th if=\"{currentAccount.isProfessional}\">Approved</th> </tr> </thead> <tbody> <tr> <td>{formatCurrency(quote.paid_amount)}</th> <td if=\"{refunded_amount > 0}\">{formatCurrency(quote.refunded_amount)}</td> <td if=\"{declined_amount > 0}\">{formatCurrency(quote.declined_amount)}</td> <td if=\"{currentAccount.isProfessional}\">{formatCurrency(quote.approved_amount)}</td> </tr> </tbody> </table> <div if=\"{currentAccount.isProfessional}\" class=\"clearfix overflow-hidden p1 bg-yellow\"> <div class=\"mt1\"> <a class=\"btn btn-small bg-darken-2\" onclick=\"{openPaymentForm}\">Add Payment</a> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-project-payments", "<table class=\"table-light\"> <thead> <tr> <th>Amount</th> <th>Due Date</th> <th>Status</th> <th></th> </tr> </thead> <tbody> <tr each=\"{payments}\" class=\"{id} {'bg-yellow': id == parent.opts.payment_id}\"> <td>{formatCurrency(amount)}</td> <td>{formatTime(due_date)}</td> <td>{status}</td> <td> <a if=\"{currentAccount.isAdministrator && (status == 'waiting')}\" class=\"btn btn-small bg-red white h6\" href=\"/app/admin/payments/{id}/edit\" target=\"_blank\">Edit</a> <a if=\"{currentAccount.isProfessional && (status == 'payable' || status == 'waiting')}\" class=\"btn btn-small bg-red white h6 {busy: busy}\" onclick=\"{cancelPayment}\">Cancel</a> <button if=\"{currentAccount.isCustomer && status == 'payable'}\" class=\"btn btn-small bg-green white h6 {busy: busy}\" __disabled=\"{busy}\" onclick=\"{payPayment}\">Pay</button> </td> </tr> </tbody> </table> <table if=\"{payments.length > 0}\" class=\"table-light mt2\"> <thead> <tr> <th>Paid</th> <th if=\"{quote.refunded_amount > 0}\">Refunded</th> <th if=\"{quote.declined_amount > 0}\">Declined</th> <th if=\"{currentAccount.isProfessional}\">Approved</th> </tr> </thead> <tbody> <tr> <td>{formatCurrency(quote.paid_amount)}</th> <td if=\"{refunded_amount > 0}\">{formatCurrency(quote.refunded_amount)}</td> <td if=\"{declined_amount > 0}\">{formatCurrency(quote.declined_amount)}</td> <td if=\"{currentAccount.isProfessional}\">{formatCurrency(quote.approved_amount)}</td> </tr> </tbody> </table> <div if=\"{currentAccount.isProfessional}\" class=\"clearfix overflow-hidden p1 bg-yellow\"> <div class=\"mt1\"> <a class=\"btn btn-small bg-darken-2\" onclick=\"{openPaymentForm}\">Add Payment</a> </div> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.on("mount", function () {
@@ -31771,8 +31809,16 @@
 	  });
 	
 	  this.on("before-mount", function () {
-	    _this.quote = _this.opts.quote;
-	    _this.loadResources("payments", { quote_id: _this.quote.id });
+	    if (_this.opts.quote_id) {
+	      // this.quote = this.opts.quote
+	      _this.opts.api.quotes.show(_this.opts.quote_id).then(function (quote) {
+	        return _this.update({ quote: quote });
+	      });
+	      _this.loadResources("payments", { quote_id: _this.opts.quote_id });
+	    } else {
+	      _this.quote = _this.opts.quote;
+	      _this.loadResources("payments", { quote_id: _this.quote.id });
+	    }
 	  });
 	
 	  this.reload = function () {
@@ -31873,7 +31919,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-project-tender", "<h2 class=\"mt0\">Tender</h2> <p if=\"{_.isEmpty(project.tender)}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. <virtual if=\"{currentAccount.isCustomer}\"> You can speed up the process by creating a tender document and we will be notified about it. </virtual> <div if=\"{_.isEmpty(project.tender) && !currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> </p> <virtual if=\"{currentAccount.isAdministrator}\"> Apply tender template <r-typeahead-input resource=\"tender_templates\" api=\"{opts.api}\" datum_tokenizer=\"{['name']}\"></r-typeahead-input> </virtual> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Tender</span> <div class=\"m0 mxn2\"> <r-tender-summary document=\"{project.tender.document}\"></r-tender-summary> </div> <p class=\"overflow-hidden m0 mxn2 p1 border-top\"> <a class=\"btn btn-small\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Open</a> <a class=\"btn btn-small btn-primary\" if=\"{currentAccount.isProfessional}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> </ul>", "", "", function (opts) {
+	riot.tag2("r-project-tender", "<h2 class=\"mt0\">Tender</h2> <p if=\"{_.isEmpty(project.tender)}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. <virtual if=\"{currentAccount.isCustomer}\"> You can speed up the process by creating a tender document and we will be notified about it. </virtual> <div if=\"{_.isEmpty(project.tender) && !currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> </p> <virtual if=\"{currentAccount.isAdministrator}\"> Apply tender template <r-typeahead-input resource=\"tender_templates\" api=\"{opts.api}\" datum_tokenizer=\"{['name']}\"></r-typeahead-input> </virtual> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <div class=\"m0 mxn2\"> <r-tender-summary document=\"{project.tender.document}\"></r-tender-summary> </div> <p class=\"overflow-hidden m0 mxn2 p1 border-top\"> <a class=\"btn btn-small\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Open</a> <a class=\"btn btn-small btn-primary\" if=\"{currentAccount.isProfessional}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> </ul>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.clone = function (e) {

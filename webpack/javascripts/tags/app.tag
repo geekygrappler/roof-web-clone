@@ -79,6 +79,17 @@ import './admin/index.tag'
   riot.route('projects/*', (id) => {
     riot.route(`/projects/${id}/overview`, 'Overview', true)
   })
+  riot.route('projects/*/payments', (id) => {
+    riot.mount(this.content, 'r-projects-show', {
+      api: opts.api,
+      id: id,
+      tab: `r-project-quotes`,
+      contentOpts: {
+        id: id,
+        tab: 'payments'
+      }
+    })
+  })
   riot.route('projects/*/*', (id, tab) => {
     riot.mount(this.content, 'r-projects-show', {
       api: opts.api,
@@ -109,6 +120,32 @@ import './admin/index.tag'
       project_id: project_id
     })
   })
+
+  riot.route('projects/*/quotes/*/payments', (project_id, quote_id) => {
+    riot.mount(this.content, 'r-projects-show', {
+      api: opts.api,
+      id: project_id,
+      tab: `r-project-quotes`,
+      contentOpts: {
+        id: project_id,
+        tab: 'payments',
+        quote_id: quote_id
+      }
+    })
+  })
+  riot.route('projects/*/quotes/*/payments/*', (project_id, quote_id, id) => {
+    riot.mount(this.content, 'r-projects-show', {
+      api: opts.api,
+      id: project_id,
+      tab: `r-project-quotes`,
+      contentOpts: {
+        id: project_id,
+        tab: 'payments',
+        payment_id: id,
+        quote_id: quote_id
+      }
+    })
+  })
   riot.route('projects/*/quotes/*', (project_id, id) => {
     riot.mount(this.content, 'r-quotes-form', {
       api: opts.api,
@@ -117,6 +154,7 @@ import './admin/index.tag'
       readonly: (this.currentAccount && this.currentAccount.isCustomer)
     })
   })
+
 
   riot.route('invitations/accept/*', (token) => {
     opts.api.invitationToken = token
