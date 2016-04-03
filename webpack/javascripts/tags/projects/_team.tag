@@ -26,22 +26,6 @@ import '../../mixins/team_tab.js'
       </div>
     </li>
 
-    <li each="{project.shortlist}" class="sm-col sm-col-6 p1 align-top">
-      <div class="px2 border">
-        <h3 class="inline-block">{ getName() }</h3>
-        <span class="inline-block align-middle h6 mb1 px1 border pill bg-aqua blue white right mt2">Professional</span>
-        <p class="overflow-hidden">
-          <div><i class="fa fa-phone"></i> { profile.phone_number }</div>
-          <div><i class="fa fa-envelope"></i> { email }</div>
-          <div if="{profile.website}"><i  class="fa fa-world"></i><a href="{ profile.website }" target="_blank">{ profile.website }</a></div>
-        </p>
-      </div>
-      <div if="{currentAccount.isAdministrator}">
-        <a onclick="{removeShortlist}" class="btn btn-small bg-red white">Remove</a>
-        <a onclick="{impersonate}" class="btn btn-small bg-maroon white">Impersonate</a>
-      </div>
-    </li>
-
     <li each="{project.professionals}" class="sm-col sm-col-6 p1 align-top">
       <div class="px2 border">
         <h3 class="inline-block">{ getName() }</h3>
@@ -110,7 +94,6 @@ import '../../mixins/team_tab.js'
   if (this.currentAccount.isAdministrator) {
     this.tags['r-typeahead-input'].on('itemselected', (item) => {
       var coll = item.user_type.plural().toLowerCase()
-      coll = coll == 'professionals' ? 'shortlist'  : coll
       if (this.project[`${coll}_ids`].indexOf(item.id) < 0) {
         this.project[`${coll}_ids`].push(item.id)
         this.opts.api.projects.update(this.project.id, this.project)
@@ -123,9 +106,6 @@ import '../../mixins/team_tab.js'
     })
     this.removeCustomer = (e) => {
       this.removeFromMembership('customers_ids', 'customers', e)
-    }
-    this.removeShortlist = (e) => {
-      this.removeFromMembership('shortlist_ids', 'shortlist', e)
     }
     this.removeProfessional = (e) => {
       this.removeFromMembership('professionals_ids', 'professionals', e)

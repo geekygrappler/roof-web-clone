@@ -43,7 +43,7 @@ import from '../../mixins/tender.js'
     </form>
 
     <div if="{record.id}" class="mt4 clearfix">
-      <p>Add a Professional to this Project by creating a Quote from this tender. Choosen pro will be shortlisted.</p>
+      <p>Add a Professional to this Project by creating a Quote from this tender. Choosen pro will be added to project.</p>
       <r-typeahead-input resource="professionals" api="{ opts.api }" datum_tokenizer="{['full_name']}"></r-typeahead-input>
     </div>
   </div>

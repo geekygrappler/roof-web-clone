@@ -18,17 +18,14 @@
           <div class="mb1">
             <i class="fa fa-clock-o mr1"></i> updated {fromNow(updated_at)}
           </div>
-          <div class="clearfix">
-            <div class="sm-col sm-col-3 ">
+          <div class="clearfix mxn2">
+            <div class="sm-col sm-col-3 px2">
               <span each="{acc in customers}" class="px1 border border-yellow mr1 mb1 h6 inline-block truncate">{acc.full_name}</span>
             </div>
-            <div class="sm-col sm-col-3 " if="{!currentAccount.isProfessional}">
-              <span each="{acc in shortlist}" class="px1 border border-orange mr1 mb1 h6 inline-block truncate">{acc.full_name}</span>
-            </div>
-            <div class="sm-col sm-col-3" if="{!currentAccount.isProfessional}">
+            <div class="sm-col sm-col-3 px2">
               <span each="{acc in professionals}" class="px1 border border-red mr1 mb1 h6 inline-block truncate">{acc.full_name} *</span>
             </div>
-            <div class="sm-col sm-col-3 ">
+            <div class="sm-col sm-col-3 px2">
               <span each="{acc in administrators}" class="px1 border border-blue mr1 mb1 h6 inline-block truncate">{acc.full_name}</span>
             </div>
           </div>

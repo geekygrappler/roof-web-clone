@@ -471,6 +471,14 @@ namespace :migrate do
     }
   end
 
+  task :drop_shortlist => :environment do
+    Project.all.map{|p|
+      p.professionals_ids = (p.professionals_ids + p.shortlist_ids).uniq
+      p.shortlist_ids = []
+      p.save
+    }
+  end
+
 
 
   task :all => [:administrators, :customers, :professionals, :projects, :assets, :shortlists, :tender_templates, :tenders, :quotes, :payments, :leads, :bot, :"jobs:clear"]

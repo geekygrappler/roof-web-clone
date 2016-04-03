@@ -17,7 +17,6 @@ import Pikaday from 'pikaday-time/pikaday'
 
   <script>
   this.notifications = [
-    'added_to_shortlist',
     'added_to_professionals',
     'appointment_canceled',
     'lead',

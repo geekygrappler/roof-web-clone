@@ -42,9 +42,6 @@
               <a each="{acc in record.customers}" href="/app/admin/accounts/{acc.id}/edit" class="mr1 mb1">{acc.full_name}</a>
             </td>
             <td>
-              <a each="{acc in record.shortlist}" href="/app/admin/accounts/{acc.id}/edit" class="mr1 mb1">{acc.full_name}</a>
-            </td>
-            <td>
               <a each="{acc in record.professionals}" href="/app/admin/accounts/{acc.id}/edit" class="mr1 mb1">{acc.full_name}</a>
             </td>
             <td>
@@ -67,7 +64,7 @@
   <script>
 
   this.updateRecords = (records) => {
-    var headers = _.filter(_.keys(records[0]), h => ['customers', 'shortlist', 'professionals', 'administrators'].indexOf(h) == -1)
+    var headers = _.filter(_.keys(records[0]), h => ['customers', 'professionals', 'administrators'].indexOf(h) == -1)
     this.update({headers: headers, records: records})
   }
 
