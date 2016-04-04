@@ -217,7 +217,7 @@ r-tender-item-group ul li h4{
   left: -$space-2;
   padding-left: $space-2;
 }
-r-tender-item-group.last ul ul::before {
+r-tender-item-group ul.last ul::before {
   content: " ";
   border: 4px solid white;
   position: absolute;
@@ -231,9 +231,20 @@ r-tender-section .border-bottom {
 r-tender-item-group .border-left {
   border-left-style: dashed;
 }
+r-tender-item-group > h5 {
+    position: relative;
+    left: -5px;
+    margin-top:0;
+    padding-top:$space-2;
+    border-left-width: 5px;
+    border-left-color: white;
+    border-left-style: solid;
+}
+
 .tender-section-name {
   text-indent: 1.5rem
 }
+
 
 .twitter-typeahead {
   display: block !important;

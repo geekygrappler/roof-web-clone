@@ -1,5 +1,6 @@
-<r-tender-item-group class="{last: drawBorderCleaner()}">
-  <ul class="list-reset ml2 mb0 relative">
+<r-tender-item-group>
+
+  <ul class="list-reset ml2 mb0 relative {last: drawBorderCleaner()}">
     <li>
       <h4 class="inline-block mb0 mt1 p1 border-bottom ">
 
@@ -59,11 +60,14 @@
   this.on('mount', () => {
     itemKeys = Object.keys(this.opts.groupitems)
     this.groupTotal = this.calcGroupTotal()
-    //this.update()
+    this.update()
   })
 
   this.on('update', () => {
-    if (!this.groupTotal && this.items) this.groupTotal = this.calcGroupTotal()
+    if (!this.groupTotal && this.items) {
+      this.groupTotal = this.calcGroupTotal()
+      this.update()
+    }
   })
 
   this.drawHeader = () => {
