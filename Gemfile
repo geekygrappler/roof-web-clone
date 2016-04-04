@@ -14,7 +14,7 @@ gem 'puma'
 gem 'font-awesome-rails'
 gem 'active_model_serializers', github: "rails-api/active_model_serializers"
 
-gem 'roof_api', '0.0.5.fix17a'
+gem 'roof_api', '0.0.5.fix18a'
 #gem 'roof_api', path: '../roof-api'
 gem 'carrierwave', git: 'https://github.com/carrierwaveuploader/carrierwave.git'
 gem 'carrierwave_backgrounder', git: 'https://github.com/pictrs/carrierwave_backgrounder.git'
