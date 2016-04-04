@@ -37075,9 +37075,9 @@
 	
 	  // this.taskActions = opts.task_actions
 	
-	  this.visible = true;
+	  this.visible = this.parent.parent.opts.id ? false : true;
 	
-	  this.icon = this.visible ? "plus-square-o" : "minus-square-o";
+	  this.icon = this.visible ? "minus-square-o" : "plus-square-o";
 	
 	  this.toggle = function (e) {
 	    e.preventDefault();
@@ -37145,14 +37145,13 @@
 	
 	  this.taskActions = _.omit(taskActions, "Materials", "VAT");
 	  //this.showDisclosures = true
-	  this.visible = false;
-	
-	  this.icon = this.visible ? "plus-square-o" : "minus-square-o";
+	  this.visible = this.parent.opts.id ? false : true;
+	  this.icon = this.visible ? "minus-square-o" : "plus-square-o";
 	
 	  this.toggle = function (e) {
 	    e.preventDefault();
 	    _this.visible = !_this.visible;
-	    _this.icon = _this.visible ? "plus-square-o" : "minus-square-o";
+	    _this.icon = _this.visible ? "minus-square-o" : "plus-square-o";
 	  };
 	
 	  this.updateSectionTotal = function () {

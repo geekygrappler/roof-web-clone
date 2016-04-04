@@ -29,9 +29,9 @@
 
   // this.taskActions = opts.task_actions
 
-  this.visible = true
+  this.visible = this.parent.parent.opts.id ? false : true
 
-  this.icon = this.visible ? 'plus-square-o' : 'minus-square-o'
+  this.icon = this.visible ? 'minus-square-o' : 'plus-square-o'
 
   this.toggle = (e) => {
     e.preventDefault()

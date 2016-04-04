@@ -231,15 +231,15 @@ r-tender-section .border-bottom {
 r-tender-item-group .border-left {
   border-left-style: dashed;
 }
-r-tender-item-group > h5 {
-    position: relative;
-    left: -5px;
-    margin-top:0;
-    padding-top:$space-2;
-    border-left-width: 5px;
-    border-left-color: white;
-    border-left-style: solid;
-}
+// r-tender-item-group > h5 {
+//     position: relative;
+//     left: -5px;
+//     margin-top:0;
+//     padding-top:$space-2;
+//     border-left-width: 5px;
+//     border-left-color: white;
+//     border-left-style: solid;
+// }
 
 .tender-section-name {
   text-indent: 1.5rem

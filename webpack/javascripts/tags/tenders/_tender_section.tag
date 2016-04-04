@@ -47,14 +47,13 @@ let taskActions = require("json!../../data/task_actions.json")
   <script>
   this.taskActions = _.omit(taskActions, 'Materials', 'VAT')
   //this.showDisclosures = true
-  this.visible = false
-
-  this.icon = this.visible ? 'plus-square-o' : 'minus-square-o'
+  this.visible = this.parent.opts.id ? false : true
+  this.icon = this.visible ? 'minus-square-o' : 'plus-square-o'
 
   this.toggle = (e) => {
     e.preventDefault()
     this.visible = !this.visible
-    this.icon = this.visible ? 'plus-square-o' : 'minus-square-o'
+    this.icon = this.visible ? 'minus-square-o' : 'plus-square-o'
   }
 
   this.updateSectionTotal = () => {
