@@ -210,8 +210,12 @@ nav a:hover {
 
 r-tender-item-group {
   display: block;
-      display: block;
-      border-left: 1px dashed $silver;
+  border-left: 1px dashed $silver;
+}
+r-tender-item-group ul li h4{
+  position: relative;
+  left: -$space-2;
+  padding-left: $space-2;
 }
 r-tender-item-group.last ul ul::before {
   content: " ";

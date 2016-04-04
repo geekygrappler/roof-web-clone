@@ -62,6 +62,10 @@
     //this.update()
   })
 
+  this.on('update', () => {
+    if (!this.groupTotal && this.items) this.groupTotal = this.calcGroupTotal()
+  })
+
   this.drawHeader = () => {
     if (this.isMounted) {
       return itemKeys.indexOf(this.group) == 0

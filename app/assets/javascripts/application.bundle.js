@@ -37107,6 +37107,10 @@
 	    ;
 	  });
 	
+	  this.on("update", function () {
+	    if (!_this.groupTotal && _this.items) _this.groupTotal = _this.calcGroupTotal();
+	  });
+	
 	  this.drawHeader = function () {
 	    if (_this.isMounted) {
 	      return itemKeys.indexOf(_this.group) == 0;
