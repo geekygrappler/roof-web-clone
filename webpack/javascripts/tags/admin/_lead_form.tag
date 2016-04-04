@@ -13,15 +13,18 @@
     type="text" name="first_name" value="{record['first_name']}"/>
     <span if="{errors['first_name']}" class="inline-error">{errors['first_name']}</span>
 
-    <label for="[last_name]">Last Name</label>
+    <label for="last_name">Last Name</label>
     <input class="block col-12 mb2 field"
-    type="text" name="[last_name]" value="{record['last_name']}"/>
+    type="text" name="last_name" value="{record['last_name']}"/>
     <span if="{errors['last_name']}" class="inline-error">{errors['last_name']}</span>
 
-    <label for="[phone_number]">Phone Number</label>
+    <label for="phone_number">Phone Number</label>
     <input class="block col-12 mb2 field"
-    type="text" name="[phone_number]" value="{record['phone_number']}"/>
+    type="text" name="phone_number" value="{record['phone_number']}"/>
     <span if="{errors['phone_number']}" class="inline-error">{errors['phone_number']}</span>
+
+    <label for="meta">Meta</label>
+    <textarea class="block col-12 mb2 field fixed-height" name="meta:object">{JSON.stringify(record['meta'], null, 2)}</textarea>
 
     <h3>Convert</h3>
     <p>Fill below fields if you want to convert Lead to a Customer, leave empty otherwise</p>

@@ -119,9 +119,13 @@ nav a:hover {
 .typeahead-item:hover{
   background-color: lighten($yellow, 20);
 }
+.typeahead-item {
+  color: $black;
+}
 .typeahead-item a{
   display: block;
   text-decoration: none;
+  color: $black !important;
 }
 
 .inline-input {

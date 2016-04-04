@@ -3,7 +3,7 @@ let links = require("json!../data/header.json")
 <r-admin-menu>
   <r-typeahead-input if="{currentAccount.isAdministrator}" resource="accounts" api="{ opts.api }" id="{currentAccount.impersonating ?  currentAccount.user_id : null}" datum_tokenizer="{['email']}"></r-typeahead-input>
   <div class="relative inline-block" data-disclosure>
-    <button type="button" class="btn btn-primary">
+    <button type="button" class="btn bg-blue white">
       Menu &#9662;
     </button>
     <div data-details class="fixed top-0 right-0 bottom-0 left-0"></div>
