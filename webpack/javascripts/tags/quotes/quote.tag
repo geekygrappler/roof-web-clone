@@ -6,7 +6,7 @@ import from '../../mixins/tender.js'
     <r-header api="{opts.api}"></r-header>
   </yield>
 
-  <div class="container p2 {readonly: isReadonly()} border">
+  <div class="container p2 {readonly: isReadonly()} ">
     <div class="clearfix">
       <div class="left mb4 overflow-hidden">
         <h1 class="mb0">{ opts.id ? getTitle() : 'New Quote' }</h1>
@@ -20,7 +20,7 @@ import from '../../mixins/tender.js'
     </div>
 
 
-    <div if="{currentAccount.isAdministrator}">
+    <div if="{currentAccount.isAdministrator}" class="p1 bg-blue white">
     <label for="project_id">Professional</label>
     <input type="hidden" name="professional_id" value="{record.professional_id}">
     <r-typeahead-input resource="professionals" api="{ opts.api }" id="{record.professional_id}" filters="{professionalFilters()}" datum_tokenizer="{['full_name']}"></r-typeahead-input>
@@ -32,7 +32,7 @@ import from '../../mixins/tender.js'
     <span if="{errors.tender_id}" class="inline-error">{errors.tender_id}</span>
     </div>
 
-    <div class="clearfix mb4">
+    <div if="{record.id}" class="clearfix mb4">
       <div class="sm-col sm-col-6">
         <h4>From</h4>
         <address>

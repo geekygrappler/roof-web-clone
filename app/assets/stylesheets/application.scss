@@ -212,6 +212,9 @@ r-tender-item-group {
   display: block;
   border-left: 1px dashed $silver;
 }
+.group-title {
+      margin-right: -1rem;
+}
 r-tender-item-group ul li h4{
   position: relative;
   left: -$space-2;
@@ -230,6 +233,46 @@ r-tender-section .border-bottom {
 }
 r-tender-item-group .border-left {
   border-left-style: dashed;
+}
+r-tender-item-group .border-right {
+  border-right-style: dashed;
+}
+r-tender-item-group .border-top {
+  border-top-style: dashed;
+}
+r-tender-item-group .border,
+r-tender-section .border {
+  border-style: dashed;
+}
+.group-total-wrapper{
+  min-height:3rem
+}
+.group-total {
+  margin-right: -2.5rem;
+}
+.group-total::before {
+  content: "|";
+  position: absolute;
+  right: 0;
+  top: 0;
+  color: white;
+  border-right-width: 1px;
+  border-right-style: dashed;
+  border-right-color: $border-color;
+  width: 1px;
+  height: 90px;
+}
+.with-line .section-total::before {
+  content: "|";
+  position: absolute;
+  left: 50%;
+  top: -20px;
+  color: white;
+  border-right-width: 1px;
+  border-right-style: dashed;
+  border-right-color: $border-color;
+  width: 1px;
+  height: 20px;
 }
 // r-tender-item-group > h5 {
 //     position: relative;

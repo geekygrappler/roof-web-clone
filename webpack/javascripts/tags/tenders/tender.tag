@@ -19,6 +19,11 @@ import './_tender_section.tag'
 
     <r-tender-section each="{ section , i in record.document.sections }" no-reorder></r-tender-section>
 
+    <div class="py3">
+    <h2 class="right-align m0"><label><input type="checkbox" onchange="{toggleVat}" checked="{record.document.include_vat}" class="mr1">VAT {tenderVat()}</label></h2>
+    <h1 class="right-align m0">Estimated total{ record.document.include_vat ? '(Inc. VAT)' : ''}: { tenderTotal }</h2>
+    </div>
+
     <form if="{ !opts.readonly && record.document }" onsubmit="{ addSection }" class="mt3 py3 clearfix mxn1 border-top">
       <div class="col col-8 px1">
         <input type="text" name="sectionName" placeholder="Section name" class="block col-12 field" />
@@ -27,11 +32,6 @@ import './_tender_section.tag'
         <button type="submit" class="block col-12 btn btn-primary"><i class="fa fa-puzzle-piece"></i> Add Section</button>
       </div>
     </form>
-
-    <div class="py3">
-    <h4 class="right-align m0"><label><input type="checkbox" onchange="{toggleVat}" checked="{record.document.include_vat}" class="mr1">VAT {tenderVat()}</label></h4>
-    <h3 class="right-align m0">Estimated total{ record.document.include_vat ? '(Inc. VAT)' : ''}: { tTotal }</h3>
-    </div>
 
     <form name="form" onsubmit="{ submit }" class="right-align">
 

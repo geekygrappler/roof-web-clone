@@ -3,7 +3,9 @@ import '../../mixins/team_tab.js'
 
   <h2 class="mt0">Team</h2>
 
-  <r-typeahead-input if="{currentAccount.isAdministrator}" resource="accounts" api="{ opts.api }" datum_tokenizer="{['full_name', 'email', 'user_type']}"></r-typeahead-input>
+  <div if="{currentAccount.isAdministrator}"  class="bg-blue white">
+  <r-typeahead-input resource="accounts" api="{ opts.api }" datum_tokenizer="{['full_name', 'email', 'user_type']}"></r-typeahead-input>
+  </div>
 
   <p>Here is the team of your project. You can arrange site visits with professionals
     here or invite other members such as family members or your own builders.
@@ -20,7 +22,7 @@ import '../../mixins/team_tab.js'
           <div><i class="fa fa-envelope"></i> { email }</div>
         </p>
       </div>
-      <div if="{currentAccount.isAdministrator}">
+      <div if="{currentAccount.isAdministrator}" class="bg-blue white p1">
         <a onclick="{removeCustomer}" class="btn btn-small bg-red white">Remove</a>
         <a onclick="{impersonate}" class="btn btn-small bg-maroon white">Impersonate</a>
       </div>
@@ -36,7 +38,7 @@ import '../../mixins/team_tab.js'
           <div if="{profile.website}"><i  class="fa fa-world"></i><a href="{ profile.website }" target="_blank">{ profile.website }</a></div>
         </p>
       </div>
-      <div if="{currentAccount.isAdministrator}">
+      <div if="{currentAccount.isAdministrator}" class="bg-blue white p1">
         <a onclick="{removeProfessional}" class="btn btn-small bg-red white">Remove</a>
         <a onclick="{impersonate}" class="btn btn-small bg-maroon white">Impersonate</a>
       </div>
@@ -51,7 +53,7 @@ import '../../mixins/team_tab.js'
           <div><i class="fa fa-envelope"></i> { email }</div>
         </p>
       </div>
-      <div if="{currentAccount.isAdministrator}">
+      <div if="{currentAccount.isAdministrator}" class="bg-blue white p1">
         <a onclick="{removeAdministrator}" class="btn btn-small bg-red white">Remove</a>
         <a onclick="{impersonate}" class="btn btn-small bg-maroon white">Impersonate</a>
       </div>

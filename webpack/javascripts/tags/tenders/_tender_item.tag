@@ -16,14 +16,14 @@ import './_comments.tag'
 </r-tender-item-action-group-dropdown>
 
 <r-tender-item>
-  <li class="relative">
+  <li class="relative border-right">
     <div if="{opts.border_cleaner}" class="border-cleaner absolute"></div>
     <div class="clearfix animate p1 border-bottom">
       <div if="{ parent.headers.name }" class="sm-col sm-col-{ parent.headers.name } mb1 sm-mb0">
         <input type="text" name="name" value="{ display_name || name }"
         class="fit field inline-input align-left col-12" oninput="{ inputname }" />
-        <a if="{action == 'Other'}" class="btn btn-small btn-outline" onclick="{openGroupCombo}">Other</a>
-        <hr class="sm-hide">
+        <a if="{action == 'Other'}" class="btn btn-small btn-outline h6" onclick="{openGroupCombo}">Change Category</a>
+        <br class="sm-hide">
       </div>
 
       <div if="{ parent.headers.quantity }" class="col sm-col-{ parent.headers.quantity } col-3 center">
@@ -47,8 +47,8 @@ import './_comments.tag'
       </div>
 
       <div if="{ parent.headers.actions }" class="col sm-col-{ parent.headers.actions } col-2 center">
-        <a href="#" class="btn btn-small border-red red" onclick="{ removeItem }"><i class="fa fa-trash-o"></i></a>
-        <a href="#" if="{parent && parent.parent && parent.parent.record.id}" class="btn btn-small border" onclick="{ openComments }"><i class="fa fa-comment-o"></i></a>
+        <a href="#" class="btn btn-small border-red red mb1 sm-mb0" onclick="{ removeItem }"><i class="fa fa-trash-o"></i></a>
+        <a href="#" if="{parent && parent.parent && parent.parent.record.id}" class="btn btn-small border mb1 sm-mb0" onclick="{ openComments }"><i class="fa fa-comment-o"></i></a>
       </div>
     </div>
   </li>

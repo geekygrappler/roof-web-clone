@@ -31,17 +31,20 @@ let taskActions = require("json!../../data/task_actions.json")
         onitemremoved="{ removeItem }" no-reorder>
       </r-tender-item-group>
 
-      <div class="clearfix mxn1 mt2">
-        <div class="col col-6 px1">
-          <r-tender-item-input name="task" auto_focus="{ true }" api="{ parent.opts.api }" icon="tasks" ></r-tender-item-input>
-        </div>
-        <div class="col col-6 px1">
-          <r-tender-item-input name="material" api="{ parent.opts.api }" icon="shopping-basket" ></r-tender-item-input>
-        </div>
-      </div>
-
     </virtual>
-    <h3 class="right-align">{section.name}: { sectionTotal }</h3>
+    <div class="clearfix {'with-line': !visible}">
+      <h3 class="right border p1 bg-white relative z2 section-total">{visible ? section.name + ':' : ''} { sectionTotal }</h3>
+    </div>
+
+    <div if="{visible}" class="clearfix mxn1 mt2 mb3">
+      <div class="col col-6 px1">
+        <r-tender-item-input name="task" auto_focus="{ true }" api="{ parent.opts.api }" icon="tasks" ></r-tender-item-input>
+      </div>
+      <div class="col col-6 px1">
+        <r-tender-item-input name="material" api="{ parent.opts.api }" icon="shopping-basket" ></r-tender-item-input>
+      </div>
+    </div>
+
   </div>
 
   <script>

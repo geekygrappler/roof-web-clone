@@ -85,7 +85,7 @@ import Pikaday from 'pikaday-time/pikaday'
     type="text" name="description" placeholder="Description" >{record.description}</textarea>
     <span if="{errors['description']}" class="inline-error">{errors['description']}</span>
 
-    <virtual if="{currentAccount.isAdministrator}">
+    <div if="{currentAccount.isAdministrator}" class="bg-blue white p1">
       <label for="host_id">Host</label>
       <select class="block col-12 mb2 field" onchange="{setHost}">
         <option></option>
@@ -94,7 +94,7 @@ import Pikaday from 'pikaday-time/pikaday'
       <span if="{errors['host']}" class="inline-error">{errors['host']}</span>
       <span if="{errors['host_id']}" class="inline-error">{errors['host_id']}</span>
       <span if="{errors['host_type']}" class="inline-error">{errors['host_type']}</span>
-    </virtual>
+    </div>
 
     <label for="host_id">Attendand</label>
     <select class="block col-12 mb2 field" onchange="{setAttendant}">

@@ -12,9 +12,9 @@
     </div>
   </p>
 
-  <virtual if="{currentAccount.isAdministrator}">
+  <div if="{currentAccount.isAdministrator}" class="bg-blue white p1">
     Apply tender template <r-typeahead-input resource="tender_templates" api="{ opts.api }" datum_tokenizer="{['name']}"></r-typeahead-input>
-  </virtual>
+  </div>
 
   <ul class="list-reset mxn1">
 

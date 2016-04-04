@@ -1,15 +1,15 @@
-<r-tender-item-group>
+<r-tender-item-group class="col-11">
 
-  <ul class="list-reset ml2 mb0 relative {last: drawBorderCleaner()}">
+  <ul class="list-reset ml2 mb0 relative {last: last}">
     <li>
-      <h4 class="inline-block mb0 mt1 p1 border-bottom ">
+      <h4 class="block mb0 mt1 p1 border-bottom border-right group-title">
 
         <a onclick="{toggle}" class="cursor-pointer">
           <i class="fa fa-{ icon } mr1"></i> { group.humanize() }
         </a>
       </h4>
       <ul class="list-reset ml2 border-left mb0" if="{visible}">
-        <li if="{drawHeader()}" class="sm-show relative">
+        <li if="{header}" class="sm-show relative">
           <div class="clearfix p1 border-bottom">
             <div each="{ name, width in headers }" class="sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate">
               { name == 'name' ? '&nbsp;' : name.humanize() }
@@ -17,12 +17,16 @@
           </div>
         </li>
 
-        <r-tender-item each="{ items }" border_cleaner="{drawBorderCleaner()}" no-reorder></r-tender-item>
+        <r-tender-item each="{items}" border_cleaner="{last}" no-reorder></r-tender-item>
 
       </ul>
     </li>
   </ul>
-  <h5 class="right-align mb0">{formatCurrency(groupTotal)}</h5>
+  <div class="clearfix relative group-total-wrapper">
+    <h4 class="right mt1 mb0 p1 border abolute group-total bg-white z2">
+      <div class="bg-white relative z4">{formatCurrency(groupTotal)}</div>
+    </h4>
+  </div>
 
   <script>
   let itemKeys
@@ -60,12 +64,16 @@
   this.on('mount', () => {
     itemKeys = Object.keys(this.opts.groupitems)
     this.groupTotal = this.calcGroupTotal()
+    this.last = this.drawBorderCleaner()
+    this.headers = this.drawHeader()
     this.update()
   })
 
   this.on('update', () => {
-    if (!this.groupTotal && this.items) {
+    if (this.items) {
       this.groupTotal = this.calcGroupTotal()
+      this.last = this.drawBorderCleaner()
+      this.headers = this.drawHeader()
       this.update()
     }
   })
