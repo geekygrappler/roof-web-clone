@@ -65,7 +65,7 @@
     itemKeys = Object.keys(this.opts.groupitems)
     this.groupTotal = this.calcGroupTotal()
     this.last = this.drawBorderCleaner()
-    this.headers = this.drawHeader()
+    this.header = this.drawHeader()
     this.update()
   })
 
@@ -73,7 +73,7 @@
     if (this.items) {
       this.groupTotal = this.calcGroupTotal()
       this.last = this.drawBorderCleaner()
-      this.headers = this.drawHeader()
+      this.header = this.drawHeader()
       this.update()
     }
   })
