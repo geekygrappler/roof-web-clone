@@ -84,6 +84,7 @@ import './admin/index.tag'
       api: opts.api,
       id: id,
       tab: `r-project-quotes`,
+      activeTabName: 'payments',
       contentOpts: {
         id: id,
         tab: 'payments'
@@ -95,6 +96,7 @@ import './admin/index.tag'
       api: opts.api,
       id: id,
       tab: `r-project-${tab}`,
+      activeTabName: tab,
       contentOpts: {
         id: id
       }

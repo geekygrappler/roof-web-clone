@@ -21,10 +21,10 @@ import './_project_payments.tag'
 
     <li each="{quotes}" class="block p1 sm-col-12 align-top">
       <div class="px2 border clearfix">
-        <h2 class="inline-block mb4">{ formatCurrency(total_amount) }</h2>
+        <h2 class="inline-block sm-mb4">{ formatCurrency(total_amount) }</h2>
 
 
-        <div class="inline-block mt2 p2 border right">
+        <div class="inline-block mt2 p2 border sm-right mb2 sm-mb0">
           <span if="{submitted_at}">
             <i class="fa fa-clock-o mr1"></i> Submitted at: {fromNow(submitted_at)}<br>
           </span>

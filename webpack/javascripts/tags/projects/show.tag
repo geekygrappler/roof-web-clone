@@ -16,7 +16,7 @@ import './_tender.tag'
     <div class="py3 px2">
       <div class="clearfix mxn2">
 
-        <r-subnav links="{subnavLinks}" tab="{opts.tab}" ></r-subnav>
+        <r-subnav links="{subnavLinks}" tab="{opts.tab}" active_tab_name="{opts.activeTabName}"></r-subnav>
         <div class="sm-col sm-col-9 sm-px2">
             <r-tabs tab="{opts.tab}" api="{opts.api}" content_opts="{opts.contentOpts}"></r-tabs>
         </div>
@@ -25,13 +25,15 @@ import './_tender.tag'
     </div>
   </div>
   <script>
+
   this.subnavLinks = [
     {href: `/app/projects/${opts.id}/overview`, name: 'overview', tag: 'r-project-overview'},
     {href: `/app/projects/${opts.id}/brief`, name: 'brief', tag: 'r-project-brief'},
     {href: `/app/projects/${opts.id}/docs`, name: 'docs', tag: 'r-project-docs'},
     {href: `/app/projects/${opts.id}/team`, name: 'team', tag: 'r-project-team'},
     {href: `/app/projects/${opts.id}/tender`, name: 'tender', tag: 'r-project-tender'},
-    {href: `/app/projects/${opts.id}/quotes`, name: 'quotes', tag: 'r-project-quotes'}
+    {href: `/app/projects/${opts.id}/quotes`, name: 'quotes', tag: 'r-project-quotes'},
+    {href: `/app/projects/${opts.id}/payments`, name: 'payments', tag: 'r-project-quotes'}
   ]
   if(this.currentAccount && this.currentAccount.isProfessional) {
     this.subnavLinks = [
@@ -39,7 +41,8 @@ import './_tender.tag'
       {href: `/app/projects/${opts.id}/docs`, name: 'docs', tag: 'r-project-docs'},
       {href: `/app/projects/${opts.id}/team`, name: 'team', tag: 'r-project-team'},
       {href: `/app/projects/${opts.id}/tender`, name: 'tender', tag: 'r-project-tender'},
-      {href: `/app/projects/${opts.id}/quotes`, name: 'quotes', tag: 'r-project-quotes'}
+      {href: `/app/projects/${opts.id}/quotes`, name: 'quotes', tag: 'r-project-quotes'},
+      {href: `/app/projects/${opts.id}/payments`, name: 'payments', tag: 'r-project-quotes'}
     ]
   }
   </script>

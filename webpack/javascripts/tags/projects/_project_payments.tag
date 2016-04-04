@@ -1,5 +1,5 @@
 <r-project-payments>
-
+  <div class="overflow-scroll">
   <table class="table-light">
     <thead>
       <tr>
@@ -7,7 +7,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr each="{payments}" class="{id} {'bg-yellow': id == parent.opts.payment_id}">
+      <tr each="{payments}" class="{'bg-yellow': id == parent.opts.payment_id}">
         <td>{formatCurrency(amount)}</td>
         <td>{formatTime(due_date)}</td>
         <td>{status}</td>
@@ -46,6 +46,7 @@
     <div class="mt1">
       <a class="btn btn-small bg-darken-2" onclick="{openPaymentForm}">Add Payment</a>
     </div>
+  </div>
   </div>
 
   <script>
