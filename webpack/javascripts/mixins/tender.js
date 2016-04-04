@@ -43,8 +43,9 @@ riot.mixin('tenderMixin', {
     })
 
     this.updateTenderTotal = () => {
-      this.tenderTotal()
-      this.update()
+      //this.tenderTotal()
+      this.update({tenderTotal: this.calcTenderTotal()})
+      //this.tenderTotal = this.calcTenderTotal()
     }
 
     this.addSection = (e) => {
@@ -73,13 +74,16 @@ riot.mixin('tenderMixin', {
         }
       }
     }
-    this.sectionTotal = (section, formatted = false) => {
+    this.calcSectionTotal = (section, formatted = false) => {
+      console.log('calcSectionTotal')
       let itemTotal = _.reduce(section.tasks, (total, item) => {
         return total + item.price * item.quantity
       }, 0)
       let materialTotal = _.reduce(section.materials, (total, item) => {
         return total + (item.supplied ? item.price * item.quantity : 0)
       }, 0)
+      section.itemTotal = itemTotal
+      section.materialTotal = materialTotal
       if (formatted) {
         // return this.formatCurrency(itemTotal + (itemTotal * VAT / 100) + materialTotal)
         return this.formatCurrency(itemTotal + materialTotal)
@@ -88,17 +92,23 @@ riot.mixin('tenderMixin', {
       }
     }
     this.tenderVat = () => {
+      console.log('tenderVat')
       return this.formatCurrency( this.record.document.include_vat ?
         _.reduce(this.record.document.sections, (total, section) => {
-          var [itemTotal , materialTotal] = this.sectionTotal(section)
+          var [itemTotal , materialTotal] = section.itemTotal ?
+            [section.itemTotal, section.materialTotal] :
+            this.calcSectionTotal(section)
 
           return (total + (itemTotal * 20 / 100))
         }, 0) : 0 )
     }
-    this.tenderTotal = () => {
+    this.calcTenderTotal = () => {
+      console.log('calcTenderTotal')
       return this.formatCurrency(
         _.reduce(this.record.document.sections, (total, section) => {
-          var [itemTotal , materialTotal] = this.sectionTotal(section)
+          var [itemTotal , materialTotal] = section.itemTotal ?
+            [section.itemTotal, section.materialTotal] :
+            this.calcSectionTotal(section)
 
           return (total + itemTotal + materialTotal + (this.record.document.include_vat ? (itemTotal * 20 / 100) : 0))
         }, 0)

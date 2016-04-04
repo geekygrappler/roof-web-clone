@@ -16,33 +16,37 @@
           </div>
         </li>
 
-        <r-tender-item each="{ items }" border_cleaner="{drawBorderCleaner()}"></r-tender-item>
+        <r-tender-item each="{ items }" border_cleaner="{drawBorderCleaner()}" no-reorder></r-tender-item>
 
       </ul>
     </li>
   </ul>
-  <h5 class="right-align mb0">{formatCurrency(total())}</h5>
+  <h5 class="right-align mb0">{formatCurrency(groupTotal)}</h5>
 
   <script>
   let itemKeys
 
-  this.taskActions = opts.task_actions
+  // this.taskActions = opts.task_actions
 
-  this.visible = false
+  this.visible = true
 
-  this.icon = 'plus-square-o'
-
-  this.changeIcon = (e) => {
-    this.icon = this.visible ? 'plus-square-o' : 'minus-square-o'
-  }
+  this.icon = this.visible ? 'plus-square-o' : 'minus-square-o'
 
   this.toggle = (e) => {
     e.preventDefault()
     this.visible = !this.visible
-    this.changeIcon(e)
+    this.icon = this.visible ? 'plus-square-o' : 'minus-square-o'
   }
 
-  this.total = () => {
+  // this.on('update', () => {
+  //   if(this.tags['r-tender-item'] && this.items && this.items.length != this.tags['r-tender-item'].length) this.update({visible: true})
+  // })
+
+  this.updateGroupTotal = () => {
+    this.groupTotal = this.calcGroupTotal()
+  }
+
+  this.calcGroupTotal = () => {
     return _.reduce(this.items, (total, item) => {
       if (this.group == 'materials') {
         return total + (item.supplied ? item.price * item.quantity : 0)
@@ -54,13 +58,16 @@
 
   this.on('mount', () => {
     itemKeys = Object.keys(this.opts.groupitems)
-    this.update()
+    this.groupTotal = this.calcGroupTotal()
+    //this.update()
   })
+
   this.drawHeader = () => {
     if (this.isMounted) {
       return itemKeys.indexOf(this.group) == 0
     }
   }
+
   this.drawBorderCleaner = () => {
     if (this.isMounted) {
       return itemKeys.indexOf(this.group) == itemKeys.length - 1

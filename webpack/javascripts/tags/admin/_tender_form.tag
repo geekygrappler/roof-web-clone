@@ -28,7 +28,7 @@ import from '../../mixins/tender.js'
 
     <div class="py3">
     <h4 class="right-align m0"><label><input type="checkbox" onchange="{toggleVat}" checked="{record.document.include_vat}" class="mr1">VAT {tenderVat()}</label></h4>
-    <h3 class="right-align m0">Estimated total{ record.document.include_vat ? '(Inc. VAT)' : ''}: { tenderTotal() }</h3>
+    <h3 class="right-align m0">Estimated total{ record.document.include_vat ? '(Inc. VAT)' : ''}: { tenderTotal }</h3>
     </div>
 
     <form name="form" onsubmit="{ submit }" class="right-align">
@@ -39,7 +39,7 @@ import from '../../mixins/tender.js'
         </ul>
       </div>
 
-      <button type="submit" class="btn btn-primary btn-big {busy: busy}">Save</button>
+      <button type="submit" class="btn btn-primary btn-big {busy: busy}" disabled="{busy}">Save</button>
     </form>
 
     <div if="{record.id}" class="mt4 clearfix">

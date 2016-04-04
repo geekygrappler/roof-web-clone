@@ -1,4 +1,19 @@
+let taskActions = require("json!../../data/task_actions.json")
 import './_comments.tag'
+
+<r-tender-item-action-group-dropdown>
+  <select onchange="{changeTaskAction}">
+    <option each="{val, name in taskActions}" value="{val}" selected="{val == 'Other'}" no-reorder>{name}</option>
+  </select>
+  <script>
+  this.taskActions = _.omit(taskActions, 'Materials', 'VAT')
+  this.changeTaskAction = (e) => {
+    e.item = this.opts.item
+    this.opts.changeTaskAction(e)
+    this.closeModal()
+  }
+  </script>
+</r-tender-item-action-group-dropdown>
 
 <r-tender-item>
   <li class="relative">
@@ -7,9 +22,7 @@ import './_comments.tag'
       <div if="{ parent.headers.name }" class="sm-col sm-col-{ parent.headers.name } mb1 sm-mb0">
         <input type="text" name="name" value="{ display_name || name }"
         class="fit field inline-input align-left col-12" oninput="{ inputname }" />
-        <select if="{action.toLowerCase() == 'other'}" onchange="{changeTaskAction}">
-          <option each="{val, name in parent.opts.task_actions}" value="{val}" selected="{val == 'Other'}">{name}</option>
-        </select>
+        <a if="{action == 'Other'}" class="btn btn-small btn-outline" onclick="{openGroupCombo}">Other</a>
         <hr class="sm-hide">
       </div>
 
@@ -42,24 +55,44 @@ import './_comments.tag'
 
   <script>
 
+
   this.on('mount', () => {
     // $('.animate', this.root).animateCss('bounceIn')
   })
 
-  this.input = (e) => {
+  this.input = _.debounce((e) => {
+    //e.preventUpdate=true
     e.item[e.target.name] = e.target.type === 'checkbox' ? e.target.checked : (e.target.name === 'price' ? (parseInt(e.target.value) || 0) * 100 : (parseInt(e.target.value) || 0))
     //this.update()
-    this.opts.api.tenders.trigger('update')
-  }
+
+    //this.opts.api.tenders.trigger('update')
+    this.parent.updateGroupTotal()
+    this.parent.parent.updateSectionTotal()
+  }, 300)
   this.inputname = (e) => {
+    //e.preventUpdate=true
     e.item.display_name = e.target.value
-    this.update()
-    this.opts.api.tenders.trigger('update')
+    //this.update()
+    //this.opts.api.tenders.trigger('update')
   }
-  this.inputTotalCost = (e) => {
+  this.inputTotalCost = _.debounce((e) => {
+    //e.preventUpdate=true
     //$('[name=price]', this.root).val()
     e.item.price = e.target.value * 100 / e.item.quantity
-    this.opts.api.tenders.trigger('update')
+    //this.opts.api.tenders.trigger('update')
+    this.parent.updateGroupTotal()
+    this.parent.parent.updateSectionTotal()
+  }, 300)
+
+  this.openGroupCombo = (e) => {
+    e.preventDefault()
+    // console.log(this.parent.parent.section)
+    riot.mount('r-modal', {
+      content: 'r-tender-item-action-group-dropdown',
+      persisted: false,
+      api: opts.api,
+      contentOpts: {api: opts.api, changeTaskAction: this.changeTaskAction, item: e.item}
+    })
   }
 
   this.removeItem = (e) => {
@@ -83,9 +116,12 @@ import './_comments.tag'
   }
 
   this.changeTaskAction = (e) => {
+
+    //e.preventUpdate=true
     e.item.action = e.target.value
-    this.update()
-    this.parent.update()
+    //this.update()
+    //this.parent.update()
+    console.log('changeTaskAction')
     this.opts.api.tenders.trigger('update')
   }
 

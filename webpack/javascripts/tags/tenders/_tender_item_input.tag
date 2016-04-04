@@ -11,14 +11,14 @@ import Handlebars from 'handlebars/dist/handlebars'
   </div>
   <script>
 
-  this.request({url: `/api/${this.opts.name.plural()}`}).then((data) => {
+  //this.request({url: `/api/${this.opts.name.plural()}`}).then((data) => {
 
     let source = new Bloodhound({
       datumTokenizer:  function (d) {
         return Bloodhound.tokenizers.whitespace(`${d.action} ${d.group} ${d.name} ${d.tags && d.tags.join(' ')}`)
       },
       queryTokenizer: Bloodhound.tokenizers.whitespace,
-      local: data[this.opts.name.plural()],
+      // local: data[this.opts.name.plural()],
       sufficient: 10,
       remote: {
         url: `/api/${this.opts.name.plural()}?query=%QUERY`,
@@ -31,7 +31,9 @@ import Handlebars from 'handlebars/dist/handlebars'
 
 
     $(this.query)
-    .on('typeahead:notfound', this.addDefaultItem)
+    .on('typeahead:notfound', (e) => {
+      this.addDefaultItem()
+    })
     .on('typeahead:select', (e, suggestion) => {
       this.selectItem(suggestion)
     })
@@ -53,9 +55,9 @@ import Handlebars from 'handlebars/dist/handlebars'
         `)
       }
     });
-  })
+  //})
 
-  this.addDefaultItem = (e) => {
+  this.addDefaultItem = () => {
     var val = $(this.query).typeahead('val')
     if (val) {
       this.selectItem(this.getDefaultItem(val))

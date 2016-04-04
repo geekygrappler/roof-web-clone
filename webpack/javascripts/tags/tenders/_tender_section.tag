@@ -1,34 +1,34 @@
 let taskActions = require("json!../../data/task_actions.json")
 
 <r-tender-section>
-  <div data-disclosure>
+  <div>
     <div class="relative border-bottom mt2">
       <h3 class="block overflow-hidden mb0">
-        <i data-handle class="absolute left-0 top-0 mt1 cursor-pointer fa fa-{ icon }" onclick="{changeIcon}"></i>
+        <i class="absolute left-0 top-0 mt1 cursor-pointer fa fa-{ icon }" onclick="{toggle}"></i>
         <input type="text" class="block col-12 field border-none tender-section-name h3"
         value="{ section.name.humanize() }" oninput="{renameSection}">
       </h3>
       <a class="absolute right-0 top-0 btn btn-small border-red red" onclick="{removeSection}"><i class="fa fa-trash-o"></i></a>
     </div>
-    <div data-details>
+    <virtual if="{visible}">
 
       <r-tender-item-group
         name="task"
-        task_actions="{taskActions}"
+
         groupitems="{section.tasks_by_action}"
         each="{ group, items in section.tasks_by_action }"
         headers="{ parent.headers.task }"
-        onitemremoved="{ removeItem }">
+        onitemremoved="{ removeItem }" no-reorder>
       </r-tender-item-group>
 
       <r-tender-item-group
         name="material"
-        task_actions="{taskActions}"
+
         groupitems="{section.materials_by_group}"
         show="{ section.materials && section.materials.length > 0 }"
         each="{ group, items in section.materials_by_group }"
         headers="{ parent.headers.material }"
-        onitemremoved="{ removeItem }">
+        onitemremoved="{ removeItem }" no-reorder>
       </r-tender-item-group>
 
       <div class="clearfix mxn1 mt2">
@@ -40,18 +40,29 @@ let taskActions = require("json!../../data/task_actions.json")
         </div>
       </div>
 
-    </div>
-    <h3 class="right-align">{section.name}: { sectionTotal(section, true) }</h3>
+    </virtual>
+    <h3 class="right-align">{section.name}: { sectionTotal }</h3>
   </div>
 
   <script>
   this.taskActions = _.omit(taskActions, 'Materials', 'VAT')
   //this.showDisclosures = true
-  this.icon = 'plus-square-o'
+  this.visible = false
 
-  this.changeIcon = (e) => {
-    this.icon = $('[data-details]', this.root).hasClass('display-none') ? 'plus-square-o' : 'minus-square-o'
+  this.icon = this.visible ? 'plus-square-o' : 'minus-square-o'
+
+  this.toggle = (e) => {
+    e.preventDefault()
+    this.visible = !this.visible
+    this.icon = this.visible ? 'plus-square-o' : 'minus-square-o'
   }
+
+  this.updateSectionTotal = () => {
+    console.log('updateSectionTotal')
+    this.sectionTotal = this.calcSectionTotal(this.section, true)
+    this.parent.updateTenderTotal()
+  }
+
 
   this.on('update', () => {
     if (this.section) {
@@ -60,7 +71,7 @@ let taskActions = require("json!../../data/task_actions.json")
         return _.indexOf(_.keys(this.taskActions), group)
       })),(item) => item.action)
       this.section.materials_by_group = {materials: this.section.materials}
-      this.opts.api.tenders.trigger('update')
+      if (!this.sectionTotal) this.updateSectionTotal()
     }
   })
 
@@ -70,6 +81,7 @@ let taskActions = require("json!../../data/task_actions.json")
     if (index < 0 || typeof item.id === 'undefined') {
       this.section.tasks.push(item)
       this.update()
+      this.updateSectionTotal()
     }
   })
   this.tags.material.on('itemselected', (item) => {
@@ -78,6 +90,7 @@ let taskActions = require("json!../../data/task_actions.json")
     if (index < 0 || typeof item.id === 'undefined') {
       this.section.materials.push(item)
       this.update()
+      this.updateSectionTotal()
     }
   })
 
@@ -85,6 +98,7 @@ let taskActions = require("json!../../data/task_actions.json")
     name = name.plural()
     let index = _.findIndex(this.section[name], itm => _.isEqual(itm, e.item) )
     this.section[name].splice(index, 1)
+    console.log('removeItem')
     this.update()
     this.opts.api.tenders.trigger('update')
   }
@@ -92,7 +106,7 @@ let taskActions = require("json!../../data/task_actions.json")
   this.renameSection = _.debounce((e) => {
     this.section.name = e.target.value
     this.update()
-  })
+  }, 300)
 
   </script>
 </r-tender-section>

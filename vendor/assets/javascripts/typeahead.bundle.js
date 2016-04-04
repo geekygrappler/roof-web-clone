@@ -2038,9 +2038,9 @@
 
                 if ($selectable = this.menu.getActiveSelectable()) {
                   this.select($selectable) && $e.preventDefault();
-                // allow notfound values to be used  
+                // allow notfound values to be used
                 } else {
-                  this.input.$input.trigger('typeahead:notfound')
+                  this.eventBus.trigger('notfound')
                 }
             },
             _onTabKeyed: function onTabKeyed(type, $e) {

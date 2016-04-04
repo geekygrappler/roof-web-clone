@@ -31964,7 +31964,7 @@
 	
 	__webpack_require__(156);
 	
-	riot.tag2("r-tenders-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1> {opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Tender ' + opts.id : 'New Tender'}</h1> <a class=\"mb1 btn btn-small h6 btn-outline orange\" href=\"/app/projects/{project.id}\"> <i class=\"fa fa-chevron-left\"></i> Back to Project </a> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal()}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{!currentAccount.isProfessional}\" type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{currentAccount.isProfessional}\" onclick=\"{cloneTender}\" class=\"btn btn-primary btn-big {busy: busy}\">Clone</a> </form> </div>", "", "", function (opts) {
+	riot.tag2("r-tenders-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1> {opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Tender ' + opts.id : 'New Tender'}</h1> <a class=\"mb1 btn btn-small h6 btn-outline orange\" href=\"/app/projects/{project.id}\"> <i class=\"fa fa-chevron-left\"></i> Back to Project </a> <r-tender-section each=\"{section , i in record.document.sections}\" no-reorder></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{!currentAccount.isProfessional}\" type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{currentAccount.isProfessional}\" onclick=\"{cloneTender}\" class=\"btn btn-primary btn-big {busy: busy}\">Clone</a> </form> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.headers = {
@@ -32108,8 +32108,8 @@
 	    });
 	
 	    this.updateTenderTotal = function () {
-	      _this.tenderTotal();
-	      _this.update();
+	      //this.tenderTotal()
+	      _this.update({ tenderTotal: _this.calcTenderTotal() });
 	    };
 	
 	    this.addSection = function (e) {
@@ -32139,15 +32139,18 @@
 	        }
 	      }
 	    };
-	    this.sectionTotal = function (section) {
+	    this.calcSectionTotal = function (section) {
 	      var formatted = arguments[1] === undefined ? false : arguments[1];
 	
+	      console.log("calcSectionTotal");
 	      var itemTotal = _.reduce(section.tasks, function (total, item) {
 	        return total + item.price * item.quantity;
 	      }, 0);
 	      var materialTotal = _.reduce(section.materials, function (total, item) {
 	        return total + (item.supplied ? item.price * item.quantity : 0);
 	      }, 0);
+	      section.itemTotal = itemTotal;
+	      section.materialTotal = materialTotal;
 	      if (formatted) {
 	        // return this.formatCurrency(itemTotal + (itemTotal * VAT / 100) + materialTotal)
 	        return _this.formatCurrency(itemTotal + materialTotal);
@@ -32156,25 +32159,27 @@
 	      }
 	    };
 	    this.tenderVat = function () {
+	      console.log("tenderVat");
 	      return _this.formatCurrency(_this.record.document.include_vat ? _.reduce(_this.record.document.sections, function (total, section) {
-	        var _sectionTotal = _this.sectionTotal(section);
+	        var _ref = section.itemTotal ? [section.itemTotal, section.materialTotal] : _this.calcSectionTotal(section);
 	
-	        var _sectionTotal2 = _slicedToArray(_sectionTotal, 2);
+	        var _ref2 = _slicedToArray(_ref, 2);
 	
-	        var itemTotal = _sectionTotal2[0];
-	        var materialTotal = _sectionTotal2[1];
+	        var itemTotal = _ref2[0];
+	        var materialTotal = _ref2[1];
 	
 	        return total + itemTotal * 20 / 100;
 	      }, 0) : 0);
 	    };
-	    this.tenderTotal = function () {
+	    this.calcTenderTotal = function () {
+	      console.log("calcTenderTotal");
 	      return _this.formatCurrency(_.reduce(_this.record.document.sections, function (total, section) {
-	        var _sectionTotal = _this.sectionTotal(section);
+	        var _ref = section.itemTotal ? [section.itemTotal, section.materialTotal] : _this.calcSectionTotal(section);
 	
-	        var _sectionTotal2 = _slicedToArray(_sectionTotal, 2);
+	        var _ref2 = _slicedToArray(_ref, 2);
 	
-	        var itemTotal = _sectionTotal2[0];
-	        var materialTotal = _sectionTotal2[1];
+	        var itemTotal = _ref2[0];
+	        var materialTotal = _ref2[1];
 	
 	        return total + itemTotal + materialTotal + (_this.record.document.include_vat ? itemTotal * 20 / 100 : 0);
 	      }, 0));
@@ -32186,6 +32191,7 @@
 	    };
 	  }
 	});
+	//this.tenderTotal = this.calcTenderTotal()
 	// $('[name=searchable_names]').last()[0].focus()
 
 /***/ },
@@ -32201,40 +32207,42 @@
 	riot.tag2("r-tender-item-input", "<div class=\"relative\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Start typing to add {opts.name}\" autocomplete=\"off\"> </form> <i class=\"fa fa-plus absolute right-0 top-0 p1\" onclick=\"{addDefaultItem}\"></i> </div>", "", "", function (opts) {
 	  var _this = this;
 	
-	  this.request({ url: "/api/" + this.opts.name.plural() }).then(function (data) {
+	  //this.request({url: `/api/${this.opts.name.plural()}`}).then((data) => {
 	
-	    var source = new Bloodhound({
-	      datumTokenizer: function datumTokenizer(d) {
-	        return Bloodhound.tokenizers.whitespace("" + d.action + " " + d.group + " " + d.name + " " + (d.tags && d.tags.join(" ")));
-	      },
-	      queryTokenizer: Bloodhound.tokenizers.whitespace,
-	      local: data[_this.opts.name.plural()],
-	      sufficient: 10,
-	      remote: {
-	        url: "/api/" + _this.opts.name.plural() + "?query=%QUERY",
-	        wildcard: "%QUERY",
-	        transform: function (data) {
-	          return data[_this.opts.name.plural()];
-	        }
+	  var source = new Bloodhound({
+	    datumTokenizer: function datumTokenizer(d) {
+	      return Bloodhound.tokenizers.whitespace("" + d.action + " " + d.group + " " + d.name + " " + (d.tags && d.tags.join(" ")));
+	    },
+	    queryTokenizer: Bloodhound.tokenizers.whitespace,
+	    // local: data[this.opts.name.plural()],
+	    sufficient: 10,
+	    remote: {
+	      url: "/api/" + this.opts.name.plural() + "?query=%QUERY",
+	      wildcard: "%QUERY",
+	      transform: function (data) {
+	        return data[_this.opts.name.plural()];
 	      }
-	    });
-	
-	    $(_this.query).on("typeahead:notfound", _this.addDefaultItem).on("typeahead:select", function (e, suggestion) {
-	      _this.selectItem(suggestion);
-	    }).typeahead(null, {
-	      name: _this.opts.name.plural(),
-	      source: source,
-	      display: "name",
-	      limit: 10,
-	      templates: {
-	        empty: "\n        <div class=\"empty-message border-bottom typeahead-item p1\">\n          unable to find any " + opts.name + " that match the current query, hit enter to add in Other category\n        </div>",
-	
-	        suggestion: Handlebars.compile("\n          <div class=\"border-bottom typeahead-item\">\n            <a class=\"cursor-pointer p2\"><span class=\"bg-orange p1\">{{action}}</span> {{name}}</a>\n          </div>\n        ")
-	      }
-	    });
+	    }
 	  });
 	
-	  this.addDefaultItem = function (e) {
+	  $(this.query).on("typeahead:notfound", function (e) {
+	    _this.addDefaultItem();
+	  }).on("typeahead:select", function (e, suggestion) {
+	    _this.selectItem(suggestion);
+	  }).typeahead(null, {
+	    name: this.opts.name.plural(),
+	    source: source,
+	    display: "name",
+	    limit: 10,
+	    templates: {
+	      empty: "\n        <div class=\"empty-message border-bottom typeahead-item p1\">\n          unable to find any " + opts.name + " that match the current query, hit enter to add in Other category\n        </div>",
+	
+	      suggestion: Handlebars.compile("\n          <div class=\"border-bottom typeahead-item\">\n            <a class=\"cursor-pointer p2\"><span class=\"bg-orange p1\">{{action}}</span> {{name}}</a>\n          </div>\n        ")
+	    }
+	  });
+	  //})
+	
+	  this.addDefaultItem = function () {
 	    var val = $(_this.query).typeahead("val");
 	    if (val) {
 	      _this.selectItem(_this.getDefaultItem(val));
@@ -36897,27 +36905,60 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
+	var taskActions = __webpack_require__(146);
+	
 	__webpack_require__(154);
 	
-	riot.tag2("r-tender-item", "<li class=\"relative\"> <div if=\"{opts.border_cleaner}\" class=\"border-cleaner absolute\"></div> <div class=\"clearfix animate p1 border-bottom\"> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> <input type=\"text\" name=\"name\" value=\"{display_name || name}\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputname}\"> <select if=\"{action.toLowerCase() == 'other'}\" onchange=\"{changeTaskAction}\"> <option each=\"{val, name in parent.opts.task_actions}\" value=\"{val}\" __selected=\"{val == 'Other'}\">{name}</option> </select> <hr class=\"sm-hide\"> </div> <div if=\"{parent.headers.quantity}\" class=\"col sm-col-{parent.headers.quantity} col-3 center\"> <input name=\"quantity\" value=\"{quantity}\" step=\"1\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.price}\" class=\"col sm-col-{parent.headers.price} col-{parent.opts.name == 'task' ? 3 : 2} center relative\"> <i class=\"fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white\"></i><input name=\"price\" value=\"{parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0)}\" __disabled=\"{parent.opts.name == 'material' && !supplied}\" step=\"1\" min=\"0\" class=\"fit field inline-input center price\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.total_cost}\" class=\"col sm-col-{parent.headers.total_cost} col-3 center relative\"> <i class=\"fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white\"></i><input value=\"{parent.opts.name == 'task' ? (price / 100 * quantity) : (supplied ? price / 100 * quantity : '0')}\" step=\"1\" min=\"0\" class=\"fit field inline-input center price\" oninput=\"{inputTotalCost}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.supplied}\" class=\"col sm-col-{parent.headers.supplied} col-1 center\"> <input if=\"{parent.opts.name == 'material'}\" type=\"checkbox\" name=\"supplied\" __checked=\"{supplied}\" class=\"align-middle\" onchange=\"{input}\"> </div> <div if=\"{parent.headers.actions}\" class=\"col sm-col-{parent.headers.actions} col-2 center\"> <a href=\"#\" class=\"btn btn-small border-red red\" onclick=\"{removeItem}\"><i class=\"fa fa-trash-o\"></i></a> <a href=\"#\" if=\"{parent && parent.parent && parent.parent.record.id}\" class=\"btn btn-small border\" onclick=\"{openComments}\"><i class=\"fa fa-comment-o\"></i></a> </div> </div> </li>", "", "", function (opts) {
+	riot.tag2("r-tender-item-action-group-dropdown", "<select onchange=\"{changeTaskAction}\"> <option each=\"{val, name in taskActions}\" value=\"{val}\" __selected=\"{val == 'Other'}\" no-reorder>{name}</option> </select>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.taskActions = _.omit(taskActions, "Materials", "VAT");
+	  this.changeTaskAction = function (e) {
+	    e.item = _this.opts.item;
+	    _this.opts.changeTaskAction(e);
+	    _this.closeModal();
+	  };
+	});
+	
+	riot.tag2("r-tender-item", "<li class=\"relative\"> <div if=\"{opts.border_cleaner}\" class=\"border-cleaner absolute\"></div> <div class=\"clearfix animate p1 border-bottom\"> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> <input type=\"text\" name=\"name\" value=\"{display_name || name}\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputname}\"> <a if=\"{action == 'Other'}\" class=\"btn btn-small btn-outline\" onclick=\"{openGroupCombo}\">Other</a> <hr class=\"sm-hide\"> </div> <div if=\"{parent.headers.quantity}\" class=\"col sm-col-{parent.headers.quantity} col-3 center\"> <input name=\"quantity\" value=\"{quantity}\" step=\"1\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.price}\" class=\"col sm-col-{parent.headers.price} col-{parent.opts.name == 'task' ? 3 : 2} center relative\"> <i class=\"fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white\"></i><input name=\"price\" value=\"{parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0)}\" __disabled=\"{parent.opts.name == 'material' && !supplied}\" step=\"1\" min=\"0\" class=\"fit field inline-input center price\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.total_cost}\" class=\"col sm-col-{parent.headers.total_cost} col-3 center relative\"> <i class=\"fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white\"></i><input value=\"{parent.opts.name == 'task' ? (price / 100 * quantity) : (supplied ? price / 100 * quantity : '0')}\" step=\"1\" min=\"0\" class=\"fit field inline-input center price\" oninput=\"{inputTotalCost}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.supplied}\" class=\"col sm-col-{parent.headers.supplied} col-1 center\"> <input if=\"{parent.opts.name == 'material'}\" type=\"checkbox\" name=\"supplied\" __checked=\"{supplied}\" class=\"align-middle\" onchange=\"{input}\"> </div> <div if=\"{parent.headers.actions}\" class=\"col sm-col-{parent.headers.actions} col-2 center\"> <a href=\"#\" class=\"btn btn-small border-red red\" onclick=\"{removeItem}\"><i class=\"fa fa-trash-o\"></i></a> <a href=\"#\" if=\"{parent && parent.parent && parent.parent.record.id}\" class=\"btn btn-small border\" onclick=\"{openComments}\"><i class=\"fa fa-comment-o\"></i></a> </div> </div> </li>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.on("mount", function () {});
 	
-	  this.input = function (e) {
+	  this.input = _.debounce(function (e) {
+	    //e.preventUpdate=true
 	    e.item[e.target.name] = e.target.type === "checkbox" ? e.target.checked : e.target.name === "price" ? (parseInt(e.target.value) || 0) * 100 : parseInt(e.target.value) || 0;
 	    //this.update()
-	    _this.opts.api.tenders.trigger("update");
-	  };
+	
+	    //this.opts.api.tenders.trigger('update')
+	    _this.parent.updateGroupTotal();
+	    _this.parent.parent.updateSectionTotal();
+	  }, 300);
 	  this.inputname = function (e) {
-	    e.item.display_name = e.target.value;
-	    _this.update();
-	    _this.opts.api.tenders.trigger("update");
+	    //e.preventUpdate=true
+	    e.item.display_name = e.target.value
+	    //this.update()
+	    //this.opts.api.tenders.trigger('update')
+	    ;
 	  };
-	  this.inputTotalCost = function (e) {
+	  this.inputTotalCost = _.debounce(function (e) {
+	    //e.preventUpdate=true
 	    //$('[name=price]', this.root).val()
 	    e.item.price = e.target.value * 100 / e.item.quantity;
-	    _this.opts.api.tenders.trigger("update");
+	    //this.opts.api.tenders.trigger('update')
+	    _this.parent.updateGroupTotal();
+	    _this.parent.parent.updateSectionTotal();
+	  }, 300);
+	
+	  this.openGroupCombo = function (e) {
+	    e.preventDefault();
+	    // console.log(this.parent.parent.section)
+	    riot.mount("r-modal", {
+	      content: "r-tender-item-action-group-dropdown",
+	      persisted: false,
+	      api: opts.api,
+	      contentOpts: { api: opts.api, changeTaskAction: _this.changeTaskAction, item: e.item }
+	    });
 	  };
 	
 	  this.removeItem = function (e) {
@@ -36940,9 +36981,12 @@
 	  };
 	
 	  this.changeTaskAction = function (e) {
+	
+	    //e.preventUpdate=true
 	    e.item.action = e.target.value;
-	    _this.update();
-	    _this.parent.update();
+	    //this.update()
+	    //this.parent.update()
+	    console.log("changeTaskAction");
 	    _this.opts.api.tenders.trigger("update");
 	  };
 	});
@@ -37021,28 +37065,32 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-tender-item-group", "<ul class=\"list-reset ml2 mb0 relative\"> <li> <h4 class=\"inline-block mb0 mt1 p1 border-bottom \"> <a onclick=\"{toggle}\" class=\"cursor-pointer\"> <i class=\"fa fa-{icon} mr1\"></i> {group.humanize()} </a> </h4> <ul class=\"list-reset ml2 border-left mb0\" if=\"{visible}\"> <li if=\"{drawHeader()}\" class=\"sm-show relative\"> <div class=\"clearfix p1 border-bottom\"> <div each=\"{name, width in headers}\" class=\"sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate\"> {name == 'name' ? '&nbsp;' : name.humanize()} </div> </div> </li> <r-tender-item each=\"{items}\" border_cleaner=\"{drawBorderCleaner()}\"></r-tender-item> </ul> </li> </ul> <h5 class=\"right-align mb0\">{formatCurrency(total())}</h5>", "", "class=\"{last: drawBorderCleaner()}\"", function (opts) {
+	riot.tag2("r-tender-item-group", "<ul class=\"list-reset ml2 mb0 relative\"> <li> <h4 class=\"inline-block mb0 mt1 p1 border-bottom \"> <a onclick=\"{toggle}\" class=\"cursor-pointer\"> <i class=\"fa fa-{icon} mr1\"></i> {group.humanize()} </a> </h4> <ul class=\"list-reset ml2 border-left mb0\" if=\"{visible}\"> <li if=\"{drawHeader()}\" class=\"sm-show relative\"> <div class=\"clearfix p1 border-bottom\"> <div each=\"{name, width in headers}\" class=\"sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate\"> {name == 'name' ? '&nbsp;' : name.humanize()} </div> </div> </li> <r-tender-item each=\"{items}\" border_cleaner=\"{drawBorderCleaner()}\" no-reorder></r-tender-item> </ul> </li> </ul> <h5 class=\"right-align mb0\">{formatCurrency(groupTotal)}</h5>", "", "class=\"{last: drawBorderCleaner()}\"", function (opts) {
 	  var _this = this;
 	
 	  var itemKeys = undefined;
 	
-	  this.taskActions = opts.task_actions;
+	  // this.taskActions = opts.task_actions
 	
-	  this.visible = false;
+	  this.visible = true;
 	
-	  this.icon = "plus-square-o";
-	
-	  this.changeIcon = function (e) {
-	    _this.icon = _this.visible ? "plus-square-o" : "minus-square-o";
-	  };
+	  this.icon = this.visible ? "plus-square-o" : "minus-square-o";
 	
 	  this.toggle = function (e) {
 	    e.preventDefault();
 	    _this.visible = !_this.visible;
-	    _this.changeIcon(e);
+	    _this.icon = _this.visible ? "plus-square-o" : "minus-square-o";
 	  };
 	
-	  this.total = function () {
+	  // this.on('update', () => {
+	  //   if(this.tags['r-tender-item'] && this.items && this.items.length != this.tags['r-tender-item'].length) this.update({visible: true})
+	  // })
+	
+	  this.updateGroupTotal = function () {
+	    _this.groupTotal = _this.calcGroupTotal();
+	  };
+	
+	  this.calcGroupTotal = function () {
 	    return _.reduce(_this.items, function (total, item) {
 	      if (_this.group == "materials") {
 	        return total + (item.supplied ? item.price * item.quantity : 0);
@@ -37054,13 +37102,17 @@
 	
 	  this.on("mount", function () {
 	    itemKeys = Object.keys(_this.opts.groupitems);
-	    _this.update();
+	    _this.groupTotal = _this.calcGroupTotal()
+	    //this.update()
+	    ;
 	  });
+	
 	  this.drawHeader = function () {
 	    if (_this.isMounted) {
 	      return itemKeys.indexOf(_this.group) == 0;
 	    }
 	  };
+	
 	  this.drawBorderCleaner = function () {
 	    if (_this.isMounted) {
 	      return itemKeys.indexOf(_this.group) == itemKeys.length - 1;
@@ -37079,15 +37131,25 @@
 	
 	var taskActions = __webpack_require__(146);
 	
-	riot.tag2("r-tender-section", "<div data-disclosure> <div class=\"relative border-bottom mt2\"> <h3 class=\"block overflow-hidden mb0\"> <i data-handle class=\"absolute left-0 top-0 mt1 cursor-pointer fa fa-{icon}\" onclick=\"{changeIcon}\"></i> <input type=\"text\" class=\"block col-12 field border-none tender-section-name h3\" value=\"{section.name.humanize()}\" oninput=\"{renameSection}\"> </h3> <a class=\"absolute right-0 top-0 btn btn-small border-red red\" onclick=\"{removeSection}\"><i class=\"fa fa-trash-o\"></i></a> </div> <div data-details> <r-tender-item-group name=\"task\" task_actions=\"{taskActions}\" groupitems=\"{section.tasks_by_action}\" each=\"{group, items in section.tasks_by_action}\" headers=\"{parent.headers.task}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <r-tender-item-group name=\"material\" task_actions=\"{taskActions}\" groupitems=\"{section.materials_by_group}\" show=\"{section.materials && section.materials.length > 0}\" each=\"{group, items in section.materials_by_group}\" headers=\"{parent.headers.material}\" onitemremoved=\"{removeItem}\"> </r-tender-item-group> <div class=\"clearfix mxn1 mt2\"> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"task\" auto_focus=\"{true}\" api=\"{parent.opts.api}\" icon=\"tasks\"></r-tender-item-input> </div> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"material\" api=\"{parent.opts.api}\" icon=\"shopping-basket\"></r-tender-item-input> </div> </div> </div> <h3 class=\"right-align\">{section.name}: {sectionTotal(section, true)}</h3> </div>", "", "", function (opts) {
+	riot.tag2("r-tender-section", "<div> <div class=\"relative border-bottom mt2\"> <h3 class=\"block overflow-hidden mb0\"> <i class=\"absolute left-0 top-0 mt1 cursor-pointer fa fa-{icon}\" onclick=\"{toggle}\"></i> <input type=\"text\" class=\"block col-12 field border-none tender-section-name h3\" value=\"{section.name.humanize()}\" oninput=\"{renameSection}\"> </h3> <a class=\"absolute right-0 top-0 btn btn-small border-red red\" onclick=\"{removeSection}\"><i class=\"fa fa-trash-o\"></i></a> </div> <virtual if=\"{visible}\"> <r-tender-item-group name=\"task\" groupitems=\"{section.tasks_by_action}\" each=\"{group, items in section.tasks_by_action}\" headers=\"{parent.headers.task}\" onitemremoved=\"{removeItem}\" no-reorder> </r-tender-item-group> <r-tender-item-group name=\"material\" groupitems=\"{section.materials_by_group}\" show=\"{section.materials && section.materials.length > 0}\" each=\"{group, items in section.materials_by_group}\" headers=\"{parent.headers.material}\" onitemremoved=\"{removeItem}\" no-reorder> </r-tender-item-group> <div class=\"clearfix mxn1 mt2\"> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"task\" auto_focus=\"{true}\" api=\"{parent.opts.api}\" icon=\"tasks\"></r-tender-item-input> </div> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"material\" api=\"{parent.opts.api}\" icon=\"shopping-basket\"></r-tender-item-input> </div> </div> </virtual> <h3 class=\"right-align\">{section.name}: {sectionTotal}</h3> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.taskActions = _.omit(taskActions, "Materials", "VAT");
 	  //this.showDisclosures = true
-	  this.icon = "plus-square-o";
+	  this.visible = false;
 	
-	  this.changeIcon = function (e) {
-	    _this.icon = $("[data-details]", _this.root).hasClass("display-none") ? "plus-square-o" : "minus-square-o";
+	  this.icon = this.visible ? "plus-square-o" : "minus-square-o";
+	
+	  this.toggle = function (e) {
+	    e.preventDefault();
+	    _this.visible = !_this.visible;
+	    _this.icon = _this.visible ? "plus-square-o" : "minus-square-o";
+	  };
+	
+	  this.updateSectionTotal = function () {
+	    console.log("updateSectionTotal");
+	    _this.sectionTotal = _this.calcSectionTotal(_this.section, true);
+	    _this.parent.updateTenderTotal();
 	  };
 	
 	  this.on("update", function () {
@@ -37101,7 +37163,7 @@
 	        return item.action;
 	      });
 	      _this.section.materials_by_group = { materials: _this.section.materials };
-	      _this.opts.api.tenders.trigger("update");
+	      if (!_this.sectionTotal) _this.updateSectionTotal();
 	    }
 	  });
 	
@@ -37113,6 +37175,7 @@
 	    if (index < 0 || typeof item.id === "undefined") {
 	      _this.section.tasks.push(item);
 	      _this.update();
+	      _this.updateSectionTotal();
 	    }
 	  });
 	  this.tags.material.on("itemselected", function (item) {
@@ -37123,6 +37186,7 @@
 	    if (index < 0 || typeof item.id === "undefined") {
 	      _this.section.materials.push(item);
 	      _this.update();
+	      _this.updateSectionTotal();
 	    }
 	  });
 	
@@ -37132,6 +37196,7 @@
 	      return _.isEqual(itm, e.item);
 	    });
 	    _this.section[name].splice(index, 1);
+	    console.log("removeItem");
 	    _this.update();
 	    _this.opts.api.tenders.trigger("update");
 	  };
@@ -37139,7 +37204,7 @@
 	  this.renameSection = _.debounce(function (e) {
 	    _this.section.name = e.target.value;
 	    _this.update();
-	  });
+	  }, 300);
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
@@ -37151,7 +37216,7 @@
 	
 	__webpack_require__(150);
 	
-	riot.tag2("r-quotes-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: isReadonly()} border\"> <div class=\"clearfix\"> <div class=\"left mb4 overflow-hidden\"> <h1 class=\"mb0\">{opts.id ? getTitle() : 'New Quote'}</h1> <a class=\"btn btn-small h6 btn-outline orange\" href=\"/app/projects/{record.project_id}\"><i class=\"fa fa-chevron-left\"></i> Back to Project</a> </div> <div class=\"right h5 mt3 align-right\"> <div>Created at: {formatTime(record.created_at)}</div> <div if=\"{record.submitted_at}\">Submitted at: {formatTime(record.submitted_at)}</div> <div if=\"{record.accepted_at}\">Accepted at: {formatTime(record.accepted_at)}</div> </div> </div> <div if=\"{currentAccount.isAdministrator}\"> <label for=\"project_id\">Professional</label> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" id=\"{record.professional_id}\" filters=\"{professionalFilters()}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"tender_id\">Tender</label> <input type=\"hidden\" name=\"tender_id\" value=\"{record.tender_id}\"> <r-typeahead-input resource=\"tenders\" api=\"{opts.api}\" id=\"{record.tender_id}\" filters=\"{tenderFilters()}\" datum_tokenizer=\"{['id', 'total_amount']}\"></r-typeahead-input> <span if=\"{errors.tender_id}\" class=\"inline-error\">{errors.tender_id}</span> </div> <div class=\"clearfix mb4\"> <div class=\"sm-col sm-col-6\"> <h4>From</h4> <address> {record.professional.profile.first_name} {record.professional.profile.last_name}<br> <virtual if=\"{!isAllValuesEmpty(record.professional.address)}\"> {record.professional.address.street_address}<br> {record.professional.address.postcode}, {record.professional.address.city}<br> {record.professional.address.country} </virtual> </address> </div> </div> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal()}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\"> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-6 px2\"> <label>Insurance Amount</label> <select name=\"insurance_amount\" class=\"block col-12 field mb2\" onchange=\"{setVal}\" if=\"{!currentAccount.isCustomer}\"> <option>Select</option> <option each=\"{_, i in new Array(19)}\" key=\"0\" value=\"{(i+1)}\" __selected=\"{record.insurance_amount == (i+1)}\">{(i+1) + ' Million'}</option> </select> <p if=\"{currentAccount.isCustomer}\">{record.insurance_amount ?  record.insurance_amount + ' Million' : 'N/A'}</p> </div> <div class=\"sm-col sm-col-6 px2\"> <label>Guarantee Length</label> <select name=\"guarantee_length\" class=\"block col-12 field mb2\" onchange=\"{setVal}\" if=\"{!currentAccount.isCustomer}\"> <option>Select</option> <option each=\"{_, i in new Array(19)}\" key=\"0\" value=\"{(i+1)}\" __selected=\"{record.guarantee_length == (i+1)}\">{(i+1) + (i > 0 ? ' Years' : ' Year')}</option> </select> <p if=\"{currentAccount.isCustomer}\">{record.guarantee_length ? record.guarantee_length + ' Years' : 'N/A'} </p> </div> </div> <label>Summary</label> <textarea type=\"text\" name=\"summary\" placeholder=\"Summary\" class=\"block col-12 field mb2\" oninput=\"{setVal}\" if=\"{!currentAccount.isCustomer}\">{record.summary}</textarea> <p if=\"{currentAccount.isCustomer}\">{record.summary ? record.summary : 'N/A'}</p> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <div class=\"right-align\"> <button if=\"{opts.id && !currentAccount.isProfessional && record.submitted_at}\" class=\"btn btn-primary btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </button> <virtual if=\"{!opts.readonly && !currentAccount.isCustomer}\"> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{opts.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\"> {record.submitted_at ? 'Submitted' : 'Submit'} <span if=\"{record.submitted_at}\">{fromNow(record.submitted_at)}</span> </a> </virtual> </div> </form> </div>", "", "", function (opts) {
+	riot.tag2("r-quotes-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: isReadonly()} border\"> <div class=\"clearfix\"> <div class=\"left mb4 overflow-hidden\"> <h1 class=\"mb0\">{opts.id ? getTitle() : 'New Quote'}</h1> <a class=\"btn btn-small h6 btn-outline orange\" href=\"/app/projects/{record.project_id}\"><i class=\"fa fa-chevron-left\"></i> Back to Project</a> </div> <div class=\"right h5 mt3 align-right\"> <div>Created at: {formatTime(record.created_at)}</div> <div if=\"{record.submitted_at}\">Submitted at: {formatTime(record.submitted_at)}</div> <div if=\"{record.accepted_at}\">Accepted at: {formatTime(record.accepted_at)}</div> </div> </div> <div if=\"{currentAccount.isAdministrator}\"> <label for=\"project_id\">Professional</label> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" id=\"{record.professional_id}\" filters=\"{professionalFilters()}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"tender_id\">Tender</label> <input type=\"hidden\" name=\"tender_id\" value=\"{record.tender_id}\"> <r-typeahead-input resource=\"tenders\" api=\"{opts.api}\" id=\"{record.tender_id}\" filters=\"{tenderFilters()}\" datum_tokenizer=\"{['id', 'total_amount']}\"></r-typeahead-input> <span if=\"{errors.tender_id}\" class=\"inline-error\">{errors.tender_id}</span> </div> <div class=\"clearfix mb4\"> <div class=\"sm-col sm-col-6\"> <h4>From</h4> <address> {record.professional.profile.first_name} {record.professional.profile.last_name}<br> <virtual if=\"{!isAllValuesEmpty(record.professional.address)}\"> {record.professional.address.street_address}<br> {record.professional.address.postcode}, {record.professional.address.city}<br> {record.professional.address.country} </virtual> </address> </div> </div> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\"> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-6 px2\"> <label>Insurance Amount</label> <select name=\"insurance_amount\" class=\"block col-12 field mb2\" onchange=\"{setVal}\" if=\"{!currentAccount.isCustomer}\"> <option>Select</option> <option each=\"{_, i in new Array(19)}\" key=\"0\" value=\"{(i+1)}\" __selected=\"{record.insurance_amount == (i+1)}\">{(i+1) + ' Million'}</option> </select> <p if=\"{currentAccount.isCustomer}\">{record.insurance_amount ?  record.insurance_amount + ' Million' : 'N/A'}</p> </div> <div class=\"sm-col sm-col-6 px2\"> <label>Guarantee Length</label> <select name=\"guarantee_length\" class=\"block col-12 field mb2\" onchange=\"{setVal}\" if=\"{!currentAccount.isCustomer}\"> <option>Select</option> <option each=\"{_, i in new Array(19)}\" key=\"0\" value=\"{(i+1)}\" __selected=\"{record.guarantee_length == (i+1)}\">{(i+1) + (i > 0 ? ' Years' : ' Year')}</option> </select> <p if=\"{currentAccount.isCustomer}\">{record.guarantee_length ? record.guarantee_length + ' Years' : 'N/A'} </p> </div> </div> <label>Summary</label> <textarea type=\"text\" name=\"summary\" placeholder=\"Summary\" class=\"block col-12 field mb2\" oninput=\"{setVal}\" if=\"{!currentAccount.isCustomer}\">{record.summary}</textarea> <p if=\"{currentAccount.isCustomer}\">{record.summary ? record.summary : 'N/A'}</p> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <div class=\"right-align\"> <button if=\"{opts.id && !currentAccount.isProfessional && record.submitted_at}\" class=\"btn btn-primary btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </button> <virtual if=\"{!opts.readonly && !currentAccount.isCustomer}\"> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{opts.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\"> {record.submitted_at ? 'Submitted' : 'Submit'} <span if=\"{record.submitted_at}\">{fromNow(record.submitted_at)}</span> </a> </virtual> </div> </form> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.getTitle = function () {
@@ -37556,7 +37621,7 @@
 	
 	__webpack_require__(150);
 	
-	riot.tag2("r-admin-tender-template-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <h1><input type=\"text\" name=\"name\" value=\"{record.name}\" class=\"block col-12 field\" placeholder=\"Name\" oninput=\"{setInputValue}\"></h1> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal()}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>When you apply a template to a project, if there isn't Tender on the project it clones itself to project, if Tender exists it apply changes to project's tender </p> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-tender-template-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <h1><input type=\"text\" name=\"name\" value=\"{record.name}\" class=\"block col-12 field\" placeholder=\"Name\" oninput=\"{setInputValue}\"></h1> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>When you apply a template to a project, if there isn't Tender on the project it clones itself to project, if Tender exists it apply changes to project's tender </p> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> </div> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.record = { name: null, document: { sections: [] } };
@@ -37646,7 +37711,7 @@
 	
 	__webpack_require__(150);
 	
-	riot.tag2("r-admin-tender-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <label for=\"project_id\">Project</label> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" id=\"{record.project_id}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> <span if=\"{errors.project_id}\" class=\"inline-error\">{errors.project_id}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal()}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>Add a Professional to this Project by creating a Quote from this tender. Choosen pro will be added to project.</p> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-tender-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <label for=\"project_id\">Project</label> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" id=\"{record.project_id}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> <span if=\"{errors.project_id}\" class=\"inline-error\">{errors.project_id}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\" __disabled=\"{busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>Add a Professional to this Project by creating a Quote from this tender. Choosen pro will be added to project.</p> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> </div> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.record = { project_id: this.opts.project_id, document: { sections: [] } };
@@ -37744,7 +37809,7 @@
 	
 	__webpack_require__(150);
 	
-	riot.tag2("r-admin-quote-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <label for=\"project\">Project</label> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" id=\"{record.project_id}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> <span if=\"{errors.project}\" class=\"inline-error\">{errors.project}</span> <label for=\"project_id\">Professional</label> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" id=\"{record.professional_id}\" filters=\"{professionalFilters()}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"tender_id\">Tender</label> <input type=\"hidden\" name=\"tender_id\" value=\"{record.tender_id}\"> <r-typeahead-input resource=\"tenders\" api=\"{opts.api}\" id=\"{record.tender_id}\" filters=\"{tenderFilters()}\" datum_tokenizer=\"{['id', 'total_amount']}\"></r-typeahead-input> <span if=\"{errors.tender_id}\" class=\"inline-error\">{errors.project}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal()}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{record.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> <button if=\"{record.id}\" class=\"btn bg-red btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </button> </form> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-quote-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <label for=\"project\">Project</label> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" id=\"{record.project_id}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> <span if=\"{errors.project}\" class=\"inline-error\">{errors.project}</span> <label for=\"project_id\">Professional</label> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" id=\"{record.professional_id}\" filters=\"{professionalFilters()}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"tender_id\">Tender</label> <input type=\"hidden\" name=\"tender_id\" value=\"{record.tender_id}\"> <r-typeahead-input resource=\"tenders\" api=\"{opts.api}\" id=\"{record.tender_id}\" filters=\"{tenderFilters()}\" datum_tokenizer=\"{['id', 'total_amount']}\"></r-typeahead-input> <span if=\"{errors.tender_id}\" class=\"inline-error\">{errors.project}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{record.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> <button if=\"{record.id}\" class=\"btn bg-red btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </button> </form> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.headers = {
