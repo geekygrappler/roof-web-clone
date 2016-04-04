@@ -121,7 +121,7 @@ import './_comments.tag'
     e.item.action = e.target.value
     //this.update()
     //this.parent.update()
-    console.log('changeTaskAction')
+    // console.log('changeTaskAction')
     this.opts.api.tenders.trigger('update')
   }
 

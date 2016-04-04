@@ -3247,7 +3247,7 @@
 	  gaSend: function gaSend() {
 	    var params = Array.prototype.slice.call(arguments);
 	    params.unshift("send");
-	    console.log(params);
+	    ga.apply(ga, params);
 	  },
 	  sendGALeadConfirmationConversion: function sendGALeadConfirmationConversion() {
 	    var google_conversion_id = 913725911;
@@ -3264,7 +3264,6 @@
 	  }
 	});
 	// }
-	//ga.apply(ga, params)
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
@@ -28943,7 +28942,7 @@
 	    });
 	  });
 	  riot.route("leads/new..", function () {
-	    console.log(riot.route.query());
+	    // console.log(riot.route.query())
 	    riot.mount(_this.content, "r-lead", { api: opts.api, query: riot.route.query() });
 	    riot.mount("r-leads-form", { api: opts.api, query: riot.route.query() });
 	    $("r-app").removeClass("display-none");
@@ -29031,6 +29030,7 @@
 	    });
 	  });
 	  riot.route("projects/*/quotes/*", function (project_id, id) {
+	    // console.log(this.currentAccount)
 	    riot.mount(_this.content, "r-quotes-form", {
 	      api: opts.api,
 	      project_id: project_id,
@@ -32142,7 +32142,7 @@
 	    this.calcSectionTotal = function (section) {
 	      var formatted = arguments[1] === undefined ? false : arguments[1];
 	
-	      console.log("calcSectionTotal");
+	      // console.log('calcSectionTotal')
 	      var itemTotal = _.reduce(section.tasks, function (total, item) {
 	        return total + item.price * item.quantity;
 	      }, 0);
@@ -32159,7 +32159,7 @@
 	      }
 	    };
 	    this.tenderVat = function () {
-	      console.log("tenderVat");
+	      // console.log('tenderVat')
 	      return _this.formatCurrency(_this.record.document.include_vat ? _.reduce(_this.record.document.sections, function (total, section) {
 	        var _ref = section.itemTotal ? [section.itemTotal, section.materialTotal] : _this.calcSectionTotal(section);
 	
@@ -32172,7 +32172,7 @@
 	      }, 0) : 0);
 	    };
 	    this.calcTenderTotal = function () {
-	      console.log("calcTenderTotal");
+	      // console.log('calcTenderTotal')
 	      return _this.formatCurrency(_.reduce(_this.record.document.sections, function (total, section) {
 	        var _ref = section.itemTotal ? [section.itemTotal, section.materialTotal] : _this.calcSectionTotal(section);
 	
@@ -36986,7 +36986,7 @@
 	    e.item.action = e.target.value;
 	    //this.update()
 	    //this.parent.update()
-	    console.log("changeTaskAction");
+	    // console.log('changeTaskAction')
 	    _this.opts.api.tenders.trigger("update");
 	  };
 	});
@@ -37147,7 +37147,7 @@
 	  };
 	
 	  this.updateSectionTotal = function () {
-	    console.log("updateSectionTotal");
+	    // console.log('updateSectionTotal')
 	    _this.sectionTotal = _this.calcSectionTotal(_this.section, true);
 	    _this.parent.updateTenderTotal();
 	  };
@@ -37196,7 +37196,7 @@
 	      return _.isEqual(itm, e.item);
 	    });
 	    _this.section[name].splice(index, 1);
-	    console.log("removeItem");
+	    // console.log('removeItem')
 	    _this.update();
 	    _this.opts.api.tenders.trigger("update");
 	  };
@@ -37239,6 +37239,7 @@
 	  };
 	
 	  this.isReadonly = function () {
+	    console.log("this.opts.readonly", _this.opts.readonly);
 	    return _this.opts.readonly;
 	  };
 	
@@ -37299,8 +37300,8 @@
 	  };
 	
 	  this.updateQuote = function (record) {
-	    if (!_this.currentAccount.isAdministrator) {
-	      _this.opts.readonly = !!record.accepted_at;
+	    if (!_this.currentAccount.isAdministrator && record.accepted_at) {
+	      _this.opts.readonly = true;
 	    }
 	    _this.update({ record: record });
 	  };

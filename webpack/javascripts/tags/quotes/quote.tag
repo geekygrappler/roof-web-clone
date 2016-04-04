@@ -135,6 +135,7 @@ import from '../../mixins/tender.js'
     }
 
     this.isReadonly = () => {
+      console.log('this.opts.readonly', this.opts.readonly)
       return this.opts.readonly
     }
 
@@ -197,8 +198,8 @@ import from '../../mixins/tender.js'
     }
 
     this.updateQuote = (record) => {
-      if(!this.currentAccount.isAdministrator) {
-        this.opts.readonly = !!record.accepted_at
+      if(!this.currentAccount.isAdministrator && record.accepted_at) {
+        this.opts.readonly = true
       }
       this.update({record: record})
     }

@@ -115,8 +115,7 @@ riot.mixin({
   gaSend: function () {
     var params = Array.prototype.slice.call(arguments)
     params.unshift('send')
-    console.log(params)
-    //ga.apply(ga, params)
+    ga.apply(ga, params)
   },
   sendGALeadConfirmationConversion: function () {
     var google_conversion_id = 913725911;

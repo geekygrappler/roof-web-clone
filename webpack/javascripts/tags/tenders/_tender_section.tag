@@ -58,7 +58,7 @@ let taskActions = require("json!../../data/task_actions.json")
   }
 
   this.updateSectionTotal = () => {
-    console.log('updateSectionTotal')
+    // console.log('updateSectionTotal')
     this.sectionTotal = this.calcSectionTotal(this.section, true)
     this.parent.updateTenderTotal()
   }
@@ -98,7 +98,7 @@ let taskActions = require("json!../../data/task_actions.json")
     name = name.plural()
     let index = _.findIndex(this.section[name], itm => _.isEqual(itm, e.item) )
     this.section[name].splice(index, 1)
-    console.log('removeItem')
+    // console.log('removeItem')
     this.update()
     this.opts.api.tenders.trigger('update')
   }

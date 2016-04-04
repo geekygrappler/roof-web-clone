@@ -59,7 +59,7 @@ import './admin/index.tag'
     })
   })
   riot.route('leads/new..', () => {
-    console.log(riot.route.query())
+    // console.log(riot.route.query())
     riot.mount(this.content, 'r-lead', {api: opts.api, query: riot.route.query()})
     riot.mount('r-leads-form', {api: opts.api, query: riot.route.query()})
     $('r-app').removeClass('display-none')
@@ -147,6 +147,7 @@ import './admin/index.tag'
     })
   })
   riot.route('projects/*/quotes/*', (project_id, id) => {
+    // console.log(this.currentAccount)
     riot.mount(this.content, 'r-quotes-form', {
       api: opts.api,
       project_id: project_id,
