@@ -325,12 +325,12 @@ namespace :migrate do
         pro = Professional.where("(data->'migration'->'professional_shortlist_ids') @> ?", row[:professional_shortlist_id].to_json).first
         ppp = Project.where("(data->'migration'->'professional_shortlist_ids') @> ?", row[:professional_shortlist_id].to_json).first
         if pro && ppp
-          tt = Quote.create({
+          tt = Quote.new({
             project_id: ppp.try(:id),
             professional_id: pro.try(:id),
             document: parse_tender_data(row[:data]),
-            accepted_at: row[:is_accepted] ? row[:updated_at] : nil,
-            submitted_at: row[:submitted] ? row[:updated_at] : nil,
+            accepted_at: row[:is_accepted].to_s =="t" ? row[:updated_at] : nil,
+            submitted_at: row[:submitted].to_s == "t" ? row[:updated_at] : nil,
             migration: {
               id: row[:id],
               professional_shortlist_id: row[:professional_shortlist_id],
@@ -345,6 +345,7 @@ namespace :migrate do
               viewed_by_user: row[:viewed_by_user]
             }
           })
+          tt.save(validate: false)
           unless tt.persisted?
             puts "[migrate:quotes error.row] #{row}"
             puts "[migrate:quotes error] #{tt.errors.full_messages}"
@@ -511,6 +512,7 @@ def parse_tender_data data
           rt['display_name'] = t['name']
         else
           rt = t.clone
+          rt.delete('id')
           rt['price'] = (t['unitPrice'].to_i * 100) || 0
           rt['quantity'] = t['quantity'].to_i
           rt['action'] = t['category'] || 'Other'
