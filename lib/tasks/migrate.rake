@@ -485,19 +485,6 @@ namespace :migrate do
     TenderTemplate.all.map{|o| o.save(validate: false)}
   end
 
-  task :fix_migrated_quotes => :environment do
-    migrated_quotes = Quote.where.not("data->'migration' = ?", nil.to_json)
-    migrated_quotes.each do |q|
-      q.document.items('tasks').map{ |t|
-        t.delete('id')
-        t
-      }
-      q.save(validate: false)
-    end
-  end
-
-
-
   task :all => [:administrators, :customers, :professionals, :projects, :assets, :shortlists, :tender_templates, :tenders, :quotes, :payments, :leads, :bot, :"jobs:clear"]
 end
 
@@ -515,7 +502,7 @@ def parse_tender_data data
       sec['tasks'] = tasks.map { |t|
         t.delete('sectionId')
         rt = {}
-        if nt = Task.by_name(t['name']).first || Task.by_action(t['category']).first || Task.by_group(t['category']).first
+        if nt = Task.by_name(t['name']).first
           rt = nt.data.as_json.clone
           rt.delete('searchable')
           rt['id'] = nt.id
