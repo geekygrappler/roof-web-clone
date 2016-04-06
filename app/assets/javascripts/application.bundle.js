@@ -30076,9 +30076,9 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-option-group-input", "<div each=\"{field, i in opts.groups}\" class=\"mb2\"> <label class=\"block\">{field.humanize()}</label> <label each=\"{op, n in parent.opts.options}\"> <input type=\"radio\" name=\"{getName(field)}\" value=\"{op}\" __checked=\"{parent.opts.record[field] === op}\"> {op.humanize()} </label> </div>", "", "", function (opts) {
+	riot.tag2("r-option-group-input", "<div each=\"{field, i in opts.groups}\" class=\"mb2\"> <label class=\"block\">{field.humanize()}</label> <label each=\"{op, n in parent.opts.options}\"> <input type=\"radio\" name=\"{getName(field)}\" value=\"{op}\" __checked=\"{parent.parent.opts.record[field] === op}\"> {op.humanize()} </label> </div>", "", "", function (opts) {
 	  this.getName = function (field) {
-	    return opts.name ? "opts.name[" + field + "]" : field;
+	    return opts.name ? "" + opts.name + "[" + field + "]" : field;
 	  };
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
