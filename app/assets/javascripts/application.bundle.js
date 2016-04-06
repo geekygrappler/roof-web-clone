@@ -3247,7 +3247,7 @@
 	  gaSend: function gaSend() {
 	    var params = Array.prototype.slice.call(arguments);
 	    params.unshift("send");
-	    ga.apply(ga, params);
+	    if (typeof ga !== "undefined") ga.apply(ga, params);
 	  },
 	  sendGALeadConfirmationConversion: function sendGALeadConfirmationConversion() {
 	    var google_conversion_id = 913725911;
