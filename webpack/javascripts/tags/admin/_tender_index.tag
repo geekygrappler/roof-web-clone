@@ -14,7 +14,7 @@
       <table id="streamtable" class="table-light bg-white">
         <thead class="bg-darken-1">
           <tr>
-              <th each="{ attr, i in headers }" class="nowrap">{ attr.humanize() }</th>
+              <th each="{ attr, i in headers }" class="nowrap cursor-pointer" onclick="{sort}">{ attr.humanize() } <i class="fa fa-sort"></i></th>
               <th></th>
           </tr>
         </thead>

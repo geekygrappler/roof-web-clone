@@ -62,7 +62,7 @@ riot.mixin('adminIndex', {
       this.opts.api[this.opts.resource].on('index.fail', this.errorHandler)
       this.opts.api[this.opts.resource].on('index.success', this.updateRecords)
       this.opts.api[this.opts.resource].on('delete.success', this.removeRecord)
-      this.opts.api[this.opts.resource].index({page: this.opts.page, query: this.opts.query})
+      this.opts.api[this.opts.resource].index({page: this.opts.page, query: this.opts.query, order: this.opts.order})
     })
 
     this.on('unmount', () => {
@@ -70,34 +70,56 @@ riot.mixin('adminIndex', {
       this.opts.api[this.opts.resource].off('index.success', this.updateRecords)
       this.opts.api[this.opts.resource].off('delete.success', this.removeRecord)
     })
-
+    this.sort = (e) => {
+      var dir = this.order ? (this.order[1] == 'asc' ? 'desc' : 'asc') : 'asc'
+      this.order = [e.item.attr, dir]
+      if(this.opts.query) {
+        riot.route(`/admin/${this.opts.resource}/search/${this.opts.query}/page/1/order/${this.order}`)
+      } else {
+        riot.route(`/admin/${this.opts.resource}/page/1/order/${this.order}`)
+      }
+    }
     this.prevPage = (e) => {
+      var url = ''
       e.preventDefault()
       this.opts.page = Math.max(this.opts.page - 1, 1)
       // this.opts.api[opts.resource].index({page: this.currentPage})
       if(this.opts.query) {
-        riot.route(`/admin/${this.opts.resource}/search/${this.opts.query}/page/${this.opts.page}`)
+        url = `/admin/${this.opts.resource}/search/${this.opts.query}/page/${this.opts.page}`
       } else {
-        riot.route(`/admin/${this.opts.resource}/page/${this.opts.page}`)
+        url = `/admin/${this.opts.resource}/page/${this.opts.page}`
       }
+      if (this.order) {
+        url += `/order/${this.order}`
+      }
+      riot.route(url)
     }
     this.nextPage = (e) => {
+      var url = ''
       e.preventDefault()
       // this.currentPage = Math.min(this.currentPage + 1, 0)
       // this.opts.api[opts.resource].index({page: ++this.currentPage})
       if(this.opts.query) {
-        riot.route(`/admin/${this.opts.resource}/search/${this.opts.query}/page/${++this.opts.page}`)
+        url = `/admin/${this.opts.resource}/search/${this.opts.query}/page/${++this.opts.page}`
       } else {
-        riot.route(`/admin/${this.opts.resource}/page/${++this.opts.page}`)
+        url = `/admin/${this.opts.resource}/page/${++this.opts.page}`
       }
-
+      if (this.order) {
+        url += `/order/${this.order}`
+      }
+      riot.route(url)
     }
     this.gotoPage = (e) => {
+      var url = ''
       if(this.opts.query) {
-        riot.route(`/admin/${this.opts.resource}/search/${this.opts.query}/page/${e.target.value}`)
+        url = `/admin/${this.opts.resource}/search/${this.opts.query}/page/${e.target.value}`
       } else {
-        riot.route(`/admin/${this.opts.resource}/page/${e.target.value}`)
+        url = `/admin/${this.opts.resource}/page/${e.target.value}`
       }
+      if (this.order) {
+        url += `/order/${this.order}`
+      }
+      riot.route(url)
     }
 
     this.updateRecords = this.updateRecords || (records) => {
