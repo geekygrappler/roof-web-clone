@@ -103,7 +103,7 @@ riot.mixin('tenderMixin', {
         }, 0) : 0 )
     }
     this.calcTenderTotal = () => {
-      // console.log('calcTenderTotal')
+
       return this.formatCurrency(
         _.reduce(this.record.document.sections, (total, section) => {
           var [itemTotal , materialTotal] = section.itemTotal ?
@@ -116,7 +116,7 @@ riot.mixin('tenderMixin', {
     }
     this.toggleVat = (e) => {
       this.record.document.include_vat = !this.record.document.include_vat
-      // this.update()
+      this.tenderTotal = this.calcTenderTotal()
     }
   }
 })

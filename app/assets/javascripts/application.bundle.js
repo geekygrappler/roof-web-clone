@@ -32211,7 +32211,7 @@
 	      }, 0) : 0);
 	    };
 	    this.calcTenderTotal = function () {
-	      // console.log('calcTenderTotal')
+	
 	      return _this.formatCurrency(_.reduce(_this.record.document.sections, function (total, section) {
 	        var _ref = section.itemTotal ? [section.itemTotal, section.materialTotal] : _this.calcSectionTotal(section);
 	
@@ -32224,9 +32224,8 @@
 	      }, 0));
 	    };
 	    this.toggleVat = function (e) {
-	      _this.record.document.include_vat = !_this.record.document.include_vat
-	      // this.update()
-	      ;
+	      _this.record.document.include_vat = !_this.record.document.include_vat;
+	      _this.tenderTotal = _this.calcTenderTotal();
 	    };
 	  }
 	});
