@@ -37,6 +37,7 @@
 
   <script>
 
+
   this.clone = (e) => {
     e.preventDefault()
     opts.api.quotes.create({

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160403185945) do
+ActiveRecord::Schema.define(version: 20160406115651) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -42,9 +42,9 @@ ActiveRecord::Schema.define(version: 20160403185945) do
     t.string   "actor_type"
     t.integer  "subject_id"
     t.string   "subject_type"
-    t.jsonb    "data"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.jsonb    "data",         default: {}
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
   end
 
   add_index "activities", ["actor_type", "actor_id"], name: "index_activities_on_actor_type_and_actor_id", using: :btree
@@ -84,9 +84,11 @@ ActiveRecord::Schema.define(version: 20160403185945) do
     t.integer  "account_id"
     t.integer  "commentable_id"
     t.string   "commentable_type"
-    t.jsonb    "data",             default: {}
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
+    t.jsonb    "data",                    default: {}
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+    t.integer  "commentable_parent_id"
+    t.string   "commentable_parent_type"
   end
 
   add_index "comments", ["account_id"], name: "index_comments_on_account_id", using: :btree

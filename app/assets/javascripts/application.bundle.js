@@ -36958,10 +36958,14 @@
 	  };
 	});
 	
-	riot.tag2("r-tender-item", "<li class=\"relative border-right\"> <div class=\"clearfix p1 border-bottom\"> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> <input type=\"text\" name=\"name\" value=\"{display_name || name}\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputname}\"> <br class=\"sm-hide\"> </div> <div if=\"{parent.headers.quantity}\" class=\"col sm-col-{parent.headers.quantity} col-3 center\"> <input name=\"quantity\" value=\"{quantity}\" step=\"1\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.price}\" class=\"col sm-col-{parent.headers.price} col-{parent.opts.name == 'task' ? 3 : 2} center relative\"> <i class=\"fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white\"></i><input name=\"price\" value=\"{parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0)}\" __disabled=\"{parent.opts.name == 'material' && !supplied}\" step=\"1\" min=\"0\" class=\"fit field inline-input center price\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.total_cost}\" class=\"col sm-col-{parent.headers.total_cost} col-3 center relative\"> <i class=\"fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white\"></i><input value=\"{parent.opts.name == 'task' ? (price / 100 * quantity) : (supplied ? price / 100 * quantity : '0')}\" step=\"1\" min=\"0\" class=\"fit field inline-input center price\" oninput=\"{inputTotalCost}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.supplied}\" class=\"col sm-col-{parent.headers.supplied} col-1 center\"> <input if=\"{parent.opts.name == 'material'}\" type=\"checkbox\" name=\"supplied\" __checked=\"{supplied}\" class=\"align-middle\" onchange=\"{input}\"> </div> <div if=\"{parent.headers.actions}\" class=\"col sm-col-{parent.headers.actions} col-2 center\"> <a href=\"#\" class=\"btn btn-small border-red red mb1 sm-mb0\" onclick=\"{removeItem}\" title=\"Delete\"><i class=\"fa fa-trash-o\"></i></a> <a href=\"#\" if=\"{parent && parent.parent && parent.parent.record.id}\" class=\"btn btn-small border mb1 sm-mb0\" onclick=\"{openComments}\" title=\"Comments\"><i class=\"fa fa-comment-o\"></i></a> <a if=\"{action == 'Other'}\" class=\"btn btn-small btn-outline mb1 sm-mb0\" onclick=\"{openGroupCombo}\" title=\"Change Category\"><i class=\"fa fa-edit\"></i></a> </div> </div> </li>", "", "", function (opts) {
+	riot.tag2("r-tender-item", "<li class=\"relative border-right\"> <div class=\"clearfix p1 border-bottom\"> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> <input type=\"text\" name=\"name\" value=\"{display_name || name}\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputname}\"> <br class=\"sm-hide\"> </div> <div if=\"{parent.headers.quantity}\" class=\"col sm-col-{parent.headers.quantity} col-3 center\"> <input name=\"quantity\" value=\"{quantity}\" step=\"1\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.price}\" class=\"col sm-col-{parent.headers.price} col-{parent.opts.name == 'task' ? 3 : 2} center relative\"> <i class=\"fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white\"></i><input name=\"price\" value=\"{parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0)}\" __disabled=\"{parent.opts.name == 'material' && !supplied}\" step=\"1\" min=\"0\" class=\"fit field inline-input center price\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.total_cost}\" class=\"col sm-col-{parent.headers.total_cost} col-3 center relative\"> <i class=\"fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white\"></i><input value=\"{parent.opts.name == 'task' ? (price / 100 * quantity) : (supplied ? price / 100 * quantity : '0')}\" step=\"1\" min=\"0\" class=\"fit field inline-input center price\" oninput=\"{inputTotalCost}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.supplied}\" class=\"col sm-col-{parent.headers.supplied} col-1 center\"> <input if=\"{parent.opts.name == 'material'}\" type=\"checkbox\" name=\"supplied\" __checked=\"{supplied}\" class=\"align-middle\" onchange=\"{input}\"> </div> <div if=\"{parent.headers.actions}\" class=\"col sm-col-{parent.headers.actions} col-2 center\"> <a href=\"#\" class=\"btn btn-small border-red red mb1 sm-mb0\" onclick=\"{removeItem}\" title=\"Delete\"><i class=\"fa fa-trash-o\"></i></a> <a href=\"#\" if=\"{parent && parent.parent && parent.parent.record.id}\" class=\"btn btn-small border mb1 sm-mb0\" onclick=\"{openComments}\" title=\"Comments\"><i class=\"fa fa-comment-o\"></i> [{getCommentsCount()}]</a> <a if=\"{action == 'Other'}\" class=\"btn btn-small btn-outline mb1 sm-mb0\" onclick=\"{openGroupCombo}\" title=\"Change Category\"><i class=\"fa fa-edit\"></i></a> </div> </div> </li>", "", "", function (opts) {
 	  var _this = this;
 	
-	  this.on("mount", function () {});
+	  this.commentsCount = 0;
+	  this.on("mount", function () {
+	    // $('.animate', this.root).animateCss('bounceIn')
+	    _this.getCommentsCount();
+	  });
 	
 	  this.input = _.debounce(function (e) {
 	    //e.preventUpdate=true
@@ -36971,9 +36975,10 @@
 	    //this.opts.api.tenders.trigger('update')
 	    _this.parent.updateGroupTotal();
 	    _this.parent.parent.updateSectionTotal();
-	  }, 300);
+	  }, 200);
 	  this.inputname = function (e) {
-	    //e.preventUpdate=true
+	    //e.preventDefault()
+	    e.preventUpdate = true;
 	    e.item.display_name = e.target.value
 	    //this.update()
 	    //this.opts.api.tenders.trigger('update')
@@ -36986,7 +36991,7 @@
 	    //this.opts.api.tenders.trigger('update')
 	    _this.parent.updateGroupTotal();
 	    _this.parent.parent.updateSectionTotal();
-	  }, 300);
+	  }, 200);
 	
 	  this.openGroupCombo = function (e) {
 	    e.preventDefault();
@@ -37014,8 +37019,25 @@
 	      content: "r-comments",
 	      persisted: false,
 	      api: opts.api,
-	      contentOpts: { api: opts.api, project: _this.parent.parent.record, item: e.item }
+	      contentOpts: {
+	        parent_tag: _this,
+	        commentsCount: _this.commentsCount,
+	        api: opts.api,
+	        parent_record: _this.parent.parent.record,
+	        project_id: _this.parent.parent.record.project_id,
+	        commentable_id: e.item.id,
+	        commentable_type: e.item.action ? "Task" : "Material",
+	        commentable_parent_id: _this.parent.parent.record.id,
+	        commentable_parent_type: "Tender"
+	      }
 	    });
+	  };
+	  this.getCommentsCount = function () {
+	    var item = _this._item;
+	    var type = item.action ? "tasks" : "materials";
+	    var counts = _.findWhere(_this.parent.parent.record.comments_counts[type], { id: item.id });
+	    // this.update({commentsCount: counts ? (counts.comments_count || 0) : 0})
+	    return counts ? counts.comments_count || 0 : 0;
 	  };
 	
 	  this.changeTaskAction = function (e) {
@@ -37028,8 +37050,6 @@
 	    _this.opts.api.tenders.trigger("update");
 	  };
 	});
-	
-	// $('.animate', this.root).animateCss('bounceIn')
 	// } ).animateCss('bounceOut')
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
@@ -37039,15 +37059,21 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-comments", "<h3>Comments</h3> <blockquote each=\"{comments}\" class=\"clearfix m0 p1 border-left mb1\"> {text} <a class=\"btn btn-small border-red red right\" onclick=\"{delete}\" if=\"{account_id == currentAccount.id}\"> <i class=\"fa fa-trash-o\"></i> </a> <div class=\"h5 right-align mt1\"><strong>{account.profile.first_name} {account.profile.last_name}</strong> <span class=\"italic\">{fromNow(created_at)}</span></div> </blockquote> <form name=\"form\" onsubmit=\"{create}\" class=\"mt2\"> <input type=\"hidden\" name=\"project_id\" value=\"{opts.project.id}\"> <input type=\"hidden\" name=\"account_id\" value=\"{currentAccount.id}\"> <input type=\"hidden\" name=\"commentable_id\" value=\"{opts.item.id}\"> <input type=\"hidden\" name=\"commentable_type\" value=\"{opts.item.action ? 'Task' : 'Material'}\"> <textarea class=\"block col-12 mb2 field\" name=\"text\" placeholder=\"Leave your comment\"></textarea> <button class=\"btn btn-primary {busy: busy}\" __disabled=\"{busy}\">Comment</button> </form>", "", "", function (opts) {
+	riot.tag2("r-comments", "<h3>Comments</h3> <blockquote each=\"{comments}\" class=\"clearfix m0 p1 border-left mb1\"> {text} <a class=\"btn btn-small border-red red right\" onclick=\"{delete}\" if=\"{account_id == currentAccount.id}\"> <i class=\"fa fa-trash-o\"></i> </a> <div class=\"h5 right-align mt1\"><strong>{account.profile.first_name} {account.profile.last_name}</strong> <span class=\"italic\">{fromNow(created_at)}</span></div> </blockquote> <form name=\"form\" onsubmit=\"{create}\" class=\"mt2\"> <input type=\"hidden\" name=\"project_id\" value=\"{opts.project_id}\"> <input type=\"hidden\" name=\"account_id\" value=\"{currentAccount.id}\"> <input type=\"hidden\" name=\"commentable_id\" value=\"{opts.commentable_id}\"> <input type=\"hidden\" name=\"commentable_type\" value=\"{opts.commentable_type}\"> <input type=\"hidden\" name=\"commentable_parent_id\" value=\"{opts.commentable_parent_id}\"> <input type=\"hidden\" name=\"commentable_parent_type\" value=\"{opts.commentable_parent_type}\"> <textarea class=\"block col-12 mb2 field\" name=\"text\" placeholder=\"Leave your comment\"></textarea> <button class=\"btn btn-primary {busy: busy}\" __disabled=\"{busy}\">Comment</button> </form>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.on("mount", function () {
+	    _this.commentsCount = _this.opts.commentsCount;
 	    _this.opts.api.comments.on("create.success", _this.addComment);
 	    _this.opts.api.comments.on("create.fail", _this.errorHandler);
 	    _this.opts.api.comments.on("delete.success", _this.removeComment);
 	    _this.opts.api.comments.on("delete.fail", _this.errorHandler);
-	    _this.loadResources("comments", { commentable_id: _this.opts.item.id, commentable_type: _this.opts.item.action ? "Task" : "Material" });
+	    _this.loadResources("comments", {
+	      project_id: _this.opts.project_id,
+	      commentable_id: _this.opts.commentable_id,
+	      commentable_type: _this.opts.commentable_type,
+	      commentable_parent_id: _this.opts.commentable_parent_id,
+	      commentable_parent_type: _this.opts.commentable_parent_type });
 	  });
 	  this.on("unmount", function () {
 	    _this.opts.api.comments.off("create.success", _this.addComment);
@@ -37082,6 +37108,7 @@
 	    });
 	    if (_id === -1) {
 	      _this.comments.push(comment);
+	      _this.updateCommentCounts(1);
 	    }
 	    _this.updateReset();
 	  };
@@ -37091,8 +37118,18 @@
 	    });
 	    if (_id > -1) {
 	      _this.comments.splice(_id, 1);
-	      _this.update();
+	      _this.updateCommentCounts(-1);
 	    }
+	  };
+	  this.updateCommentCounts = function (val) {
+	    var counts = _.findWhere(_this.opts.parent_record.comments_counts[_this.opts.commentable_type.plural().toLowerCase()], { id: _this.opts.commentable_id });
+	    if (counts) {
+	      counts.comments_count = counts.comments_count + val;
+	    } else {
+	      _this.opts.parent_record.comments_counts[_this.opts.commentable_parent_type] = { id: _this.opts.commentable_id, comments_count: val > 0 ? 1 : 0 };
+	    }
+	    _this.update();
+	    _this.opts.parent_tag.update();
 	  };
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))

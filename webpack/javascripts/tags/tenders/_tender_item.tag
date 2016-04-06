@@ -47,7 +47,7 @@ import './_comments.tag'
 
       <div if="{ parent.headers.actions }" class="col sm-col-{ parent.headers.actions } col-2 center">
         <a href="#" class="btn btn-small border-red red mb1 sm-mb0" onclick="{ removeItem }" title="Delete"><i class="fa fa-trash-o"></i></a>
-        <a href="#" if="{parent && parent.parent && parent.parent.record.id}" class="btn btn-small border mb1 sm-mb0" onclick="{ openComments }" title="Comments"><i class="fa fa-comment-o"></i></a>
+        <a href="#" if="{parent && parent.parent && parent.parent.record.id}" class="btn btn-small border mb1 sm-mb0" onclick="{ openComments }" title="Comments"><i class="fa fa-comment-o"></i> [{getCommentsCount()}]</a>
         <a if="{action == 'Other'}" class="btn btn-small btn-outline mb1 sm-mb0" onclick="{openGroupCombo}" title="Change Category"><i class="fa fa-edit"></i></a>
       </div>
     </div>
@@ -55,9 +55,10 @@ import './_comments.tag'
 
   <script>
 
-
+  this.commentsCount = 0
   this.on('mount', () => {
     // $('.animate', this.root).animateCss('bounceIn')
+    this.getCommentsCount()
   })
 
   this.input = _.debounce((e) => {
@@ -68,9 +69,10 @@ import './_comments.tag'
     //this.opts.api.tenders.trigger('update')
     this.parent.updateGroupTotal()
     this.parent.parent.updateSectionTotal()
-  }, 300)
+  }, 200)
   this.inputname = (e) => {
-    //e.preventUpdate=true
+    //e.preventDefault()
+    e.preventUpdate=true
     e.item.display_name = e.target.value
     //this.update()
     //this.opts.api.tenders.trigger('update')
@@ -82,7 +84,7 @@ import './_comments.tag'
     //this.opts.api.tenders.trigger('update')
     this.parent.updateGroupTotal()
     this.parent.parent.updateSectionTotal()
-  }, 300)
+  }, 200)
 
   this.openGroupCombo = (e) => {
     e.preventDefault()
@@ -111,9 +113,28 @@ import './_comments.tag'
       content: 'r-comments',
       persisted: false,
       api: opts.api,
-      contentOpts: {api: opts.api, project: this.parent.parent.record, item: e.item}
+      contentOpts: {
+        parent_tag: this,
+        commentsCount: this.commentsCount,
+        api: opts.api,
+        parent_record: this.parent.parent.record,
+        project_id: this.parent.parent.record.project_id,
+        commentable_id: e.item.id,
+        commentable_type: e.item.action ? 'Task' : 'Material',
+        commentable_parent_id: this.parent.parent.record.id,
+        commentable_parent_type: 'Tender'
+      }
     })
   }
+  this.getCommentsCount = () => {
+    var item = this._item
+    var type = item.action ? 'tasks' : 'materials'
+    var counts = _.findWhere(this.parent.parent.record.comments_counts[type], {id: item.id})
+    // this.update({commentsCount: counts ? (counts.comments_count || 0) : 0})
+    return counts ? (counts.comments_count || 0) : 0
+  }
+
+
 
   this.changeTaskAction = (e) => {
 

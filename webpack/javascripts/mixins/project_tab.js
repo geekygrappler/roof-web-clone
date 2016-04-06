@@ -6,7 +6,7 @@ riot.mixin('projectTab', {
         opts = this.opts,
         project_id = opts.project_id || opts.id
 
-    this.updateProject = project => {
+    this.updateProject = (project) => {
       this.update({project})
     }
     this.on('mount', () => {
