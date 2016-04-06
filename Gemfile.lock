@@ -200,7 +200,7 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
-    roof_api (0.0.6)
+    roof_api (0.0.6.fix1)
       cancancan (~> 1.10)
       carrierwave
       carrierwave_backgrounder
@@ -278,7 +278,7 @@ DEPENDENCIES
   puma
   rails (= 4.2.5.1)
   rails_12factor
-  roof_api (= 0.0.6)
+  roof_api (= 0.0.6.fix1)
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)
   spring

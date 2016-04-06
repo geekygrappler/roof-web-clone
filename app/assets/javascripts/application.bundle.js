@@ -17670,12 +17670,12 @@
 	      _this.opts.api[_this.opts.resource].off("delete.success", _this.removeRecord);
 	    });
 	    this.sort = function (e) {
-	      var dir = _this.order ? _this.order[1] == "asc" ? "desc" : "asc" : "asc";
-	      _this.order = [e.item.attr, dir];
+	      var dir = _this.opts.order ? _this.opts.order[1] == "asc" ? "desc" : "asc" : "asc";
+	      _this.opts.order = [e.item.attr, dir];
 	      if (_this.opts.query) {
-	        riot.route("/admin/" + _this.opts.resource + "/search/" + _this.opts.query + "/page/1/order/" + _this.order);
+	        riot.route("/admin/" + _this.opts.resource + "/search/" + _this.opts.query + "/page/1/order/" + _this.opts.order);
 	      } else {
-	        riot.route("/admin/" + _this.opts.resource + "/page/1/order/" + _this.order);
+	        riot.route("/admin/" + _this.opts.resource + "/page/1/order/" + _this.opts.order);
 	      }
 	    };
 	    this.prevPage = function (e) {
@@ -17688,8 +17688,8 @@
 	      } else {
 	        url = "/admin/" + _this.opts.resource + "/page/" + _this.opts.page;
 	      }
-	      if (_this.order) {
-	        url += "/order/" + _this.order;
+	      if (_this.opts.order) {
+	        url += "/order/" + _this.opts.order;
 	      }
 	      riot.route(url);
 	    };
@@ -17703,8 +17703,8 @@
 	      } else {
 	        url = "/admin/" + _this.opts.resource + "/page/" + ++_this.opts.page;
 	      }
-	      if (_this.order) {
-	        url += "/order/" + _this.order;
+	      if (_this.opts.order) {
+	        url += "/order/" + _this.opts.order;
 	      }
 	      riot.route(url);
 	    };
@@ -17715,8 +17715,8 @@
 	      } else {
 	        url = "/admin/" + _this.opts.resource + "/page/" + e.target.value;
 	      }
-	      if (_this.order) {
-	        url += "/order/" + _this.order;
+	      if (_this.opts.order) {
+	        url += "/order/" + _this.opts.order;
 	      }
 	      riot.route(url);
 	    };
@@ -29578,9 +29578,16 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-files-input-with-preview", "<div class=\"relative\"> <r-file-input name=\"{opts.name}\" record=\"{opts.record}\" data-accept=\"{opts.data_accept}\" accept=\"{opts.accept}\"></r-file-input> <div class=\"border center dropzone {busy: busy}\"> <i class=\"fa fa-plus fa-2x mt3\"></i> <p>Drag and drop your documents here or click to select</p> </div> <div class=\"clearfix upload-previews mxn1\"> <div each=\"{asset, index in opts.record[opts.name]}\" class=\"sm-col col-6 sm-col-4 p1 rounded center thumb animated bounceIn\"> <div class=\"border p1 truncate overflow-hidden\"> <a class=\"cursor-zoom\" href=\"{asset.file.url}\" target=\"_blank\"> <img riot-src=\"{asset.content_type.indexOf('image') > -1 ? asset.file.thumb.url : asset.file.cover.url}\"> </a> <br><span>{filename(asset.file.url)}</span> <br><a class=\"btn btn-small\" onclick=\"{destroy}\"><i class=\"fa fa-times\"></i></a> </div> </div> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-files-input-with-preview", "<div class=\"relative\"> <r-file-input name=\"{opts.name}\" record=\"{opts.record}\" data-accept=\"{opts.data_accept}\" accept=\"{opts.accept}\"></r-file-input> <div class=\"border center dropzone {busy: busy}\"> <i class=\"fa fa-plus fa-2x mt3\"></i> <p>Drag and drop your documents here or click to select</p> </div> <div class=\"clearfix upload-previews mxn1\"> <div each=\"{asset, index in opts.record[opts.name]}\" class=\"sm-col col-6 sm-col-4 p1 rounded center thumb animated bounceIn\"> <div class=\"border p1 truncate overflow-hidden\"> <a class=\"cursor-zoom\" href=\"{asset.file.url}\" target=\"_blank\"> <img riot-src=\"{thumbUrl(asset)}\"> </a> <br><span>{filename(asset.file.url)}</span> <br><a class=\"btn btn-small\" onclick=\"{destroy}\"><i class=\"fa fa-times\"></i></a> </div> </div> </div> </div>", "", "", function (opts) {
 	  var _this = this;
 	
+	  this.thumbUrl = function (asset) {
+	    if (asset.file_processing) {
+	      asset.file.cover.url = "/images/file-document-icon.png";
+	      asset.file.thumb.url = "/images/file-document-icon.png";
+	    }
+	    return asset.content_type.indexOf("image") > -1 ? asset.file.thumb.url : asset.file.cover.url;
+	  };
 	  this.destroy = function (e) {
 	    if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
 	      (function () {
