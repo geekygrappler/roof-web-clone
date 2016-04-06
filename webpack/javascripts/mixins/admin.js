@@ -71,12 +71,12 @@ riot.mixin('adminIndex', {
       this.opts.api[this.opts.resource].off('delete.success', this.removeRecord)
     })
     this.sort = (e) => {
-      var dir = this.order ? (this.order[1] == 'asc' ? 'desc' : 'asc') : 'asc'
-      this.order = [e.item.attr, dir]
+      var dir = this.opts.order ? (this.opts.order[1] == 'asc' ? 'desc' : 'asc') : 'asc'
+      this.opts.order = [e.item.attr, dir]
       if(this.opts.query) {
-        riot.route(`/admin/${this.opts.resource}/search/${this.opts.query}/page/1/order/${this.order}`)
+        riot.route(`/admin/${this.opts.resource}/search/${this.opts.query}/page/1/order/${this.opts.order}`)
       } else {
-        riot.route(`/admin/${this.opts.resource}/page/1/order/${this.order}`)
+        riot.route(`/admin/${this.opts.resource}/page/1/order/${this.opts.order}`)
       }
     }
     this.prevPage = (e) => {
@@ -89,8 +89,8 @@ riot.mixin('adminIndex', {
       } else {
         url = `/admin/${this.opts.resource}/page/${this.opts.page}`
       }
-      if (this.order) {
-        url += `/order/${this.order}`
+      if (this.opts.order) {
+        url += `/order/${this.opts.order}`
       }
       riot.route(url)
     }
@@ -104,8 +104,8 @@ riot.mixin('adminIndex', {
       } else {
         url = `/admin/${this.opts.resource}/page/${++this.opts.page}`
       }
-      if (this.order) {
-        url += `/order/${this.order}`
+      if (this.opts.order) {
+        url += `/order/${this.opts.order}`
       }
       riot.route(url)
     }
@@ -116,8 +116,8 @@ riot.mixin('adminIndex', {
       } else {
         url = `/admin/${this.opts.resource}/page/${e.target.value}`
       }
-      if (this.order) {
-        url += `/order/${this.order}`
+      if (this.opts.order) {
+        url += `/order/${this.opts.order}`
       }
       riot.route(url)
     }
