@@ -84,6 +84,7 @@ let taskActions = require("json!../../data/task_actions.json")
       this.section.tasks.push(item)
       this.update()
       this.updateSectionTotal()
+      this.opts.api.tenders.trigger('update')
     }
   })
   this.tags.material.on('itemselected', (item) => {
@@ -93,6 +94,7 @@ let taskActions = require("json!../../data/task_actions.json")
       this.section.materials.push(item)
       this.update()
       this.updateSectionTotal()
+      this.opts.api.tenders.trigger('update')
     }
   })
 

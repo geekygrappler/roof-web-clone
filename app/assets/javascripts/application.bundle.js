@@ -32165,6 +32165,7 @@
 	      _this.record.document.sections.push(section);
 	      _this.sectionName.value = null;
 	      _this.update();
+	      _this.submit();
 	    };
 	    this.removeSection = function (e) {
 	      e.preventDefault();
@@ -32175,6 +32176,7 @@
 	        if (index > -1) {
 	          _this.record.document.sections.splice(index, 1);
 	          _this.update();
+	          _this.submit();
 	        }
 	      }
 	    };
@@ -32227,6 +32229,10 @@
 	      _this.record.document.include_vat = !_this.record.document.include_vat;
 	      _this.tenderTotal = _this.calcTenderTotal();
 	    };
+	    // let's try autosave
+	    this.opts.api.tenders.on("update", function () {
+	      _this.submit();
+	    });
 	  }
 	});
 	//this.tenderTotal = this.calcTenderTotal()
@@ -37033,6 +37039,10 @@
 	    });
 	  };
 	  this.getCommentsCount = function () {
+	    if (!_this._item) {
+	      return 0;
+	    }
+	
 	    var item = _this._item;
 	    var type = item.action ? "tasks" : "materials";
 	    var counts = _.findWhere(_this.parent.parent.record.comments_counts[type], { id: item.id });
@@ -37260,6 +37270,7 @@
 	      _this.section.tasks.push(item);
 	      _this.update();
 	      _this.updateSectionTotal();
+	      _this.opts.api.tenders.trigger("update");
 	    }
 	  });
 	  this.tags.material.on("itemselected", function (item) {
@@ -37271,6 +37282,7 @@
 	      _this.section.materials.push(item);
 	      _this.update();
 	      _this.updateSectionTotal();
+	      _this.opts.api.tenders.trigger("update");
 	    }
 	  });
 	

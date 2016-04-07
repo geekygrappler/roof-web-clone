@@ -127,11 +127,14 @@ import './_comments.tag'
     })
   }
   this.getCommentsCount = () => {
+    if (!this._item) { return 0 }
+
     var item = this._item
     var type = item.action ? 'tasks' : 'materials'
     var counts = _.findWhere(this.parent.parent.record.comments_counts[type], {id: item.id})
     // this.update({commentsCount: counts ? (counts.comments_count || 0) : 0})
     return counts ? (counts.comments_count || 0) : 0
+
   }
 
 

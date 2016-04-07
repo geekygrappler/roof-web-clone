@@ -62,6 +62,7 @@ riot.mixin('tenderMixin', {
       this.record.document.sections.push(section)
       this.sectionName.value = null
       this.update()
+      this.submit()
       // $('[name=searchable_names]').last()[0].focus()
     }
     this.removeSection = (e) => {
@@ -71,6 +72,7 @@ riot.mixin('tenderMixin', {
         if (index > -1) {
           this.record.document.sections.splice(index, 1)
           this.update()
+          this.submit()
         }
       }
     }
@@ -118,5 +120,9 @@ riot.mixin('tenderMixin', {
       this.record.document.include_vat = !this.record.document.include_vat
       this.tenderTotal = this.calcTenderTotal()
     }
+    // let's try autosave
+    this.opts.api.tenders.on('update', () => {
+      this.submit()
+    })
   }
 })
