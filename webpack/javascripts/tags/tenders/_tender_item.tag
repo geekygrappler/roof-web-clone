@@ -47,7 +47,7 @@ import './_comments.tag'
 
       <div if="{ parent.headers.actions }" class="col sm-col-{ parent.headers.actions } col-2 center">
         <a href="#" class="btn btn-small border-red red mb1 sm-mb0" onclick="{ removeItem }" title="Delete"><i class="fa fa-trash-o"></i></a>
-        <a href="#" if="{parent && parent.parent && parent.parent.record.id}" class="btn btn-small border mb1 sm-mb0" onclick="{ openComments }" title="Comments"><i class="fa fa-comment-o"></i> [{getCommentsCount()}]</a>
+        <a href="#" if="{parent && parent.parent && parent.parent.record.id && this.parent.parent.type != 'TenderTemplate'}" class="btn btn-small border mb1 sm-mb0" onclick="{ openComments }" title="Comments"><i class="fa fa-comment-o"></i> [{getCommentsCount()}]</a>
         <a if="{action == 'Other'}" class="btn btn-small btn-outline mb1 sm-mb0" onclick="{openGroupCombo}" title="Change Category"><i class="fa fa-edit"></i></a>
       </div>
     </div>
@@ -122,13 +122,14 @@ import './_comments.tag'
         commentable_id: e.item.id,
         commentable_type: e.item.action ? 'Task' : 'Material',
         commentable_parent_id: this.parent.parent.record.id,
-        commentable_parent_type: 'Tender'
+        commentable_parent_type: this.parent.parent.type
       }
     })
   }
   this.getCommentsCount = () => {
     if (!this._item) { return 0 }
-
+    console.log(this.parent.parent.record)
+    this.parent.parent.record.comments_counts = this.parent.parent.record.comments_counts || {}
     var item = this._item
     var type = item.action ? 'tasks' : 'materials'
     var counts = _.findWhere(this.parent.parent.record.comments_counts[type], {id: item.id})

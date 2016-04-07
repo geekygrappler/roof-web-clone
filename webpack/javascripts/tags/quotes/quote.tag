@@ -113,6 +113,8 @@ import from '../../mixins/tender.js'
   </div>
   <script>
 
+  this.type = 'Quote'
+
     this.getTitle = () => {
       // (opts.readonly ? 'Showing' : 'Editing') + ' Quote ' + opts.id
       if(this.title) {

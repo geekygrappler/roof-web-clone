@@ -60,7 +60,7 @@ import from '../../mixins/tender.js'
     </form>
   </div>
   <script>
-
+  this.type = 'Quote'
     this.headers = {
       task: {name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2},
       material: {name: 5, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2}

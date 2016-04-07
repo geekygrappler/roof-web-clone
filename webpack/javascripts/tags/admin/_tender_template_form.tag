@@ -48,6 +48,7 @@ import from '../../mixins/tender.js'
 
   </div>
   <script>
+  this.type = 'TenderTemplate'
     this.record = {name: null, document: {sections: []}}
 
     this.headers = {

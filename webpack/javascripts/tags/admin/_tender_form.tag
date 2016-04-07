@@ -48,7 +48,7 @@ import from '../../mixins/tender.js'
     </div>
   </div>
   <script>
-
+this.type = 'Tender'
     this.record = {project_id: this.opts.project_id, document: {sections: []}}
 
     this.headers = {
