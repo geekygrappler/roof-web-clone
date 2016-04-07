@@ -23,7 +23,7 @@ gem 'rails_12factor'
 gem 'delayed_job_active_record'
 gem 'clockwork'
 # only for migration
-
+gem 'asset_sync'
 
 group :development, :test do
   gem 'byebug'
