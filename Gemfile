@@ -14,8 +14,8 @@ gem 'puma'
 gem 'font-awesome-rails'
 gem 'active_model_serializers', github: "rails-api/active_model_serializers"
 
-gem 'roof_api', '0.0.6.fix3'
-#gem 'roof_api', path: '../roof-api'
+gem 'roof_api', '0.0.6.fix4'
+# gem 'roof_api', path: '../roof-api'
 gem 'carrierwave', git: 'https://github.com/carrierwaveuploader/carrierwave.git'
 gem 'carrierwave_backgrounder', git: 'https://github.com/pictrs/carrierwave_backgrounder.git'
 gem 'fog-aws'
@@ -23,7 +23,7 @@ gem 'rails_12factor'
 gem 'delayed_job_active_record'
 gem 'clockwork'
 # only for migration
-gem 'asset_sync'
+# gem 'asset_sync'
 
 group :development, :test do
   gem 'byebug'
