@@ -221,6 +221,38 @@ apis.sessions.stopImpersonate = function () {
   })
 }
 
+apis.passwords.create = function (data) {
+  return request({
+    url: `/api/auth/password`,
+    type: 'post',
+    data: {account: data}
+  })
+  .fail((xhr) => {
+    apis['passwords'].trigger('create.fail', xhr)
+    return xhr
+  })
+  .then((data) => {
+    apis['passwords'].trigger('create.success', data)
+    return data
+  })
+}
+
+apis.passwords.update = function (data) {
+  return request({
+    url: `/api/auth/password`,
+    type: 'put',
+    data: {account: data}
+  })
+  .fail((xhr) => {
+    apis['passwords'].trigger('update.fail', xhr)
+    return xhr
+  })
+  .then((id) => {
+    apis['passwords'].trigger('update.success', id)
+    return id
+  })
+}
+
 apis.registrations.signup = function (data) {
   return request({
     type: 'post',

@@ -58,6 +58,25 @@ import './admin/index.tag'
       contentOpts: {tab: 'r-signup', api: opts.api}
     })
   })
+  riot.route('forgot-password', () => {
+    if (opts.api.currentAccount) return riot.route(opts.api.authenticatedRoot)
+    riot.mount('r-modal', {
+      content: 'r-auth',
+      persisted: true,
+      api: opts.api,
+      contentOpts: {tab: 'r-forgot-password', api: opts.api}
+    })
+  })
+  riot.route('reset-password?..', (token) => {
+    if (opts.api.currentAccount) return riot.route(opts.api.authenticatedRoot)
+    riot.mount('r-modal', {
+      content: 'r-auth',
+      persisted: true,
+      api: opts.api,
+      contentOpts: {tab: 'r-reset-password', api: opts.api}
+    })
+  })
+
   riot.route('leads/new..', () => {
     // console.log(riot.route.query())
     riot.mount(this.content, 'r-lead', {api: opts.api, query: riot.route.query()})

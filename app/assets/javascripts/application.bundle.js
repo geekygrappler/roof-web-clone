@@ -2848,6 +2848,34 @@
 	  });
 	};
 	
+	apis.passwords.create = function (data) {
+	  return request({
+	    url: "/api/auth/password",
+	    type: "post",
+	    data: { account: data }
+	  }).fail(function (xhr) {
+	    apis.passwords.trigger("create.fail", xhr);
+	    return xhr;
+	  }).then(function (data) {
+	    apis.passwords.trigger("create.success", data);
+	    return data;
+	  });
+	};
+	
+	apis.passwords.update = function (data) {
+	  return request({
+	    url: "/api/auth/password",
+	    type: "put",
+	    data: { account: data }
+	  }).fail(function (xhr) {
+	    apis.passwords.trigger("update.fail", xhr);
+	    return xhr;
+	  }).then(function (id) {
+	    apis.passwords.trigger("update.success", id);
+	    return id;
+	  });
+	};
+	
 	apis.registrations.signup = function (data) {
 	  return request({
 	    type: "post",
@@ -28964,6 +28992,25 @@
 	      contentOpts: { tab: "r-signup", api: opts.api }
 	    });
 	  });
+	  riot.route("forgot-password", function () {
+	    if (opts.api.currentAccount) return riot.route(opts.api.authenticatedRoot);
+	    riot.mount("r-modal", {
+	      content: "r-auth",
+	      persisted: true,
+	      api: opts.api,
+	      contentOpts: { tab: "r-forgot-password", api: opts.api }
+	    });
+	  });
+	  riot.route("reset-password?..", function (token) {
+	    if (opts.api.currentAccount) return riot.route(opts.api.authenticatedRoot);
+	    riot.mount("r-modal", {
+	      content: "r-auth",
+	      persisted: true,
+	      api: opts.api,
+	      contentOpts: { tab: "r-reset-password", api: opts.api }
+	    });
+	  });
+	
 	  riot.route("leads/new..", function () {
 	    // console.log(riot.route.query())
 	    riot.mount(_this.content, "r-lead", { api: opts.api, query: riot.route.query() });
@@ -29343,6 +29390,10 @@
 	
 	__webpack_require__(123);
 	
+	__webpack_require__(184);
+	
+	__webpack_require__(185);
+	
 	riot.tag2("r-auth", "<r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\"></r-tabs>", "", "", function (opts) {});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
@@ -29382,7 +29433,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-signin", "<h2 class=\"center mt0 mb2\">Sign in</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/auth/sign_in\" onsubmit=\"{submit}\"> <div if=\"{errors}\" id=\"error_explanation\"> {errors} </div> <label for=\"email\">Email</label> <input class=\"block col-12 mb2 field\" autofocus=\"true\" type=\"text\" name=\"email\"> <label for=\"email\">Password</label> <input class=\"block col-12 mb2 field\" autocomplete=\"off\" type=\"password\" name=\"password\"> <div> <label class=\"inline-block mb2\"> <input type=\"checkbox\" label=\"Remember me\" name=\"remember_me\"> Remember me </label> </div> <button name=\"submit\" type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\" __disabled=\"{busy}\">Sign in</button> <div class=\"center\"> <a name=\"r-reset-password\" href=\"/app/reset-password\" title=\"Reset Password\" onclick=\"{opts.navigate}\" class=\"block\">Forgot your password?</a> </div> </form> <div class=\"center\"><a name=\"r-signup\" href=\"/app/signup\" title=\"Sign up\" onclick=\"{opts.navigate}\">Sign up</a></div>", "", "", function (opts) {
+	riot.tag2("r-signin", "<h2 class=\"center mt0 mb2\">Sign in</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/auth/sign_in\" onsubmit=\"{submit}\"> <div if=\"{errors}\" id=\"error_explanation\"> {errors} </div> <label for=\"email\">Email</label> <input class=\"block col-12 mb2 field\" autofocus=\"true\" type=\"text\" name=\"email\"> <label for=\"email\">Password</label> <input class=\"block col-12 mb2 field\" autocomplete=\"off\" type=\"password\" name=\"password\"> <div> <label class=\"inline-block mb2\"> <input type=\"checkbox\" label=\"Remember me\" name=\"remember_me\"> Remember me </label> </div> <button name=\"submit\" type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\" __disabled=\"{busy}\">Sign in</button> <div class=\"center\"> <a name=\"r-forgot-password\" href=\"/app/forgot-password\" title=\"Forgot Password\" onclick=\"{opts.navigate}\" class=\"block\">Forgot your password?</a> </div> </form> <div class=\"center\"><a name=\"r-signup\" href=\"/app/signup\" title=\"Sign up\" onclick=\"{opts.navigate}\">Sign up</a></div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.submit = function (e) {
@@ -38473,6 +38524,66 @@
 	riot.tag2("r-admin-administrator-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap cursor-pointer\" onclick=\"{sort}\">{attr.humanize()} <i class=\"fa fa-sort\"></i></th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> <a href=\"/app/admin/accounts/{record.account_id}/edit\">{record.account_id}</a> </td> <td> {record.full_name} </td> <td> {record.first_name} </td> <td> {record.last_name} </td> <td> {record.phone_number} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 184 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-forgot-password", "<h2 class=\"center mt0 mb2\">Forgot Password</h2> <form if=\"{!succeed}\" name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/auth/password\" onsubmit=\"{submit}\"> <label for=\"email\">Email *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"email\"> <span if=\"{errors['email']}\" class=\"inline-error\">{errors['email']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Send password reset instructions</button> </form> <p if=\"{succeed}\" class=\"p2\">Password reset instructions sent to your email.</p> <div class=\"center\"> <a name=\"r-signin\" href=\"/app/signin\" title=\"Sign in\" onclick=\"{opts.navigate}\">Sign in</a> <a name=\"r-signin\" href=\"/app/signup\" title=\"Sign up\" onclick=\"{opts.navigate}\">Sign up</a> </div>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.submit = function (e) {
+	
+	    e.preventDefault();
+	
+	    var data = _this.serializeForm(_this.form);
+	
+	    if (_.isEmpty(data)) {
+	      $(_this.form).animateCss("shake");
+	      return;
+	    }
+	
+	    _this.update({ busy: true, errors: null });
+	
+	    _this.opts.api.passwords.create(data).fail(_this.errorHandler).then(function (account) {
+	      _this.update({ busy: false, succeed: true });
+	    });
+	  };
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 185 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-reset-password", "<h2 class=\"center mt0 mb2\">Reset Password</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/auth/password\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"reset_password_token\" value=\"{resetPasswordToken}\"> <span if=\"{errors['reset_password_token']}\" class=\"inline-error\">Token {errors['reset_password_token']}</span> <label for=\"password\">Password *</label> <input class=\"block col-12 mb2 field\" type=\"password\" name=\"password\"> <span if=\"{errors['password']}\" class=\"inline-error\">{errors['password']}</span> <label for=\"password\">Password Confirmation *</label> <input class=\"block col-12 mb2 field\" type=\"password\" name=\"password_confirmation\"> <span if=\"{errors['password_confirmation']}\" class=\"inline-error\">{errors['password_confirmation']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Reset password</button> </form> <div class=\"center\"> <a name=\"r-signin\" href=\"/app/signin\" title=\"Sign in\" onclick=\"{opts.navigate}\">Sign in</a> <a name=\"r-signin\" href=\"/app/signup\" title=\"Sign up\" onclick=\"{opts.navigate}\">Sign up</a> </div>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.resetPasswordToken = riot.route.query().reset_password_token;
+	  this.submit = function (e) {
+	
+	    e.preventDefault();
+	
+	    var data = _this.serializeForm(_this.form);
+	
+	    if (_.isEmpty(data)) {
+	      $(_this.form).animateCss("shake");
+	      return;
+	    }
+	
+	    _this.update({ busy: true, errors: null });
+	
+	    _this.opts.api.passwords.update(data).fail(_this.errorHandler).then(function () {
+	      _this.update({ busy: false, succeed: true });
+	      window.location.href = "/app/signin";
+	    });
+	  };
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 

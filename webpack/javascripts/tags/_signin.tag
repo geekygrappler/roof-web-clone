@@ -24,7 +24,7 @@
     <button name="submit" type="submit" class="block col-12 mb2 btn btn-big btn-primary {busy: busy}" disabled="{busy}">Sign in</button>
 
     <div class="center">
-      <a name="r-reset-password" href="/app/reset-password" title="Reset Password" onclick="{opts.navigate}" class="block">Forgot your password?</a>
+      <a name="r-forgot-password" href="/app/forgot-password" title="Forgot Password" onclick="{opts.navigate}" class="block">Forgot your password?</a>
     </div>
 
   </form>
