@@ -108,10 +108,10 @@
 
   this.payPayment = (e) => {
     e.preventDefault()
-    if (this.currentAccount.paying) {
-      this.update({busy: true})
-      this.opts.api.payments.pay(e.item.id)
-    } else {
+    //if (this.currentAccount.paying) {
+    //  this.update({busy: true})
+    //  this.opts.api.payments.pay(e.item.id)
+    //} else {
       this.payment = e.item
 
       // load Stripe if not loaded
@@ -159,7 +159,7 @@
 
         })
       }
-    }
+    //}
   }
 
   this.addPayment = (payment) => {
