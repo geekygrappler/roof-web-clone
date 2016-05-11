@@ -1,11 +1,12 @@
 <nav class="relative clearfix <%= color %> h5">
   <div class="left">
-    <a href="/" class="btn py2"><img src="<%= image_path "logos/#{color}.svg" %>" class="logo--small" /></a>
+    <a href="/" class="btn py2"><img src="<%= image_path "logos/black.svg" %>" class="logo--small" /></a>
   </div>
   <div class="right py1 sm-show mr1">
-    <a href="/pages/about" class="btn py2">About us</a>
-    <a href="/pages/how_it_works" class="btn py2">How it works</a>
-    <a href="/app/signin" class="btn py2">Sign in</a>
+    <a href="/pages/about" class="btn py2 black">About us</a>
+    <a href="/pages/how_it_works" class="btn py2 black">How it works</a>
+    <a href="/app/signin" class="btn py2 black">Sign in</a>
+    <a href="<%= brief_path %>" class="h4 btn btn-small bg-yellow black">Get Free Quote</a>
   </div>
   <div class="right sm-hide py1 mr1">
     <div class="inline-block" data-disclosure>
@@ -20,6 +21,7 @@
           <li><a href="/pages/about" class="btn block">About us</a></li>
           <li><a href="/pages/how_it_works" class="btn block">How it works</a></li>
           <li><a href="/app/signin" class="btn block">Sign in</a></li>
+          <li><a href="<%= brief_path %>" class="h4 btn btn-small bg-yellow black">Get Free Quote</a></li>
         </ul>
       </div>
     </div>

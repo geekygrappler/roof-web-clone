@@ -13,31 +13,31 @@
 
     <div class="sm-col sm-col-8 px2">
 
-      <section class="container center px2 py4">
-  <a name="how-it-works"></a>
-  <h1 class="h1-responsive mt0 mb4">How it Works</h1>
-  <div class="clearfix mb2">
-    <%= render partial: 'pages/landing/components/how_it_works_step', locals: {
-      image: 'how_it_works/1roof-about-step1.png',
-      title: "1) We prepare the brief",
-      description: "We answer any questions you might have and help create a thorough plan.",
-      reverse: false
-    } %>
-    <%= render partial: 'pages/landing/components/how_it_works_step', locals: {
-      image: 'how_it_works/1roof-about-step3.png',
-      title: "2) We collect clear quotes",
-      description: "We create a tender document and invite appropriate professionals to quote.",
-      reverse: true
-    } %>
-    <%= render partial: 'pages/landing/components/how_it_works_step', locals: {
-      image: 'how_it_works/1roof-about-step5.png',
-      title: "3) We ensure safe terms",
-      description: "We set up the schedule of works, contract and staged payment.",
-      reverse: false
-    } %>
-  </div>
-  <a href="<%= brief_path %>" class="h4 btn btn-big bg-gray yellow">OK I'm ready. Let's get started!</a>
-</section>
+    <section class="container center px2 py4">
+      <a name="how-it-works"></a>
+      <h1 class="h1-responsive mt0 mb4">How it Works</h1>
+          <div class="clearfix mb2">
+            <%= render partial: 'pages/landing/components/how_it_works_step', locals: {
+              image: 'how_it_works/1roof-about-step1.png',
+              title: "1) We prepare the brief",
+              description: "We answer any questions you might have and help create a thorough plan.",
+              reverse: false
+              } %>
+              <%= render partial: 'pages/landing/components/how_it_works_step', locals: {
+                image: 'how_it_works/1roof-about-step3.png',
+                title: "2) We collect clear quotes",
+                description: "We create a tender document and invite appropriate professionals to quote.",
+                reverse: true
+              } %>
+              <%= render partial: 'pages/landing/components/how_it_works_step', locals: {
+                image: 'how_it_works/1roof-about-step5.png',
+                title: "3) We ensure safe terms",
+                description: "We set up the schedule of works, contract and staged payment.",
+                reverse: false
+              } %>
+          </div>
+        <a href="<%= brief_path %>" class="h4 btn btn-big bg-yellow">OK I'm ready. Let's get started!</a>
+    </section>
     </div>
 
   </div>
