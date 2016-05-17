@@ -107,10 +107,10 @@ let taskActions = require("json!../../data/task_actions.json")
     this.opts.api.tenders.trigger('update')
   }
 
-  this.renameSection = _.debounce((e) => {
+  this.renameSection = (e) => {
+    e.preventUpdate = true
     this.section.name = e.target.value
-    this.update()
-  }, 300)
+  }
 
   </script>
 </r-tender-section>

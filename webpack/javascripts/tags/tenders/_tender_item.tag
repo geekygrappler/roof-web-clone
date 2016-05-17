@@ -128,7 +128,6 @@ import './_comments.tag'
   }
   this.getCommentsCount = () => {
     if (!this._item) { return 0 }
-    console.log(this.parent.parent.record)
     this.parent.parent.record.comments_counts = this.parent.parent.record.comments_counts || {}
     var item = this._item
     var type = item.action ? 'tasks' : 'materials'
