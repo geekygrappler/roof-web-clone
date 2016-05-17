@@ -23,25 +23,6 @@ GIT
     carrierwave_backgrounder (0.4.2)
       carrierwave (~> 0.5)
 
-PATH
-  remote: ../roof-api
-  specs:
-    roof_api (0.0.6.fix4)
-      cancancan (~> 1.10)
-      carrierwave
-      carrierwave_backgrounder
-      devise
-      json-schema
-      mini_magick
-      pg
-      puma
-      rails (= 4.2.5.1)
-      rails-api
-      request_store
-      slack-notifier
-      stripe
-      verbs
-
 GEM
   remote: https://rubygems.org/
   remote: https://Urx7-1GrXUKKC-1LnfGi@gem.fury.io/onurroof/
@@ -88,7 +69,7 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.2)
     byebug (8.2.2)
-    cancancan (1.13.1)
+    cancancan (1.14.0)
     clockwork (1.2.0)
       activesupport
       tzinfo
@@ -106,7 +87,7 @@ GEM
     delayed_job_active_record (4.1.0)
       activerecord (>= 3.0, < 5)
       delayed_job (>= 3.0, < 5)
-    devise (4.1.0)
+    devise (4.1.1)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
       railties (>= 4.1.0, < 5.1)
@@ -149,7 +130,7 @@ GEM
       railties (>= 4.2.0)
       thor (>= 0.14, < 2.0)
     json (1.8.3)
-    json-schema (2.6.1)
+    json-schema (2.6.2)
       addressable (~> 2.3.8)
     launchy (2.4.3)
       addressable (~> 2.3)
@@ -218,6 +199,21 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
+    roof_api (0.0.6.fix5)
+      cancancan (~> 1.10)
+      carrierwave
+      carrierwave_backgrounder
+      devise
+      json-schema
+      mini_magick
+      pg
+      puma
+      rails (= 4.2.5.1)
+      rails-api
+      request_store
+      slack-notifier
+      stripe
+      verbs
     sass (3.4.21)
     sass-rails (5.0.4)
       railties (>= 4.0.0, < 5.0)
@@ -237,7 +233,7 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
-    stripe (1.41.0)
+    stripe (1.42.0)
       rest-client (~> 1.4)
     thor (0.19.1)
     thread_safe (0.3.5)
@@ -281,7 +277,7 @@ DEPENDENCIES
   puma
   rails (= 4.2.5.1)
   rails_12factor
-  roof_api!
+  roof_api (= 0.0.6.fix5)
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)
   spring
