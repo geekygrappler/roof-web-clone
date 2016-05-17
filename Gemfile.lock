@@ -23,6 +23,25 @@ GIT
     carrierwave_backgrounder (0.4.2)
       carrierwave (~> 0.5)
 
+PATH
+  remote: ../roof-api
+  specs:
+    roof_api (0.0.6.fix4)
+      cancancan (~> 1.10)
+      carrierwave
+      carrierwave_backgrounder
+      devise
+      json-schema
+      mini_magick
+      pg
+      puma
+      rails (= 4.2.5.1)
+      rails-api
+      request_store
+      slack-notifier
+      stripe
+      verbs
+
 GEM
   remote: https://rubygems.org/
   remote: https://Urx7-1GrXUKKC-1LnfGi@gem.fury.io/onurroof/
@@ -87,7 +106,7 @@ GEM
     delayed_job_active_record (4.1.0)
       activerecord (>= 3.0, < 5)
       delayed_job (>= 3.0, < 5)
-    devise (4.0.0)
+    devise (4.1.0)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
       railties (>= 4.1.0, < 5.1)
@@ -193,27 +212,12 @@ GEM
     rdoc (4.2.2)
       json (~> 1.4)
     request_store (1.3.1)
-    responders (2.1.2)
+    responders (2.2.0)
       railties (>= 4.2.0, < 5.1)
     rest-client (1.8.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
-    roof_api (0.0.6.fix4)
-      cancancan (~> 1.10)
-      carrierwave
-      carrierwave_backgrounder
-      devise
-      json-schema
-      mini_magick
-      pg
-      puma
-      rails (= 4.2.5.1)
-      rails-api
-      request_store
-      slack-notifier
-      stripe
-      verbs
     sass (3.4.21)
     sass-rails (5.0.4)
       railties (>= 4.0.0, < 5.0)
@@ -277,7 +281,7 @@ DEPENDENCIES
   puma
   rails (= 4.2.5.1)
   rails_12factor
-  roof_api (= 0.0.6.fix4)
+  roof_api!
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)
   spring

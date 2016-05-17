@@ -25,6 +25,12 @@ import './_comments.tag'
         <br class="sm-hide">
       </div>
 
+      <div if="{ parent.headers.name }" class="sm-col sm-col-{ parent.headers.name } mb1 sm-mb0">
+        <input type="text" name="description" value="{ description }" placeholder="Description"
+        class="fit field inline-input align-left col-12" oninput="{ inputdesc }" />
+        <br class="sm-hide">
+      </div>
+
       <div if="{ parent.headers.quantity }" class="col sm-col-{ parent.headers.quantity } col-3 center">
         <input type="number" name="quantity" value="{ quantity }" step="1" min="0"
         class="fit field inline-input center" oninput="{ input }" />
@@ -74,6 +80,13 @@ import './_comments.tag'
     //e.preventDefault()
     e.preventUpdate=true
     e.item.display_name = e.target.value
+    //this.update()
+    //this.opts.api.tenders.trigger('update')
+  }
+  this.inputdesc = (e) => {
+    //e.preventDefault()
+    e.preventUpdate=true
+    e.item.description = e.target.value
     //this.update()
     //this.opts.api.tenders.trigger('update')
   }

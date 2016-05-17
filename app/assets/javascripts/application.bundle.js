@@ -32119,21 +32119,21 @@
 	
 	  this.type = "Tender";
 	  this.headers = {
-	    task: { name: 7, quantity: 3, actions: 2 },
-	    material: { name: 7, quantity: 3, actions: 2 }
+	    task: { name: 3, description: 4, quantity: 3, actions: 2 },
+	    material: { name: 3, description: 4, quantity: 3, actions: 2 }
 	  };
 	
 	  if (opts.readonly) {
 	    delete this.headers.task.actions;
-	    this.headers.task.name = 9;
+	    this.headers.task.name = 5;
 	    delete this.headers.material.actions;
-	    this.headers.material.name = 9;
+	    this.headers.material.name = 5;
 	  }
 	
 	  if (opts.api.currentAccount.isAdministrator) {
 	    this.headers = {
-	      task: { name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2 },
-	      material: { name: 5, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2 }
+	      task: { name: 3, description: 3, quantity: 1, price: 1, total_cost: 2, actions: 2 },
+	      material: { name: 2, description: 3, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2 }
 	    };
 	  }
 	
@@ -37076,7 +37076,7 @@
 	  };
 	});
 	
-	riot.tag2("r-tender-item", "<li class=\"relative border-right\"> <div class=\"clearfix p1 border-bottom\"> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> <input type=\"text\" name=\"name\" value=\"{display_name || name}\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputname}\"> <br class=\"sm-hide\"> </div> <div if=\"{parent.headers.quantity}\" class=\"col sm-col-{parent.headers.quantity} col-3 center\"> <input name=\"quantity\" value=\"{quantity}\" step=\"1\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.price}\" class=\"col sm-col-{parent.headers.price} col-{parent.opts.name == 'task' ? 3 : 2} center relative\"> <i class=\"fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white\"></i><input name=\"price\" value=\"{parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0)}\" __disabled=\"{parent.opts.name == 'material' && !supplied}\" step=\"1\" min=\"0\" class=\"fit field inline-input center price\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.total_cost}\" class=\"col sm-col-{parent.headers.total_cost} col-3 center relative\"> <i class=\"fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white\"></i><input value=\"{parent.opts.name == 'task' ? (price / 100 * quantity) : (supplied ? price / 100 * quantity : '0')}\" step=\"1\" min=\"0\" class=\"fit field inline-input center price\" oninput=\"{inputTotalCost}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.supplied}\" class=\"col sm-col-{parent.headers.supplied} col-1 center\"> <input if=\"{parent.opts.name == 'material'}\" type=\"checkbox\" name=\"supplied\" __checked=\"{supplied}\" class=\"align-middle\" onchange=\"{input}\"> </div> <div if=\"{parent.headers.actions}\" class=\"col sm-col-{parent.headers.actions} col-2 center\"> <a href=\"#\" class=\"btn btn-small border-red red mb1 sm-mb0\" onclick=\"{removeItem}\" title=\"Delete\"><i class=\"fa fa-trash-o\"></i></a> <a href=\"#\" if=\"{parent && parent.parent && parent.parent.record.id && this.parent.parent.type != 'TenderTemplate'}\" class=\"btn btn-small border mb1 sm-mb0\" onclick=\"{openComments}\" title=\"Comments\"><i class=\"fa fa-comment-o\"></i> [{getCommentsCount()}]</a> <a if=\"{action == 'Other'}\" class=\"btn btn-small btn-outline mb1 sm-mb0\" onclick=\"{openGroupCombo}\" title=\"Change Category\"><i class=\"fa fa-edit\"></i></a> </div> </div> </li>", "", "", function (opts) {
+	riot.tag2("r-tender-item", "<li class=\"relative border-right\"> <div class=\"clearfix p1 border-bottom\"> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> <input type=\"text\" name=\"name\" value=\"{display_name || name}\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputname}\"> <br class=\"sm-hide\"> </div> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> <input type=\"text\" name=\"description\" value=\"{description}\" placeholder=\"Description\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputdesc}\"> <br class=\"sm-hide\"> </div> <div if=\"{parent.headers.quantity}\" class=\"col sm-col-{parent.headers.quantity} col-3 center\"> <input name=\"quantity\" value=\"{quantity}\" step=\"1\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.price}\" class=\"col sm-col-{parent.headers.price} col-{parent.opts.name == 'task' ? 3 : 2} center relative\"> <i class=\"fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white\"></i><input name=\"price\" value=\"{parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0)}\" __disabled=\"{parent.opts.name == 'material' && !supplied}\" step=\"1\" min=\"0\" class=\"fit field inline-input center price\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.total_cost}\" class=\"col sm-col-{parent.headers.total_cost} col-3 center relative\"> <i class=\"fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white\"></i><input value=\"{parent.opts.name == 'task' ? (price / 100 * quantity) : (supplied ? price / 100 * quantity : '0')}\" step=\"1\" min=\"0\" class=\"fit field inline-input center price\" oninput=\"{inputTotalCost}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.supplied}\" class=\"col sm-col-{parent.headers.supplied} col-1 center\"> <input if=\"{parent.opts.name == 'material'}\" type=\"checkbox\" name=\"supplied\" __checked=\"{supplied}\" class=\"align-middle\" onchange=\"{input}\"> </div> <div if=\"{parent.headers.actions}\" class=\"col sm-col-{parent.headers.actions} col-2 center\"> <a href=\"#\" class=\"btn btn-small border-red red mb1 sm-mb0\" onclick=\"{removeItem}\" title=\"Delete\"><i class=\"fa fa-trash-o\"></i></a> <a href=\"#\" if=\"{parent && parent.parent && parent.parent.record.id && this.parent.parent.type != 'TenderTemplate'}\" class=\"btn btn-small border mb1 sm-mb0\" onclick=\"{openComments}\" title=\"Comments\"><i class=\"fa fa-comment-o\"></i> [{getCommentsCount()}]</a> <a if=\"{action == 'Other'}\" class=\"btn btn-small btn-outline mb1 sm-mb0\" onclick=\"{openGroupCombo}\" title=\"Change Category\"><i class=\"fa fa-edit\"></i></a> </div> </div> </li>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.commentsCount = 0;
@@ -37098,6 +37098,14 @@
 	    //e.preventDefault()
 	    e.preventUpdate = true;
 	    e.item.display_name = e.target.value
+	    //this.update()
+	    //this.opts.api.tenders.trigger('update')
+	    ;
+	  };
+	  this.inputdesc = function (e) {
+	    //e.preventDefault()
+	    e.preventUpdate = true;
+	    e.item.description = e.target.value
 	    //this.update()
 	    //this.opts.api.tenders.trigger('update')
 	    ;
@@ -37360,7 +37368,11 @@
 	
 	  this.on("update", function () {
 	    if (_this.section) {
-	      var grouped = _.groupBy(_this.section.tasks, function (item) {
+	      var tasksWithDescription = _.map(_this.section.tasks, function (item) {
+	        item.description = item.description ? item.description : "";
+	        return item;
+	      });
+	      var grouped = _.groupBy(tasksWithDescription, function (item) {
 	        return item.action;
 	      });
 	      _this.section.tasks_by_action = _.groupBy(_.flatten(_.sortBy(grouped, function (list, group) {
@@ -37368,7 +37380,11 @@
 	      })), function (item) {
 	        return item.action;
 	      });
-	      _this.section.materials_by_group = { materials: _this.section.materials };
+	      var materialsWithDescription = _.map(_this.section.materials, function (item) {
+	        item.description = item.description ? item.description : "";
+	        return item;
+	      });
+	      _this.section.materials_by_group = { materials: materialsWithDescription };
 	      if (!_this.sectionTotal) _this.updateSectionTotal();
 	    }
 	  });
