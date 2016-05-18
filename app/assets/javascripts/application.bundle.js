@@ -37474,18 +37474,17 @@
 	  };
 	
 	  this.isReadonly = function () {
-	    console.log("this.opts.readonly", _this.opts.readonly);
 	    return _this.opts.readonly;
 	  };
 	
-	  if (opts.readonly) {
+	  if (this.opts.readonly) {
 	    delete this.headers.task.actions;
 	    this.headers.task.name = 8;
 	    delete this.headers.material.actions;
 	    this.headers.material.name = 7;
 	  }
 	
-	  if (opts.id) {
+	  if (this.opts.id) {
 	    this.on("mount", function () {
 	      opts.api.quotes.on("show.fail", _this.errorHandler);
 	      opts.api.quotes.on("show.success", _this.updateQuote);
