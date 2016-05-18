@@ -26,10 +26,15 @@ import './_comments.tag'
         <br class="sm-hide">
       </div>
 
-      <div if="{ parent.headers.name }" class="sm-col sm-col-{ parent.headers.description } mb1 sm-mb0">
+      <div if="{ parent.headers.description }" class="sm-col sm-col-{ parent.headers.description } mb1 sm-mb0">
         <input type="text" name="description" value="{ description }" placeholder="Description"
         class="fit field inline-input align-left col-12" oninput="{ inputdesc }" />
         <br class="sm-hide">
+      </div>
+
+      <div if="{ parent.headers.supplied }" class="col sm-col-{ parent.headers.supplied } col-1 center">
+        <input if="{ parent.opts.name == 'material'}" type="checkbox" name="supplied"
+        checked="{ supplied }" class="align-middle" onchange="{ input }" />
       </div>
 
       <div if="{ parent.headers.quantity }" class="col sm-col-{ parent.headers.quantity } col-3 center">
@@ -38,7 +43,7 @@ import './_comments.tag'
       </div>
 
       <div if="{ parent.headers.price }" class="col sm-col-{ parent.headers.price } col-{parent.opts.name == 'task' ? 3 : 2} center relative">
-        <i if="{!parent.opts.readonly}" class="fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white"></i><input if="{!parent.opts.readonly}" type="{number}" name="price" value="{ parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0) }"
+        <i if="{!parent.opts.readonly}" class="fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white"></i><input if="{!parent.opts.readonly}" type="number" name="price" value="{ parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0) }"
         disabled="{ parent.opts.name == 'material' && !supplied }" step="1" min="0" class="fit field inline-input center price" oninput="{ input }" />
         <label if="{parent.opts.readonly}">{ formatCurrency(parent.opts.name == 'task' ? price : (supplied ? price : 0)) }</label>
       </div>
@@ -47,11 +52,6 @@ import './_comments.tag'
         <i if="{!parent.opts.readonly}" class="fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white"></i><input if="{!parent.opts.readonly}" type="number" value="{parent.opts.name == 'task' ? (price / 100 * quantity) : (supplied ? price / 100 * quantity : '0')}"
         step="1" min="0" class="fit field inline-input center price" oninput="{ inputTotalCost }" >
         <label if="{parent.opts.readonly}">{ formatCurrency(parent.opts.name == 'task' ? (price * quantity) : (supplied ? price * quantity : '0'))}</label>
-      </div>
-
-      <div if="{ parent.headers.supplied }" class="col sm-col-{ parent.headers.supplied } col-1 center">
-        <input if="{ parent.opts.name == 'material'}" type="checkbox" name="supplied"
-        checked="{ supplied }" class="align-middle" onchange="{ input }" />
       </div>
 
       <div if="{ parent.headers.actions }" class="col sm-col-{ parent.headers.actions } col-2 center">

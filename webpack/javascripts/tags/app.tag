@@ -5,6 +5,7 @@ import './auth.tag'
 import './_invitation_accept.tag'
 import './modal.tag'
 import './_pagination.tag'
+import './_dialog.tag'
 
 import './projects/_file_input.tag'
 import './projects/_files_input_with_preview.tag'

@@ -137,7 +137,7 @@ import from '../../mixins/tender.js'
 
     this.headers = {
       task: {name: 3, description: 3, quantity: 1, price: 1, total_cost: 2, actions: 2},
-      material: {name: 2, description: 3, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2}
+      material: {name: 2, description: 3, supplied: 1, quantity: 1, price: 1, total_cost: 2, actions: 2}
     }
 
     this.isReadonly = () => {

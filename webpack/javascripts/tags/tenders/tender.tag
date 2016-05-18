@@ -4,6 +4,7 @@ import './_tender_item.tag'
 import './_tender_item_group.tag'
 import './_tender_section.tag'
 import './_tender_filters.tag'
+import './_area_calculator.tag'
 
 <r-tenders-form>
 
@@ -68,7 +69,7 @@ import './_tender_filters.tag'
     if(opts.api.currentAccount.isAdministrator) {
       this.headers = {
         task: {name: 3, description: 3, quantity: 1, price: 1, total_cost: 2, actions: 2},
-        material: {name: 2, description: 3, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2}
+        material: {name: 2, description: 3,  supplied: 1, quantity: 1, price: 1, total_cost: 2, actions: 2}
       }
     }
 

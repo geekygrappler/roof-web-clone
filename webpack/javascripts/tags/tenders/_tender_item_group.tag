@@ -12,7 +12,7 @@
         <li if="{header}" class="sm-show relative">
           <div class="clearfix p1 border-bottom">
             <div each="{ name, width in headers }" class="sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate">
-              { name == 'name' ? '&nbsp;' : name.humanize() }
+              { ['name','description'].indexOf(name) > -1  ? '&nbsp;' : name.humanize() }
             </div>
           </div>
         </li>

@@ -7,7 +7,7 @@ import './tags/app.tag'
 
 riot.route.base('/app/')
 let mount = () => {
-  riot.mount('r-app', {api})
+  riot.mount('r-app', {api: api, app: {}})
   riot.route.start(true)
 }
 let showApp = () => {

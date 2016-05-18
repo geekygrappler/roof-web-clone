@@ -131,5 +131,13 @@ riot.mixin({
       image.src = '//www.googleadservices.com/pagead/conversion/913725911/?label=VbuCCK7d7WIQ17PZswM&amp;guid=ON&amp;script=0'
       return image
     })
+  },
+  setActivity: function (e) {
+    this.opts.api.activity = e.currentTarget.rel
+    this.trigger('change:activity')
+  },
+  unsetActivity: function (e) {
+    this.opts.api.activity = null
+    this.trigger('change:activity')
   }
 })

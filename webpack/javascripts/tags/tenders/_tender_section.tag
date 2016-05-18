@@ -4,8 +4,12 @@ let taskActions = require("json!../../data/task_actions.json")
   <div>
     <div class="relative border-bottom mt2">
       <h3 class="block overflow-hidden mb0">
-        <i class="absolute left-0 top-0 mt1 cursor-pointer fa fa-{ icon }" onclick="{toggle}"></i>
-        <input type="text" class="block col-12 field border-none tender-section-name h3"
+
+        <i class="cursor-pointer fa fa-{ icon }" onclick="{toggle}"></i>
+        <a if="{section.dimensions && section.dimensions.length > 0}" class="h6 bg-teal gray rounded notification-badge" onclick="{setActivity}" rel="edit_dimensions_{section.id}">{section.dimensions.join('x')}</a>
+        <a if="{!section.dimensions || section.dimensions.length == 0}" onclick="{setActivity}" rel="edit_dimensions_{section.id}"><i class="fa fa-edit"></i></a>
+
+        <input type="text" class="col-10 field border-none tender-section-name h3"
         value="{ section.name.humanize() }" oninput="{renameSection}">
       </h3>
       <a class="absolute right-0 top-0 btn btn-small border-red red" onclick="{removeSection}"><i class="fa fa-trash-o"></i></a>
@@ -46,6 +50,18 @@ let taskActions = require("json!../../data/task_actions.json")
       </div>
     </div>
 
+    <r-dialog if="{opts.api.activity == ('edit_dimensions_' + section.id)}" title="Edit Dimensions" >
+      <form class="p2" onsubmit="{parent.updateDimensions}">
+        <label>Section Dimensions</label>
+        <r-area-calculator dimensions="{parent.section.dimensions}" callback="{preventSubmit}"></r-area-calculator>
+        <div class="clearfix mt2 mxn2">
+          <div class="col col-6 px2">
+            <button class="block col-12 mb2 btn btn-primary">Save</button>
+          </div>
+        </div>
+      </form>
+    </r-dialog>
+
   </div>
 
   <script>
@@ -60,6 +76,12 @@ let taskActions = require("json!../../data/task_actions.json")
     this.icon = this.visible ? 'minus-square-o' : 'plus-square-o'
   }
 
+  this.updateDimensions = (e) => {
+    this.section.dimensions = _.compact([parseInt(e.target.width.value), parseInt(e.target.height.value), parseInt(e.target.length.value)])
+    this.unsetActivity()
+    this.update()
+  }
+
   this.updateSectionTotalLocal = () => {
     this.sectionTotal = this.calcSectionTotal(this.section, true)
   }
@@ -72,7 +94,7 @@ let taskActions = require("json!../../data/task_actions.json")
   this.on('mount', () => {
     this.parent.tags['r-tender-filters'].on('update', this.updateSectionTotalLocal)
   })
-  
+
   this.on('before-unmount', () => {
     this.parent.tags['r-tender-filters'].off('update', this.updateSectionTotalLocal)
   })

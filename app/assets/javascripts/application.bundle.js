@@ -62,7 +62,7 @@
 	
 	riot.route.base("/app/");
 	var mount = function () {
-	  riot.mount("r-app", { api: api });
+	  riot.mount("r-app", { api: api, app: {} });
 	  riot.route.start(true);
 	};
 	var showApp = function () {
@@ -3292,6 +3292,14 @@
 	      image.src = "//www.googleadservices.com/pagead/conversion/913725911/?label=VbuCCK7d7WIQ17PZswM&amp;guid=ON&amp;script=0";
 	      return image;
 	    });
+	  },
+	  setActivity: function setActivity(e) {
+	    this.opts.api.activity = e.currentTarget.rel;
+	    this.trigger("change:activity");
+	  },
+	  unsetActivity: function unsetActivity(e) {
+	    this.opts.api.activity = null;
+	    this.trigger("change:activity");
 	  }
 	});
 	// }
@@ -32701,6 +32709,8 @@
 	
 	__webpack_require__(129);
 	
+	__webpack_require__(189);
+	
 	__webpack_require__(130);
 	
 	__webpack_require__(131);
@@ -35879,6 +35889,8 @@
 	
 	__webpack_require__(160);
 	
+	__webpack_require__(188);
+	
 	riot.tag2("r-tenders-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1> {opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Tender ' + opts.id : 'New Tender'}</h1> <a class=\"mb1 btn btn-small h6 btn-outline orange\" href=\"/app/projects/{project.id}\"> <i class=\"fa fa-chevron-left\"></i> Back to Project </a> <r-tender-filters record=\"{record}\"></r-tender-filters> <r-tender-section each=\"{section , i in sections()}\" no-reorder></r-tender-section> <div class=\"py3\"> <h2 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h2> <h1 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h2> </div> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{!currentAccount.isProfessional}\" type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{currentAccount.isProfessional}\" onclick=\"{cloneTender}\" class=\"btn btn-primary btn-big {busy: busy}\">Clone</a> </form> </div>", "", "", function (opts) {
 	  var _this = this;
 	
@@ -35901,7 +35913,7 @@
 	  if (opts.api.currentAccount.isAdministrator) {
 	    this.headers = {
 	      task: { name: 3, description: 3, quantity: 1, price: 1, total_cost: 2, actions: 2 },
-	      material: { name: 2, description: 3, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2 }
+	      material: { name: 2, description: 3, supplied: 1, quantity: 1, price: 1, total_cost: 2, actions: 2 }
 	    };
 	  }
 	
@@ -40857,7 +40869,7 @@
 	  };
 	});
 	
-	riot.tag2("r-tender-item", "<li class=\"relative border-right\"> <div class=\"clearfix p1 border-bottom\"> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> <input if=\"{this.parent.parent.type == 'Tender'}\" type=\"text\" name=\"name\" value=\"{display_name || name}\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputname}\"> <label if=\"{this.parent.parent.type == 'Quote'}\">{display_name || name}</label> <br class=\"sm-hide\"> </div> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.description} mb1 sm-mb0\"> <input type=\"text\" name=\"description\" value=\"{description}\" placeholder=\"Description\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputdesc}\"> <br class=\"sm-hide\"> </div> <div if=\"{parent.headers.quantity}\" class=\"col sm-col-{parent.headers.quantity} col-3 center\"> <input name=\"quantity\" value=\"{quantity}\" step=\"1\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.price}\" class=\"col sm-col-{parent.headers.price} col-{parent.opts.name == 'task' ? 3 : 2} center relative\"> <i if=\"{!parent.opts.readonly}\" class=\"fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white\"></i><input if=\"{!parent.opts.readonly}\" type=\"{number}\" name=\"price\" value=\"{parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0)}\" __disabled=\"{parent.opts.name == 'material' && !supplied}\" step=\"1\" min=\"0\" class=\"fit field inline-input center price\" oninput=\"{input}\"> <label if=\"{parent.opts.readonly}\">{formatCurrency(parent.opts.name == 'task' ? price : (supplied ? price : 0))}</label> </div> <div if=\"{parent.headers.total_cost}\" class=\"col sm-col-{parent.headers.total_cost} col-3 center relative\"> <i if=\"{!parent.opts.readonly}\" class=\"fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white\"></i><input if=\"{!parent.opts.readonly}\" value=\"{parent.opts.name == 'task' ? (price / 100 * quantity) : (supplied ? price / 100 * quantity : '0')}\" step=\"1\" min=\"0\" class=\"fit field inline-input center price\" oninput=\"{inputTotalCost}\" type=\"{'number'}\"> <label if=\"{parent.opts.readonly}\">{formatCurrency(parent.opts.name == 'task' ? (price * quantity) : (supplied ? price * quantity : '0'))}</label> </div> <div if=\"{parent.headers.supplied}\" class=\"col sm-col-{parent.headers.supplied} col-1 center\"> <input if=\"{parent.opts.name == 'material'}\" type=\"checkbox\" name=\"supplied\" __checked=\"{supplied}\" class=\"align-middle\" onchange=\"{input}\"> </div> <div if=\"{parent.headers.actions}\" class=\"col sm-col-{parent.headers.actions} col-2 center\"> <a href=\"#\" class=\"btn btn-small border-red red mb1 sm-mb0\" onclick=\"{removeItem}\" title=\"Delete\"><i class=\"fa fa-trash-o\"></i></a> <a href=\"#\" if=\"{parent && parent.parent && parent.parent.record.id && this.parent.parent.type != 'TenderTemplate'}\" class=\"btn btn-small border mb1 sm-mb0\" onclick=\"{openComments}\" title=\"Comments\"><i class=\"fa fa-comment-o\"></i> [{getCommentsCount()}]</a> <a if=\"{action == 'Other'}\" class=\"btn btn-small btn-outline mb1 sm-mb0\" onclick=\"{openGroupCombo}\" title=\"Change Category\"><i class=\"fa fa-edit\"></i></a> </div> </div> </li>", "", "", function (opts) {
+	riot.tag2("r-tender-item", "<li class=\"relative border-right\"> <div class=\"clearfix p1 border-bottom\"> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> <input if=\"{this.parent.parent.type == 'Tender'}\" type=\"text\" name=\"name\" value=\"{display_name || name}\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputname}\"> <label if=\"{this.parent.parent.type == 'Quote'}\">{display_name || name}</label> <br class=\"sm-hide\"> </div> <div if=\"{parent.headers.description}\" class=\"sm-col sm-col-{parent.headers.description} mb1 sm-mb0\"> <input type=\"text\" name=\"description\" value=\"{description}\" placeholder=\"Description\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputdesc}\"> <br class=\"sm-hide\"> </div> <div if=\"{parent.headers.supplied}\" class=\"col sm-col-{parent.headers.supplied} col-1 center\"> <input if=\"{parent.opts.name == 'material'}\" type=\"checkbox\" name=\"supplied\" __checked=\"{supplied}\" class=\"align-middle\" onchange=\"{input}\"> </div> <div if=\"{parent.headers.quantity}\" class=\"col sm-col-{parent.headers.quantity} col-3 center\"> <input name=\"quantity\" value=\"{quantity}\" step=\"1\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.price}\" class=\"col sm-col-{parent.headers.price} col-{parent.opts.name == 'task' ? 3 : 2} center relative\"> <i if=\"{!parent.opts.readonly}\" class=\"fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white\"></i><input if=\"{!parent.opts.readonly}\" name=\"price\" value=\"{parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0)}\" __disabled=\"{parent.opts.name == 'material' && !supplied}\" step=\"1\" min=\"0\" class=\"fit field inline-input center price\" oninput=\"{input}\" type=\"{'number'}\"> <label if=\"{parent.opts.readonly}\">{formatCurrency(parent.opts.name == 'task' ? price : (supplied ? price : 0))}</label> </div> <div if=\"{parent.headers.total_cost}\" class=\"col sm-col-{parent.headers.total_cost} col-3 center relative\"> <i if=\"{!parent.opts.readonly}\" class=\"fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white\"></i><input if=\"{!parent.opts.readonly}\" value=\"{parent.opts.name == 'task' ? (price / 100 * quantity) : (supplied ? price / 100 * quantity : '0')}\" step=\"1\" min=\"0\" class=\"fit field inline-input center price\" oninput=\"{inputTotalCost}\" type=\"{'number'}\"> <label if=\"{parent.opts.readonly}\">{formatCurrency(parent.opts.name == 'task' ? (price * quantity) : (supplied ? price * quantity : '0'))}</label> </div> <div if=\"{parent.headers.actions}\" class=\"col sm-col-{parent.headers.actions} col-2 center\"> <a href=\"#\" class=\"btn btn-small border-red red mb1 sm-mb0\" onclick=\"{removeItem}\" title=\"Delete\"><i class=\"fa fa-trash-o\"></i></a> <a href=\"#\" if=\"{parent && parent.parent && parent.parent.record.id && this.parent.parent.type != 'TenderTemplate'}\" class=\"btn btn-small border mb1 sm-mb0\" onclick=\"{openComments}\" title=\"Comments\"><i class=\"fa fa-comment-o\"></i> [{getCommentsCount()}]</a> <a if=\"{action == 'Other'}\" class=\"btn btn-small btn-outline mb1 sm-mb0\" onclick=\"{openGroupCombo}\" title=\"Change Category\"><i class=\"fa fa-edit\"></i></a> </div> </div> </li>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.commentsCount = 0;
@@ -41056,7 +41068,7 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-tender-item-group", "<ul class=\"list-reset ml2 mb0 relative {last: last}\"> <li> <h4 class=\"block mb0 mt1 p1 border-bottom border-right group-title\"> <a onclick=\"{toggle}\" class=\"cursor-pointer\"> <i class=\"fa fa-{icon} mr1\"></i> {group.humanize()} </a> </h4> <ul class=\"list-reset ml2 border-left mb0\" if=\"{visible}\"> <li if=\"{header}\" class=\"sm-show relative\"> <div class=\"clearfix p1 border-bottom\"> <div each=\"{name, width in headers}\" class=\"sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate\"> {name == 'name' ? '&nbsp;' : name.humanize()} </div> </div> </li> <r-tender-item each=\"{items}\" border_cleaner=\"{last}\" __readonly=\"{opts.readonly}\" no-reorder></r-tender-item> </ul> </li> </ul> <div class=\"clearfix relative group-total-wrapper\"> <h4 class=\"right mt1 mb0 p1 border abolute group-total bg-white z2\"> <div class=\"bg-white relative z4\">{formatCurrency(groupTotal)}</div> </h4> </div>", "", "class=\"col-11\"", function (opts) {
+	riot.tag2("r-tender-item-group", "<ul class=\"list-reset ml2 mb0 relative {last: last}\"> <li> <h4 class=\"block mb0 mt1 p1 border-bottom border-right group-title\"> <a onclick=\"{toggle}\" class=\"cursor-pointer\"> <i class=\"fa fa-{icon} mr1\"></i> {group.humanize()} </a> </h4> <ul class=\"list-reset ml2 border-left mb0\" if=\"{visible}\"> <li if=\"{header}\" class=\"sm-show relative\"> <div class=\"clearfix p1 border-bottom\"> <div each=\"{name, width in headers}\" class=\"sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate\"> {['name','description'].indexOf(name) > -1  ? '&nbsp;' : name.humanize()} </div> </div> </li> <r-tender-item each=\"{items}\" border_cleaner=\"{last}\" __readonly=\"{opts.readonly}\" no-reorder></r-tender-item> </ul> </li> </ul> <div class=\"clearfix relative group-total-wrapper\"> <h4 class=\"right mt1 mb0 p1 border abolute group-total bg-white z2\"> <div class=\"bg-white relative z4\">{formatCurrency(groupTotal)}</div> </h4> </div>", "", "class=\"col-11\"", function (opts) {
 	  var _this = this;
 	
 	  var itemKeys = undefined;
@@ -41133,7 +41145,7 @@
 	
 	var taskActions = __webpack_require__(149);
 	
-	riot.tag2("r-tender-section", "<div> <div class=\"relative border-bottom mt2\"> <h3 class=\"block overflow-hidden mb0\"> <i class=\"absolute left-0 top-0 mt1 cursor-pointer fa fa-{icon}\" onclick=\"{toggle}\"></i> <input type=\"text\" class=\"block col-12 field border-none tender-section-name h3\" value=\"{section.name.humanize()}\" oninput=\"{renameSection}\"> </h3> <a class=\"absolute right-0 top-0 btn btn-small border-red red\" onclick=\"{removeSection}\"><i class=\"fa fa-trash-o\"></i></a> </div> <virtual if=\"{visible}\"> <r-tender-item-group name=\"task\" groupitems=\"{section.tasks_by_action}\" __readonly=\"{parent.parent.opts.readonly}\" each=\"{group, items in section.tasks_by_action}\" headers=\"{parent.headers.task}\" onitemremoved=\"{removeItem}\" no-reorder> </r-tender-item-group> <r-tender-item-group name=\"material\" if=\"{(filterAction == 'Materials' || !filterAction)}\" __readonly=\"{parent.parent.opts.readonly}\" groupitems=\"{section.materials_by_group}\" show=\"{section.materials && section.materials.length > 0}\" each=\"{group, items in section.materials_by_group}\" headers=\"{parent.headers.material}\" onitemremoved=\"{removeItem}\" no-reorder> </r-tender-item-group> </virtual> <div class=\"clearfix {'with-line': !visible}\"> <h3 class=\"right border p1 bg-white relative z2 section-total\">{visible ? section.name + ':' : ''} {sectionTotal}</h3> </div> <div if=\"{visible}\" class=\"clearfix mxn1 mt2 mb3\"> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"task\" auto_focus=\"{true}\" api=\"{parent.opts.api}\" icon=\"tasks\"></r-tender-item-input> </div> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"material\" api=\"{parent.opts.api}\" icon=\"shopping-basket\"></r-tender-item-input> </div> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-tender-section", "<div> <div class=\"relative border-bottom mt2\"> <h3 class=\"block overflow-hidden mb0\"> <i class=\"cursor-pointer fa fa-{icon}\" onclick=\"{toggle}\"></i> <a if=\"{section.dimensions && section.dimensions.length > 0}\" class=\"h6 bg-teal gray rounded notification-badge\" onclick=\"{setActivity}\" rel=\"edit_dimensions_{section.id}\">{section.dimensions.join('x')}</a> <a if=\"{!section.dimensions || section.dimensions.length == 0}\" onclick=\"{setActivity}\" rel=\"edit_dimensions_{section.id}\"><i class=\"fa fa-edit\"></i></a> <input type=\"text\" class=\"col-10 field border-none tender-section-name h3\" value=\"{section.name.humanize()}\" oninput=\"{renameSection}\"> </h3> <a class=\"absolute right-0 top-0 btn btn-small border-red red\" onclick=\"{removeSection}\"><i class=\"fa fa-trash-o\"></i></a> </div> <virtual if=\"{visible}\"> <r-tender-item-group name=\"task\" groupitems=\"{section.tasks_by_action}\" __readonly=\"{parent.parent.opts.readonly}\" each=\"{group, items in section.tasks_by_action}\" headers=\"{parent.headers.task}\" onitemremoved=\"{removeItem}\" no-reorder> </r-tender-item-group> <r-tender-item-group name=\"material\" if=\"{(filterAction == 'Materials' || !filterAction)}\" __readonly=\"{parent.parent.opts.readonly}\" groupitems=\"{section.materials_by_group}\" show=\"{section.materials && section.materials.length > 0}\" each=\"{group, items in section.materials_by_group}\" headers=\"{parent.headers.material}\" onitemremoved=\"{removeItem}\" no-reorder> </r-tender-item-group> </virtual> <div class=\"clearfix {'with-line': !visible}\"> <h3 class=\"right border p1 bg-white relative z2 section-total\">{visible ? section.name + ':' : ''} {sectionTotal}</h3> </div> <div if=\"{visible}\" class=\"clearfix mxn1 mt2 mb3\"> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"task\" auto_focus=\"{true}\" api=\"{parent.opts.api}\" icon=\"tasks\"></r-tender-item-input> </div> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"material\" api=\"{parent.opts.api}\" icon=\"shopping-basket\"></r-tender-item-input> </div> </div> <r-dialog if=\"{opts.api.activity == ('edit_dimensions_' + section.id)}\" title=\"Edit Dimensions\"> <form class=\"p2\" onsubmit=\"{parent.updateDimensions}\"> <label>Section Dimensions</label> <r-area-calculator dimensions=\"{parent.section.dimensions}\" callback=\"{preventSubmit}\"></r-area-calculator> <div class=\"clearfix mt2 mxn2\"> <div class=\"col col-6 px2\"> <button class=\"block col-12 mb2 btn btn-primary\">Save</button> </div> </div> </form> </r-dialog> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.taskActions = _.omit(taskActions, "Materials", "VAT");
@@ -41145,6 +41157,12 @@
 	    e.preventDefault();
 	    _this.visible = !_this.visible;
 	    _this.icon = _this.visible ? "minus-square-o" : "plus-square-o";
+	  };
+	
+	  this.updateDimensions = function (e) {
+	    _this.section.dimensions = _.compact([parseInt(e.target.width.value), parseInt(e.target.height.value), parseInt(e.target.length.value)]);
+	    _this.unsetActivity();
+	    _this.update();
 	  };
 	
 	  this.updateSectionTotalLocal = function () {
@@ -41291,7 +41309,7 @@
 	
 	  this.headers = {
 	    task: { name: 3, description: 3, quantity: 1, price: 1, total_cost: 2, actions: 2 },
-	    material: { name: 2, description: 3, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2 }
+	    material: { name: 2, description: 3, supplied: 1, quantity: 1, price: 1, total_cost: 2, actions: 2 }
 	  };
 	
 	  this.isReadonly = function () {
@@ -42430,6 +42448,34 @@
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 188 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-area-calculator", "<div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-4 px2\"> <label>Width</label> <input name=\"width\" min=\"0\" class=\"block col-12 mb2 field\" value=\"{opts.dimensions[0]}\" oninput=\"{update}\" type=\"{'number'}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Height</label> <input name=\"height\" min=\"0\" class=\"block col-12 mb2 field\" value=\"{opts.dimensions[1]}\" oninput=\"{update}\" type=\"{'number'}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Length</label> <input name=\"length\" min=\"0\" class=\"block col-12 mb2 field\" value=\"{opts.dimensions[2]}\" oninput=\"{update}\" type=\"{'number'}\"> </div> </div> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-4 px2\"> <label>Wall Area</label> <input type=\"submit\" class=\"block col-12 mb2 btn bg-blue white\" value=\"{wallArea(width.value, height.value, length.value)}\" onclick=\"{opts.callback}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Floor Area</label> <input type=\"submit\" class=\"block col-12 mb2 btn bg-blue white\" value=\"{floorArea(width.value, height.value, length.value)}\" onclick=\"{opts.callback}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Wall Length</label> <input type=\"submit\" class=\"block col-12 mb2 btn bg-blue white\" value=\"{wallLength(width.value, height.value, length.value)}\" onclick=\"{opts.callback}\"> </div> </div>", "", "", function (opts) {
+	  this.wallArea = function (w, h, l) {
+	    return 2 * w * h + 2 * l * h;
+	  };
+	  this.floorArea = function (w, h, l) {
+	    return w * h;
+	  };
+	  this.wallLength = function (w, h, l) {
+	    return 2 * w + 2 * l;
+	  };
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 189 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-dialog", "<div class=\"fixed flex flex-center left-0 top-0 bottom-0 right-0 bg-darken-4 z30\"> <div class=\"relative clearfix mx-auto col-11 sm-col-6 md-col-5 lg-col-4 flex-center bg-white border border-darken-3 rounded shadow dialog\"> <div class=\"p1 bg-darken-2 gray\"> <h1 class=\"h4 m0 inline-block mr2\">{opts.title}</h1> <a class=\"center btn btn-small gray absolute right-0 top-0 mt1 mr1\" onclick=\"{unsetActivity}\"><i class=\"fa fa-times\"></i></a> </div> <yield></yield> </div> </div>", "", "", function (opts) {});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }
