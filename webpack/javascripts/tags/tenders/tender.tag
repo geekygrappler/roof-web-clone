@@ -47,22 +47,23 @@ import './_tender_section.tag'
   </div>
   <script>
   this.type = 'Tender'
+  
     this.headers = {
-      task: {name: 7, quantity: 3, actions: 2},
-      material: {name: 7, quantity: 3, actions: 2}
+      task: {name: 3, description: 4, quantity: 3, actions: 2},
+      material: {name: 3, description: 4, quantity: 3, actions: 2}
     }
 
     if(opts.readonly) {
       delete this.headers.task.actions
-      this.headers.task.name = 9
+      this.headers.task.name = 5
       delete this.headers.material.actions
-      this.headers.material.name = 9
+      this.headers.material.name = 5
     }
 
     if(opts.api.currentAccount.isAdministrator) {
       this.headers = {
-        task: {name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2},
-        material: {name: 5, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2}
+        task: {name: 3, description: 3, quantity: 1, price: 1, total_cost: 2, actions: 2},
+        material: {name: 2, description: 3, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2}
       }
     }
 

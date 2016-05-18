@@ -17,6 +17,7 @@
     "webpack": "^1.12.2"
   },
   "dependencies": {
+    "autolinker": "^0.26.0",
     "codemirror": "^5.13.2",
     "dot-object": "^1.4.1",
     "handlebars": "^4.0.5",

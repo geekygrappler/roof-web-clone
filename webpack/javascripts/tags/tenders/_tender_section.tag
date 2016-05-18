@@ -68,11 +68,19 @@ let taskActions = require("json!../../data/task_actions.json")
 
   this.on('update', () => {
     if (this.section) {
-      var grouped = _.groupBy(this.section.tasks, (item) => item.action)
+      var tasksWithDescription = _.map(this.section.tasks, (item) => {
+        item.description = item.description ? item.description : ''
+        return item
+      })
+      var grouped = _.groupBy(tasksWithDescription, (item) => item.action)
       this.section.tasks_by_action = _.groupBy(_.flatten(_.sortBy(grouped, (list, group) => {
         return _.indexOf(_.keys(this.taskActions), group)
       })),(item) => item.action)
-      this.section.materials_by_group = {materials: this.section.materials}
+      var materialsWithDescription = _.map(this.section.materials, (item) => {
+        item.description = item.description ? item.description : ''
+        return item
+      })
+      this.section.materials_by_group = {materials: materialsWithDescription}
       if (!this.sectionTotal) this.updateSectionTotal()
     }
   })
@@ -107,10 +115,10 @@ let taskActions = require("json!../../data/task_actions.json")
     this.opts.api.tenders.trigger('update')
   }
 
-  this.renameSection = _.debounce((e) => {
+  this.renameSection = (e) => {
+    e.preventUpdate = true
     this.section.name = e.target.value
-    this.update()
-  }, 300)
+  }
 
   </script>
 </r-tender-section>
