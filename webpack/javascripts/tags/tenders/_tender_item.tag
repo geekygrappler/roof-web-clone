@@ -38,13 +38,15 @@ import './_comments.tag'
       </div>
 
       <div if="{ parent.headers.price }" class="col sm-col-{ parent.headers.price } col-{parent.opts.name == 'task' ? 3 : 2} center relative">
-        <i class="fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white"></i><input type="number" name="price" value="{ parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0) }"
+        <i if="{!parent.opts.readonly}" class="fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white"></i><input if="{!parent.opts.readonly}" type="{number}" name="price" value="{ parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0) }"
         disabled="{ parent.opts.name == 'material' && !supplied }" step="1" min="0" class="fit field inline-input center price" oninput="{ input }" />
+        <label if="{parent.opts.readonly}">{ formatCurrency(parent.opts.name == 'task' ? price : (supplied ? price : 0)) }</label>
       </div>
 
       <div if="{ parent.headers.total_cost }" class="col sm-col-{ parent.headers.total_cost } col-3 center relative">
-        <i class="fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white"></i><input type="number" value="{parent.opts.name == 'task' ? (price / 100 * quantity) : (supplied ? price / 100 * quantity : '0')}"
+        <i if="{!parent.opts.readonly}" class="fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white"></i><input if="{!parent.opts.readonly}" type="number" value="{parent.opts.name == 'task' ? (price / 100 * quantity) : (supplied ? price / 100 * quantity : '0')}"
         step="1" min="0" class="fit field inline-input center price" oninput="{ inputTotalCost }" >
+        <label if="{parent.opts.readonly}">{ formatCurrency(parent.opts.name == 'task' ? (price * quantity) : (supplied ? price * quantity : '0'))}</label>
       </div>
 
       <div if="{ parent.headers.supplied }" class="col sm-col-{ parent.headers.supplied } col-1 center">

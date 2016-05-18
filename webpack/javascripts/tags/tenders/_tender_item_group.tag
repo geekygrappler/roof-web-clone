@@ -17,7 +17,7 @@
           </div>
         </li>
 
-        <r-tender-item each="{items}" border_cleaner="{last}" no-reorder></r-tender-item>
+        <r-tender-item each="{items}" border_cleaner="{last}" readonly="{opts.readonly}" no-reorder></r-tender-item>
 
       </ul>
     </li>
@@ -70,6 +70,7 @@
   })
 
   this.on('update', () => {
+
     if (this.items) {
       this.groupTotal = this.calcGroupTotal()
       this.last = this.drawBorderCleaner()

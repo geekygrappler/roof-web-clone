@@ -15,7 +15,7 @@ let taskActions = require("json!../../data/task_actions.json")
       <r-tender-item-group
         name="task"
         groupitems="{section.tasks_by_action}"
-
+        readonly="{parent.parent.opts.readonly}"
         each="{ group, items in section.tasks_by_action }"
         headers="{ parent.headers.task }"
         onitemremoved="{ removeItem }" no-reorder>
@@ -24,6 +24,7 @@ let taskActions = require("json!../../data/task_actions.json")
       <r-tender-item-group
         name="material"
         if="{(filterAction == 'Materials' || !filterAction)}"
+        readonly="{parent.parent.opts.readonly}"
         groupitems="{section.materials_by_group}"
         show="{ section.materials && section.materials.length > 0 }"
         each="{ group, items in section.materials_by_group }"

@@ -48,7 +48,7 @@ import from '../../mixins/tender.js'
 
     <r-tender-filters record="{record}"></r-tender-filters>
 
-    <r-tender-section each="{ section , i in sections() }" ></r-tender-section>
+    <r-tender-section readonly="{opts.readonly}" each="{ section , i in sections() }"></r-tender-section>
 
     <form if="{ !opts.readonly && record.document }" onsubmit="{ addSection }" class="mt3 py3 clearfix mxn1 border-top">
       <div class="col col-8 px1">
@@ -146,9 +146,10 @@ import from '../../mixins/tender.js'
 
     if(this.opts.readonly){
       delete this.headers.task.actions
-      this.headers.task.name = 8
+      this.headers.task.description = 5
       delete this.headers.material.actions
-      this.headers.material.name = 7
+      this.headers.material.name = 3
+      this.headers.material.description = 4
     }
 
     if (this.opts.id) {

@@ -208,6 +208,9 @@ nav a:hover {
 .readonly input{
   pointer-events:none;
   color: $black;
+  &.inline-input.center {
+    text-align: center;
+  }
 }
 .readonly r-tender-item-input {
   display: none
