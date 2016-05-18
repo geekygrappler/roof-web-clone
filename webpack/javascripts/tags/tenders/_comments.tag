@@ -1,8 +1,15 @@
+<r-raw>
+  <span></span>
+  <script>
+  this.root.innerHTML = opts.content
+  </script>
+</r-raw>
+
 <r-comments>
   <h3>Comments</h3>
 
   <blockquote each="{comments}" class="clearfix m0 p1 border-left mb1">
-    {text}
+    <r-raw content="{ autolinker.link( text ) }"></r-raw>
     <a class="btn btn-small border-red red right" onclick="{delete}" if="{account_id == currentAccount.id}">
       <i class="fa fa-trash-o"></i>
     </a>
@@ -25,6 +32,7 @@
   </form>
 
   <script>
+  console.log(this.autolinker)
   this.on('mount', () => {
     this.commentsCount = this.opts.commentsCount
     this.opts.api.comments.on('create.success', this.addComment)

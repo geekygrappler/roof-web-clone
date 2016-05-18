@@ -3,6 +3,7 @@ import dot from 'dot-object'
 import moment from 'moment'
 import numeral from 'numeral/numeral'
 import language from 'numeral/languages/en-gb'
+import Autolinker from 'autolinker'
 numeral.language('en-gb', language)
 numeral.language('en-gb')
 
@@ -18,6 +19,7 @@ riot.mixin({
     'CONFIRM_DELETE': 'Are you sure to delete?',
     'CONFIRM_UNSAVED_CHANGES': 'You have unsaved changes!, if you click OK they will be lost, click cancel to keep them.'
   },
+  autolinker: new Autolinker(),
   init: function () {
     if (this.parent && this.parent.opts.api) this.opts.api = this.parent.opts.api
     if (this.opts.api) this.currentAccount = this.opts.api.currentAccount
