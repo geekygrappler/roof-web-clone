@@ -36070,15 +36070,21 @@
 	    this.calcSectionTotal = function (section) {
 	      var formatted = arguments[1] === undefined ? false : arguments[1];
 	
-	      // console.log('calcSectionTotal')
-	      var itemTotal = _.reduce(section.tasks, function (total, item) {
+	      var filterAction = _this.tags["r-tender-filters"].action;
+	
+	      var tasks = _.isString(filterAction) ? _.filter(section.tasks, function (task) {
+	        return task.action == filterAction;
+	      }) : section.tasks;
+	
+	      var itemTotal = _.reduce(tasks, function (total, item) {
 	        return total + item.price * item.quantity;
 	      }, 0);
-	      var materialTotal = _.reduce(section.materials, function (total, item) {
+	      var materialTotal = filterAction == "Materials" || !filterAction ? _.reduce(section.materials, function (total, item) {
 	        return total + (item.supplied ? item.price * item.quantity : 0);
-	      }, 0);
+	      }, 0) : 0;
 	      section.itemTotal = itemTotal;
 	      section.materialTotal = materialTotal;
+	
 	      if (formatted) {
 	        // return this.formatCurrency(itemTotal + (itemTotal * VAT / 100) + materialTotal)
 	        return _this.formatCurrency(itemTotal + materialTotal);
@@ -36101,7 +36107,7 @@
 	    };
 	    this.calcTenderTotal = function () {
 	
-	      return _this.formatCurrency(_.reduce(_this.record.document.sections, function (total, section) {
+	      return _this.formatCurrency(_.reduce(_this.sections(), function (total, section) {
 	        var _ref = section.itemTotal ? [section.itemTotal, section.materialTotal] : _this.calcSectionTotal(section);
 	
 	        var _ref2 = _slicedToArray(_ref, 2);
@@ -41141,11 +41147,22 @@
 	    _this.icon = _this.visible ? "minus-square-o" : "plus-square-o";
 	  };
 	
-	  this.updateSectionTotal = function () {
-	    // console.log('updateSectionTotal')
+	  this.updateSectionTotalLocal = function () {
 	    _this.sectionTotal = _this.calcSectionTotal(_this.section, true);
+	  };
+	
+	  this.updateSectionTotal = function () {
+	    _this.updateSectionTotalLocal();
 	    _this.parent.updateTenderTotal();
 	  };
+	
+	  this.on("mount", function () {
+	    _this.parent.tags["r-tender-filters"].on("update", _this.updateSectionTotalLocal);
+	  });
+	
+	  this.on("before-unmount", function () {
+	    _this.parent.tags["r-tender-filters"].off("update", _this.updateSectionTotalLocal);
+	  });
 	
 	  this.on("update", function () {
 	

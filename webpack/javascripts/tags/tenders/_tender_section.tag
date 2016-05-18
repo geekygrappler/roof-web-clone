@@ -60,12 +60,22 @@ let taskActions = require("json!../../data/task_actions.json")
     this.icon = this.visible ? 'minus-square-o' : 'plus-square-o'
   }
 
-  this.updateSectionTotal = () => {
-    // console.log('updateSectionTotal')
+  this.updateSectionTotalLocal = () => {
     this.sectionTotal = this.calcSectionTotal(this.section, true)
+  }
+
+  this.updateSectionTotal = () => {
+    this.updateSectionTotalLocal()
     this.parent.updateTenderTotal()
   }
 
+  this.on('mount', () => {
+    this.parent.tags['r-tender-filters'].on('update', this.updateSectionTotalLocal)
+  })
+  
+  this.on('before-unmount', () => {
+    this.parent.tags['r-tender-filters'].off('update', this.updateSectionTotalLocal)
+  })
 
   this.on('update', () => {
 

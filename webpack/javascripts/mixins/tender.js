@@ -82,15 +82,20 @@ riot.mixin('tenderMixin', {
       }
     }
     this.calcSectionTotal = (section, formatted = false) => {
-      // console.log('calcSectionTotal')
-      let itemTotal = _.reduce(section.tasks, (total, item) => {
+
+      var filterAction = this.tags['r-tender-filters'].action
+
+      var tasks = _.isString(filterAction) ? _.filter(section.tasks, task => task.action == filterAction) : section.tasks
+
+      let itemTotal = _.reduce(tasks, (total, item) => {
         return total + item.price * item.quantity
       }, 0)
-      let materialTotal = _.reduce(section.materials, (total, item) => {
+      let materialTotal = (filterAction == 'Materials' || !filterAction) ? _.reduce(section.materials, (total, item) => {
         return total + (item.supplied ? item.price * item.quantity : 0)
-      }, 0)
+      }, 0) : 0
       section.itemTotal = itemTotal
       section.materialTotal = materialTotal
+
       if (formatted) {
         // return this.formatCurrency(itemTotal + (itemTotal * VAT / 100) + materialTotal)
         return this.formatCurrency(itemTotal + materialTotal)
@@ -112,7 +117,7 @@ riot.mixin('tenderMixin', {
     this.calcTenderTotal = () => {
 
       return this.formatCurrency(
-        _.reduce(this.record.document.sections, (total, section) => {
+        _.reduce(this.sections(), (total, section) => {
           var [itemTotal , materialTotal] = section.itemTotal ?
             [section.itemTotal, section.materialTotal] :
             this.calcSectionTotal(section)
