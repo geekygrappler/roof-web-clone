@@ -7,7 +7,7 @@ let taskActions = require("json!../../data/task_actions.json")
 
         <i class="cursor-pointer fa fa-{ icon }" onclick="{toggle}"></i>
         <a if="{section.dimensions && section.dimensions.length > 0}" class="h6 bg-teal gray rounded notification-badge" onclick="{setActivity}" rel="edit_dimensions_{section.id}">{section.dimensions.join('x')}</a>
-        <a if="{!section.dimensions || section.dimensions.length == 0}" onclick="{setActivity}" rel="edit_dimensions_{section.id}"><i class="fa fa-edit"></i></a>
+        <a if="{!parent.opts.readonly && (!section.dimensions || section.dimensions.length == 0)}" onclick="{setActivity}" rel="edit_dimensions_{section.id}"><i class="fa fa-edit"></i></a>
 
         <input type="text" class="col-10 field border-none tender-section-name h3"
         value="{ section.name.humanize() }" oninput="{renameSection}">
@@ -96,7 +96,7 @@ let taskActions = require("json!../../data/task_actions.json")
   })
 
   this.on('before-unmount', () => {
-    this.parent.tags['r-tender-filters'].off('update', this.updateSectionTotalLocal)
+    this.parent.tags['r-tender-filters'] && this.parent.tags['r-tender-filters'].off('update', this.updateSectionTotalLocal)
   })
 
   this.on('update', () => {

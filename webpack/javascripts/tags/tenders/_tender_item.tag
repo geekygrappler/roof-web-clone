@@ -38,7 +38,7 @@ import './_comments.tag'
       </div>
 
       <div if="{ parent.headers.quantity }" class="col sm-col-{ parent.headers.quantity } col-3 center relative">
-        <a if="{['Decorating','Lay'].indexOf(action) > -1}" rel="edit_dimensions_task_{id}_{name}" onclick="{setActivity}"><i class="fa fa-edit absolute left-0 top-0 z1 mt1 mr1 bg-white" ></i></a>
+        <a if="{!parent.opts.readonly && ['Decorating','Lay'].indexOf(action) > -1}" rel="edit_dimensions_task_{id}_{name}" onclick="{setActivity}"><i class="fa fa-edit absolute left-0 top-0 z1 mt1 mr1 bg-white" ></i></a>
         <input type="number" name="quantity" value="{ quantity }" step="1" min="0"
         class="fit field inline-input center" oninput="{ input }" />
       </div>
