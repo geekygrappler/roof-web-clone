@@ -37,7 +37,8 @@ import './_comments.tag'
         checked="{ supplied }" class="align-middle" onchange="{ input }" />
       </div>
 
-      <div if="{ parent.headers.quantity }" class="col sm-col-{ parent.headers.quantity } col-3 center">
+      <div if="{ parent.headers.quantity }" class="col sm-col-{ parent.headers.quantity } col-3 center relative">
+        <a if="{['Decorating','Lay'].indexOf(action) > -1}" rel="edit_dimensions_task_{id}_{name}" onclick="{setActivity}"><i class="fa fa-edit absolute left-0 top-0 z1 mt1 mr1 bg-white" ></i></a>
         <input type="number" name="quantity" value="{ quantity }" step="1" min="0"
         class="fit field inline-input center" oninput="{ input }" />
       </div>
@@ -62,6 +63,18 @@ import './_comments.tag'
     </div>
   </li>
 
+  <r-dialog if="{opts.api.activity == ('edit_dimensions_task_' + id + '_' + name)}" title="Edit Dimensions" >
+    <form class="p2" onsubmit="{parent.updateDimensions}">
+      <label>Dimensions</label>
+      <r-area-calculator dimensions="{parent.parent.parent.section.dimensions}" callback="{parent.setQuantity}"></r-area-calculator>
+      <div class="clearfix mt2 mxn2">
+        <div class="col col-6 px2">
+          <button class="block col-12 mb2 btn btn-primary">Save</button>
+        </div>
+      </div>
+    </form>
+  </r-dialog>
+
   <script>
 
   this.commentsCount = 0
@@ -69,6 +82,18 @@ import './_comments.tag'
     // $('.animate', this.root).animateCss('bounceIn')
     this.getCommentsCount()
   })
+
+  this.updateDimensions = (e) => {
+    e.preventDefault()
+    this._item.dimensions = _.compact([parseInt(e.target.width.value), parseInt(e.target.height.value), parseInt(e.target.length.value)])
+    this.unsetActivity()
+  }
+
+  this.setQuantity = (e) => {
+    e.preventDefault()
+    this._item.quantity = parseInt(e.currentTarget.value)
+    this.unsetActivity()
+  }
 
   this.input = _.debounce((e) => {
     //e.preventUpdate=true
