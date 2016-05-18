@@ -20,8 +20,9 @@ import './_comments.tag'
     <!--<div if="{opts.border_cleaner}" class="border-cleaner absolute"></div>-->
     <div class="clearfix p1 border-bottom">
       <div if="{ parent.headers.name }" class="sm-col sm-col-{ parent.headers.name } mb1 sm-mb0">
-        <input type="text" name="name" value="{ display_name || name }"
-        class="fit field inline-input align-left col-12" oninput="{ inputname }" />
+        <input if="{this.parent.parent.type == 'Tender'}" type="text" name="name" value="{ display_name || name }"
+        class="fit field inline-input align-left col-12" oninput="{ inputname }"  />
+        <label if="{this.parent.parent.type == 'Quote'}">{ display_name || name }</label>
         <br class="sm-hide">
       </div>
 

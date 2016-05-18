@@ -47,6 +47,7 @@ import './_tender_section.tag'
   </div>
   <script>
   this.type = 'Tender'
+  
     this.headers = {
       task: {name: 3, description: 4, quantity: 3, actions: 2},
       material: {name: 3, description: 4, quantity: 3, actions: 2}
