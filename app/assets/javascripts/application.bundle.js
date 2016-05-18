@@ -35758,53 +35758,53 @@
 	
 	  this.payPayment = function (e) {
 	    e.preventDefault();
-	    if (_this.currentAccount.paying) {
-	      _this.update({ busy: true });
-	      _this.opts.api.payments.pay(e.item.id);
-	    } else {
-	      _this.payment = e.item;
+	    //if (this.currentAccount.paying) {
+	    //  this.update({busy: true})
+	    //  this.opts.api.payments.pay(e.item.id)
+	    //} else {
+	    _this.payment = e.item;
 	
-	      // load Stripe if not loaded
-	      if (typeof window.StripeCheckout !== "undefined" || window.StripeCheckout != null) {
+	    // load Stripe if not loaded
+	    if (typeof window.StripeCheckout !== "undefined" || window.StripeCheckout != null) {
+	      // Open Checkout with further options
+	      _this.stripeHandler.open({
+	        //name: 'Stripe.com',
+	        //description: '2 widgets',
+	        amount: e.item.amount
+	      });
+	    } else {
+	      _this.update({ busy: true });
+	      $.getScript("https://checkout.stripe.com/checkout.js").then(function () {
+	
+	        _this.stripeHandler = StripeCheckout.configure({
+	          key: $("meta[name=stripe-key]").attr("content"),
+	          //image: '/img/documentation/checkout/marketplace.png',
+	          locale: "auto",
+	          currency: "gbp",
+	          token: function (token) {
+	            _this.update({ busy: true });
+	            _this.opts.api.payments.pay(_this.payment.id, token.id);
+	          },
+	          closed: function () {
+	            _this.update({ busy: false });
+	          }
+	        });
+	
+	        // Close Checkout on page navigation
+	        $(window).on("popstate", function () {
+	          this.stripeHandler.close();
+	          this.update({ busy: false });
+	        });
+	
 	        // Open Checkout with further options
 	        _this.stripeHandler.open({
 	          //name: 'Stripe.com',
 	          //description: '2 widgets',
 	          amount: e.item.amount
 	        });
-	      } else {
-	        _this.update({ busy: true });
-	        $.getScript("https://checkout.stripe.com/checkout.js").then(function () {
-	
-	          _this.stripeHandler = StripeCheckout.configure({
-	            key: $("meta[name=stripe-key]").attr("content"),
-	            //image: '/img/documentation/checkout/marketplace.png',
-	            locale: "auto",
-	            currency: "gbp",
-	            token: function (token) {
-	              _this.update({ busy: true });
-	              _this.opts.api.payments.pay(_this.payment.id, token.id);
-	            },
-	            closed: function () {
-	              _this.update({ busy: false });
-	            }
-	          });
-	
-	          // Close Checkout on page navigation
-	          $(window).on("popstate", function () {
-	            this.stripeHandler.close();
-	            this.update({ busy: false });
-	          });
-	
-	          // Open Checkout with further options
-	          _this.stripeHandler.open({
-	            //name: 'Stripe.com',
-	            //description: '2 widgets',
-	            amount: e.item.amount
-	          });
-	        });
-	      }
+	      });
 	    }
+	    //}
 	  };
 	
 	  this.addPayment = function (payment) {
