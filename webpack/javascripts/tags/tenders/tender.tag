@@ -3,6 +3,7 @@ import './_tender_item_input.tag'
 import './_tender_item.tag'
 import './_tender_item_group.tag'
 import './_tender_section.tag'
+import './_tender_filters.tag'
 
 <r-tenders-form>
 
@@ -17,7 +18,9 @@ import './_tender_section.tag'
       <i class="fa fa-chevron-left"></i> Back to Project
     </a>
 
-    <r-tender-section each="{ section , i in record.document.sections }" no-reorder></r-tender-section>
+    <r-tender-filters record="{record}"></r-tender-filters>
+
+    <r-tender-section each="{ section , i in sections() }" no-reorder></r-tender-section>
 
     <div class="py3">
     <h2 class="right-align m0"><label><input type="checkbox" onchange="{toggleVat}" checked="{record.document.include_vat}" class="mr1">VAT {tenderVat()}</label></h2>
@@ -47,11 +50,13 @@ import './_tender_section.tag'
   </div>
   <script>
   this.type = 'Tender'
-  
+
     this.headers = {
       task: {name: 3, description: 4, quantity: 3, actions: 2},
       material: {name: 3, description: 4, quantity: 3, actions: 2}
     }
+
+    this.tags['r-tender-filters'].on('update', this.update)
 
     if(opts.readonly) {
       delete this.headers.task.actions

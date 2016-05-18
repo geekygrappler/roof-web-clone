@@ -48,6 +48,11 @@ riot.mixin('tenderMixin', {
       //this.tenderTotal = this.calcTenderTotal()
     }
 
+    this.sections = () => {
+      var filterSection = this.tags['r-tender-filters'].section
+      return filterSection ? _.filter(this.record.document.sections, (section) => section.id == filterSection): this.record.document.sections
+    }
+
     this.addSection = (e) => {
       e.preventDefault()
       if (_.isEmpty(this.sectionName.value)) {

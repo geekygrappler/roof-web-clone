@@ -14,8 +14,8 @@ let taskActions = require("json!../../data/task_actions.json")
 
       <r-tender-item-group
         name="task"
-
         groupitems="{section.tasks_by_action}"
+
         each="{ group, items in section.tasks_by_action }"
         headers="{ parent.headers.task }"
         onitemremoved="{ removeItem }" no-reorder>
@@ -23,7 +23,7 @@ let taskActions = require("json!../../data/task_actions.json")
 
       <r-tender-item-group
         name="material"
-
+        if="{(filterAction == 'Materials' || !filterAction)}"
         groupitems="{section.materials_by_group}"
         show="{ section.materials && section.materials.length > 0 }"
         each="{ group, items in section.materials_by_group }"
@@ -67,15 +67,22 @@ let taskActions = require("json!../../data/task_actions.json")
 
 
   this.on('update', () => {
+
     if (this.section) {
-      var tasksWithDescription = _.map(this.section.tasks, (item) => {
+      this.filterAction = this.parent.tags['r-tender-filters'].action
+
+      var tasks = _.isString(this.filterAction) ? _.filter(this.section.tasks, task => task.action == this.filterAction) : this.section.tasks
+
+      var tasksWithDescription = _.map(tasks, (item) => {
         item.description = item.description ? item.description : ''
         return item
       })
+
       var grouped = _.groupBy(tasksWithDescription, (item) => item.action)
       this.section.tasks_by_action = _.groupBy(_.flatten(_.sortBy(grouped, (list, group) => {
         return _.indexOf(_.keys(this.taskActions), group)
       })),(item) => item.action)
+
       var materialsWithDescription = _.map(this.section.materials, (item) => {
         item.description = item.description ? item.description : ''
         return item

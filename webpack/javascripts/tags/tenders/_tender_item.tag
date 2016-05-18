@@ -26,7 +26,7 @@ import './_comments.tag'
         <br class="sm-hide">
       </div>
 
-      <div if="{ parent.headers.name }" class="sm-col sm-col-{ parent.headers.name } mb1 sm-mb0">
+      <div if="{ parent.headers.name }" class="sm-col sm-col-{ parent.headers.description } mb1 sm-mb0">
         <input type="text" name="description" value="{ description }" placeholder="Description"
         class="fit field inline-input align-left col-12" oninput="{ inputdesc }" />
         <br class="sm-hide">
