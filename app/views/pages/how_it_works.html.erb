@@ -1,0 +1,46 @@
+<section class="container px2 py3">
+  <div class="clearfix mxn2">
+    <aside class="sm-col sm-col-4 px2">
+
+      <ul class="list-reset border-left border-top border-right rounded">
+        <li><a href="/pages/how_it_works" class="btn block border-bottom bg-yellow">How it works</a></li>
+        <li><a href="/pages/pros" class="btn block border-bottom">Hand-picked professionals</a></li>
+        <li><a href="/pages/quotes" class="btn block border-bottom">Accurate quotes</a></li>
+      </ul>
+
+    </aside>
+
+    <div class="sm-col sm-col-8 px2">
+
+    <h1 class="h2-responsive mt0">How it works</h1>
+
+    <p>We have made it easy to get your project off to the perfect start in just a few simple steps. </p>
+
+    <section class="container center px2 py4">
+          <div class="clearfix mb2">
+            <%= render partial: 'pages/landing/components/how_it_works_step', locals: {
+              image: 'benefits/floor_plans_dk.png',
+              title: "1) Run through the plans",
+              description: "We will call you to discuss the specifics of your project and give you an instant estimate.",
+              reverse: true
+
+              } %>
+              <%= render partial: 'pages/landing/components/how_it_works_step', locals: {
+                image: 'benefits/handpicked_pros_dk.png',
+                title: "2) Arrange site visit",
+                description: "We hand-pick the most suitable contractor for your project and arrange a site visit.",
+                reverse: true
+              } %>
+              <%= render partial: 'pages/landing/components/how_it_works_step', locals: {
+                image: 'benefits/quote2_dk.png',
+                title: "3) Receive your quote",
+                description: "Once the site visit has happened you will get a broken down quote itemising every aspect of your project",
+                reverse: true
+              } %>
+          </div>
+        <a href="<%= brief_path %>" class="h4 btn btn-big bg-yellow">OK I'm ready. Let's get started!</a>
+    </section>
+    </div>
+
+  </div>
+</section>
