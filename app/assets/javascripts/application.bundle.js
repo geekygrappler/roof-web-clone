@@ -56,9 +56,9 @@
 	
 	__webpack_require__(6);
 	
-	__webpack_require__(111);
+	__webpack_require__(114);
 	
-	__webpack_require__(117);
+	__webpack_require__(120);
 	
 	riot.route.base("/app/");
 	var mount = function () {
@@ -83,11 +83,11 @@
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Riot v2.3.17, @license MIT */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Riot v2.4.0, @license MIT */
 	
 	;(function(window, undefined) {
 	  'use strict';
-	var riot = { version: 'v2.3.17', settings: {} },
+	var riot = { version: 'v2.4.0', settings: {} },
 	  // be aware, internal usage
 	  // ATTENTION: prefix the global dynamic variables with `__`
 	
@@ -112,14 +112,18 @@
 	  T_STRING = 'string',
 	  T_OBJECT = 'object',
 	  T_UNDEF  = 'undefined',
-	  T_BOOL   = 'boolean',
 	  T_FUNCTION = 'function',
 	  // special native tags that cannot be treated like the others
 	  SPECIAL_TAGS_REGEX = /^(?:t(?:body|head|foot|[rhd])|caption|col(?:group)?|opt(?:ion|group))$/,
-	  RESERVED_WORDS_BLACKLIST = ['_item', '_id', '_parent', 'update', 'root', 'mount', 'unmount', 'mixin', 'isMounted', 'isLoop', 'tags', 'parent', 'opts', 'trigger', 'on', 'off', 'one'],
+	  RESERVED_WORDS_BLACKLIST = /^(?:_(?:item|id|parent)|update|root|(?:un)?mount|mixin|is(?:Mounted|Loop)|tags|parent|opts|trigger|o(?:n|ff|ne))$/,
+	  // SVG tags list https://www.w3.org/TR/SVG/attindex.html#PresentationAttributes
+	  SVG_TAGS_LIST = ['altGlyph', 'animate', 'animateColor', 'circle', 'clipPath', 'defs', 'ellipse', 'feBlend', 'feColorMatrix', 'feComponentTransfer', 'feComposite', 'feConvolveMatrix', 'feDiffuseLighting', 'feDisplacementMap', 'feFlood', 'feGaussianBlur', 'feImage', 'feMerge', 'feMorphology', 'feOffset', 'feSpecularLighting', 'feTile', 'feTurbulence', 'filter', 'font', 'foreignObject', 'g', 'glyph', 'glyphRef', 'image', 'line', 'linearGradient', 'marker', 'mask', 'missing-glyph', 'path', 'pattern', 'polygon', 'polyline', 'radialGradient', 'rect', 'stop', 'svg', 'switch', 'symbol', 'text', 'textPath', 'tref', 'tspan', 'use'],
 	
 	  // version# for IE 8-11, 0 for others
-	  IE_VERSION = (window && window.document || {}).documentMode | 0
+	  IE_VERSION = (window && window.document || {}).documentMode | 0,
+	
+	  // detect firefox to fix #1374
+	  FIREFOX = window && !!window.InstallTrigger
 	/* istanbul ignore next */
 	riot.observable = function(el) {
 	
@@ -131,16 +135,38 @@
 	  el = el || {}
 	
 	  /**
-	   * Private variables and methods
+	   * Private variables
 	   */
 	  var callbacks = {},
-	    slice = Array.prototype.slice,
-	    onEachEvent = function(e, fn) { e.replace(/\S+/g, fn) }
+	    slice = Array.prototype.slice
 	
-	  // extend the object adding the observable methods
+	  /**
+	   * Private Methods
+	   */
+	
+	  /**
+	   * Helper function needed to get and loop all the events in a string
+	   * @param   { String }   e - event string
+	   * @param   {Function}   fn - callback
+	   */
+	  function onEachEvent(e, fn) {
+	    var es = e.split(' '), l = es.length, i = 0, name, indx
+	    for (; i < l; i++) {
+	      name = es[i]
+	      indx = name.indexOf('.')
+	      if (name) fn( ~indx ? name.substring(0, indx) : name, i, ~indx ? name.slice(indx + 1) : null)
+	    }
+	  }
+	
+	  /**
+	   * Public Api
+	   */
+	
+	  // extend the el object adding the observable methods
 	  Object.defineProperties(el, {
 	    /**
-	     * Listen to the given space separated list of `events` and execute the `callback` each time an event is triggered.
+	     * Listen to the given space separated list of `events` and
+	     * execute the `callback` each time an event is triggered.
 	     * @param  { String } events - events ids
 	     * @param  { Function } fn - callback function
 	     * @returns { Object } el
@@ -149,9 +175,10 @@
 	      value: function(events, fn) {
 	        if (typeof fn != 'function')  return el
 	
-	        onEachEvent(events, function(name, pos) {
+	        onEachEvent(events, function(name, pos, ns) {
 	          (callbacks[name] = callbacks[name] || []).push(fn)
 	          fn.typed = pos > 0
+	          fn.ns = ns
 	        })
 	
 	        return el
@@ -171,11 +198,11 @@
 	      value: function(events, fn) {
 	        if (events == '*' && !fn) callbacks = {}
 	        else {
-	          onEachEvent(events, function(name) {
-	            if (fn) {
+	          onEachEvent(events, function(name, pos, ns) {
+	            if (fn || ns) {
 	              var arr = callbacks[name]
 	              for (var i = 0, cb; cb = arr && arr[i]; ++i) {
-	                if (cb == fn) arr.splice(i--, 1)
+	                if (cb == fn || ns && cb.ns == ns) arr.splice(i--, 1)
 	              }
 	            } else delete callbacks[name]
 	          })
@@ -188,7 +215,8 @@
 	    },
 	
 	    /**
-	     * Listen to the given space separated list of `events` and execute the `callback` at most once
+	     * Listen to the given space separated list of `events` and
+	     * execute the `callback` at most once
 	     * @param   { String } events - events ids
 	     * @param   { Function } fn - callback function
 	     * @returns { Object } el
@@ -207,7 +235,8 @@
 	    },
 	
 	    /**
-	     * Execute all callback functions that listen to the given space separated list of `events`
+	     * Execute all callback functions that listen to
+	     * the given space separated list of `events`
 	     * @param   { String } events - events ids
 	     * @returns { Object } el
 	     */
@@ -223,14 +252,14 @@
 	          args[i] = arguments[i + 1] // skip first argument
 	        }
 	
-	        onEachEvent(events, function(name) {
+	        onEachEvent(events, function(name, pos, ns) {
 	
 	          fns = slice.call(callbacks[name] || [], 0)
 	
 	          for (var i = 0, fn; fn = fns[i]; ++i) {
-	            if (fn.busy) return
+	            if (fn.busy) continue
 	            fn.busy = 1
-	            fn.apply(el, fn.typed ? [name].concat(args) : args)
+	            if (!ns || fn.ns == ns) fn.apply(el, fn.typed ? [name].concat(args) : args)
 	            if (fns[i] !== fn) { i-- }
 	            fn.busy = 0
 	          }
@@ -260,7 +289,7 @@
 	 */
 	
 	
-	var RE_ORIGIN = /^.+?\/+[^\/]+/,
+	var RE_ORIGIN = /^.+?\/\/+[^\/]+/,
 	  EVENT_LISTENER = 'EventListener',
 	  REMOVE_EVENT_LISTENER = 'remove' + EVENT_LISTENER,
 	  ADD_EVENT_LISTENER = 'add' + EVENT_LISTENER,
@@ -354,7 +383,7 @@
 	 * @returns {string} path from root
 	 */
 	function getPathFromRoot(href) {
-	  return (href || loc.href || '')[REPLACE](RE_ORIGIN, '')
+	  return (href || loc.href)[REPLACE](RE_ORIGIN, '')
 	}
 	
 	/**
@@ -365,7 +394,7 @@
 	function getPathFromBase(href) {
 	  return base[0] == '#'
 	    ? (href || loc.href || '').split(base)[1] || ''
-	    : getPathFromRoot(href)[REPLACE](base, '')
+	    : (loc ? getPathFromRoot(href) : href || '')[REPLACE](base, '')
 	}
 	
 	function emit(force) {
@@ -399,6 +428,7 @@
 	
 	  var el = e.target
 	  while (el && el.nodeName != 'A') el = el.parentNode
+	
 	  if (
 	    !el || el.nodeName != 'A' // not A tag
 	    || el[HAS_ATTRIBUTE]('download') // has download attr
@@ -505,10 +535,11 @@
 	 */
 	route.create = function() {
 	  var newSubRouter = new Router()
+	  // assign sub-router's main method
+	  var router = newSubRouter.m.bind(newSubRouter)
 	  // stop only this sub-router
-	  newSubRouter.m.stop = newSubRouter.s.bind(newSubRouter)
-	  // return sub-router's main method
-	  return newSubRouter.m.bind(newSubRouter)
+	  router.stop = newSubRouter.s.bind(newSubRouter)
+	  return router
 	}
 	
 	/**
@@ -592,9 +623,8 @@
 	
 	/**
 	 * The riot template engine
-	 * @version v2.3.21
+	 * @version v2.4.0
 	 */
-	
 	/**
 	 * riot.util.brackets
 	 *
@@ -657,7 +687,7 @@
 	
 	    var arr = pair.split(' ')
 	
-	    if (arr.length !== 2 || /[\x00-\x1F<>a-zA-Z0-9'",;\\]/.test(pair)) {
+	    if (arr.length !== 2 || /[\x00-\x1F<>a-zA-Z0-9'",;\\]/.test(pair)) { // eslint-disable-line
 	      throw new Error('Unsupported brackets "' + pair + '"')
 	    }
 	    arr = arr.concat(pair.replace(/(?=[[\]()*+?.^$|])/g, '\\').split(' '))
@@ -688,7 +718,7 @@
 	
 	    isexpr = start = re.lastIndex = 0
 	
-	    while (match = re.exec(str)) {
+	    while ((match = re.exec(str))) {
 	
 	      pos = match.index
 	
@@ -698,8 +728,9 @@
 	          re.lastIndex = skipBraces(str, match[2], re.lastIndex)
 	          continue
 	        }
-	        if (!match[3])
+	        if (!match[3]) {
 	          continue
+	        }
 	      }
 	
 	      if (!match[1]) {
@@ -717,10 +748,11 @@
 	    return parts
 	
 	    function unescapeStr (s) {
-	      if (tmpl || isexpr)
+	      if (tmpl || isexpr) {
 	        parts.push(s && s.replace(_bp[5], '$1'))
-	      else
+	      } else {
 	        parts.push(s)
+	      }
 	    }
 	
 	    function skipBraces (s, ch, ix) {
@@ -730,7 +762,7 @@
 	
 	      recch.lastIndex = ix
 	      ix = 1
-	      while (match = recch.exec(s)) {
+	      while ((match = recch.exec(s))) {
 	        if (match[1] &&
 	          !(match[1] === ch ? ++ix : --ix)) break
 	      }
@@ -744,13 +776,10 @@
 	
 	  _brackets.loopKeys = function loopKeys (expr) {
 	    var m = expr.match(_cache[9])
+	
 	    return m
 	      ? { key: m[1], pos: m[2], val: _cache[0] + m[3].trim() + _cache[1] }
 	      : { val: expr.trim() }
-	  }
-	
-	  _brackets.hasRaw = function (src) {
-	    return _cache[10].test(src)
 	  }
 	
 	  _brackets.array = function array (pair) {
@@ -762,13 +791,13 @@
 	      _cache = _create(pair)
 	      _regex = pair === DEFAULT ? _loopback : _rewrite
 	      _cache[9] = _regex(_pairs[9])
-	      _cache[10] = _regex(_pairs[10])
 	    }
 	    cachedBrackets = pair
 	  }
 	
 	  function _setSettings (o) {
 	    var b
+	
 	    o = o || {}
 	    b = o.brackets
 	    Object.defineProperty(o, 'brackets', {
@@ -836,22 +865,28 @@
 	  }
 	
 	  function _create (str) {
-	
 	    var expr = _getTmpl(str)
+	
 	    if (expr.slice(0, 11) !== 'try{return ') expr = 'return ' + expr
 	
+	/* eslint-disable */
+	
 	    return new Function('E', expr + ';')
+	/* eslint-enable */
 	  }
 	
 	  var
+	    CH_IDEXPR = '\u2057',
+	    RE_CSNAME = /^(?:(-?[_A-Za-z\xA0-\xFF][-\w\xA0-\xFF]*)|\u2057(\d+)~):/,
 	    RE_QBLOCK = RegExp(brackets.S_QBLOCKS, 'g'),
-	    RE_QBMARK = /\x01(\d+)~/g
+	    RE_DQUOTE = /\u2057/g,
+	    RE_QBMARK = /\u2057(\d+)~/g
 	
 	  function _getTmpl (str) {
 	    var
 	      qstr = [],
 	      expr,
-	      parts = brackets.split(str.replace(/\u2057/g, '"'), 1)
+	      parts = brackets.split(str.replace(RE_DQUOTE, '"'), 1)
 	
 	    if (parts.length > 2 || parts[0]) {
 	      var i, j, list = []
@@ -860,11 +895,11 @@
 	
 	        expr = parts[i]
 	
-	        if (expr && (expr = i & 1 ?
+	        if (expr && (expr = i & 1
 	
-	              _parseExpr(expr, 1, qstr) :
+	            ? _parseExpr(expr, 1, qstr)
 	
-	              '"' + expr
+	            : '"' + expr
 	                .replace(/\\/g, '\\\\')
 	                .replace(/\r\n?|\n/g, '\\n')
 	                .replace(/"/g, '\\"') +
@@ -874,21 +909,21 @@
 	
 	      }
 	
-	      expr = j < 2 ? list[0] :
-	             '[' + list.join(',') + '].join("")'
+	      expr = j < 2 ? list[0]
+	           : '[' + list.join(',') + '].join("")'
 	
 	    } else {
 	
 	      expr = _parseExpr(parts[1], 0, qstr)
 	    }
 	
-	    if (qstr[0])
+	    if (qstr[0]) {
 	      expr = expr.replace(RE_QBMARK, function (_, pos) {
 	        return qstr[pos]
 	          .replace(/\r/g, '\\r')
 	          .replace(/\n/g, '\\n')
 	      })
-	
+	    }
 	    return expr
 	  }
 	
@@ -897,16 +932,13 @@
 	      '(': /[()]/g,
 	      '[': /[[\]]/g,
 	      '{': /[{}]/g
-	    },
-	    CS_IDENT = /^(?:(-?[_A-Za-z\xA0-\xFF][-\w\xA0-\xFF]*)|\x01(\d+)~):/
+	    }
 	
 	  function _parseExpr (expr, asText, qstr) {
 	
-	    if (expr[0] === '=') expr = expr.slice(1)
-	
 	    expr = expr
 	          .replace(RE_QBLOCK, function (s, div) {
-	            return s.length > 2 && !div ? '\x01' + (qstr.push(s) - 1) + '~' : s
+	            return s.length > 2 && !div ? CH_IDEXPR + (qstr.push(s) - 1) + '~' : s
 	          })
 	          .replace(/\s+/g, ' ').trim()
 	          .replace(/\ ?([[\({},?\.:])\ ?/g, '$1')
@@ -918,7 +950,7 @@
 	        match
 	
 	      while (expr &&
-	            (match = expr.match(CS_IDENT)) &&
+	            (match = expr.match(RE_CSNAME)) &&
 	            !match.index
 	        ) {
 	        var
@@ -937,8 +969,8 @@
 	        list[cnt++] = _wrapExpr(jsb, 1, key)
 	      }
 	
-	      expr = !cnt ? _wrapExpr(expr, asText) :
-	          cnt > 1 ? '[' + list.join(',') + '].join(" ").trim()' : list[0]
+	      expr = !cnt ? _wrapExpr(expr, asText)
+	           : cnt > 1 ? '[' + list.join(',') + '].join(" ").trim()' : list[0]
 	    }
 	    return expr
 	
@@ -958,7 +990,7 @@
 	  }
 	
 	  // istanbul ignore next: not both
-	  var
+	  var // eslint-disable-next-line max-len
 	    JS_CONTEXT = '"in this?this:' + (typeof window !== 'object' ? 'global' : 'window') + ').',
 	    JS_VARNAME = /[,{][$\w]+:|(^ *|[^$\w\.])(?!(?:typeof|true|false|null|undefined|in|instanceof|is(?:Finite|NaN)|void|NaN|new|Date|RegExp|Math)(?![$\w]))([$_A-Za-z][$\w]*)/g,
 	    JS_NOPROPS = /^(?=(\.[$\w]+))\1(?:[^.[(]|$)/
@@ -986,14 +1018,14 @@
 	
 	    if (key) {
 	
-	      expr = (tb ?
-	          'function(){' + expr + '}.call(this)' : '(' + expr + ')'
+	      expr = (tb
+	          ? 'function(){' + expr + '}.call(this)' : '(' + expr + ')'
 	        ) + '?"' + key + '":""'
 	
 	    } else if (asText) {
 	
-	      expr = 'function(v){' + (tb ?
-	          expr.replace('return ', 'v=') : 'v=(' + expr + ')'
+	      expr = 'function(v){' + (tb
+	          ? expr.replace('return ', 'v=') : 'v=(' + expr + ')'
 	        ) + ';return v||v===0?v:""}.call(this)'
 	    }
 	
@@ -1003,7 +1035,7 @@
 	  // istanbul ignore next: compatibility fix for beta versions
 	  _tmpl.parse = function (s) { return s }
 	
-	  _tmpl.version = brackets.version = 'v2.3.21'
+	  _tmpl.version = brackets.version = 'v2.4.0'
 	
 	  return _tmpl
 	
@@ -1040,7 +1072,7 @@
 	    var
 	      match   = templ && templ.match(/^\s*<([-\w]+)/),
 	      tagName = match && match[1].toLowerCase(),
-	      el = mkEl('div')
+	      el = mkEl('div', isSVGTag(tagName))
 	
 	    // replace all the yield tags with the tag inner html
 	    templ = replaceYield(templ, html)
@@ -1049,7 +1081,7 @@
 	    if (tblTags.test(tagName))
 	      el = specialTags(el, templ, tagName)
 	    else
-	      el.innerHTML = templ
+	      setInnerHTML(el, templ)
 	
 	    el.stub = true
 	
@@ -1216,7 +1248,7 @@
 	
 	  var mustReorder = typeof getAttr(dom, 'no-reorder') !== T_STRING || remAttr(dom, 'no-reorder'),
 	    tagName = getTagName(dom),
-	    impl = __tagImpl[tagName] || { tmpl: dom.outerHTML },
+	    impl = __tagImpl[tagName] || { tmpl: getOuterHTML(dom) },
 	    useRoot = SPECIAL_TAGS_REGEX.test(tagName),
 	    root = dom.parentNode,
 	    ref = document.createTextNode(''),
@@ -1342,14 +1374,13 @@
 	    if (isOption) {
 	      root.appendChild(frag)
 	
-	      // #1374 <select> <option selected={true}> </select>
-	      if (root.length) {
-	        var si, op = root.options
-	
-	        root.selectedIndex = si = -1
-	        for (i = 0; i < op.length; i++) {
-	          if (op[i].selected = op[i].__selected) {
-	            if (si < 0) root.selectedIndex = si = i
+	      // #1374 FireFox bug in <option selected={expression}>
+	      if (FIREFOX && !root.multiple) {
+	        for (var n = 0; n < root.length; n++) {
+	          if (root[n].__riot1374) {
+	            root.selectedIndex = n  // clear other options
+	            delete root[n].__riot1374
+	            break
 	          }
 	        }
 	      }
@@ -1508,7 +1539,6 @@
 	    root = conf.root,
 	    tagName = root.tagName.toLowerCase(),
 	    attr = {},
-	    implAttr = {},
 	    propsInSyncWithParent = [],
 	    dom
 	
@@ -1564,7 +1594,7 @@
 	    if (!self.parent || !isLoop) return
 	    each(Object.keys(self.parent), function(k) {
 	      // some properties must be always in sync with the parent tag
-	      var mustSync = !contains(RESERVED_WORDS_BLACKLIST, k) && contains(propsInSyncWithParent, k)
+	      var mustSync = !RESERVED_WORDS_BLACKLIST.test(k) && contains(propsInSyncWithParent, k)
 	      if (typeof self[k] === T_UNDEF || mustSync) {
 	        // track the property to keep in sync
 	        // so we can keep it updated
@@ -1642,9 +1672,12 @@
 	
 	    updateOpts()
 	
-	    // add global mixin
+	    // add global mixins
 	    var globalMixin = riot.mixin(GLOBAL_MIXIN)
-	    if (globalMixin) self.mixin(globalMixin)
+	    if (globalMixin)
+	      for (var i in globalMixin)
+	        if (globalMixin.hasOwnProperty(i))
+	          self.mixin(globalMixin[i])
 	
 	    // initialiation
 	    if (impl.fn) impl.fn.call(self, opts)
@@ -1711,12 +1744,6 @@
 	    if (~tagIndex)
 	      __virtualDom.splice(tagIndex, 1)
 	
-	    if (this._virts) {
-	      each(this._virts, function(v) {
-	        if (v.parentNode) v.parentNode.removeChild(v)
-	      })
-	    }
-	
 	    if (p) {
 	
 	      if (parent) {
@@ -1739,11 +1766,19 @@
 	
 	      if (!keepRootTag)
 	        p.removeChild(el)
-	      else
-	        // the riot-tag attribute isn't needed anymore, remove it
-	        remAttr(p, 'riot-tag')
+	      else {
+	        // the riot-tag and the data-is attributes aren't needed anymore, remove them
+	        remAttr(p, RIOT_TAG_IS)
+	        remAttr(p, RIOT_TAG) // this will be removed in riot 3.0.0
+	      }
+	
 	    }
 	
+	    if (this._virts) {
+	      each(this._virts, function(v) {
+	        if (v.parentNode) v.parentNode.removeChild(v)
+	      })
+	    }
 	
 	    self.trigger('unmount')
 	    toggle()
@@ -1854,10 +1889,9 @@
 	
 	    if (expr.bool) {
 	      value = !!value
-	      if (attrName === 'selected') dom.__selected = value   // #1374
-	    }
-	    else if (value == null)
+	    } else if (value == null) {
 	      value = ''
+	    }
 	
 	    // #1638: regression of #1612, update the dom only if the value of the
 	    // expression was changed
@@ -1936,6 +1970,9 @@
 	    } else if (expr.bool) {
 	      dom[attrName] = value
 	      if (value) setAttr(dom, attrName, attrName)
+	      if (FIREFOX && attrName === 'selected' && dom.tagName === 'OPTION') {
+	        dom.__riot1374 = value   // #1374
+	      }
 	
 	    } else if (value === 0 || value && typeof value !== T_OBJECT) {
 	      // <img src="{ expr }">
@@ -1972,6 +2009,46 @@
 	 */
 	function isFunction(v) {
 	  return typeof v === T_FUNCTION || false   // avoid IE problems
+	}
+	
+	/**
+	 * Get the outer html of any DOM node SVGs included
+	 * @param   { Object } el - DOM node to parse
+	 * @returns { String } el.outerHTML
+	 */
+	function getOuterHTML(el) {
+	  if (el.outerHTML) return el.outerHTML
+	  // some browsers do not support outerHTML on the SVGs tags
+	  else {
+	    var container = mkEl('div')
+	    container.appendChild(el.cloneNode(true))
+	    return container.innerHTML
+	  }
+	}
+	
+	/**
+	 * Set the inner html of any DOM node SVGs included
+	 * @param { Object } container - DOM node where we will inject the new html
+	 * @param { String } html - html to inject
+	 */
+	function setInnerHTML(container, html) {
+	  if (typeof container.innerHTML != T_UNDEF) container.innerHTML = html
+	  // some browsers do not support innerHTML on the SVGs tags
+	  else {
+	    var doc = new DOMParser().parseFromString(html, 'application/xml')
+	    container.appendChild(
+	      container.ownerDocument.importNode(doc.documentElement, true)
+	    )
+	  }
+	}
+	
+	/**
+	 * Checks wether a DOM node must be considered part of an svg document
+	 * @param   { String }  name - tag name
+	 * @returns { Boolean } -
+	 */
+	function isSVGTag(name) {
+	  return ~SVG_TAGS_LIST.indexOf(name)
 	}
 	
 	/**
@@ -2135,7 +2212,7 @@
 	    value: value,
 	    enumerable: false,
 	    writable: false,
-	    configurable: false
+	    configurable: true
 	  }, options))
 	  return el
 	}
@@ -2219,8 +2296,7 @@
 	
 	  var o = {}
 	  for (var key in data) {
-	    if (!contains(RESERVED_WORDS_BLACKLIST, key))
-	      o[key] = data[key]
+	    if (!RESERVED_WORDS_BLACKLIST.test(key)) o[key] = data[key]
 	  }
 	  return o
 	}
@@ -2275,10 +2351,13 @@
 	/**
 	 * Create a generic DOM node
 	 * @param   { String } name - name of the DOM node we want to create
+	 * @param   { Boolean } isSvg - should we use a SVG as parent node?
 	 * @returns { Object } DOM node just created
 	 */
-	function mkEl(name) {
-	  return document.createElement(name)
+	function mkEl(name, isSvg) {
+	  return isSvg ?
+	    document.createElementNS('http://www.w3.org/2000/svg', 'svg') :
+	    document.createElement(name)
 	}
 	
 	/**
@@ -2432,23 +2511,30 @@
 	 * Create a mixin that could be globally shared across all the tags
 	 */
 	riot.mixin = (function() {
-	  var mixins = {}
+	  var mixins = {},
+	    globals = mixins[GLOBAL_MIXIN] = {},
+	    _id = 0
 	
 	  /**
 	   * Create/Return a mixin by its name
-	   * @param   { String } name - mixin name (global mixin if missing)
-	   * @param   { Object } mixin - mixin logic
-	   * @returns { Object } the mixin logic
+	   * @param   { String }  name - mixin name (global mixin if object)
+	   * @param   { Object }  mixin - mixin logic
+	   * @param   { Boolean } g - is global?
+	   * @returns { Object }  the mixin logic
 	   */
-	  return function(name, mixin) {
+	  return function(name, mixin, g) {
+	    // Unnamed global
 	    if (isObject(name)) {
-	      mixin = name
-	      mixins[GLOBAL_MIXIN] = extend(mixins[GLOBAL_MIXIN] || {}, mixin)
+	      riot.mixin('__unnamed_'+_id++, name, true)
 	      return
 	    }
 	
-	    if (!mixin) return mixins[name]
-	    mixins[name] = mixin
+	    var store = g ? globals : mixins
+	
+	    // Getter
+	    if (!mixin) return store[name]
+	    // Setter
+	    store[name] = extend(store[name] || {}, mixin)
 	  }
 	
 	})()
@@ -2534,6 +2620,7 @@
 	      if (tagName && riotTag !== tagName) {
 	        riotTag = tagName
 	        setAttr(root, RIOT_TAG_IS, tagName)
+	        setAttr(root, RIOT_TAG, tagName) // this will be removed in riot 3.0.0
 	      }
 	      var tag = mountTo(root, riotTag || root.tagName.toLowerCase(), opts)
 	
@@ -2604,6 +2691,11 @@
 	    tag.update()
 	  })
 	}
+	
+	/**
+	 * Export the Virtual DOM
+	 */
+	riot.vdom = __virtualDom
 	
 	/**
 	 * Export the Tag constructor
@@ -3151,11 +3243,11 @@
 	
 	var moment = _interopRequire(__webpack_require__(8));
 	
-	var numeral = _interopRequire(__webpack_require__(108));
+	var numeral = _interopRequire(__webpack_require__(111));
 	
-	var language = _interopRequire(__webpack_require__(109));
+	var language = _interopRequire(__webpack_require__(112));
 	
-	var Autolinker = _interopRequire(__webpack_require__(110));
+	var Autolinker = _interopRequire(__webpack_require__(113));
 	
 	numeral.language("en-gb", language);
 	numeral.language("en-gb");
@@ -3799,7 +3891,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {//! moment.js
-	//! version : 2.12.0
+	//! version : 2.13.0
 	//! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 	//! license : MIT
 	//! momentjs.com
@@ -3876,7 +3968,9 @@
 	            invalidMonth    : null,
 	            invalidFormat   : false,
 	            userInvalidated : false,
-	            iso             : false
+	            iso             : false,
+	            parsedDateParts : [],
+	            meridiem        : null
 	        };
 	    }
 	
@@ -3887,9 +3981,30 @@
 	        return m._pf;
 	    }
 	
+	    var some;
+	    if (Array.prototype.some) {
+	        some = Array.prototype.some;
+	    } else {
+	        some = function (fun) {
+	            var t = Object(this);
+	            var len = t.length >>> 0;
+	
+	            for (var i = 0; i < len; i++) {
+	                if (i in t && fun.call(this, t[i], i, t)) {
+	                    return true;
+	                }
+	            }
+	
+	            return false;
+	        };
+	    }
+	
 	    function valid__isValid(m) {
 	        if (m._isValid == null) {
 	            var flags = getParsingFlags(m);
+	            var parsedParts = some.call(flags.parsedDateParts, function (i) {
+	                return i != null;
+	            });
 	            m._isValid = !isNaN(m._d.getTime()) &&
 	                flags.overflow < 0 &&
 	                !flags.empty &&
@@ -3897,7 +4012,8 @@
 	                !flags.invalidWeekday &&
 	                !flags.nullInput &&
 	                !flags.invalidFormat &&
-	                !flags.userInvalidated;
+	                !flags.userInvalidated &&
+	                (!flags.meridiem || (flags.meridiem && parsedParts));
 	
 	            if (m._strict) {
 	                m._isValid = m._isValid &&
@@ -4040,6 +4156,9 @@
 	        var firstTime = true;
 	
 	        return extend(function () {
+	            if (utils_hooks__hooks.deprecationHandler != null) {
+	                utils_hooks__hooks.deprecationHandler(null, msg);
+	            }
 	            if (firstTime) {
 	                warn(msg + '\nArguments: ' + Array.prototype.slice.call(arguments).join(', ') + '\n' + (new Error()).stack);
 	                firstTime = false;
@@ -4051,6 +4170,9 @@
 	    var deprecations = {};
 	
 	    function deprecateSimple(name, msg) {
+	        if (utils_hooks__hooks.deprecationHandler != null) {
+	            utils_hooks__hooks.deprecationHandler(name, msg);
+	        }
 	        if (!deprecations[name]) {
 	            warn(msg);
 	            deprecations[name] = true;
@@ -4058,6 +4180,7 @@
 	    }
 	
 	    utils_hooks__hooks.suppressDeprecationWarnings = false;
+	    utils_hooks__hooks.deprecationHandler = null;
 	
 	    function isFunction(input) {
 	        return input instanceof Function || Object.prototype.toString.call(input) === '[object Function]';
@@ -4105,6 +4228,22 @@
 	        if (config != null) {
 	            this.set(config);
 	        }
+	    }
+	
+	    var keys;
+	
+	    if (Object.keys) {
+	        keys = Object.keys;
+	    } else {
+	        keys = function (obj) {
+	            var i, res = [];
+	            for (i in obj) {
+	                if (hasOwnProp(obj, i)) {
+	                    res.push(i);
+	                }
+	            }
+	            return res;
+	        };
 	    }
 	
 	    // internal storage for locale config files
@@ -4261,7 +4400,7 @@
 	    }
 	
 	    function locale_locales__listLocales() {
-	        return Object.keys(locales);
+	        return keys(locales);
 	    }
 	
 	    var aliases = {};
@@ -4340,7 +4479,7 @@
 	            Math.pow(10, Math.max(0, zerosToFill)).toString().substr(1) + absNumber;
 	    }
 	
-	    var formattingTokens = /(\[[^\[]*\])|(\\)?([Hh]mm(ss)?|Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|Qo?|YYYYYY|YYYYY|YYYY|YY|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|mm?|ss?|S{1,9}|x|X|zz?|ZZ?|.)/g;
+	    var formattingTokens = /(\[[^\[]*\])|(\\)?([Hh]mm(ss)?|Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|Qo?|YYYYYY|YYYYY|YYYY|YY|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|kk?|mm?|ss?|S{1,9}|x|X|zz?|ZZ?|.)/g;
 	
 	    var localFormattingTokens = /(\[[^\[]*\])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g;
 	
@@ -4393,7 +4532,7 @@
 	        }
 	
 	        return function (mom) {
-	            var output = '';
+	            var output = '', i;
 	            for (i = 0; i < length; i++) {
 	                output += array[i] instanceof Function ? array[i].call(mom, format) : array[i];
 	            }
@@ -4522,6 +4661,23 @@
 	    var WEEK = 7;
 	    var WEEKDAY = 8;
 	
+	    var indexOf;
+	
+	    if (Array.prototype.indexOf) {
+	        indexOf = Array.prototype.indexOf;
+	    } else {
+	        indexOf = function (o) {
+	            // I know
+	            var i;
+	            for (i = 0; i < this.length; ++i) {
+	                if (this[i] === o) {
+	                    return i;
+	                }
+	            }
+	            return -1;
+	        };
+	    }
+	
 	    function daysInMonth(year, month) {
 	        return new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
 	    }
@@ -4584,8 +4740,53 @@
 	            this._monthsShort[MONTHS_IN_FORMAT.test(format) ? 'format' : 'standalone'][m.month()];
 	    }
 	
+	    function units_month__handleStrictParse(monthName, format, strict) {
+	        var i, ii, mom, llc = monthName.toLocaleLowerCase();
+	        if (!this._monthsParse) {
+	            // this is not used
+	            this._monthsParse = [];
+	            this._longMonthsParse = [];
+	            this._shortMonthsParse = [];
+	            for (i = 0; i < 12; ++i) {
+	                mom = create_utc__createUTC([2000, i]);
+	                this._shortMonthsParse[i] = this.monthsShort(mom, '').toLocaleLowerCase();
+	                this._longMonthsParse[i] = this.months(mom, '').toLocaleLowerCase();
+	            }
+	        }
+	
+	        if (strict) {
+	            if (format === 'MMM') {
+	                ii = indexOf.call(this._shortMonthsParse, llc);
+	                return ii !== -1 ? ii : null;
+	            } else {
+	                ii = indexOf.call(this._longMonthsParse, llc);
+	                return ii !== -1 ? ii : null;
+	            }
+	        } else {
+	            if (format === 'MMM') {
+	                ii = indexOf.call(this._shortMonthsParse, llc);
+	                if (ii !== -1) {
+	                    return ii;
+	                }
+	                ii = indexOf.call(this._longMonthsParse, llc);
+	                return ii !== -1 ? ii : null;
+	            } else {
+	                ii = indexOf.call(this._longMonthsParse, llc);
+	                if (ii !== -1) {
+	                    return ii;
+	                }
+	                ii = indexOf.call(this._shortMonthsParse, llc);
+	                return ii !== -1 ? ii : null;
+	            }
+	        }
+	    }
+	
 	    function localeMonthsParse (monthName, format, strict) {
 	        var i, mom, regex;
+	
+	        if (this._monthsParseExact) {
+	            return units_month__handleStrictParse.call(this, monthName, format, strict);
+	        }
 	
 	        if (!this._monthsParse) {
 	            this._monthsParse = [];
@@ -4593,6 +4794,9 @@
 	            this._shortMonthsParse = [];
 	        }
 	
+	        // TODO: add sorting
+	        // Sorting makes sure if one month (or abbr) is a prefix of another
+	        // see sorting in computeMonthsParse
 	        for (i = 0; i < 12; i++) {
 	            // make the regex if we don't have it already
 	            mom = create_utc__createUTC([2000, i]);
@@ -4718,8 +4922,8 @@
 	
 	        this._monthsRegex = new RegExp('^(' + mixedPieces.join('|') + ')', 'i');
 	        this._monthsShortRegex = this._monthsRegex;
-	        this._monthsStrictRegex = new RegExp('^(' + longPieces.join('|') + ')$', 'i');
-	        this._monthsShortStrictRegex = new RegExp('^(' + shortPieces.join('|') + ')$', 'i');
+	        this._monthsStrictRegex = new RegExp('^(' + longPieces.join('|') + ')', 'i');
+	        this._monthsShortStrictRegex = new RegExp('^(' + shortPieces.join('|') + ')', 'i');
 	    }
 	
 	    function checkOverflow (m) {
@@ -4946,7 +5150,7 @@
 	
 	    // MOMENTS
 	
-	    var getSetYear = makeGetSet('FullYear', false);
+	    var getSetYear = makeGetSet('FullYear', true);
 	
 	    function getIsLeapYear () {
 	        return isLeapYear(this.year());
@@ -5215,6 +5419,9 @@
 	                config._a[HOUR] > 0) {
 	            getParsingFlags(config).bigHour = undefined;
 	        }
+	
+	        getParsingFlags(config).parsedDateParts = config._a.slice(0);
+	        getParsingFlags(config).meridiem = config._meridiem;
 	        // handle meridiem
 	        config._a[HOUR] = meridiemFixWrap(config._locale, config._a[HOUR], config._meridiem);
 	
@@ -5355,7 +5562,7 @@
 	        if (input === undefined) {
 	            config._d = new Date(utils_hooks__hooks.now());
 	        } else if (isDate(input)) {
-	            config._d = new Date(+input);
+	            config._d = new Date(input.valueOf());
 	        } else if (typeof input === 'string') {
 	            configFromString(config);
 	        } else if (isArray(input)) {
@@ -5475,7 +5682,7 @@
 	        this._milliseconds = +milliseconds +
 	            seconds * 1e3 + // 1000
 	            minutes * 6e4 + // 1000 * 60
-	            hours * 36e5; // 1000 * 60 * 60
+	            hours * 1000 * 60 * 60; //using 1000 * 60 * 60 instead of 36e5 to avoid floating point rounding errors https://github.com/moment/moment/issues/2978
 	        // Because of dateAddRemove treats 24 hours as different from a
 	        // day when working around DST, we need to store them separately
 	        this._days = +days +
@@ -5545,9 +5752,9 @@
 	        var res, diff;
 	        if (model._isUTC) {
 	            res = model.clone();
-	            diff = (isMoment(input) || isDate(input) ? +input : +local__createLocal(input)) - (+res);
+	            diff = (isMoment(input) || isDate(input) ? input.valueOf() : local__createLocal(input).valueOf()) - res.valueOf();
 	            // Use low-level api, because this fn is low-level api.
-	            res._d.setTime(+res._d + diff);
+	            res._d.setTime(res._d.valueOf() + diff);
 	            utils_hooks__hooks.updateOffset(res, false);
 	            return res;
 	        } else {
@@ -5708,7 +5915,7 @@
 	    // from http://docs.closure-library.googlecode.com/git/closure_goog_date_date.js.source.html
 	    // somewhat more in line with 4.4.3.2 2004 spec, but allows decimal anywhere
 	    // and further modified to allow for strings containing both week and day
-	    var isoRegex = /^(-)?P(?:([0-9,.]*)Y)?(?:([0-9,.]*)M)?(?:([0-9,.]*)W)?(?:([0-9,.]*)D)?(?:T(?:([0-9,.]*)H)?(?:([0-9,.]*)M)?(?:([0-9,.]*)S)?)?$/;
+	    var isoRegex = /^(-)?P(?:(-?[0-9,.]*)Y)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)W)?(?:(-?[0-9,.]*)D)?(?:T(?:(-?[0-9,.]*)H)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)S)?)?$/;
 	
 	    function create__createDuration (input, key) {
 	        var duration = input,
@@ -5852,7 +6059,7 @@
 	        updateOffset = updateOffset == null ? true : updateOffset;
 	
 	        if (milliseconds) {
-	            mom._d.setTime(+mom._d + milliseconds * isAdding);
+	            mom._d.setTime(mom._d.valueOf() + milliseconds * isAdding);
 	        }
 	        if (days) {
 	            get_set__set(mom, 'Date', get_set__get(mom, 'Date') + days * isAdding);
@@ -5897,9 +6104,9 @@
 	        }
 	        units = normalizeUnits(!isUndefined(units) ? units : 'millisecond');
 	        if (units === 'millisecond') {
-	            return +this > +localInput;
+	            return this.valueOf() > localInput.valueOf();
 	        } else {
-	            return +localInput < +this.clone().startOf(units);
+	            return localInput.valueOf() < this.clone().startOf(units).valueOf();
 	        }
 	    }
 	
@@ -5910,14 +6117,16 @@
 	        }
 	        units = normalizeUnits(!isUndefined(units) ? units : 'millisecond');
 	        if (units === 'millisecond') {
-	            return +this < +localInput;
+	            return this.valueOf() < localInput.valueOf();
 	        } else {
-	            return +this.clone().endOf(units) < +localInput;
+	            return this.clone().endOf(units).valueOf() < localInput.valueOf();
 	        }
 	    }
 	
-	    function isBetween (from, to, units) {
-	        return this.isAfter(from, units) && this.isBefore(to, units);
+	    function isBetween (from, to, units, inclusivity) {
+	        inclusivity = inclusivity || '()';
+	        return (inclusivity[0] === '(' ? this.isAfter(from, units) : !this.isBefore(from, units)) &&
+	            (inclusivity[1] === ')' ? this.isBefore(to, units) : !this.isAfter(to, units));
 	    }
 	
 	    function isSame (input, units) {
@@ -5928,10 +6137,10 @@
 	        }
 	        units = normalizeUnits(units || 'millisecond');
 	        if (units === 'millisecond') {
-	            return +this === +localInput;
+	            return this.valueOf() === localInput.valueOf();
 	        } else {
-	            inputMs = +localInput;
-	            return +(this.clone().startOf(units)) <= inputMs && inputMs <= +(this.clone().endOf(units));
+	            inputMs = localInput.valueOf();
+	            return this.clone().startOf(units).valueOf() <= inputMs && inputMs <= this.clone().endOf(units).valueOf();
 	        }
 	    }
 	
@@ -5998,10 +6207,12 @@
 	            adjust = (b - anchor) / (anchor2 - anchor);
 	        }
 	
-	        return -(wholeMonthDiff + adjust);
+	        //check for negative zero, return zero if negative zero
+	        return -(wholeMonthDiff + adjust) || 0;
 	    }
 	
 	    utils_hooks__hooks.defaultFormat = 'YYYY-MM-DDTHH:mm:ssZ';
+	    utils_hooks__hooks.defaultFormatUtc = 'YYYY-MM-DDTHH:mm:ss[Z]';
 	
 	    function toString () {
 	        return this.clone().locale('en').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ');
@@ -6022,7 +6233,10 @@
 	    }
 	
 	    function format (inputString) {
-	        var output = formatMoment(this, inputString || utils_hooks__hooks.defaultFormat);
+	        if (!inputString) {
+	            inputString = this.isUtc() ? utils_hooks__hooks.defaultFormatUtc : utils_hooks__hooks.defaultFormat;
+	        }
+	        var output = formatMoment(this, inputString);
 	        return this.localeData().postformat(output);
 	    }
 	
@@ -6101,6 +6315,7 @@
 	        case 'week':
 	        case 'isoWeek':
 	        case 'day':
+	        case 'date':
 	            this.hours(0);
 	            /* falls through */
 	        case 'hour':
@@ -6134,19 +6349,25 @@
 	        if (units === undefined || units === 'millisecond') {
 	            return this;
 	        }
+	
+	        // 'date' is an alias for 'day', so it should be considered as such.
+	        if (units === 'date') {
+	            units = 'day';
+	        }
+	
 	        return this.startOf(units).add(1, (units === 'isoWeek' ? 'week' : units)).subtract(1, 'ms');
 	    }
 	
 	    function to_type__valueOf () {
-	        return +this._d - ((this._offset || 0) * 60000);
+	        return this._d.valueOf() - ((this._offset || 0) * 60000);
 	    }
 	
 	    function unix () {
-	        return Math.floor(+this / 1000);
+	        return Math.floor(this.valueOf() / 1000);
 	    }
 	
 	    function toDate () {
-	        return this._offset ? new Date(+this) : this._d;
+	        return this._offset ? new Date(this.valueOf()) : this._d;
 	    }
 	
 	    function toArray () {
@@ -6415,9 +6636,15 @@
 	    addRegexToken('d',    match1to2);
 	    addRegexToken('e',    match1to2);
 	    addRegexToken('E',    match1to2);
-	    addRegexToken('dd',   matchWord);
-	    addRegexToken('ddd',  matchWord);
-	    addRegexToken('dddd', matchWord);
+	    addRegexToken('dd',   function (isStrict, locale) {
+	        return locale.weekdaysMinRegex(isStrict);
+	    });
+	    addRegexToken('ddd',   function (isStrict, locale) {
+	        return locale.weekdaysShortRegex(isStrict);
+	    });
+	    addRegexToken('dddd',   function (isStrict, locale) {
+	        return locale.weekdaysRegex(isStrict);
+	    });
 	
 	    addWeekParseToken(['dd', 'ddd', 'dddd'], function (input, week, config, token) {
 	        var weekday = config._locale.weekdaysParse(input, token, config._strict);
@@ -6470,8 +6697,76 @@
 	        return this._weekdaysMin[m.day()];
 	    }
 	
+	    function day_of_week__handleStrictParse(weekdayName, format, strict) {
+	        var i, ii, mom, llc = weekdayName.toLocaleLowerCase();
+	        if (!this._weekdaysParse) {
+	            this._weekdaysParse = [];
+	            this._shortWeekdaysParse = [];
+	            this._minWeekdaysParse = [];
+	
+	            for (i = 0; i < 7; ++i) {
+	                mom = create_utc__createUTC([2000, 1]).day(i);
+	                this._minWeekdaysParse[i] = this.weekdaysMin(mom, '').toLocaleLowerCase();
+	                this._shortWeekdaysParse[i] = this.weekdaysShort(mom, '').toLocaleLowerCase();
+	                this._weekdaysParse[i] = this.weekdays(mom, '').toLocaleLowerCase();
+	            }
+	        }
+	
+	        if (strict) {
+	            if (format === 'dddd') {
+	                ii = indexOf.call(this._weekdaysParse, llc);
+	                return ii !== -1 ? ii : null;
+	            } else if (format === 'ddd') {
+	                ii = indexOf.call(this._shortWeekdaysParse, llc);
+	                return ii !== -1 ? ii : null;
+	            } else {
+	                ii = indexOf.call(this._minWeekdaysParse, llc);
+	                return ii !== -1 ? ii : null;
+	            }
+	        } else {
+	            if (format === 'dddd') {
+	                ii = indexOf.call(this._weekdaysParse, llc);
+	                if (ii !== -1) {
+	                    return ii;
+	                }
+	                ii = indexOf.call(this._shortWeekdaysParse, llc);
+	                if (ii !== -1) {
+	                    return ii;
+	                }
+	                ii = indexOf.call(this._minWeekdaysParse, llc);
+	                return ii !== -1 ? ii : null;
+	            } else if (format === 'ddd') {
+	                ii = indexOf.call(this._shortWeekdaysParse, llc);
+	                if (ii !== -1) {
+	                    return ii;
+	                }
+	                ii = indexOf.call(this._weekdaysParse, llc);
+	                if (ii !== -1) {
+	                    return ii;
+	                }
+	                ii = indexOf.call(this._minWeekdaysParse, llc);
+	                return ii !== -1 ? ii : null;
+	            } else {
+	                ii = indexOf.call(this._minWeekdaysParse, llc);
+	                if (ii !== -1) {
+	                    return ii;
+	                }
+	                ii = indexOf.call(this._weekdaysParse, llc);
+	                if (ii !== -1) {
+	                    return ii;
+	                }
+	                ii = indexOf.call(this._shortWeekdaysParse, llc);
+	                return ii !== -1 ? ii : null;
+	            }
+	        }
+	    }
+	
 	    function localeWeekdaysParse (weekdayName, format, strict) {
 	        var i, mom, regex;
+	
+	        if (this._weekdaysParseExact) {
+	            return day_of_week__handleStrictParse.call(this, weekdayName, format, strict);
+	        }
 	
 	        if (!this._weekdaysParse) {
 	            this._weekdaysParse = [];
@@ -6483,7 +6778,7 @@
 	        for (i = 0; i < 7; i++) {
 	            // make the regex if we don't have it already
 	
-	            mom = local__createLocal([2000, 1]).day(i);
+	            mom = create_utc__createUTC([2000, 1]).day(i);
 	            if (strict && !this._fullWeekdaysParse[i]) {
 	                this._fullWeekdaysParse[i] = new RegExp('^' + this.weekdays(mom, '').replace('.', '\.?') + '$', 'i');
 	                this._shortWeekdaysParse[i] = new RegExp('^' + this.weekdaysShort(mom, '').replace('.', '\.?') + '$', 'i');
@@ -6539,6 +6834,99 @@
 	        return input == null ? this.day() || 7 : this.day(this.day() % 7 ? input : input - 7);
 	    }
 	
+	    var defaultWeekdaysRegex = matchWord;
+	    function weekdaysRegex (isStrict) {
+	        if (this._weekdaysParseExact) {
+	            if (!hasOwnProp(this, '_weekdaysRegex')) {
+	                computeWeekdaysParse.call(this);
+	            }
+	            if (isStrict) {
+	                return this._weekdaysStrictRegex;
+	            } else {
+	                return this._weekdaysRegex;
+	            }
+	        } else {
+	            return this._weekdaysStrictRegex && isStrict ?
+	                this._weekdaysStrictRegex : this._weekdaysRegex;
+	        }
+	    }
+	
+	    var defaultWeekdaysShortRegex = matchWord;
+	    function weekdaysShortRegex (isStrict) {
+	        if (this._weekdaysParseExact) {
+	            if (!hasOwnProp(this, '_weekdaysRegex')) {
+	                computeWeekdaysParse.call(this);
+	            }
+	            if (isStrict) {
+	                return this._weekdaysShortStrictRegex;
+	            } else {
+	                return this._weekdaysShortRegex;
+	            }
+	        } else {
+	            return this._weekdaysShortStrictRegex && isStrict ?
+	                this._weekdaysShortStrictRegex : this._weekdaysShortRegex;
+	        }
+	    }
+	
+	    var defaultWeekdaysMinRegex = matchWord;
+	    function weekdaysMinRegex (isStrict) {
+	        if (this._weekdaysParseExact) {
+	            if (!hasOwnProp(this, '_weekdaysRegex')) {
+	                computeWeekdaysParse.call(this);
+	            }
+	            if (isStrict) {
+	                return this._weekdaysMinStrictRegex;
+	            } else {
+	                return this._weekdaysMinRegex;
+	            }
+	        } else {
+	            return this._weekdaysMinStrictRegex && isStrict ?
+	                this._weekdaysMinStrictRegex : this._weekdaysMinRegex;
+	        }
+	    }
+	
+	
+	    function computeWeekdaysParse () {
+	        function cmpLenRev(a, b) {
+	            return b.length - a.length;
+	        }
+	
+	        var minPieces = [], shortPieces = [], longPieces = [], mixedPieces = [],
+	            i, mom, minp, shortp, longp;
+	        for (i = 0; i < 7; i++) {
+	            // make the regex if we don't have it already
+	            mom = create_utc__createUTC([2000, 1]).day(i);
+	            minp = this.weekdaysMin(mom, '');
+	            shortp = this.weekdaysShort(mom, '');
+	            longp = this.weekdays(mom, '');
+	            minPieces.push(minp);
+	            shortPieces.push(shortp);
+	            longPieces.push(longp);
+	            mixedPieces.push(minp);
+	            mixedPieces.push(shortp);
+	            mixedPieces.push(longp);
+	        }
+	        // Sorting makes sure if one weekday (or abbr) is a prefix of another it
+	        // will match the longer piece.
+	        minPieces.sort(cmpLenRev);
+	        shortPieces.sort(cmpLenRev);
+	        longPieces.sort(cmpLenRev);
+	        mixedPieces.sort(cmpLenRev);
+	        for (i = 0; i < 7; i++) {
+	            shortPieces[i] = regexEscape(shortPieces[i]);
+	            longPieces[i] = regexEscape(longPieces[i]);
+	            mixedPieces[i] = regexEscape(mixedPieces[i]);
+	        }
+	
+	        this._weekdaysRegex = new RegExp('^(' + mixedPieces.join('|') + ')', 'i');
+	        this._weekdaysShortRegex = this._weekdaysRegex;
+	        this._weekdaysMinRegex = this._weekdaysRegex;
+	
+	        this._weekdaysStrictRegex = new RegExp('^(' + longPieces.join('|') + ')', 'i');
+	        this._weekdaysShortStrictRegex = new RegExp('^(' + shortPieces.join('|') + ')', 'i');
+	        this._weekdaysMinStrictRegex = new RegExp('^(' + minPieces.join('|') + ')', 'i');
+	    }
+	
 	    // FORMATTING
 	
 	    addFormatToken('DDD', ['DDDD', 3], 'DDDo', 'dayOfYear');
@@ -6570,8 +6958,13 @@
 	        return this.hours() % 12 || 12;
 	    }
 	
+	    function kFormat() {
+	        return this.hours() || 24;
+	    }
+	
 	    addFormatToken('H', ['HH', 2], 0, 'hour');
 	    addFormatToken('h', ['hh', 2], 0, hFormat);
+	    addFormatToken('k', ['kk', 2], 0, kFormat);
 	
 	    addFormatToken('hmm', 0, 0, function () {
 	        return '' + hFormat.apply(this) + zeroFill(this.minutes(), 2);
@@ -7032,6 +7425,13 @@
 	    prototype__proto._weekdaysShort = defaultLocaleWeekdaysShort;
 	    prototype__proto.weekdaysParse  =        localeWeekdaysParse;
 	
+	    prototype__proto._weekdaysRegex      = defaultWeekdaysRegex;
+	    prototype__proto.weekdaysRegex       =        weekdaysRegex;
+	    prototype__proto._weekdaysShortRegex = defaultWeekdaysShortRegex;
+	    prototype__proto.weekdaysShortRegex  =        weekdaysShortRegex;
+	    prototype__proto._weekdaysMinRegex   = defaultWeekdaysMinRegex;
+	    prototype__proto.weekdaysMinRegex    =        weekdaysMinRegex;
+	
 	    // Hours
 	    prototype__proto.isPM = localeIsPM;
 	    prototype__proto._meridiemParse = defaultLocaleMeridiemParse;
@@ -7043,7 +7443,7 @@
 	        return locale[field](utc, format);
 	    }
 	
-	    function list (format, index, field, count, setter) {
+	    function listMonthsImpl (format, index, field) {
 	        if (typeof format === 'number') {
 	            index = format;
 	            format = undefined;
@@ -7052,35 +7452,79 @@
 	        format = format || '';
 	
 	        if (index != null) {
-	            return lists__get(format, index, field, setter);
+	            return lists__get(format, index, field, 'month');
 	        }
 	
 	        var i;
 	        var out = [];
-	        for (i = 0; i < count; i++) {
-	            out[i] = lists__get(format, i, field, setter);
+	        for (i = 0; i < 12; i++) {
+	            out[i] = lists__get(format, i, field, 'month');
+	        }
+	        return out;
+	    }
+	
+	    // ()
+	    // (5)
+	    // (fmt, 5)
+	    // (fmt)
+	    // (true)
+	    // (true, 5)
+	    // (true, fmt, 5)
+	    // (true, fmt)
+	    function listWeekdaysImpl (localeSorted, format, index, field) {
+	        if (typeof localeSorted === 'boolean') {
+	            if (typeof format === 'number') {
+	                index = format;
+	                format = undefined;
+	            }
+	
+	            format = format || '';
+	        } else {
+	            format = localeSorted;
+	            index = format;
+	            localeSorted = false;
+	
+	            if (typeof format === 'number') {
+	                index = format;
+	                format = undefined;
+	            }
+	
+	            format = format || '';
+	        }
+	
+	        var locale = locale_locales__getLocale(),
+	            shift = localeSorted ? locale._week.dow : 0;
+	
+	        if (index != null) {
+	            return lists__get(format, (index + shift) % 7, field, 'day');
+	        }
+	
+	        var i;
+	        var out = [];
+	        for (i = 0; i < 7; i++) {
+	            out[i] = lists__get(format, (i + shift) % 7, field, 'day');
 	        }
 	        return out;
 	    }
 	
 	    function lists__listMonths (format, index) {
-	        return list(format, index, 'months', 12, 'month');
+	        return listMonthsImpl(format, index, 'months');
 	    }
 	
 	    function lists__listMonthsShort (format, index) {
-	        return list(format, index, 'monthsShort', 12, 'month');
+	        return listMonthsImpl(format, index, 'monthsShort');
 	    }
 	
-	    function lists__listWeekdays (format, index) {
-	        return list(format, index, 'weekdays', 7, 'day');
+	    function lists__listWeekdays (localeSorted, format, index) {
+	        return listWeekdaysImpl(localeSorted, format, index, 'weekdays');
 	    }
 	
-	    function lists__listWeekdaysShort (format, index) {
-	        return list(format, index, 'weekdaysShort', 7, 'day');
+	    function lists__listWeekdaysShort (localeSorted, format, index) {
+	        return listWeekdaysImpl(localeSorted, format, index, 'weekdaysShort');
 	    }
 	
-	    function lists__listWeekdaysMin (format, index) {
-	        return list(format, index, 'weekdaysMin', 7, 'day');
+	    function lists__listWeekdaysMin (localeSorted, format, index) {
+	        return listWeekdaysImpl(localeSorted, format, index, 'weekdaysMin');
 	    }
 	
 	    locale_locales__getSetGlobalLocale('en', {
@@ -7451,7 +7895,7 @@
 	    // Side effect imports
 	
 	
-	    utils_hooks__hooks.version = '2.12.0';
+	    utils_hooks__hooks.version = '2.13.0';
 	
 	    setHookCallback(local__createLocal);
 	
@@ -7615,94 +8059,100 @@
 		"./km.js": 62,
 		"./ko": 63,
 		"./ko.js": 63,
-		"./lb": 64,
-		"./lb.js": 64,
-		"./lo": 65,
-		"./lo.js": 65,
-		"./lt": 66,
-		"./lt.js": 66,
-		"./lv": 67,
-		"./lv.js": 67,
-		"./me": 68,
-		"./me.js": 68,
-		"./mk": 69,
-		"./mk.js": 69,
-		"./ml": 70,
-		"./ml.js": 70,
-		"./mr": 71,
-		"./mr.js": 71,
-		"./ms": 72,
-		"./ms-my": 73,
-		"./ms-my.js": 73,
-		"./ms.js": 72,
-		"./my": 74,
-		"./my.js": 74,
-		"./nb": 75,
-		"./nb.js": 75,
-		"./ne": 76,
-		"./ne.js": 76,
-		"./nl": 77,
-		"./nl.js": 77,
-		"./nn": 78,
-		"./nn.js": 78,
-		"./pa-in": 79,
-		"./pa-in.js": 79,
-		"./pl": 80,
-		"./pl.js": 80,
-		"./pt": 81,
-		"./pt-br": 82,
-		"./pt-br.js": 82,
-		"./pt.js": 81,
-		"./ro": 83,
-		"./ro.js": 83,
-		"./ru": 84,
-		"./ru.js": 84,
-		"./se": 85,
-		"./se.js": 85,
-		"./si": 86,
-		"./si.js": 86,
-		"./sk": 87,
-		"./sk.js": 87,
-		"./sl": 88,
-		"./sl.js": 88,
-		"./sq": 89,
-		"./sq.js": 89,
-		"./sr": 90,
-		"./sr-cyrl": 91,
-		"./sr-cyrl.js": 91,
-		"./sr.js": 90,
-		"./sv": 92,
-		"./sv.js": 92,
-		"./sw": 93,
-		"./sw.js": 93,
-		"./ta": 94,
-		"./ta.js": 94,
-		"./te": 95,
-		"./te.js": 95,
-		"./th": 96,
-		"./th.js": 96,
-		"./tl-ph": 97,
-		"./tl-ph.js": 97,
-		"./tlh": 98,
-		"./tlh.js": 98,
-		"./tr": 99,
-		"./tr.js": 99,
-		"./tzl": 100,
-		"./tzl.js": 100,
-		"./tzm": 101,
-		"./tzm-latn": 102,
-		"./tzm-latn.js": 102,
-		"./tzm.js": 101,
-		"./uk": 103,
-		"./uk.js": 103,
-		"./uz": 104,
-		"./uz.js": 104,
-		"./vi": 105,
-		"./vi.js": 105,
-		"./zh-cn": 106,
-		"./zh-cn.js": 106,
-		"./zh-tw": 107,
-		"./zh-tw.js": 107
+		"./ky": 64,
+		"./ky.js": 64,
+		"./lb": 65,
+		"./lb.js": 65,
+		"./lo": 66,
+		"./lo.js": 66,
+		"./lt": 67,
+		"./lt.js": 67,
+		"./lv": 68,
+		"./lv.js": 68,
+		"./me": 69,
+		"./me.js": 69,
+		"./mk": 70,
+		"./mk.js": 70,
+		"./ml": 71,
+		"./ml.js": 71,
+		"./mr": 72,
+		"./mr.js": 72,
+		"./ms": 73,
+		"./ms-my": 74,
+		"./ms-my.js": 74,
+		"./ms.js": 73,
+		"./my": 75,
+		"./my.js": 75,
+		"./nb": 76,
+		"./nb.js": 76,
+		"./ne": 77,
+		"./ne.js": 77,
+		"./nl": 78,
+		"./nl.js": 78,
+		"./nn": 79,
+		"./nn.js": 79,
+		"./pa-in": 80,
+		"./pa-in.js": 80,
+		"./pl": 81,
+		"./pl.js": 81,
+		"./pt": 82,
+		"./pt-br": 83,
+		"./pt-br.js": 83,
+		"./pt.js": 82,
+		"./ro": 84,
+		"./ro.js": 84,
+		"./ru": 85,
+		"./ru.js": 85,
+		"./se": 86,
+		"./se.js": 86,
+		"./si": 87,
+		"./si.js": 87,
+		"./sk": 88,
+		"./sk.js": 88,
+		"./sl": 89,
+		"./sl.js": 89,
+		"./sq": 90,
+		"./sq.js": 90,
+		"./sr": 91,
+		"./sr-cyrl": 92,
+		"./sr-cyrl.js": 92,
+		"./sr.js": 91,
+		"./ss": 93,
+		"./ss.js": 93,
+		"./sv": 94,
+		"./sv.js": 94,
+		"./sw": 95,
+		"./sw.js": 95,
+		"./ta": 96,
+		"./ta.js": 96,
+		"./te": 97,
+		"./te.js": 97,
+		"./th": 98,
+		"./th.js": 98,
+		"./tl-ph": 99,
+		"./tl-ph.js": 99,
+		"./tlh": 100,
+		"./tlh.js": 100,
+		"./tr": 101,
+		"./tr.js": 101,
+		"./tzl": 102,
+		"./tzl.js": 102,
+		"./tzm": 103,
+		"./tzm-latn": 104,
+		"./tzm-latn.js": 104,
+		"./tzm.js": 103,
+		"./uk": 105,
+		"./uk.js": 105,
+		"./uz": 106,
+		"./uz.js": 106,
+		"./vi": 107,
+		"./vi.js": 107,
+		"./x-pseudo": 108,
+		"./x-pseudo.js": 108,
+		"./zh-cn": 109,
+		"./zh-cn.js": 109,
+		"./zh-tw": 110,
+		"./zh-tw.js": 110
 	};
 	function webpackContext(req) {
 		return __webpack_require__(webpackContextResolve(req));
@@ -7873,6 +8323,7 @@
 	        weekdays : 'الأحد_الإثنين_الثلاثاء_الأربعاء_الخميس_الجمعة_السبت'.split('_'),
 	        weekdaysShort : 'أحد_إثنين_ثلاثاء_أربعاء_خميس_جمعة_سبت'.split('_'),
 	        weekdaysMin : 'ح_ن_ث_ر_خ_ج_س'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -7957,6 +8408,7 @@
 	        weekdays : 'الأحد_الإتنين_الثلاثاء_الأربعاء_الخميس_الجمعة_السبت'.split('_'),
 	        weekdaysShort : 'احد_اتنين_ثلاثاء_اربعاء_خميس_جمعة_سبت'.split('_'),
 	        weekdaysMin : 'ح_ن_ث_ر_خ_ج_س'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -8043,6 +8495,7 @@
 	        weekdays : 'الأحد_الإثنين_الثلاثاء_الأربعاء_الخميس_الجمعة_السبت'.split('_'),
 	        weekdaysShort : 'أحد_إثنين_ثلاثاء_أربعاء_خميس_جمعة_سبت'.split('_'),
 	        weekdaysMin : 'ح_ن_ث_ر_خ_ج_س'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -8125,6 +8578,7 @@
 	        weekdays: 'الأحد_الإثنين_الثلاثاء_الأربعاء_الخميس_الجمعة_السبت'.split('_'),
 	        weekdaysShort: 'أحد_إثنين_ثلاثاء_أربعاء_خميس_جمعة_سبت'.split('_'),
 	        weekdaysMin: 'ح_ن_ث_ر_خ_ج_س'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat: {
 	            LT: 'HH:mm',
 	            LTS: 'HH:mm:ss',
@@ -8208,6 +8662,7 @@
 	        weekdays : 'Bazar_Bazar ertəsi_Çərşənbə axşamı_Çərşənbə_Cümə axşamı_Cümə_Şənbə'.split('_'),
 	        weekdaysShort : 'Baz_BzE_ÇAx_Çər_CAx_Cüm_Şən'.split('_'),
 	        weekdaysMin : 'Bz_BE_ÇA_Çə_CA_Cü_Şə'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -8817,6 +9272,7 @@
 	        weekdays : 'Sul_Lun_Meurzh_Merc\'her_Yaou_Gwener_Sadorn'.split('_'),
 	        weekdaysShort : 'Sul_Lun_Meu_Mer_Yao_Gwe_Sad'.split('_'),
 	        weekdaysMin : 'Su_Lu_Me_Mer_Ya_Gw_Sa'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'h[e]mm A',
 	            LTS : 'h[e]mm:ss A',
@@ -8935,9 +9391,11 @@
 	    var bs = moment.defineLocale('bs', {
 	        months : 'januar_februar_mart_april_maj_juni_juli_august_septembar_oktobar_novembar_decembar'.split('_'),
 	        monthsShort : 'jan._feb._mar._apr._maj._jun._jul._aug._sep._okt._nov._dec.'.split('_'),
+	        monthsParseExact: true,
 	        weekdays : 'nedjelja_ponedjeljak_utorak_srijeda_četvrtak_petak_subota'.split('_'),
 	        weekdaysShort : 'ned._pon._uto._sri._čet._pet._sub.'.split('_'),
 	        weekdaysMin : 'ne_po_ut_sr_če_pe_su'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'H:mm',
 	            LTS : 'H:mm:ss',
@@ -9026,9 +9484,11 @@
 	    var ca = moment.defineLocale('ca', {
 	        months : 'gener_febrer_març_abril_maig_juny_juliol_agost_setembre_octubre_novembre_desembre'.split('_'),
 	        monthsShort : 'gen._febr._mar._abr._mai._jun._jul._ag._set._oct._nov._des.'.split('_'),
+	        monthsParseExact : true,
 	        weekdays : 'diumenge_dilluns_dimarts_dimecres_dijous_divendres_dissabte'.split('_'),
 	        weekdaysShort : 'dg._dl._dt._dc._dj._dv._ds.'.split('_'),
 	        weekdaysMin : 'Dg_Dl_Dt_Dc_Dj_Dv_Ds'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'H:mm',
 	            LTS : 'H:mm:ss',
@@ -9354,6 +9814,7 @@
 	        weekdays: 'Dydd Sul_Dydd Llun_Dydd Mawrth_Dydd Mercher_Dydd Iau_Dydd Gwener_Dydd Sadwrn'.split('_'),
 	        weekdaysShort: 'Sul_Llun_Maw_Mer_Iau_Gwe_Sad'.split('_'),
 	        weekdaysMin: 'Su_Ll_Ma_Me_Ia_Gw_Sa'.split('_'),
+	        weekdaysParseExact : true,
 	        // time formats are the same as en-gb
 	        longDateFormat: {
 	            LT: 'HH:mm',
@@ -9514,9 +9975,11 @@
 	    var de = moment.defineLocale('de', {
 	        months : 'Januar_Februar_März_April_Mai_Juni_Juli_August_September_Oktober_November_Dezember'.split('_'),
 	        monthsShort : 'Jan._Febr._Mrz._Apr._Mai_Jun._Jul._Aug._Sept._Okt._Nov._Dez.'.split('_'),
+	        monthsParseExact : true,
 	        weekdays : 'Sonntag_Montag_Dienstag_Mittwoch_Donnerstag_Freitag_Samstag'.split('_'),
 	        weekdaysShort : 'So._Mo._Di._Mi._Do._Fr._Sa.'.split('_'),
 	        weekdaysMin : 'So_Mo_Di_Mi_Do_Fr_Sa'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT: 'HH:mm',
 	            LTS: 'HH:mm:ss',
@@ -9595,9 +10058,11 @@
 	    var de_at = moment.defineLocale('de-at', {
 	        months : 'Jänner_Februar_März_April_Mai_Juni_Juli_August_September_Oktober_November_Dezember'.split('_'),
 	        monthsShort : 'Jän._Febr._Mrz._Apr._Mai_Jun._Jul._Aug._Sept._Okt._Nov._Dez.'.split('_'),
+	        monthsParseExact : true,
 	        weekdays : 'Sonntag_Montag_Dienstag_Mittwoch_Donnerstag_Freitag_Samstag'.split('_'),
 	        weekdaysShort : 'So._Mo._Di._Mi._Do._Fr._Sa.'.split('_'),
 	        weekdaysMin : 'So_Mo_Di_Mi_Do_Fr_Sa'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT: 'HH:mm',
 	            LTS: 'HH:mm:ss',
@@ -10299,9 +10764,11 @@
 	                return monthsShortDot[m.month()];
 	            }
 	        },
+	        monthsParseExact : true,
 	        weekdays : 'domingo_lunes_martes_miércoles_jueves_viernes_sábado'.split('_'),
 	        weekdaysShort : 'dom._lun._mar._mié._jue._vie._sáb.'.split('_'),
 	        weekdaysMin : 'do_lu_ma_mi_ju_vi_sá'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'H:mm',
 	            LTS : 'H:mm:ss',
@@ -10457,9 +10924,11 @@
 	    var eu = moment.defineLocale('eu', {
 	        months : 'urtarrila_otsaila_martxoa_apirila_maiatza_ekaina_uztaila_abuztua_iraila_urria_azaroa_abendua'.split('_'),
 	        monthsShort : 'urt._ots._mar._api._mai._eka._uzt._abu._ira._urr._aza._abe.'.split('_'),
+	        monthsParseExact : true,
 	        weekdays : 'igandea_astelehena_asteartea_asteazkena_osteguna_ostirala_larunbata'.split('_'),
 	        weekdaysShort : 'ig._al._ar._az._og._ol._lr.'.split('_'),
 	        weekdaysMin : 'ig_al_ar_az_og_ol_lr'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -10552,6 +11021,7 @@
 	        weekdays : 'یک\u200cشنبه_دوشنبه_سه\u200cشنبه_چهارشنبه_پنج\u200cشنبه_جمعه_شنبه'.split('_'),
 	        weekdaysShort : 'یک\u200cشنبه_دوشنبه_سه\u200cشنبه_چهارشنبه_پنج\u200cشنبه_جمعه_شنبه'.split('_'),
 	        weekdaysMin : 'ی_د_س_چ_پ_ج_ش'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -10809,9 +11279,11 @@
 	    var fr = moment.defineLocale('fr', {
 	        months : 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split('_'),
 	        monthsShort : 'janv._févr._mars_avr._mai_juin_juil._août_sept._oct._nov._déc.'.split('_'),
+	        monthsParseExact : true,
 	        weekdays : 'dimanche_lundi_mardi_mercredi_jeudi_vendredi_samedi'.split('_'),
 	        weekdaysShort : 'dim._lun._mar._mer._jeu._ven._sam.'.split('_'),
 	        weekdaysMin : 'Di_Lu_Ma_Me_Je_Ve_Sa'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -10875,9 +11347,11 @@
 	    var fr_ca = moment.defineLocale('fr-ca', {
 	        months : 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split('_'),
 	        monthsShort : 'janv._févr._mars_avr._mai_juin_juil._août_sept._oct._nov._déc.'.split('_'),
+	        monthsParseExact : true,
 	        weekdays : 'dimanche_lundi_mardi_mercredi_jeudi_vendredi_samedi'.split('_'),
 	        weekdaysShort : 'dim._lun._mar._mer._jeu._ven._sam.'.split('_'),
 	        weekdaysMin : 'Di_Lu_Ma_Me_Je_Ve_Sa'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -10937,9 +11411,11 @@
 	    var fr_ch = moment.defineLocale('fr-ch', {
 	        months : 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split('_'),
 	        monthsShort : 'janv._févr._mars_avr._mai_juin_juil._août_sept._oct._nov._déc.'.split('_'),
+	        monthsParseExact : true,
 	        weekdays : 'dimanche_lundi_mardi_mercredi_jeudi_vendredi_samedi'.split('_'),
 	        weekdaysShort : 'dim._lun._mar._mer._jeu._ven._sam.'.split('_'),
 	        weekdaysMin : 'Di_Lu_Ma_Me_Je_Ve_Sa'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -11012,9 +11488,11 @@
 	                return monthsShortWithDots[m.month()];
 	            }
 	        },
+	        monthsParseExact : true,
 	        weekdays : 'snein_moandei_tiisdei_woansdei_tongersdei_freed_sneon'.split('_'),
 	        weekdaysShort : 'si._mo._ti._wo._to._fr._so.'.split('_'),
 	        weekdaysMin : 'Si_Mo_Ti_Wo_To_Fr_So'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -11158,9 +11636,11 @@
 	    var gl = moment.defineLocale('gl', {
 	        months : 'Xaneiro_Febreiro_Marzo_Abril_Maio_Xuño_Xullo_Agosto_Setembro_Outubro_Novembro_Decembro'.split('_'),
 	        monthsShort : 'Xan._Feb._Mar._Abr._Mai._Xuñ._Xul._Ago._Set._Out._Nov._Dec.'.split('_'),
+	        monthsParseExact: true,
 	        weekdays : 'Domingo_Luns_Martes_Mércores_Xoves_Venres_Sábado'.split('_'),
 	        weekdaysShort : 'Dom._Lun._Mar._Mér._Xov._Ven._Sáb.'.split('_'),
 	        weekdaysMin : 'Do_Lu_Ma_Mé_Xo_Ve_Sá'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'H:mm',
 	            LTS : 'H:mm:ss',
@@ -11365,6 +11845,7 @@
 	    var hi = moment.defineLocale('hi', {
 	        months : 'जनवरी_फ़रवरी_मार्च_अप्रैल_मई_जून_जुलाई_अगस्त_सितम्बर_अक्टूबर_नवम्बर_दिसम्बर'.split('_'),
 	        monthsShort : 'जन._फ़र._मार्च_अप्रै._मई_जून_जुल._अग._सित._अक्टू._नव._दिस.'.split('_'),
+	        monthsParseExact: true,
 	        weekdays : 'रविवार_सोमवार_मंगलवार_बुधवार_गुरूवार_शुक्रवार_शनिवार'.split('_'),
 	        weekdaysShort : 'रवि_सोम_मंगल_बुध_गुरू_शुक्र_शनि'.split('_'),
 	        weekdaysMin : 'र_सो_मं_बु_गु_शु_श'.split('_'),
@@ -11523,9 +12004,11 @@
 	            standalone: 'siječanj_veljača_ožujak_travanj_svibanj_lipanj_srpanj_kolovoz_rujan_listopad_studeni_prosinac'.split('_')
 	        },
 	        monthsShort : 'sij._velj._ožu._tra._svi._lip._srp._kol._ruj._lis._stu._pro.'.split('_'),
+	        monthsParseExact: true,
 	        weekdays : 'nedjelja_ponedjeljak_utorak_srijeda_četvrtak_petak_subota'.split('_'),
 	        weekdaysShort : 'ned._pon._uto._sri._čet._pet._sub.'.split('_'),
 	        weekdaysMin : 'ne_po_ut_sr_če_pe_su'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'H:mm',
 	            LTS : 'H:mm:ss',
@@ -12399,11 +12882,11 @@
 	    };
 	
 	    var kk = moment.defineLocale('kk', {
-	        months : 'Қаңтар_Ақпан_Наурыз_Сәуір_Мамыр_Маусым_Шілде_Тамыз_Қыркүйек_Қазан_Қараша_Желтоқсан'.split('_'),
-	        monthsShort : 'Қаң_Ақп_Нау_Сәу_Мам_Мау_Шіл_Там_Қыр_Қаз_Қар_Жел'.split('_'),
-	        weekdays : 'Жексенбі_Дүйсенбі_Сейсенбі_Сәрсенбі_Бейсенбі_Жұма_Сенбі'.split('_'),
-	        weekdaysShort : 'Жек_Дүй_Сей_Сәр_Бей_Жұм_Сен'.split('_'),
-	        weekdaysMin : 'Жк_Дй_Сй_Ср_Бй_Жм_Сн'.split('_'),
+	        months : 'қаңтар_ақпан_наурыз_сәуір_мамыр_маусым_шілде_тамыз_қыркүйек_қазан_қараша_желтоқсан'.split('_'),
+	        monthsShort : 'қаң_ақп_нау_сәу_мам_мау_шіл_там_қыр_қаз_қар_жел'.split('_'),
+	        weekdays : 'жексенбі_дүйсенбі_сейсенбі_сәрсенбі_бейсенбі_жұма_сенбі'.split('_'),
+	        weekdaysShort : 'жек_дүй_сей_сәр_бей_жұм_сен'.split('_'),
+	        weekdaysMin : 'жк_дй_сй_ср_бй_жм_сн'.split('_'),
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -12467,8 +12950,8 @@
 	
 	
 	    var km = moment.defineLocale('km', {
-	        months: 'មករា_កុម្ភៈ_មិនា_មេសា_ឧសភា_មិថុនា_កក្កដា_សីហា_កញ្ញា_តុលា_វិច្ឆិកា_ធ្នូ'.split('_'),
-	        monthsShort: 'មករា_កុម្ភៈ_មិនា_មេសា_ឧសភា_មិថុនា_កក្កដា_សីហា_កញ្ញា_តុលា_វិច្ឆិកា_ធ្នូ'.split('_'),
+	        months: 'មករា_កុម្ភៈ_មីនា_មេសា_ឧសភា_មិថុនា_កក្កដា_សីហា_កញ្ញា_តុលា_វិច្ឆិកា_ធ្នូ'.split('_'),
+	        monthsShort: 'មករា_កុម្ភៈ_មីនា_មេសា_ឧសភា_មិថុនា_កក្កដា_សីហា_កញ្ញា_តុលា_វិច្ឆិកា_ធ្នូ'.split('_'),
 	        weekdays: 'អាទិត្យ_ច័ន្ទ_អង្គារ_ពុធ_ព្រហស្បតិ៍_សុក្រ_សៅរ៍'.split('_'),
 	        weekdaysShort: 'អាទិត្យ_ច័ន្ទ_អង្គារ_ពុធ_ព្រហស្បតិ៍_សុក្រ_សៅរ៍'.split('_'),
 	        weekdaysMin: 'អាទិត្យ_ច័ន្ទ_អង្គារ_ពុធ_ព្រហស្បតិ៍_សុក្រ_សៅរ៍'.split('_'),
@@ -12557,17 +13040,17 @@
 	        relativeTime : {
 	            future : '%s 후',
 	            past : '%s 전',
-	            s : '몇초',
+	            s : '몇 초',
 	            ss : '%d초',
 	            m : '일분',
 	            mm : '%d분',
-	            h : '한시간',
+	            h : '한 시간',
 	            hh : '%d시간',
 	            d : '하루',
 	            dd : '%d일',
-	            M : '한달',
+	            M : '한 달',
 	            MM : '%d달',
-	            y : '일년',
+	            y : '일 년',
 	            yy : '%d년'
 	        },
 	        ordinalParse : /\d{1,2}일/,
@@ -12587,6 +13070,98 @@
 
 /***/ },
 /* 64 */
+/***/ function(module, exports, __webpack_require__) {
+
+	//! moment.js locale configuration
+	//! locale : kyrgyz (ky)
+	//! author : Chyngyz Arystan uulu : https://github.com/chyngyz
+	
+	;(function (global, factory) {
+	    true ? factory(__webpack_require__(8)) :
+	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
+	   factory(global.moment)
+	}(this, function (moment) { 'use strict';
+	
+	
+	
+	    var suffixes = {
+	        0: '-чү',
+	        1: '-чи',
+	        2: '-чи',
+	        3: '-чү',
+	        4: '-чү',
+	        5: '-чи',
+	        6: '-чы',
+	        7: '-чи',
+	        8: '-чи',
+	        9: '-чу',
+	        10: '-чу',
+	        20: '-чы',
+	        30: '-чу',
+	        40: '-чы',
+	        50: '-чү',
+	        60: '-чы',
+	        70: '-чи',
+	        80: '-чи',
+	        90: '-чу',
+	        100: '-чү'
+	    };
+	
+	    var ky = moment.defineLocale('ky', {
+	        months : 'январь_февраль_март_апрель_май_июнь_июль_август_сентябрь_октябрь_ноябрь_декабрь'.split('_'),
+	        monthsShort : 'янв_фев_март_апр_май_июнь_июль_авг_сен_окт_ноя_дек'.split('_'),
+	        weekdays : 'Жекшемби_Дүйшөмбү_Шейшемби_Шаршемби_Бейшемби_Жума_Ишемби'.split('_'),
+	        weekdaysShort : 'Жек_Дүй_Шей_Шар_Бей_Жум_Ише'.split('_'),
+	        weekdaysMin : 'Жк_Дй_Шй_Шр_Бй_Жм_Иш'.split('_'),
+	        longDateFormat : {
+	            LT : 'HH:mm',
+	            LTS : 'HH:mm:ss',
+	            L : 'DD.MM.YYYY',
+	            LL : 'D MMMM YYYY',
+	            LLL : 'D MMMM YYYY HH:mm',
+	            LLLL : 'dddd, D MMMM YYYY HH:mm'
+	        },
+	        calendar : {
+	            sameDay : '[Бүгүн саат] LT',
+	            nextDay : '[Эртең саат] LT',
+	            nextWeek : 'dddd [саат] LT',
+	            lastDay : '[Кече саат] LT',
+	            lastWeek : '[Өткен аптанын] dddd [күнү] [саат] LT',
+	            sameElse : 'L'
+	        },
+	        relativeTime : {
+	            future : '%s ичинде',
+	            past : '%s мурун',
+	            s : 'бирнече секунд',
+	            m : 'бир мүнөт',
+	            mm : '%d мүнөт',
+	            h : 'бир саат',
+	            hh : '%d саат',
+	            d : 'бир күн',
+	            dd : '%d күн',
+	            M : 'бир ай',
+	            MM : '%d ай',
+	            y : 'бир жыл',
+	            yy : '%d жыл'
+	        },
+	        ordinalParse: /\d{1,2}-(чи|чы|чү|чу)/,
+	        ordinal : function (number) {
+	            var a = number % 10,
+	                b = number >= 100 ? 100 : null;
+	            return number + (suffixes[number] || suffixes[a] || suffixes[b]);
+	        },
+	        week : {
+	            dow : 1, // Monday is the first day of the week.
+	            doy : 7  // The week that contains Jan 1st is the first week of the year.
+	        }
+	    });
+	
+	    return ky;
+	
+	}));
+
+/***/ },
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -12668,9 +13243,11 @@
 	    var lb = moment.defineLocale('lb', {
 	        months: 'Januar_Februar_Mäerz_Abrëll_Mee_Juni_Juli_August_September_Oktober_November_Dezember'.split('_'),
 	        monthsShort: 'Jan._Febr._Mrz._Abr._Mee_Jun._Jul._Aug._Sept._Okt._Nov._Dez.'.split('_'),
+	        monthsParseExact : true,
 	        weekdays: 'Sonndeg_Méindeg_Dënschdeg_Mëttwoch_Donneschdeg_Freideg_Samschdeg'.split('_'),
 	        weekdaysShort: 'So._Mé._Dë._Më._Do._Fr._Sa.'.split('_'),
 	        weekdaysMin: 'So_Mé_Dë_Më_Do_Fr_Sa'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat: {
 	            LT: 'H:mm [Auer]',
 	            LTS: 'H:mm:ss [Auer]',
@@ -12724,7 +13301,7 @@
 	}));
 
 /***/ },
-/* 65 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -12744,6 +13321,7 @@
 	        weekdays : 'ອາທິດ_ຈັນ_ອັງຄານ_ພຸດ_ພະຫັດ_ສຸກ_ເສົາ'.split('_'),
 	        weekdaysShort : 'ທິດ_ຈັນ_ອັງຄານ_ພຸດ_ພະຫັດ_ສຸກ_ເສົາ'.split('_'),
 	        weekdaysMin : 'ທ_ຈ_ອຄ_ພ_ພຫ_ສກ_ສ'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -12797,7 +13375,7 @@
 	}));
 
 /***/ },
-/* 66 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -12866,6 +13444,7 @@
 	        },
 	        weekdaysShort : 'Sek_Pir_Ant_Tre_Ket_Pen_Šeš'.split('_'),
 	        weekdaysMin : 'S_P_A_T_K_Pn_Š'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -12916,7 +13495,7 @@
 	}));
 
 /***/ },
-/* 67 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -12972,6 +13551,7 @@
 	        weekdays : 'svētdiena_pirmdiena_otrdiena_trešdiena_ceturtdiena_piektdiena_sestdiena'.split('_'),
 	        weekdaysShort : 'Sv_P_O_T_C_Pk_S'.split('_'),
 	        weekdaysMin : 'Sv_P_O_T_C_Pk_S'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -13016,7 +13596,7 @@
 	}));
 
 /***/ },
-/* 68 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -13054,11 +13634,13 @@
 	    };
 	
 	    var me = moment.defineLocale('me', {
-	        months: ['januar', 'februar', 'mart', 'april', 'maj', 'jun', 'jul', 'avgust', 'septembar', 'oktobar', 'novembar', 'decembar'],
-	        monthsShort: ['jan.', 'feb.', 'mar.', 'apr.', 'maj', 'jun', 'jul', 'avg.', 'sep.', 'okt.', 'nov.', 'dec.'],
-	        weekdays: ['nedjelja', 'ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota'],
-	        weekdaysShort: ['ned.', 'pon.', 'uto.', 'sri.', 'čet.', 'pet.', 'sub.'],
-	        weekdaysMin: ['ne', 'po', 'ut', 'sr', 'če', 'pe', 'su'],
+	        months: 'januar_februar_mart_april_maj_jun_jul_avgust_septembar_oktobar_novembar_decembar'.split('_'),
+	        monthsShort: 'jan._feb._mar._apr._maj_jun_jul_avg._sep._okt._nov._dec.'.split('_'),
+	        monthsParseExact : true,
+	        weekdays: 'nedjelja_ponedjeljak_utorak_srijeda_četvrtak_petak_subota'.split('_'),
+	        weekdaysShort: 'ned._pon._uto._sri._čet._pet._sub.'.split('_'),
+	        weekdaysMin: 'ne_po_ut_sr_če_pe_su'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat: {
 	            LT: 'H:mm',
 	            LTS : 'H:mm:ss',
@@ -13129,7 +13711,7 @@
 	}));
 
 /***/ },
-/* 69 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -13223,7 +13805,7 @@
 	}));
 
 /***/ },
-/* 70 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -13240,6 +13822,7 @@
 	    var ml = moment.defineLocale('ml', {
 	        months : 'ജനുവരി_ഫെബ്രുവരി_മാർച്ച്_ഏപ്രിൽ_മേയ്_ജൂൺ_ജൂലൈ_ഓഗസ്റ്റ്_സെപ്റ്റംബർ_ഒക്ടോബർ_നവംബർ_ഡിസംബർ'.split('_'),
 	        monthsShort : 'ജനു._ഫെബ്രു._മാർ._ഏപ്രി._മേയ്_ജൂൺ_ജൂലൈ._ഓഗ._സെപ്റ്റ._ഒക്ടോ._നവം._ഡിസം.'.split('_'),
+	        monthsParseExact : true,
 	        weekdays : 'ഞായറാഴ്ച_തിങ്കളാഴ്ച_ചൊവ്വാഴ്ച_ബുധനാഴ്ച_വ്യാഴാഴ്ച_വെള്ളിയാഴ്ച_ശനിയാഴ്ച'.split('_'),
 	        weekdaysShort : 'ഞായർ_തിങ്കൾ_ചൊവ്വ_ബുധൻ_വ്യാഴം_വെള്ളി_ശനി'.split('_'),
 	        weekdaysMin : 'ഞാ_തി_ചൊ_ബു_വ്യാ_വെ_ശ'.split('_'),
@@ -13307,7 +13890,7 @@
 	}));
 
 /***/ },
-/* 71 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -13386,6 +13969,7 @@
 	    var mr = moment.defineLocale('mr', {
 	        months : 'जानेवारी_फेब्रुवारी_मार्च_एप्रिल_मे_जून_जुलै_ऑगस्ट_सप्टेंबर_ऑक्टोबर_नोव्हेंबर_डिसेंबर'.split('_'),
 	        monthsShort: 'जाने._फेब्रु._मार्च._एप्रि._मे._जून._जुलै._ऑग._सप्टें._ऑक्टो._नोव्हें._डिसें.'.split('_'),
+	        monthsParseExact : true,
 	        weekdays : 'रविवार_सोमवार_मंगळवार_बुधवार_गुरूवार_शुक्रवार_शनिवार'.split('_'),
 	        weekdaysShort : 'रवि_सोम_मंगळ_बुध_गुरू_शुक्र_शनि'.split('_'),
 	        weekdaysMin : 'र_सो_मं_बु_गु_शु_श'.split('_'),
@@ -13469,7 +14053,7 @@
 	}));
 
 /***/ },
-/* 72 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -13555,7 +14139,7 @@
 	}));
 
 /***/ },
-/* 73 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -13641,7 +14225,7 @@
 	}));
 
 /***/ },
-/* 74 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -13738,7 +14322,7 @@
 	}));
 
 /***/ },
-/* 75 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -13756,9 +14340,11 @@
 	    var nb = moment.defineLocale('nb', {
 	        months : 'januar_februar_mars_april_mai_juni_juli_august_september_oktober_november_desember'.split('_'),
 	        monthsShort : 'jan._feb._mars_april_mai_juni_juli_aug._sep._okt._nov._des.'.split('_'),
+	        monthsParseExact : true,
 	        weekdays : 'søndag_mandag_tirsdag_onsdag_torsdag_fredag_lørdag'.split('_'),
 	        weekdaysShort : 'sø._ma._ti._on._to._fr._lø.'.split('_'),
 	        weekdaysMin : 'sø_ma_ti_on_to_fr_lø'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -13777,7 +14363,7 @@
 	        },
 	        relativeTime : {
 	            future : 'om %s',
-	            past : 'for %s siden',
+	            past : '%s siden',
 	            s : 'noen sekunder',
 	            m : 'ett minutt',
 	            mm : '%d minutter',
@@ -13803,7 +14389,7 @@
 	}));
 
 /***/ },
-/* 76 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -13845,9 +14431,11 @@
 	    var ne = moment.defineLocale('ne', {
 	        months : 'जनवरी_फेब्रुवरी_मार्च_अप्रिल_मई_जुन_जुलाई_अगष्ट_सेप्टेम्बर_अक्टोबर_नोभेम्बर_डिसेम्बर'.split('_'),
 	        monthsShort : 'जन._फेब्रु._मार्च_अप्रि._मई_जुन_जुलाई._अग._सेप्ट._अक्टो._नोभे._डिसे.'.split('_'),
+	        monthsParseExact : true,
 	        weekdays : 'आइतबार_सोमबार_मङ्गलबार_बुधबार_बिहिबार_शुक्रबार_शनिबार'.split('_'),
 	        weekdaysShort : 'आइत._सोम._मङ्गल._बुध._बिहि._शुक्र._शनि.'.split('_'),
 	        weekdaysMin : 'आ._सो._मं._बु._बि._शु._श.'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'Aको h:mm बजे',
 	            LTS : 'Aको h:mm:ss बजे',
@@ -13928,7 +14516,7 @@
 	}));
 
 /***/ },
-/* 77 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -13954,9 +14542,11 @@
 	                return monthsShortWithDots[m.month()];
 	            }
 	        },
+	        monthsParseExact : true,
 	        weekdays : 'zondag_maandag_dinsdag_woensdag_donderdag_vrijdag_zaterdag'.split('_'),
 	        weekdaysShort : 'zo._ma._di._wo._do._vr._za.'.split('_'),
 	        weekdaysMin : 'Zo_Ma_Di_Wo_Do_Vr_Za'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -14003,7 +14593,7 @@
 	}));
 
 /***/ },
-/* 78 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -14041,7 +14631,7 @@
 	        },
 	        relativeTime : {
 	            future : 'om %s',
-	            past : 'for %s sidan',
+	            past : '%s sidan',
 	            s : 'nokre sekund',
 	            m : 'eit minutt',
 	            mm : '%d minutt',
@@ -14067,7 +14657,7 @@
 	}));
 
 /***/ },
-/* 79 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -14195,7 +14785,7 @@
 	}));
 
 /***/ },
-/* 80 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -14304,7 +14894,7 @@
 	}));
 
 /***/ },
-/* 81 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -14324,6 +14914,7 @@
 	        weekdays : 'Domingo_Segunda-Feira_Terça-Feira_Quarta-Feira_Quinta-Feira_Sexta-Feira_Sábado'.split('_'),
 	        weekdaysShort : 'Dom_Seg_Ter_Qua_Qui_Sex_Sáb'.split('_'),
 	        weekdaysMin : 'Dom_2ª_3ª_4ª_5ª_6ª_Sáb'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -14372,7 +14963,7 @@
 	}));
 
 /***/ },
-/* 82 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -14392,6 +14983,7 @@
 	        weekdays : 'Domingo_Segunda-feira_Terça-feira_Quarta-feira_Quinta-feira_Sexta-feira_Sábado'.split('_'),
 	        weekdaysShort : 'Dom_Seg_Ter_Qua_Qui_Sex_Sáb'.split('_'),
 	        weekdaysMin : 'Dom_2ª_3ª_4ª_5ª_6ª_Sáb'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -14436,7 +15028,7 @@
 	}));
 
 /***/ },
-/* 83 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -14469,6 +15061,7 @@
 	    var ro = moment.defineLocale('ro', {
 	        months : 'ianuarie_februarie_martie_aprilie_mai_iunie_iulie_august_septembrie_octombrie_noiembrie_decembrie'.split('_'),
 	        monthsShort : 'ian._febr._mart._apr._mai_iun._iul._aug._sept._oct._nov._dec.'.split('_'),
+	        monthsParseExact: true,
 	        weekdays : 'duminică_luni_marți_miercuri_joi_vineri_sâmbătă'.split('_'),
 	        weekdaysShort : 'Dum_Lun_Mar_Mie_Joi_Vin_Sâm'.split('_'),
 	        weekdaysMin : 'Du_Lu_Ma_Mi_Jo_Vi_Sâ'.split('_'),
@@ -14514,7 +15107,7 @@
 	}));
 
 /***/ },
-/* 84 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -14549,17 +15142,20 @@
 	            return number + ' ' + plural(format[key], +number);
 	        }
 	    }
-	    var monthsParse = [/^янв/i, /^фев/i, /^мар/i, /^апр/i, /^ма[й|я]/i, /^июн/i, /^июл/i, /^авг/i, /^сен/i, /^окт/i, /^ноя/i, /^дек/i];
+	    var monthsParse = [/^янв/i, /^фев/i, /^мар/i, /^апр/i, /^ма[йя]/i, /^июн/i, /^июл/i, /^авг/i, /^сен/i, /^окт/i, /^ноя/i, /^дек/i];
 	
 	    // http://new.gramota.ru/spravka/rules/139-prop : § 103
+	    // Сокращения месяцев: http://new.gramota.ru/spravka/buro/search-answer?s=242637
+	    // CLDR data:          http://www.unicode.org/cldr/charts/28/summary/ru.html#1753
 	    var ru = moment.defineLocale('ru', {
 	        months : {
 	            format: 'января_февраля_марта_апреля_мая_июня_июля_августа_сентября_октября_ноября_декабря'.split('_'),
 	            standalone: 'январь_февраль_март_апрель_май_июнь_июль_август_сентябрь_октябрь_ноябрь_декабрь'.split('_')
 	        },
 	        monthsShort : {
-	            format: 'янв_фев_мар_апр_мая_июня_июля_авг_сен_окт_ноя_дек'.split('_'),
-	            standalone: 'янв_фев_март_апр_май_июнь_июль_авг_сен_окт_ноя_дек'.split('_')
+	            // по CLDR именно "июл." и "июн.", но какой смысл менять букву на точку ?
+	            format: 'янв._февр._мар._апр._мая_июня_июля_авг._сент._окт._нояб._дек.'.split('_'),
+	            standalone: 'янв._февр._март_апр._май_июнь_июль_авг._сент._окт._нояб._дек.'.split('_')
 	        },
 	        weekdays : {
 	            standalone: 'воскресенье_понедельник_вторник_среда_четверг_пятница_суббота'.split('_'),
@@ -14571,6 +15167,10 @@
 	        monthsParse : monthsParse,
 	        longMonthsParse : monthsParse,
 	        shortMonthsParse : monthsParse,
+	        monthsRegex: /^(сентябр[яь]|октябр[яь]|декабр[яь]|феврал[яь]|январ[яь]|апрел[яь]|августа?|ноябр[яь]|сент\.|февр\.|нояб\.|июнь|янв.|июль|дек.|авг.|апр.|марта|мар[.т]|окт.|июн[яь]|июл[яь]|ма[яй])/i,
+	        monthsShortRegex: /^(сентябр[яь]|октябр[яь]|декабр[яь]|феврал[яь]|январ[яь]|апрел[яь]|августа?|ноябр[яь]|сент\.|февр\.|нояб\.|июнь|янв.|июль|дек.|авг.|апр.|марта|мар[.т]|окт.|июн[яь]|июл[яь]|ма[яй])/i,
+	        monthsStrictRegex: /^(сентябр[яь]|октябр[яь]|декабр[яь]|феврал[яь]|январ[яь]|апрел[яь]|августа?|ноябр[яь]|марта?|июн[яь]|июл[яь]|ма[яй])/i,
+	        monthsShortStrictRegex: /^(нояб\.|февр\.|сент\.|июль|янв\.|июн[яь]|мар[.т]|авг\.|апр\.|окт\.|дек\.|ма[яй])/i,
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -14686,7 +15286,7 @@
 	}));
 
 /***/ },
-/* 85 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -14751,7 +15351,7 @@
 	}));
 
 /***/ },
-/* 86 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -14772,6 +15372,7 @@
 	        weekdays : 'ඉරිදා_සඳුදා_අඟහරුවාදා_බදාදා_බ්‍රහස්පතින්දා_සිකුරාදා_සෙනසුරාදා'.split('_'),
 	        weekdaysShort : 'ඉරි_සඳු_අඟ_බදා_බ්‍රහ_සිකු_සෙන'.split('_'),
 	        weekdaysMin : 'ඉ_ස_අ_බ_බ්‍ර_සි_සෙ'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'a h:mm',
 	            LTS : 'a h:mm:ss',
@@ -14825,7 +15426,7 @@
 	}));
 
 /***/ },
-/* 87 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -14979,7 +15580,7 @@
 	}));
 
 /***/ },
-/* 88 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -15067,9 +15668,11 @@
 	    var sl = moment.defineLocale('sl', {
 	        months : 'januar_februar_marec_april_maj_junij_julij_avgust_september_oktober_november_december'.split('_'),
 	        monthsShort : 'jan._feb._mar._apr._maj._jun._jul._avg._sep._okt._nov._dec.'.split('_'),
+	        monthsParseExact: true,
 	        weekdays : 'nedelja_ponedeljek_torek_sreda_četrtek_petek_sobota'.split('_'),
 	        weekdaysShort : 'ned._pon._tor._sre._čet._pet._sob.'.split('_'),
 	        weekdaysMin : 'ne_po_to_sr_če_pe_so'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'H:mm',
 	            LTS : 'H:mm:ss',
@@ -15143,7 +15746,7 @@
 	}));
 
 /***/ },
-/* 89 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -15165,6 +15768,7 @@
 	        weekdays : 'E Diel_E Hënë_E Martë_E Mërkurë_E Enjte_E Premte_E Shtunë'.split('_'),
 	        weekdaysShort : 'Die_Hën_Mar_Mër_Enj_Pre_Sht'.split('_'),
 	        weekdaysMin : 'D_H_Ma_Më_E_P_Sh'.split('_'),
+	        weekdaysParseExact : true,
 	        meridiemParse: /PD|MD/,
 	        isPM: function (input) {
 	            return input.charAt(0) === 'M';
@@ -15216,7 +15820,7 @@
 	}));
 
 /***/ },
-/* 90 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -15254,11 +15858,13 @@
 	    };
 	
 	    var sr = moment.defineLocale('sr', {
-	        months: ['januar', 'februar', 'mart', 'april', 'maj', 'jun', 'jul', 'avgust', 'septembar', 'oktobar', 'novembar', 'decembar'],
-	        monthsShort: ['jan.', 'feb.', 'mar.', 'apr.', 'maj', 'jun', 'jul', 'avg.', 'sep.', 'okt.', 'nov.', 'dec.'],
-	        weekdays: ['nedelja', 'ponedeljak', 'utorak', 'sreda', 'četvrtak', 'petak', 'subota'],
-	        weekdaysShort: ['ned.', 'pon.', 'uto.', 'sre.', 'čet.', 'pet.', 'sub.'],
-	        weekdaysMin: ['ne', 'po', 'ut', 'sr', 'če', 'pe', 'su'],
+	        months: 'januar_februar_mart_april_maj_jun_jul_avgust_septembar_oktobar_novembar_decembar'.split('_'),
+	        monthsShort: 'jan._feb._mar._apr._maj_jun_jul_avg._sep._okt._nov._dec.'.split('_'),
+	        monthsParseExact: true,
+	        weekdays: 'nedelja_ponedeljak_utorak_sreda_četvrtak_petak_subota'.split('_'),
+	        weekdaysShort: 'ned._pon._uto._sre._čet._pet._sub.'.split('_'),
+	        weekdaysMin: 'ne_po_ut_sr_če_pe_su'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat: {
 	            LT: 'H:mm',
 	            LTS : 'H:mm:ss',
@@ -15328,7 +15934,7 @@
 	}));
 
 /***/ },
-/* 91 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -15366,11 +15972,13 @@
 	    };
 	
 	    var sr_cyrl = moment.defineLocale('sr-cyrl', {
-	        months: ['јануар', 'фебруар', 'март', 'април', 'мај', 'јун', 'јул', 'август', 'септембар', 'октобар', 'новембар', 'децембар'],
-	        monthsShort: ['јан.', 'феб.', 'мар.', 'апр.', 'мај', 'јун', 'јул', 'авг.', 'сеп.', 'окт.', 'нов.', 'дец.'],
-	        weekdays: ['недеља', 'понедељак', 'уторак', 'среда', 'четвртак', 'петак', 'субота'],
-	        weekdaysShort: ['нед.', 'пон.', 'уто.', 'сре.', 'чет.', 'пет.', 'суб.'],
-	        weekdaysMin: ['не', 'по', 'ут', 'ср', 'че', 'пе', 'су'],
+	        months: 'јануар_фебруар_март_април_мај_јун_јул_август_септембар_октобар_новембар_децембар'.split('_'),
+	        monthsShort: 'јан._феб._мар._апр._мај_јун_јул_авг._сеп._окт._нов._дец.'.split('_'),
+	        monthsParseExact: true,
+	        weekdays: 'недеља_понедељак_уторак_среда_четвртак_петак_субота'.split('_'),
+	        weekdaysShort: 'нед._пон._уто._сре._чет._пет._суб.'.split('_'),
+	        weekdaysMin: 'не_по_ут_ср_че_пе_су'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat: {
 	            LT: 'H:mm',
 	            LTS : 'H:mm:ss',
@@ -15440,7 +16048,100 @@
 	}));
 
 /***/ },
-/* 92 */
+/* 93 */
+/***/ function(module, exports, __webpack_require__) {
+
+	//! moment.js locale configuration
+	//! locale : siSwati (ss)
+	//! author : Nicolai Davies<mail@nicolai.io> : https://github.com/nicolaidavies
+	
+	;(function (global, factory) {
+	    true ? factory(__webpack_require__(8)) :
+	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
+	   factory(global.moment)
+	}(this, function (moment) { 'use strict';
+	
+	
+	
+	    var ss = moment.defineLocale('ss', {
+	        months : "Bhimbidvwane_Indlovana_Indlov'lenkhulu_Mabasa_Inkhwekhweti_Inhlaba_Kholwane_Ingci_Inyoni_Imphala_Lweti_Ingongoni".split('_'),
+	        monthsShort : 'Bhi_Ina_Inu_Mab_Ink_Inh_Kho_Igc_Iny_Imp_Lwe_Igo'.split('_'),
+	        weekdays : 'Lisontfo_Umsombuluko_Lesibili_Lesitsatfu_Lesine_Lesihlanu_Umgcibelo'.split('_'),
+	        weekdaysShort : 'Lis_Umb_Lsb_Les_Lsi_Lsh_Umg'.split('_'),
+	        weekdaysMin : 'Li_Us_Lb_Lt_Ls_Lh_Ug'.split('_'),
+	        weekdaysParseExact : true,
+	        longDateFormat : {
+	            LT : 'h:mm A',
+	            LTS : 'h:mm:ss A',
+	            L : 'DD/MM/YYYY',
+	            LL : 'D MMMM YYYY',
+	            LLL : 'D MMMM YYYY h:mm A',
+	            LLLL : 'dddd, D MMMM YYYY h:mm A'
+	        },
+	        calendar : {
+	            sameDay : '[Namuhla nga] LT',
+	            nextDay : '[Kusasa nga] LT',
+	            nextWeek : 'dddd [nga] LT',
+	            lastDay : '[Itolo nga] LT',
+	            lastWeek : 'dddd [leliphelile] [nga] LT',
+	            sameElse : 'L'
+	        },
+	        relativeTime : {
+	            future : 'nga %s',
+	            past : 'wenteka nga %s',
+	            s : 'emizuzwana lomcane',
+	            m : 'umzuzu',
+	            mm : '%d emizuzu',
+	            h : 'lihora',
+	            hh : '%d emahora',
+	            d : 'lilanga',
+	            dd : '%d emalanga',
+	            M : 'inyanga',
+	            MM : '%d tinyanga',
+	            y : 'umnyaka',
+	            yy : '%d iminyaka'
+	        },
+	        meridiemParse: /ekuseni|emini|entsambama|ebusuku/,
+	        meridiem : function (hours, minutes, isLower) {
+	            if (hours < 11) {
+	                return 'ekuseni';
+	            } else if (hours < 15) {
+	                return 'emini';
+	            } else if (hours < 19) {
+	                return 'entsambama';
+	            } else {
+	                return 'ebusuku';
+	            }
+	        },
+	        meridiemHour : function (hour, meridiem) {
+	            if (hour === 12) {
+	                hour = 0;
+	            }
+	            if (meridiem === 'ekuseni') {
+	                return hour;
+	            } else if (meridiem === 'emini') {
+	                return hour >= 11 ? hour : hour + 12;
+	            } else if (meridiem === 'entsambama' || meridiem === 'ebusuku') {
+	                if (hour === 0) {
+	                    return 0;
+	                }
+	                return hour + 12;
+	            }
+	        },
+	        ordinalParse: /\d{1,2}/,
+	        ordinal : '%d',
+	        week : {
+	            dow : 1, // Monday is the first day of the week.
+	            doy : 4  // The week that contains Jan 4th is the first week of the year.
+	        }
+	    });
+	
+	    return ss;
+	
+	}));
+
+/***/ },
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -15465,8 +16166,10 @@
 	            LTS : 'HH:mm:ss',
 	            L : 'YYYY-MM-DD',
 	            LL : 'D MMMM YYYY',
-	            LLL : 'D MMMM YYYY HH:mm',
-	            LLLL : 'dddd D MMMM YYYY HH:mm'
+	            LLL : 'D MMMM YYYY [kl.] HH:mm',
+	            LLLL : 'dddd D MMMM YYYY [kl.] HH:mm',
+	            lll : 'D MMM YYYY HH:mm',
+	            llll : 'ddd D MMM YYYY HH:mm'
 	        },
 	        calendar : {
 	            sameDay: '[Idag] LT',
@@ -15511,7 +16214,7 @@
 	}));
 
 /***/ },
-/* 93 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -15531,6 +16234,7 @@
 	        weekdays : 'Jumapili_Jumatatu_Jumanne_Jumatano_Alhamisi_Ijumaa_Jumamosi'.split('_'),
 	        weekdaysShort : 'Jpl_Jtat_Jnne_Jtan_Alh_Ijm_Jmos'.split('_'),
 	        weekdaysMin : 'J2_J3_J4_J5_Al_Ij_J1'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
@@ -15573,7 +16277,7 @@
 	}));
 
 /***/ },
-/* 94 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -15706,7 +16410,7 @@
 	}));
 
 /***/ },
-/* 95 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -15723,6 +16427,7 @@
 	    var te = moment.defineLocale('te', {
 	        months : 'జనవరి_ఫిబ్రవరి_మార్చి_ఏప్రిల్_మే_జూన్_జూలై_ఆగస్టు_సెప్టెంబర్_అక్టోబర్_నవంబర్_డిసెంబర్'.split('_'),
 	        monthsShort : 'జన._ఫిబ్ర._మార్చి_ఏప్రి._మే_జూన్_జూలై_ఆగ._సెప్._అక్టో._నవ._డిసె.'.split('_'),
+	        monthsParseExact : true,
 	        weekdays : 'ఆదివారం_సోమవారం_మంగళవారం_బుధవారం_గురువారం_శుక్రవారం_శనివారం'.split('_'),
 	        weekdaysShort : 'ఆది_సోమ_మంగళ_బుధ_గురు_శుక్ర_శని'.split('_'),
 	        weekdaysMin : 'ఆ_సో_మం_బు_గు_శు_శ'.split('_'),
@@ -15798,7 +16503,7 @@
 	}));
 
 /***/ },
-/* 96 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -15815,9 +16520,11 @@
 	    var th = moment.defineLocale('th', {
 	        months : 'มกราคม_กุมภาพันธ์_มีนาคม_เมษายน_พฤษภาคม_มิถุนายน_กรกฎาคม_สิงหาคม_กันยายน_ตุลาคม_พฤศจิกายน_ธันวาคม'.split('_'),
 	        monthsShort : 'มกรา_กุมภา_มีนา_เมษา_พฤษภา_มิถุนา_กรกฎา_สิงหา_กันยา_ตุลา_พฤศจิกา_ธันวา'.split('_'),
+	        monthsParseExact: true,
 	        weekdays : 'อาทิตย์_จันทร์_อังคาร_พุธ_พฤหัสบดี_ศุกร์_เสาร์'.split('_'),
 	        weekdaysShort : 'อาทิตย์_จันทร์_อังคาร_พุธ_พฤหัส_ศุกร์_เสาร์'.split('_'), // yes, three characters difference
 	        weekdaysMin : 'อา._จ._อ._พ._พฤ._ศ._ส.'.split('_'),
+	        weekdaysParseExact : true,
 	        longDateFormat : {
 	            LT : 'H นาฬิกา m นาที',
 	            LTS : 'H นาฬิกา m นาที s วินาที',
@@ -15867,7 +16574,7 @@
 	}));
 
 /***/ },
-/* 97 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -15933,7 +16640,7 @@
 	}));
 
 /***/ },
-/* 98 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -16009,6 +16716,7 @@
 	    var tlh = moment.defineLocale('tlh', {
 	        months : 'tera’ jar wa’_tera’ jar cha’_tera’ jar wej_tera’ jar loS_tera’ jar vagh_tera’ jar jav_tera’ jar Soch_tera’ jar chorgh_tera’ jar Hut_tera’ jar wa’maH_tera’ jar wa’maH wa’_tera’ jar wa’maH cha’'.split('_'),
 	        monthsShort : 'jar wa’_jar cha’_jar wej_jar loS_jar vagh_jar jav_jar Soch_jar chorgh_jar Hut_jar wa’maH_jar wa’maH wa’_jar wa’maH cha’'.split('_'),
+	        monthsParseExact : true,
 	        weekdays : 'lojmItjaj_DaSjaj_povjaj_ghItlhjaj_loghjaj_buqjaj_ghInjaj'.split('_'),
 	        weekdaysShort : 'lojmItjaj_DaSjaj_povjaj_ghItlhjaj_loghjaj_buqjaj_ghInjaj'.split('_'),
 	        weekdaysMin : 'lojmItjaj_DaSjaj_povjaj_ghItlhjaj_loghjaj_buqjaj_ghInjaj'.split('_'),
@@ -16056,7 +16764,7 @@
 	}));
 
 /***/ },
-/* 99 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -16150,7 +16858,7 @@
 	}));
 
 /***/ },
-/* 100 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -16245,7 +16953,7 @@
 	}));
 
 /***/ },
-/* 101 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -16307,7 +17015,7 @@
 	}));
 
 /***/ },
-/* 102 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -16369,7 +17077,7 @@
 	}));
 
 /***/ },
-/* 103 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -16519,7 +17227,7 @@
 	}));
 
 /***/ },
-/* 104 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -16581,7 +17289,7 @@
 	}));
 
 /***/ },
-/* 105 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -16598,9 +17306,11 @@
 	    var vi = moment.defineLocale('vi', {
 	        months : 'tháng 1_tháng 2_tháng 3_tháng 4_tháng 5_tháng 6_tháng 7_tháng 8_tháng 9_tháng 10_tháng 11_tháng 12'.split('_'),
 	        monthsShort : 'Th01_Th02_Th03_Th04_Th05_Th06_Th07_Th08_Th09_Th10_Th11_Th12'.split('_'),
+	        monthsParseExact : true,
 	        weekdays : 'chủ nhật_thứ hai_thứ ba_thứ tư_thứ năm_thứ sáu_thứ bảy'.split('_'),
 	        weekdaysShort : 'CN_T2_T3_T4_T5_T6_T7'.split('_'),
 	        weekdaysMin : 'CN_T2_T3_T4_T5_T6_T7'.split('_'),
+	        weekdaysParseExact : true,
 	        meridiemParse: /sa|ch/i,
 	        isPM : function (input) {
 	            return /^ch$/i.test(input);
@@ -16662,7 +17372,79 @@
 	}));
 
 /***/ },
-/* 106 */
+/* 108 */
+/***/ function(module, exports, __webpack_require__) {
+
+	//! moment.js locale configuration
+	//! locale : pseudo (x-pseudo)
+	//! author : Andrew Hood : https://github.com/andrewhood125
+	
+	;(function (global, factory) {
+	    true ? factory(__webpack_require__(8)) :
+	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
+	   factory(global.moment)
+	}(this, function (moment) { 'use strict';
+	
+	
+	    var x_pseudo = moment.defineLocale('x-pseudo', {
+	        months : 'J~áñúá~rý_F~ébrú~árý_~Márc~h_Áp~ríl_~Máý_~Júñé~_Júl~ý_Áú~gúst~_Sép~témb~ér_Ó~ctób~ér_Ñ~óvém~bér_~Décé~mbér'.split('_'),
+	        monthsShort : 'J~áñ_~Féb_~Már_~Ápr_~Máý_~Júñ_~Júl_~Áúg_~Sép_~Óct_~Ñóv_~Déc'.split('_'),
+	        monthsParseExact : true,
+	        weekdays : 'S~úñdá~ý_Mó~ñdáý~_Túé~sdáý~_Wéd~ñésd~áý_T~húrs~dáý_~Fríd~áý_S~átúr~dáý'.split('_'),
+	        weekdaysShort : 'S~úñ_~Móñ_~Túé_~Wéd_~Thú_~Frí_~Sát'.split('_'),
+	        weekdaysMin : 'S~ú_Mó~_Tú_~Wé_T~h_Fr~_Sá'.split('_'),
+	        weekdaysParseExact : true,
+	        longDateFormat : {
+	            LT : 'HH:mm',
+	            L : 'DD/MM/YYYY',
+	            LL : 'D MMMM YYYY',
+	            LLL : 'D MMMM YYYY HH:mm',
+	            LLLL : 'dddd, D MMMM YYYY HH:mm'
+	        },
+	        calendar : {
+	            sameDay : '[T~ódá~ý át] LT',
+	            nextDay : '[T~ómó~rró~w át] LT',
+	            nextWeek : 'dddd [át] LT',
+	            lastDay : '[Ý~ést~érdá~ý át] LT',
+	            lastWeek : '[L~ást] dddd [át] LT',
+	            sameElse : 'L'
+	        },
+	        relativeTime : {
+	            future : 'í~ñ %s',
+	            past : '%s á~gó',
+	            s : 'á ~féw ~sécó~ñds',
+	            m : 'á ~míñ~úté',
+	            mm : '%d m~íñú~tés',
+	            h : 'á~ñ hó~úr',
+	            hh : '%d h~óúrs',
+	            d : 'á ~dáý',
+	            dd : '%d d~áýs',
+	            M : 'á ~móñ~th',
+	            MM : '%d m~óñt~hs',
+	            y : 'á ~ýéár',
+	            yy : '%d ý~éárs'
+	        },
+	        ordinalParse: /\d{1,2}(th|st|nd|rd)/,
+	        ordinal : function (number) {
+	            var b = number % 10,
+	                output = (~~(number % 100 / 10) === 1) ? 'th' :
+	                (b === 1) ? 'st' :
+	                (b === 2) ? 'nd' :
+	                (b === 3) ? 'rd' : 'th';
+	            return number + output;
+	        },
+	        week : {
+	            dow : 1, // Monday is the first day of the week.
+	            doy : 4  // The week that contains Jan 4th is the first week of the year.
+	        }
+	    });
+	
+	    return x_pseudo;
+	
+	}));
+
+/***/ },
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -16739,7 +17521,7 @@
 	            nextWeek : function () {
 	                var startOfWeek, prefix;
 	                startOfWeek = moment().startOf('week');
-	                prefix = this.unix() - startOfWeek.unix() >= 7 * 24 * 3600 ? '[下]' : '[本]';
+	                prefix = this.diff(startOfWeek, 'days') >= 7 ? '[下]' : '[本]';
 	                return this.minutes() === 0 ? prefix + 'dddAh点整' : prefix + 'dddAh点mm';
 	            },
 	            lastWeek : function () {
@@ -16793,7 +17575,7 @@
 	}));
 
 /***/ },
-/* 107 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//! moment.js locale configuration
@@ -16880,15 +17662,15 @@
 	            future : '%s內',
 	            past : '%s前',
 	            s : '幾秒',
-	            m : '一分鐘',
+	            m : '1分鐘',
 	            mm : '%d分鐘',
-	            h : '一小時',
+	            h : '1小時',
 	            hh : '%d小時',
-	            d : '一天',
+	            d : '1天',
 	            dd : '%d天',
-	            M : '一個月',
+	            M : '1個月',
 	            MM : '%d個月',
-	            y : '一年',
+	            y : '1年',
 	            yy : '%d年'
 	        }
 	    });
@@ -16898,7 +17680,7 @@
 	}));
 
 /***/ },
-/* 108 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -17583,7 +18365,7 @@
 
 
 /***/ },
-/* 109 */
+/* 112 */
 /***/ function(module, exports) {
 
 	/*! 
@@ -17626,7 +18408,7 @@
 	}());
 
 /***/ },
-/* 110 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -21386,16 +22168,16 @@
 
 
 /***/ },
-/* 111 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 	
-	var CodeMirror = _interopRequire(__webpack_require__(112));
+	var CodeMirror = _interopRequire(__webpack_require__(115));
 	
-	__webpack_require__(113);
+	__webpack_require__(116);
 	
 	riot.mixin("admin", {
 	  openAdminForm: function openAdminForm(formTag, options, resource) {
@@ -21652,7 +22434,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 112 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -21698,6 +22480,7 @@
 	  // This is woefully incomplete. Suggestions for alternative methods welcome.
 	  var mobile = ios || /Android|webOS|BlackBerry|Opera Mini|Opera Mobi|IEMobile/i.test(userAgent);
 	  var mac = ios || /Mac/.test(platform);
+	  var chromeOS = /\bCrOS\b/.test(userAgent);
 	  var windows = /win/i.test(platform);
 	
 	  var presto_version = presto && userAgent.match(/Version\/(\d*\.\d*)/);
@@ -25337,7 +26120,7 @@
 	      ourIndex = doc.sel.primIndex;
 	    }
 	
-	    if (e.altKey) {
+	    if (chromeOS ? e.shiftKey && e.metaKey : e.altKey) {
 	      type = "rect";
 	      if (!addNew) ourRange = new Range(start, start);
 	      start = posFromMouse(cm, e, true, true);
@@ -25562,6 +26345,7 @@
 	    if (signalDOMEvent(cm, e) || eventInWidget(cm.display, e)) return;
 	
 	    e.dataTransfer.setData("Text", cm.getSelection());
+	    e.dataTransfer.effectAllowed = "copyMove"
 	
 	    // Use dummy image instead of default browsers image.
 	    // Recent Safari (~6.0.2) have a tendency to segfault when this happens, so we don't do it there.
@@ -29282,9 +30066,9 @@
 	        var spans = line.markedSpans;
 	        if (spans) for (var i = 0; i < spans.length; i++) {
 	          var span = spans[i];
-	          if (!(span.to != null && lineNo == from.line && from.ch > span.to ||
+	          if (!(span.to != null && lineNo == from.line && from.ch >= span.to ||
 	                span.from == null && lineNo != from.line ||
-	                span.from != null && lineNo == to.line && span.from > to.ch) &&
+	                span.from != null && lineNo == to.line && span.from >= to.ch) &&
 	              (!filter || filter(span.marker)))
 	            found.push(span.marker.parent || span.marker);
 	        }
@@ -29303,9 +30087,9 @@
 	    },
 	
 	    posFromIndex: function(off) {
-	      var ch, lineNo = this.first;
+	      var ch, lineNo = this.first, sepSize = this.lineSeparator().length;
 	      this.iter(function(line) {
-	        var sz = line.text.length + 1;
+	        var sz = line.text.length + sepSize;
 	        if (sz > off) { ch = off; return true; }
 	        off -= sz;
 	        ++lineNo;
@@ -29316,8 +30100,9 @@
 	      coords = clipPos(this, coords);
 	      var index = coords.ch;
 	      if (coords.line < this.first || coords.ch < 0) return 0;
+	      var sepSize = this.lineSeparator().length;
 	      this.iter(this.first, coords.line, function (line) {
-	        index += line.text.length + 1;
+	        index += line.text.length + sepSize;
 	      });
 	      return index;
 	    },
@@ -30546,14 +31331,14 @@
 	
 	  // THE END
 	
-	  CodeMirror.version = "5.13.2";
+	  CodeMirror.version = "5.14.2";
 	
 	  return CodeMirror;
 	});
 
 
 /***/ },
-/* 113 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -30561,7 +31346,7 @@
 	
 	(function(mod) {
 	  if (true) // CommonJS
-	    mod(__webpack_require__(112), __webpack_require__(114), __webpack_require__(115), __webpack_require__(116));
+	    mod(__webpack_require__(115), __webpack_require__(117), __webpack_require__(118), __webpack_require__(119));
 	  else if (typeof define == "function" && define.amd) // AMD
 	    define(["../../lib/codemirror", "../xml/xml", "../javascript/javascript", "../css/css"], mod);
 	  else // Plain browser env
@@ -30711,7 +31496,7 @@
 
 
 /***/ },
-/* 114 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -30719,7 +31504,7 @@
 	
 	(function(mod) {
 	  if (true) // CommonJS
-	    mod(__webpack_require__(112));
+	    mod(__webpack_require__(115));
 	  else if (typeof define == "function" && define.amd) // AMD
 	    define(["../../lib/codemirror"], mod);
 	  else // Plain browser env
@@ -31111,7 +31896,7 @@
 
 
 /***/ },
-/* 115 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -31121,7 +31906,7 @@
 	
 	(function(mod) {
 	  if (true) // CommonJS
-	    mod(__webpack_require__(112));
+	    mod(__webpack_require__(115));
 	  else if (typeof define == "function" && define.amd) // AMD
 	    define(["../../lib/codemirror"], mod);
 	  else // Plain browser env
@@ -31859,7 +32644,7 @@
 
 
 /***/ },
-/* 116 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -31867,7 +32652,7 @@
 	
 	(function(mod) {
 	  if (true) // CommonJS
-	    mod(__webpack_require__(112));
+	    mod(__webpack_require__(115));
 	  else if (typeof define == "function" && define.amd) // AMD
 	    define(["../../lib/codemirror"], mod);
 	  else // Plain browser env
@@ -32690,26 +33475,18 @@
 
 
 /***/ },
-/* 117 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(118);
-	
-	__webpack_require__(120);
-	
 	__webpack_require__(121);
 	
-	__webpack_require__(122);
+	__webpack_require__(123);
 	
-	__webpack_require__(127);
+	__webpack_require__(124);
 	
-	__webpack_require__(128);
-	
-	__webpack_require__(129);
-	
-	__webpack_require__(189);
+	__webpack_require__(125);
 	
 	__webpack_require__(130);
 	
@@ -32717,19 +33494,27 @@
 	
 	__webpack_require__(132);
 	
+	__webpack_require__(190);
+	
 	__webpack_require__(133);
+	
+	__webpack_require__(134);
+	
+	__webpack_require__(135);
 	
 	__webpack_require__(136);
 	
-	__webpack_require__(152);
+	__webpack_require__(139);
 	
-	__webpack_require__(161);
-	
-	__webpack_require__(162);
+	__webpack_require__(155);
 	
 	__webpack_require__(163);
 	
 	__webpack_require__(164);
+	
+	__webpack_require__(165);
+	
+	__webpack_require__(166);
 	
 	riot.tag2("r-app", "<yield from=\"header\"></yield> <div name=\"content\"></div>", "", "", function (opts) {
 	  var _this = this;
@@ -32962,12 +33747,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 118 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	var links = __webpack_require__(119);
+	var links = __webpack_require__(122);
 	
 	riot.tag2("r-admin-menu", "<r-typeahead-input if=\"{currentAccount.isAdministrator}\" resource=\"accounts\" api=\"{opts.api}\" id=\"{currentAccount.impersonating ?  currentAccount.user_id : null}\" datum_tokenizer=\"{['email']}\"></r-typeahead-input> <div class=\"relative inline-block\" data-disclosure> <button type=\"button\" class=\"btn bg-blue white\"> Menu &#9662; </button> <div data-details class=\"fixed top-0 right-0 bottom-0 left-0\"></div> <div data-details class=\"absolute left-0 mt1 nowrap black bg-blue white rounded z4\"> <a each=\"{items}\" href=\"{href}\" class=\"btn block\">{title}</a> </div> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -32990,7 +33775,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 119 */
+/* 122 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -33115,7 +33900,7 @@
 	};
 
 /***/ },
-/* 120 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33128,7 +33913,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 121 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33154,24 +33939,24 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 122 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(123);
-	
-	__webpack_require__(124);
-	
-	__webpack_require__(125);
-	
 	__webpack_require__(126);
+	
+	__webpack_require__(127);
+	
+	__webpack_require__(128);
+	
+	__webpack_require__(129);
 	
 	riot.tag2("r-auth", "<r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\"></r-tabs>", "", "", function (opts) {});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 123 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33201,7 +33986,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 124 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33234,7 +34019,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 125 */
+/* 128 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33263,7 +34048,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 126 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33294,7 +34079,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 127 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33326,7 +34111,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 128 */
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33370,7 +34155,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 129 */
+/* 132 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33387,7 +34172,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 130 */
+/* 133 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33457,7 +34242,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 131 */
+/* 134 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33499,7 +34284,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 132 */
+/* 135 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33559,20 +34344,20 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 133 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
 	
-	var options = __webpack_require__(134);
+	var options = __webpack_require__(137);
 	
-	__webpack_require__(130);
+	__webpack_require__(133);
 	
-	__webpack_require__(131);
+	__webpack_require__(134);
 	
-	__webpack_require__(135);
+	__webpack_require__(138);
 	
 	riot.tag2("r-projects-brief", "<yield if=\"{!opts.api.currentAccount}\" to=\"header\"> <header class=\"container\"> <nav class=\"relative clearfix {step > 0 ? 'black' : 'white'} h5\"> <div class=\"left\"> <a href=\"/\" class=\"btn py2\"><img riot-src=\"/images/logos/{step > 0 ? 'black' : 'white'}.svg\" class=\"logo--small\"></a> </div> </nav> </header> </yield> <yield if=\"{opts.api.currentAccount}\" to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <section if=\"{!opts.api.currentAccount}\" class=\"absolute col-12 center px2 py2 white {out: step != 0}\" data-step=\"0\"> <div class=\"container\"> <h1 class=\"h1 h1-responsive sm-mt4 mb1\">Thanks for getting started!</h1> <p class=\"h3 sm-col-6 mx-auto mb2\">The next few questions will create your brief :)</p> <div><button class=\"btn btn-big btn-primary mb3\" onclick=\"{start}\">Ok, Got it</button></div> <p>Or <button class=\"h5 btn btn-narrow btn-outline white ml1 mr1\" onclick=\"{showArrangeCallbackModal}\">Arrange a callback</button> to speak with a human</p> </div> </section> <form name=\"form\" action=\"/api/projects\" onsubmit=\"{submit}\"> <section class=\"absolute col-12 center px2 py2 {out: step != 1}\" data-step=\"1\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Mission</h1> <div class=\"clearfix mxn2 border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === project.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === project.kind}\"> </a> </div> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 2}\" data-step=\"2\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Helpful details</h1> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" autofocus=\"true\" oninput=\"{setValue}\">{project.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === project.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === project.brief.preferred_start}\">{value}</option> </select> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb4\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb4\" onclick=\"{nextStep}\">Continue</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 3}\" data-step=\"3\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Documents and Photos</h1> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-12 px2 mb2\"> <p class=\"h2\">Upload plans, documents, site photos or any other files about your project</p> <r-files-input-with-preview name=\"assets\" record=\"{project}\"></r-files-input-with-preview> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb1\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb1\" onclick=\"{nextStep}\">Continue</a> </div> <div class=\"right-align mb4\"> <a onclick=\"{nextStep}\">Skip for now</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 4}\" data-step=\"4\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Address</h1> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{project.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{project.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{project.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb1\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb1\" onclick=\"{nextStep}\">Continue</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 5}\" data-step=\"5\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Project Summary</h1> <div class=\"clearfix p3 border mb3\"> <p class=\"h3 mt0\"> You are planning a <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--project-type\">{project.kind}</span></strong> <span show=\"{!_.isEmpty(_.compact(_.values(project.address)))}\" class=\"summary--address-container\">at <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--address\"><span each=\"{name, add in project.address}\">{add}, </span></span></strong></span>. The basic overview of the brief is: <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--description\">{project.brief.description}</span></strong>. <br> <span show=\"{project.brief.budget}\" class=\"summary--budget-container\">You have a budget of <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--budget\">{project.brief.budget}</span></strong></span> <span show=\"{project.brief.preferred_start}\" class=\"summary--start-date-container\">and would like to start <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--start-date\">{project.brief.preferred_start}</span></strong>.</span> </p> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb4\" onclick=\"{prevStep}\">Back</a> <button class=\"btn btn-big btn-primary mb4 {busy: busy}\" __disabled=\"{busy}\" type=\"submit\">Correct! Make it happen</button> </div> </div> </section> </form>", "", "", function (opts) {
 	  var _this = this;
@@ -33723,7 +34508,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 134 */
+/* 137 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -33797,7 +34582,7 @@
 	};
 
 /***/ },
-/* 135 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33819,16 +34604,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 136 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(137);
-	
-	__webpack_require__(138);
-	
-	__webpack_require__(139);
+	__webpack_require__(140);
 	
 	__webpack_require__(141);
 	
@@ -33836,11 +34617,15 @@
 	
 	__webpack_require__(144);
 	
-	__webpack_require__(146);
+	__webpack_require__(145);
 	
 	__webpack_require__(147);
 	
-	__webpack_require__(151);
+	__webpack_require__(149);
+	
+	__webpack_require__(150);
+	
+	__webpack_require__(154);
 	
 	riot.tag2("r-projects-show", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <div class=\"py3 px2\"> <div class=\"clearfix mxn2\"> <r-subnav links=\"{subnavLinks}\" tab=\"{opts.tab}\" active_tab_name=\"{opts.activeTabName}\"></r-subnav> <div class=\"sm-col sm-col-9 sm-px2\"> <r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\" content_opts=\"{opts.contentOpts}\"></r-tabs> </div> </div> </div> </div>", "", "", function (opts) {
 	
@@ -33852,7 +34637,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 137 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -33898,7 +34683,7 @@
 	// }
 
 /***/ },
-/* 138 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33909,14 +34694,14 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 139 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	var options = __webpack_require__(134);
+	var options = __webpack_require__(137);
 	
-	__webpack_require__(140);
+	__webpack_require__(143);
 	
 	riot.tag2("r-project-brief", "<form name=\"form\" class=\"edit_project\" action=\"/api/projects/{opts.id}\" onsubmit=\"{submit}\"> <section class=\"container clearfix\"> <h2 class=\"mt0\">Name of your project</h2> <input type=\"text\" id=\"name\" class=\"block col-12 mb2 field\" name=\"name\" placeholder=\"My Home, Swiss Cottage, Jenny's Flat ...\" value=\"{project.name}\"> <div class=\"right-align\"> <button class=\"btn btn-primary {busy: busy}\" type=\"submit\">Save</button> </div> </section> <section class=\"container clearfix\"> <h2>Mission</h2> <div class=\"clearfix border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === project.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === project.kind}\"> </a> </div> </div> <div class=\"mt2 right-align\"> <button class=\"btn btn-primary {busy: busy}\" type=\"submit\">Save</button> </div> </section> <section class=\"container clearfix\"> <h2>Helpful details</h2> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" oninput=\"{setValue}\">{project.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-4 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === project.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-4 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === project.brief.preferred_start}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-4 px2\"> <label for=\"brief[ownership]\">Owner</label> <select id=\"brief.ownership\" name=\"brief[ownership]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.ownership}\" value=\"{value}\" __selected=\"{value === project.brief.ownership}\">{value}</option> </select> </div> </div> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <r-option-group-input record=\"{project.brief}\" name=\"brief\" groups=\"{['plans', 'planning_permission']}\" options=\"{options.yesNo}\"> </r-option-group-input> </div> <div class=\"sm-col sm-col-6 px2\"> <r-option-group-input record=\"{project.brief}\" name=\"brief\" groups=\"{['structural_drawings', 'party_wall_agreement']}\" options=\"{options.yesNo}\"> </r-option-group-input> </div> </div> <div class=\"right-align\"> <button class=\"btn btn-primary {busy: busy}\" type=\"submit\">Save</button> </div> </section> <section class=\"container clearfix\"> <h2>Address</h2> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{project.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{project.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{project.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> <div class=\"right-align\"> <button class=\"btn btn-primary {busy: busy}\" type=\"submit\">Save</button> </div> </section> </form>", "", "", function (opts) {
 	  var _this = this;
@@ -33955,7 +34740,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 140 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33968,7 +34753,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 141 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33979,7 +34764,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 142 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33988,7 +34773,7 @@
 	
 	var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
 	
-	var Pikaday = _interopRequire(__webpack_require__(143));
+	var Pikaday = _interopRequire(__webpack_require__(146));
 	
 	riot.tag2("r-project-appointments", "<div class=\"sm-col-12 px2 border\"> <h3><i class=\"fa fa-calendar-o\"></i> Appointments</h3> <a class=\"h6 btn btn-small btn-primary mb2\" onclick=\"{openAppointmentModal}\"><i class=\"fa fa-calendar-check-o\"></i> Arrange Appointment</a> <dl each=\"{appointments}\" class=\"{gray: isPast(time)}\"> <dt class=\"left\"> <i class=\"fa fa-{'thumbs-o-up': isPast(time), 'hand-o-right': isFuture(time)}\"></i> </dt> <dd> <h4>At {formatTime(time)}</h4> <div><strong>Host:</strong> {host.profile.first_name} {host.profile.last_name}</div> <div><strong>Attendant:</strong> {attendant.profile.first_name} {attendant.profile.last_name}</div> <a if=\"{isFuture(time)}\" class=\"btn btn-small h6 bg-maroon white mt1\" onclick=\"{cancelAppointment}\"><i class=\"fa fa-ban\"></i> Cancel</a> </dd> </dl> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -34103,7 +34888,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 143 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*!
@@ -35372,12 +36157,12 @@
 
 
 /***/ },
-/* 144 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(145);
+	__webpack_require__(148);
 	
 	riot.tag2("r-project-team", "<h2 class=\"mt0\">Team</h2> <div if=\"{currentAccount.isAdministrator}\" class=\"bg-blue white\"> <r-typeahead-input resource=\"accounts\" api=\"{opts.api}\" datum_tokenizer=\"{['full_name', 'email', 'user_type']}\"></r-typeahead-input> </div> <p>Here is the team of your project. You can arrange site visits with professionals here or invite other members such as family members or your own builders. </p> <ul class=\"list-reset clearfix mxn1\"> <li each=\"{project.customers}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-lime navy right mt2\">Customer</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> </p> </div> <div if=\"{currentAccount.isAdministrator}\" class=\"bg-blue white p1\"> <a onclick=\"{removeCustomer}\" class=\"btn btn-small bg-red white\">Remove</a> <a onclick=\"{impersonate}\" class=\"btn btn-small bg-maroon white\">Impersonate</a> </div> </li> <li each=\"{project.professionals}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-aqua blue white right mt2\">Professional *</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> <div if=\"{profile.website}\"><i class=\"fa fa-world\"></i><a href=\"{profile.website}\" target=\"_blank\">{profile.website}</a></div> </p> </div> <div if=\"{currentAccount.isAdministrator}\" class=\"bg-blue white p1\"> <a onclick=\"{removeProfessional}\" class=\"btn btn-small bg-red white\">Remove</a> <a onclick=\"{impersonate}\" class=\"btn btn-small bg-maroon white\">Impersonate</a> </div> </li> <li each=\"{project.administrators}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Admin</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> </p> </div> <div if=\"{currentAccount.isAdministrator}\" class=\"bg-blue white p1\"> <a onclick=\"{removeAdministrator}\" class=\"btn btn-small bg-red white\">Remove</a> <a onclick=\"{impersonate}\" class=\"btn btn-small bg-maroon white\">Impersonate</a> </div> </li> </ul> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-12 px1 mb2\"> <form name=\"form\" class=\"sm-col-12 px2 border\" onsubmit=\"{submit}\"> <h3><i class=\"fa fa-paper-plane-o\"></i> Invite a new member</h3> <div class=\"clearfix\"> <label class=\"inline-block col col-6 mb2 truncate\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Customer\">Customer </label> <label class=\"inline-block col col-6 mb2 truncate\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Professional\">Professional </label> </div> <span class=\"inline-error block\" if=\"{errors['invitee_attributes.user_type']}\">{errors['invitee_attributes.user_type']}</span> <input name=\"invitee_attributes[email]\" class=\"col-12 mb2 field\" placeholder=\"Email\" type=\"email\"> <span class=\"inline-error\" if=\"{errors['invitee_attributes.email']}\">{errors['invitee_attributes.email']}</span> <input type=\"hidden\" name=\"inviter_id\" value=\"{opts.api.currentAccount.id}\"> <input type=\"hidden\" name=\"project_id\" value=\"{opts.id}\"> <div class=\"right-align\"> <button type=\"submit\" class=\"btn btn-primary mb2 {busy: busy}\">Invite</button> </div> </form> </div> <div if=\"{project.professionals.length > 0}\" class=\"sm-col sm-col-6 px1 mb2\"> <r-project-appointments record=\"{project}\"></r-project-appointments> </div> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -35437,7 +36222,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 145 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -35486,14 +36271,14 @@
 	});
 
 /***/ },
-/* 146 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 	
-	var Pikaday = _interopRequire(__webpack_require__(143));
+	var Pikaday = _interopRequire(__webpack_require__(146));
 	
 	riot.tag2("r-payment-form", "<h2 class=\"center mt0 mb2\">Payment Form</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/payments\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <input type=\"hidden\" name=\"quote_id\" value=\"{record.quote_id}\"> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <input class=\"block col-12 mb2 field\" name=\"amount\" value=\"{record.amount}\" placeholder=\"Amount\" type=\"{'number'}\"> <span if=\"{errors['amount']}\" class=\"inline-error\">{errors['amount']}</span> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"due_date\" value=\"{record.due_date}\" placeholder=\"Due Date\"> <span if=\"{errors['due_date']}\" class=\"inline-error\">{errors['due_date']}</span> <textarea class=\"block col-12 mb2 field\" type=\"text\" name=\"description\" placeholder=\"Description\">{record.description}</textarea> <span if=\"{errors['description']}\" class=\"inline-error\">{errors['description']}</span> <div if=\"{errors}\" id=\"error_explanation\"> <ul> <li each=\"{field, messages in errors}\">{field.humanize()} {messages.join(',')}</li> </ul> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Create</button> </form>", "", "", function (opts) {
 	  var _this = this;
@@ -35548,14 +36333,14 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 147 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(148);
+	__webpack_require__(151);
 	
-	__webpack_require__(150);
+	__webpack_require__(153);
 	
 	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <div if=\"{_.isEmpty(this.quotes) && !currentAccount.isCustomer}\" class=\"mt2\"> <p>There is no quote yet</p> <a class=\"btn btn-primary mb2\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{_.isEmpty(this.quotes) && currentAccount.isCustomer}\" class=\"mt2\"> <p>There is no quote submitted yet</p> </div> <a if=\"{!_.isEmpty(this.quotes) && currentAccount.isAdministrator}\" class=\"btn btn-primary mb2\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> <ul class=\"list-reset mxn1\"> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block sm-mb4\">{formatCurrency(total_amount)}</h2> <div class=\"inline-block mt2 p2 border sm-right mb2 sm-mb0\"> <span if=\"{submitted_at}\"> <i class=\"fa fa-clock-o mr1\"></i> Submitted at: {fromNow(submitted_at)}<br> </span> <span if=\"{accepted_at}\"> <i class=\"fa fa-clock-o mr1\"></i> Accepted at: {fromNow(accepted_at)}<br> </span> <span> <i class=\"fa fa-user mr1\"></i> Professional: <strong>{professional.profile.first_name} {professional.profile.last_name}</strong> </span> </div> <div class=\"tab-nav\"> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'summary'}\" onclick=\"{changeTab}\" rel=\"summary\">Summary</a> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'payments'}\" onclick=\"{changeTab}\" rel=\"payments\">Payments</a> </div> <div class=\"tabs m0 mxn2 border-top\"> <div if=\"{activeTab == 'summary'}\" class=\"mt2\"> <r-tender-summary document=\"{document}\"></r-tender-summary> <div class=\"clearfix overflow-hidden p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Open</a> <a class=\"btn btn-small bg-darken-2\" if=\"{!currentAccount.isCustomer && !accepted_at}\" onclick=\"{delete}\">Delete</a> </div> </div> <div if=\"{activeTab == 'payments'}\" class=\"mt2\"> <r-project-payments api=\"{opts.api}\" quote=\"{this}\" payment_id=\"{parent.opts.payment_id}\"></r-project-payments> </div> </div> </div> </li> </ul>", "", "", function (opts) {
 	  var _this = this;
@@ -35615,12 +36400,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 148 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	var taskActions = __webpack_require__(149);
+	var taskActions = __webpack_require__(152);
 	
 	riot.tag2("r-tender-summary", "<table class=\"table-light\"> <tbody> <tr each=\"{name, amount in summary}\"> <td>{name}</td> <td>{formatCurrency(amount)}</td> </tr> </tbody> </table>", "", "", function (opts) {
 	  var _this = this;
@@ -35685,7 +36470,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 149 */
+/* 152 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -35705,7 +36490,7 @@
 	};
 
 /***/ },
-/* 150 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -35837,7 +36622,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 151 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -35872,24 +36657,24 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 152 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(153);
-	
-	__webpack_require__(154);
-	
 	__webpack_require__(156);
 	
-	__webpack_require__(158);
+	__webpack_require__(157);
 	
 	__webpack_require__(159);
 	
-	__webpack_require__(160);
+	__webpack_require__(161);
 	
-	__webpack_require__(188);
+	__webpack_require__(162);
+	
+	__webpack_require__(191);
+	
+	__webpack_require__(192);
 	
 	riot.tag2("r-tenders-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1> {opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Tender ' + opts.id : 'New Tender'}</h1> <a class=\"mb1 btn btn-small h6 btn-outline orange\" href=\"/app/projects/{project.id}\"> <i class=\"fa fa-chevron-left\"></i> Back to Project </a> <r-tender-filters record=\"{record}\"></r-tender-filters> <r-tender-section each=\"{section , i in sections()}\" no-reorder></r-tender-section> <div class=\"py3\"> <h2 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h2> <h1 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h2> </div> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{!currentAccount.isProfessional}\" type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{currentAccount.isProfessional}\" onclick=\"{cloneTender}\" class=\"btn btn-primary btn-big {busy: busy}\">Clone</a> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -35983,7 +36768,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 153 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -36144,14 +36929,14 @@
 	// $('[name=searchable_names]').last()[0].focus()
 
 /***/ },
-/* 154 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 	
-	var Handlebars = _interopRequire(__webpack_require__(155));
+	var Handlebars = _interopRequire(__webpack_require__(158));
 	
 	riot.tag2("r-tender-item-input", "<div class=\"relative\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Start typing to add {opts.name}\" autocomplete=\"off\"> </form> <i class=\"fa fa-plus absolute right-0 top-0 p1\" onclick=\"{addDefaultItem}\"></i> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -36236,7 +37021,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 155 */
+/* 158 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*!
@@ -40849,14 +41634,14 @@
 	;
 
 /***/ },
-/* 156 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	var taskActions = __webpack_require__(149);
+	var taskActions = __webpack_require__(152);
 	
-	__webpack_require__(157);
+	__webpack_require__(160);
 	
 	riot.tag2("r-tender-item-action-group-dropdown", "<select onchange=\"{changeTaskAction}\"> <option each=\"{val, name in taskActions}\" value=\"{val}\" __selected=\"{val == 'Other'}\" no-reorder>{name}</option> </select>", "", "", function (opts) {
 	  var _this = this;
@@ -40989,7 +41774,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 157 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -41075,7 +41860,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 158 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -41150,12 +41935,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 159 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	var taskActions = __webpack_require__(149);
+	var taskActions = __webpack_require__(152);
 	
 	riot.tag2("r-tender-section", "<div> <div class=\"relative border-bottom mt2\"> <h3 class=\"block overflow-hidden mb0\"> <i class=\"cursor-pointer fa fa-{icon}\" onclick=\"{toggle}\"></i> <a if=\"{section.dimensions && section.dimensions.length > 0}\" class=\"h6 bg-teal gray rounded notification-badge\" onclick=\"{setActivity}\" rel=\"edit_dimensions_{section.id}\">{section.dimensions.join('x')}</a> <a if=\"{!parent.opts.readonly && (!section.dimensions || section.dimensions.length == 0)}\" onclick=\"{setActivity}\" rel=\"edit_dimensions_{section.id}\"><i class=\"fa fa-edit\"></i></a> <input type=\"text\" class=\"col-10 field border-none tender-section-name h3\" value=\"{section.name.humanize()}\" oninput=\"{renameSection}\"> </h3> <a class=\"absolute right-0 top-0 btn btn-small border-red red\" onclick=\"{removeSection}\"><i class=\"fa fa-trash-o\"></i></a> </div> <virtual if=\"{visible}\"> <r-tender-item-group name=\"task\" groupitems=\"{section.tasks_by_action}\" __readonly=\"{parent.parent.opts.readonly}\" each=\"{group, items in section.tasks_by_action}\" headers=\"{parent.headers.task}\" onitemremoved=\"{removeItem}\" no-reorder> </r-tender-item-group> <r-tender-item-group name=\"material\" if=\"{(filterAction == 'Materials' || !filterAction)}\" __readonly=\"{parent.parent.opts.readonly}\" groupitems=\"{section.materials_by_group}\" show=\"{section.materials && section.materials.length > 0}\" each=\"{group, items in section.materials_by_group}\" headers=\"{parent.headers.material}\" onitemremoved=\"{removeItem}\" no-reorder> </r-tender-item-group> </virtual> <div class=\"clearfix {'with-line': !visible}\"> <h3 class=\"right border p1 bg-white relative z2 section-total\">{visible ? section.name + ':' : ''} {sectionTotal}</h3> </div> <div if=\"{visible}\" class=\"clearfix mxn1 mt2 mb3\"> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"task\" auto_focus=\"{true}\" api=\"{parent.opts.api}\" icon=\"tasks\"></r-tender-item-input> </div> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"material\" api=\"{parent.opts.api}\" icon=\"shopping-basket\"></r-tender-item-input> </div> </div> <r-dialog if=\"{opts.api.activity == ('edit_dimensions_' + section.id)}\" title=\"Edit Dimensions\"> <form class=\"p2\" onsubmit=\"{parent.updateDimensions}\"> <label>Section Dimensions</label> <r-area-calculator dimensions=\"{parent.section.dimensions}\" callback=\"{preventSubmit}\"></r-area-calculator> <div class=\"clearfix mt2 mxn2\"> <div class=\"col col-6 px2\"> <button class=\"block col-12 mb2 btn btn-primary\">Save</button> </div> </div> </form> </r-dialog> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -41270,33 +42055,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 160 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-tender-filters", "<div class=\"overflow-auto nowrap mb1\"> <a class=\"btn btn-small {'btn-primary': section == null}\" onclick=\"{setSectionFilter}\">All</a> <a each=\"{opts.record.document.sections}\" class=\"btn btn-small {'btn-primary': section == id}\" onclick=\"{setSectionFilter}\">{name}</a> </div> <div class=\"overflow-auto nowrap\"> <a class=\"btn btn-small {'btn-primary': action == null}\" onclick=\"{setActionFilter}\">All</a> <a each=\"{name in actions()}\" class=\"btn btn-small {'btn-primary': action == name}\" onclick=\"{setActionFilter}\">{name}</a> </div>", "", "", function (opts) {
-	  var _this = this;
-	
-	  this.actions = function () {
-	    return _.union(_.uniq(_.pluck(_.flatten(_.pluck(_this.opts.record.document.sections, "tasks")), "action")), ["Materials"]);
-	  };
-	  this.setSectionFilter = function (e) {
-	    _this.update({ section: e.item ? e.item.id : null });
-	  };
-	  this.setActionFilter = function (e) {
-	    _this.update({ action: e.item ? e.item.name : null });
-	  };
-	});
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ },
-/* 161 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
-	__webpack_require__(153);
+	__webpack_require__(156);
 	
 	riot.tag2("r-quotes-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: isReadonly()} \"> <div class=\"clearfix\"> <div class=\"left mb4 overflow-hidden\"> <h1 class=\"mb0\">{opts.id ? getTitle() : 'New Quote'}</h1> <a class=\"btn btn-small h6 btn-outline orange\" href=\"/app/projects/{record.project_id}\"><i class=\"fa fa-chevron-left\"></i> Back to Project</a> </div> <div class=\"right h5 mt3 align-right\"> <div>Created at: {formatTime(record.created_at)}</div> <div if=\"{record.submitted_at}\">Submitted at: {formatTime(record.submitted_at)}</div> <div if=\"{record.accepted_at}\">Accepted at: {formatTime(record.accepted_at)}</div> </div> </div> <div if=\"{currentAccount.isAdministrator}\" class=\"p1 bg-blue white\"> <label for=\"project_id\">Professional</label> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" id=\"{record.professional_id}\" filters=\"{professionalFilters()}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"tender_id\">Tender</label> <input type=\"hidden\" name=\"tender_id\" value=\"{record.tender_id}\"> <r-typeahead-input resource=\"tenders\" api=\"{opts.api}\" id=\"{record.tender_id}\" filters=\"{tenderFilters()}\" datum_tokenizer=\"{['id', 'total_amount']}\"></r-typeahead-input> <span if=\"{errors.tender_id}\" class=\"inline-error\">{errors.tender_id}</span> </div> <div if=\"{record.id}\" class=\"clearfix mb4\"> <div class=\"sm-col sm-col-6\"> <h4>From</h4> <address> {record.professional.profile.first_name} {record.professional.profile.last_name}<br> <virtual if=\"{!isAllValuesEmpty(record.professional.address)}\"> {record.professional.address.street_address}<br> {record.professional.address.postcode}, {record.professional.address.city}<br> {record.professional.address.country} </virtual> </address> </div> </div> <r-tender-filters record=\"{record}\"></r-tender-filters> <r-tender-section __readonly=\"{opts.readonly}\" each=\"{section , i in sections()}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\"> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-6 px2\"> <label>Insurance Amount</label> <select name=\"insurance_amount\" class=\"block col-12 field mb2\" onchange=\"{setVal}\" if=\"{!currentAccount.isCustomer}\"> <option>Select</option> <option each=\"{_, i in new Array(19)}\" key=\"0\" value=\"{(i+1)}\" __selected=\"{record.insurance_amount == (i+1)}\">{(i+1) + ' Million'}</option> </select> <p if=\"{currentAccount.isCustomer}\">{record.insurance_amount ?  record.insurance_amount + ' Million' : 'N/A'}</p> </div> <div class=\"sm-col sm-col-6 px2\"> <label>Guarantee Length</label> <select name=\"guarantee_length\" class=\"block col-12 field mb2\" onchange=\"{setVal}\" if=\"{!currentAccount.isCustomer}\"> <option>Select</option> <option each=\"{_, i in new Array(19)}\" key=\"0\" value=\"{(i+1)}\" __selected=\"{record.guarantee_length == (i+1)}\">{(i+1) + (i > 0 ? ' Years' : ' Year')}</option> </select> <p if=\"{currentAccount.isCustomer}\">{record.guarantee_length ? record.guarantee_length + ' Years' : 'N/A'} </p> </div> </div> <label>Summary</label> <textarea type=\"text\" name=\"summary\" placeholder=\"Summary\" class=\"block col-12 field mb2\" oninput=\"{setVal}\" if=\"{!currentAccount.isCustomer}\">{record.summary}</textarea> <p if=\"{currentAccount.isCustomer}\">{record.summary ? record.summary : 'N/A'}</p> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <div class=\"right-align\"> <button if=\"{opts.id && !currentAccount.isProfessional && record.submitted_at}\" class=\"btn btn-primary btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </button> <virtual if=\"{!opts.readonly && !currentAccount.isCustomer}\"> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{opts.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\"> {record.submitted_at ? 'Submitted' : 'Submit'} <span if=\"{record.submitted_at}\">{fromNow(record.submitted_at)}</span> </a> </virtual> </div> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -41433,7 +42197,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 162 */
+/* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -41459,14 +42223,14 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 163 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 	
-	var Pikaday = _interopRequire(__webpack_require__(143));
+	var Pikaday = _interopRequire(__webpack_require__(146));
 	
 	riot.tag2("r-settings-notifications", "<h2 class=\"mt0\">Notifications</h2> <form name=\"form\" onsubmit=\"{submit}\"> <div each=\"{not, i in notifications}\"> <label> <input type=\"checkbox\" name=\"notifications[{not}]\" __checked=\"{currentAccount.notifications[not]}\"> {not.humanize()} </label> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
 	  var _this = this;
@@ -41634,14 +42398,10 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 164 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
-	__webpack_require__(165);
-	
-	__webpack_require__(166);
 	
 	__webpack_require__(167);
 	
@@ -41661,9 +42421,9 @@
 	
 	__webpack_require__(175);
 	
-	__webpack_require__(177);
+	__webpack_require__(176);
 	
-	__webpack_require__(178);
+	__webpack_require__(177);
 	
 	__webpack_require__(179);
 	
@@ -41683,6 +42443,10 @@
 	
 	__webpack_require__(187);
 	
+	__webpack_require__(188);
+	
+	__webpack_require__(189);
+	
 	riot.tag2("r-admin-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap cursor-pointer\" onclick=\"{sort}\">{attr.humanize()} <i class=\"fa fa-sort\"></i></th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td each=\"{attr, i in headers}\"> {record[attr]} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
@@ -41690,7 +42454,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 165 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -41701,12 +42465,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 166 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(153);
+	__webpack_require__(156);
 	
 	riot.tag2("r-admin-tender-template-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <h1><input type=\"text\" name=\"name\" value=\"{record.name}\" class=\"block col-12 field\" placeholder=\"Name\" oninput=\"{setInputValue}\"></h1> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>When you apply a template to a project, if there isn't Tender on the project it clones itself to project, if Tender exists it apply changes to project's tender </p> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> </div> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -41792,12 +42556,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 167 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(153);
+	__webpack_require__(156);
 	
 	riot.tag2("r-admin-tender-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <label for=\"project_id\">Project</label> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" id=\"{record.project_id}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> <span if=\"{errors.project_id}\" class=\"inline-error\">{errors.project_id}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\" __disabled=\"{busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>Add a Professional to this Project by creating a Quote from this tender. Choosen pro will be added to project.</p> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> </div> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -41891,12 +42655,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 168 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(153);
+	__webpack_require__(156);
 	
 	riot.tag2("r-admin-quote-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <label for=\"project\">Project</label> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" id=\"{record.project_id}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> <span if=\"{errors.project}\" class=\"inline-error\">{errors.project}</span> <label for=\"project_id\">Professional</label> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" id=\"{record.professional_id}\" filters=\"{professionalFilters()}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"tender_id\">Tender</label> <input type=\"hidden\" name=\"tender_id\" value=\"{record.tender_id}\"> <r-typeahead-input resource=\"tenders\" api=\"{opts.api}\" id=\"{record.tender_id}\" filters=\"{tenderFilters()}\" datum_tokenizer=\"{['id', 'total_amount']}\"></r-typeahead-input> <span if=\"{errors.tender_id}\" class=\"inline-error\">{errors.project}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{record.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> <button if=\"{record.id}\" class=\"btn bg-red btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </button> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -42009,14 +42773,14 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 169 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 	
-	var Pikaday = _interopRequire(__webpack_require__(143));
+	var Pikaday = _interopRequire(__webpack_require__(146));
 	
 	riot.tag2("r-admin-payment-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <label for=\"project_id\">Project</label> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" id=\"{record.project_id}\" datum_tokenizer=\"{['name', 'customers.0.full_name']}\"></r-typeahead-input> <span if=\"{errors.project_id}\" class=\"inline-error\">{errors.project_id}</span> <label for=\"professional_id\">Professional</label> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" id=\"{record.professional_id}\" filters=\"{professionalFilters()}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"quote_id\">Quote</label> <input type=\"hidden\" name=\"quote_id\" value=\"{record.quote_id}\"> <r-typeahead-input resource=\"quotes\" api=\"{opts.api}\" id=\"{record.quote_id}\" filters=\"{quoteFilters()}\" datum_tokenizer=\"{['id', 'status', 'amount']}\"></r-typeahead-input> <span if=\"{errors.quote_id}\" class=\"inline-error\">{errors.quote_id}</span> <div each=\"{attr, i in ['fee', 'amount']}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <input class=\"block col-12 mb2 field\" name=\"{attr}\" value=\"{parseInt(record[attr]) * 0.01}\" type=\"{'number'}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> <div each=\"{attr, i in ['due_date', 'description']}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> <div if=\"{!_.isEmpty(errors)}\" id=\"error_explanation\"> <ul> <li each=\"{field, messages in errors}\">{field.humanize()} {messages.join(', ')}</li> </ul> </div> <div class=\"right-align\"> <button type=\"submit\" class=\"mb2 btn btn-big btn-primary {busy: busy}\">Save</button> <a if=\"{record.id && !record.approved_at}\" onclick=\"{approve}\" class=\"mb2 btn btn-big bg-green white {busy: busy}\">Approve</a> <a if=\"{record.id && record.paid_at && !record.refunded_at}\" onclick=\"{refund}\" class=\"mb2 btn btn-big bg-red white {busy: busy}\">Refund</a> </div> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -42080,7 +42844,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 170 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42091,7 +42855,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 171 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42102,7 +42866,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 172 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42113,7 +42877,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 173 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42124,7 +42888,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 174 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42135,16 +42899,16 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 175 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	var options = __webpack_require__(134);
+	var options = __webpack_require__(137);
 	
-	__webpack_require__(176);
+	__webpack_require__(178);
 	
-	__webpack_require__(140);
+	__webpack_require__(143);
 	
 	riot.tag2("r-admin-project-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form name=\"form\" class=\"edit_project\" onsubmit=\"{submit}\" autocomplete=\"off\"> <label for=\"account_id\">Account</label> <input type=\"hidden\" name=\"account_id\" value=\"{record.account_id}\"> <r-typeahead-input resource=\"accounts\" api=\"{opts.api}\" id=\"{record.account_id}\" datum_tokenizer=\"{['email']}\"></r-typeahead-input> <span if=\"{errors.account_id}\" class=\"inline-error\">{errors.account_id}</span> <label for=\"name\">Name</label> <input id=\"name\" class=\"block col-12 mb2 field\" type=\"text\" name=\"name\" value=\"{record.name}\" oninput=\"{setValue}\"> <section class=\"container clearfix\" data-step=\"1\"> <div class=\"container\"> <h2>Mission</h2> <div class=\"clearfix border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === record.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === record.kind}\"> </a> </div> </div> </div> </section> <section class=\"container clearfix\" data-step=\"2\"> <div class=\"container\"> <h2>Helpful details</h2> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" autofocus=\"true\" oninput=\"{setValue}\">{record.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === record.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === record.brief.preferred_start}\">{value}</option> </select> </div> </div> </div> </section> <section class=\"container clearfix\" data-step=\"4\"> <div class=\"container\"> <h2>Address</h2> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{record.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{record.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{record.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> </div> </section> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -42215,14 +42979,14 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 176 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 	
-	var Handlebars = _interopRequire(__webpack_require__(155));
+	var Handlebars = _interopRequire(__webpack_require__(158));
 	
 	riot.tag2("r-typeahead-input", "<div class=\"relative inline-block\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 mb2 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Start typing to search {opts.resource}\" autocomplete=\"off\"> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -42301,7 +43065,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 177 */
+/* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42313,7 +43077,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 178 */
+/* 180 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42330,7 +43094,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 179 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42348,7 +43112,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 180 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42369,7 +43133,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 181 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42381,7 +43145,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 182 */
+/* 184 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42393,7 +43157,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 183 */
+/* 185 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42405,7 +43169,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 184 */
+/* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42417,7 +43181,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 185 */
+/* 187 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42429,7 +43193,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 186 */
+/* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42441,7 +43205,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 187 */
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42463,7 +43227,37 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 188 */
+/* 190 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-dialog", "<div class=\"fixed flex flex-center left-0 top-0 bottom-0 right-0 bg-darken-4 z30\"> <div class=\"relative clearfix mx-auto col-11 sm-col-6 md-col-5 lg-col-4 flex-center bg-white border border-darken-3 rounded shadow dialog\"> <div class=\"p1 bg-darken-2 gray\"> <h1 class=\"h4 m0 inline-block mr2\">{opts.title}</h1> <a class=\"center btn btn-small gray absolute right-0 top-0 mt1 mr1\" onclick=\"{unsetActivity}\"><i class=\"fa fa-times\"></i></a> </div> <yield></yield> </div> </div>", "", "", function (opts) {});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 191 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	riot.tag2("r-tender-filters", "<div class=\"overflow-auto nowrap mb1\"> <a class=\"btn btn-small {'btn-primary': section == null}\" onclick=\"{setSectionFilter}\">All</a> <a each=\"{opts.record.document.sections}\" class=\"btn btn-small {'btn-primary': section == id}\" onclick=\"{setSectionFilter}\">{name}</a> </div> <div class=\"overflow-auto nowrap\"> <a class=\"btn btn-small {'btn-primary': action == null}\" onclick=\"{setActionFilter}\">All</a> <a each=\"{name in actions()}\" class=\"btn btn-small {'btn-primary': action == name}\" onclick=\"{setActionFilter}\">{name}</a> </div>", "", "", function (opts) {
+	  var _this = this;
+	
+	  this.actions = function () {
+	    return _.union(_.uniq(_.pluck(_.flatten(_.pluck(_this.opts.record.document.sections, "tasks")), "action")), ["Materials"]);
+	  };
+	  this.setSectionFilter = function (e) {
+	    _this.update({ section: e.item ? e.item.id : null });
+	  };
+	  this.setActionFilter = function (e) {
+	    _this.update({ action: e.item ? e.item.name : null });
+	  };
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42479,15 +43273,6 @@
 	    return 2 * w + 2 * l;
 	  };
 	});
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ },
-/* 189 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
-	riot.tag2("r-dialog", "<div class=\"fixed flex flex-center left-0 top-0 bottom-0 right-0 bg-darken-4 z30\"> <div class=\"relative clearfix mx-auto col-11 sm-col-6 md-col-5 lg-col-4 flex-center bg-white border border-darken-3 rounded shadow dialog\"> <div class=\"p1 bg-darken-2 gray\"> <h1 class=\"h4 m0 inline-block mr2\">{opts.title}</h1> <a class=\"center btn btn-small gray absolute right-0 top-0 mt1 mr1\" onclick=\"{unsetActivity}\"><i class=\"fa fa-times\"></i></a> </div> <yield></yield> </div> </div>", "", "", function (opts) {});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }
