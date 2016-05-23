@@ -45,21 +45,21 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	
+
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
-	
+
 	var riot = _interopRequire(__webpack_require__(1));
-	
+
 	var api = _interopRequire(__webpack_require__(3));
-	
+
 	__webpack_require__(5);
-	
+
 	__webpack_require__(6);
-	
+
 	__webpack_require__(114);
-	
+
 	__webpack_require__(120);
-	
+
 	riot.route.base("/app/");
 	var mount = function () {
 	  riot.mount("r-app", { api: api, app: {} });
@@ -84,30 +84,30 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Riot v2.4.0, @license MIT */
-	
+
 	;(function(window, undefined) {
 	  'use strict';
 	var riot = { version: 'v2.4.0', settings: {} },
 	  // be aware, internal usage
 	  // ATTENTION: prefix the global dynamic variables with `__`
-	
+
 	  // counter to give a unique id to all the Tag instances
 	  __uid = 0,
 	  // tags instances cache
 	  __virtualDom = [],
 	  // tags implementation cache
 	  __tagImpl = {},
-	
+
 	  /**
 	   * Const
 	   */
 	  GLOBAL_MIXIN = '__global_mixin',
-	
+
 	  // riot specific prefixes
 	  RIOT_PREFIX = 'riot-',
 	  RIOT_TAG = RIOT_PREFIX + 'tag',
 	  RIOT_TAG_IS = 'data-is',
-	
+
 	  // for typeof == '' comparisons
 	  T_STRING = 'string',
 	  T_OBJECT = 'object',
@@ -118,32 +118,32 @@
 	  RESERVED_WORDS_BLACKLIST = /^(?:_(?:item|id|parent)|update|root|(?:un)?mount|mixin|is(?:Mounted|Loop)|tags|parent|opts|trigger|o(?:n|ff|ne))$/,
 	  // SVG tags list https://www.w3.org/TR/SVG/attindex.html#PresentationAttributes
 	  SVG_TAGS_LIST = ['altGlyph', 'animate', 'animateColor', 'circle', 'clipPath', 'defs', 'ellipse', 'feBlend', 'feColorMatrix', 'feComponentTransfer', 'feComposite', 'feConvolveMatrix', 'feDiffuseLighting', 'feDisplacementMap', 'feFlood', 'feGaussianBlur', 'feImage', 'feMerge', 'feMorphology', 'feOffset', 'feSpecularLighting', 'feTile', 'feTurbulence', 'filter', 'font', 'foreignObject', 'g', 'glyph', 'glyphRef', 'image', 'line', 'linearGradient', 'marker', 'mask', 'missing-glyph', 'path', 'pattern', 'polygon', 'polyline', 'radialGradient', 'rect', 'stop', 'svg', 'switch', 'symbol', 'text', 'textPath', 'tref', 'tspan', 'use'],
-	
+
 	  // version# for IE 8-11, 0 for others
 	  IE_VERSION = (window && window.document || {}).documentMode | 0,
-	
+
 	  // detect firefox to fix #1374
 	  FIREFOX = window && !!window.InstallTrigger
 	/* istanbul ignore next */
 	riot.observable = function(el) {
-	
+
 	  /**
 	   * Extend the original object or create a new empty one
 	   * @type { Object }
 	   */
-	
+
 	  el = el || {}
-	
+
 	  /**
 	   * Private variables
 	   */
 	  var callbacks = {},
 	    slice = Array.prototype.slice
-	
+
 	  /**
 	   * Private Methods
 	   */
-	
+
 	  /**
 	   * Helper function needed to get and loop all the events in a string
 	   * @param   { String }   e - event string
@@ -157,11 +157,11 @@
 	      if (name) fn( ~indx ? name.substring(0, indx) : name, i, ~indx ? name.slice(indx + 1) : null)
 	    }
 	  }
-	
+
 	  /**
 	   * Public Api
 	   */
-	
+
 	  // extend the el object adding the observable methods
 	  Object.defineProperties(el, {
 	    /**
@@ -174,20 +174,20 @@
 	    on: {
 	      value: function(events, fn) {
 	        if (typeof fn != 'function')  return el
-	
+
 	        onEachEvent(events, function(name, pos, ns) {
 	          (callbacks[name] = callbacks[name] || []).push(fn)
 	          fn.typed = pos > 0
 	          fn.ns = ns
 	        })
-	
+
 	        return el
 	      },
 	      enumerable: false,
 	      writable: false,
 	      configurable: false
 	    },
-	
+
 	    /**
 	     * Removes the given space separated list of `events` listeners
 	     * @param   { String } events - events ids
@@ -213,7 +213,7 @@
 	      writable: false,
 	      configurable: false
 	    },
-	
+
 	    /**
 	     * Listen to the given space separated list of `events` and
 	     * execute the `callback` at most once
@@ -233,7 +233,7 @@
 	      writable: false,
 	      configurable: false
 	    },
-	
+
 	    /**
 	     * Execute all callback functions that listen to
 	     * the given space separated list of `events`
@@ -242,20 +242,20 @@
 	     */
 	    trigger: {
 	      value: function(events) {
-	
+
 	        // getting the arguments
 	        var arglen = arguments.length - 1,
 	          args = new Array(arglen),
 	          fns
-	
+
 	        for (var i = 0; i < arglen; i++) {
 	          args[i] = arguments[i + 1] // skip first argument
 	        }
-	
+
 	        onEachEvent(events, function(name, pos, ns) {
-	
+
 	          fns = slice.call(callbacks[name] || [], 0)
-	
+
 	          for (var i = 0, fn; fn = fns[i]; ++i) {
 	            if (fn.busy) continue
 	            fn.busy = 1
@@ -263,12 +263,12 @@
 	            if (fns[i] !== fn) { i-- }
 	            fn.busy = 0
 	          }
-	
+
 	          if (callbacks['*'] && name != '*')
 	            el.trigger.apply(el, ['*', name].concat(args))
-	
+
 	        })
-	
+
 	        return el
 	      },
 	      enumerable: false,
@@ -276,19 +276,19 @@
 	      configurable: false
 	    }
 	  })
-	
+
 	  return el
-	
+
 	}
 	/* istanbul ignore next */
 	;(function(riot) {
-	
+
 	/**
 	 * Simple client-side router
 	 * @module riot-route
 	 */
-	
-	
+
+
 	var RE_ORIGIN = /^.+?\/\/+[^\/]+/,
 	  EVENT_LISTENER = 'EventListener',
 	  REMOVE_EVENT_LISTENER = 'remove' + EVENT_LISTENER,
@@ -310,7 +310,7 @@
 	  routeFound = false,
 	  debouncedEmit,
 	  base, current, parser, secondParser, emitStack = [], emitStackLevel = 0
-	
+
 	/**
 	 * Default parser. You can replace it via router.parser method.
 	 * @param {string} path - current path (normalized)
@@ -319,7 +319,7 @@
 	function DEFAULT_PARSER(path) {
 	  return path.split(/[/?#]/)
 	}
-	
+
 	/**
 	 * Default parser (second). You can replace it via router.parser method.
 	 * @param {string} path - current path (normalized)
@@ -329,10 +329,10 @@
 	function DEFAULT_SECOND_PARSER(path, filter) {
 	  var re = new RegExp('^' + filter[REPLACE](/\*/g, '([^/?#]+?)')[REPLACE](/\.\./, '.*') + '$'),
 	    args = path.match(re)
-	
+
 	  if (args) return args.slice(1)
 	}
-	
+
 	/**
 	 * Simple/cheap debounce implementation
 	 * @param   {function} fn - callback
@@ -346,7 +346,7 @@
 	    t = setTimeout(fn, delay)
 	  }
 	}
-	
+
 	/**
 	 * Set the window listeners to trigger the routes
 	 * @param {boolean} autoExec - see route.start
@@ -358,7 +358,7 @@
 	  doc[ADD_EVENT_LISTENER](clickEvent, click)
 	  if (autoExec) emit(true)
 	}
-	
+
 	/**
 	 * Router class
 	 */
@@ -368,15 +368,15 @@
 	  central.on('stop', this.s.bind(this))
 	  central.on('emit', this.e.bind(this))
 	}
-	
+
 	function normalize(path) {
 	  return path[REPLACE](/^\/|\/$/, '')
 	}
-	
+
 	function isString(str) {
 	  return typeof str == 'string'
 	}
-	
+
 	/**
 	 * Get the part after domain name
 	 * @param {string} href - fullpath
@@ -385,7 +385,7 @@
 	function getPathFromRoot(href) {
 	  return (href || loc.href)[REPLACE](RE_ORIGIN, '')
 	}
-	
+
 	/**
 	 * Get the part after base
 	 * @param {string} href - fullpath
@@ -396,12 +396,12 @@
 	    ? (href || loc.href || '').split(base)[1] || ''
 	    : (loc ? getPathFromRoot(href) : href || '')[REPLACE](base, '')
 	}
-	
+
 	function emit(force) {
 	  // the stack is needed for redirections
 	  var isRoot = emitStackLevel == 0
 	  if (MAX_EMIT_STACK_LEVEL <= emitStackLevel) return
-	
+
 	  emitStackLevel++
 	  emitStack.push(function() {
 	    var path = getPathFromBase()
@@ -418,17 +418,17 @@
 	    emitStackLevel = 0
 	  }
 	}
-	
+
 	function click(e) {
 	  if (
 	    e.which != 1 // not left click
 	    || e.metaKey || e.ctrlKey || e.shiftKey // or meta keys
 	    || e.defaultPrevented // or default prevented
 	  ) return
-	
+
 	  var el = e.target
 	  while (el && el.nodeName != 'A') el = el.parentNode
-	
+
 	  if (
 	    !el || el.nodeName != 'A' // not A tag
 	    || el[HAS_ATTRIBUTE]('download') // has download attr
@@ -436,7 +436,7 @@
 	    || el.target && el.target != '_self' // another window or frame
 	    || el.href.indexOf(loc.href.match(RE_ORIGIN)[0]) == -1 // cross origin
 	  ) return
-	
+
 	  if (el.href != loc.href) {
 	    if (
 	      el.href.split('#')[0] == loc.href.split('#')[0] // internal jump
@@ -444,10 +444,10 @@
 	      || !go(getPathFromBase(el.href), el.title || doc.title) // route not found
 	    ) return
 	  }
-	
+
 	  e.preventDefault()
 	}
-	
+
 	/**
 	 * Go to the path
 	 * @param {string} path - destination path
@@ -469,11 +469,11 @@
 	    emit()
 	    return routeFound
 	  }
-	
+
 	  // Server-side usage: directly execute handlers for the path
 	  return central[TRIGGER]('emit', getPathFromBase(path))
 	}
-	
+
 	/**
 	 * Go to path or set action
 	 * a single string:                go there
@@ -490,7 +490,7 @@
 	  else if (second) this.r(first, second)
 	  else this.r('@', first)
 	}
-	
+
 	/**
 	 * Stop routing
 	 */
@@ -498,7 +498,7 @@
 	  this.off('*')
 	  this.$ = []
 	}
-	
+
 	/**
 	 * Emit
 	 * @param {string} path - path
@@ -512,7 +512,7 @@
 	    }
 	  }, this)
 	}
-	
+
 	/**
 	 * Register route
 	 * @param {string} filter - filter for matching to url
@@ -525,10 +525,10 @@
 	  }
 	  this.on(filter, action)
 	}
-	
+
 	var mainRouter = new Router()
 	var route = mainRouter.m.bind(mainRouter)
-	
+
 	/**
 	 * Create a sub router
 	 * @returns {function} the method of a new Router object
@@ -541,7 +541,7 @@
 	  router.stop = newSubRouter.s.bind(newSubRouter)
 	  return router
 	}
-	
+
 	/**
 	 * Set the base of url
 	 * @param {(str|RegExp)} arg - a new base or '#' or '#!'
@@ -550,12 +550,12 @@
 	  base = arg || '#'
 	  current = getPathFromBase() // recalculate current path
 	}
-	
+
 	/** Exec routing right now **/
 	route.exec = function() {
 	  emit(true)
 	}
-	
+
 	/**
 	 * Replace the default router to yours
 	 * @param {function} fn - your parser function
@@ -570,7 +570,7 @@
 	  if (fn) parser = fn
 	  if (fn2) secondParser = fn2
 	}
-	
+
 	/**
 	 * Helper function to get url query as an object
 	 * @returns {object} parsed query
@@ -581,7 +581,7 @@
 	  href[REPLACE](/[?&](.+?)=([^&]*)/g, function(_, k, v) { q[k] = v })
 	  return q
 	}
-	
+
 	/** Stop routing **/
 	route.stop = function () {
 	  if (started) {
@@ -594,7 +594,7 @@
 	    started = false
 	  }
 	}
-	
+
 	/**
 	 * Start routing
 	 * @param {boolean} autoExec - automatically exec after starting if true
@@ -612,15 +612,15 @@
 	    started = true
 	  }
 	}
-	
+
 	/** Prepare the router **/
 	route.base()
 	route.parser()
-	
+
 	riot.route = route
 	})(riot)
 	/* istanbul ignore next */
-	
+
 	/**
 	 * The riot template engine
 	 * @version v2.4.0
@@ -633,28 +633,28 @@
 	 *
 	 * @module
 	 */
-	
+
 	var brackets = (function (UNDEF) {
-	
+
 	  var
 	    REGLOB = 'g',
-	
+
 	    R_MLCOMMS = /\/\*[^*]*\*+(?:[^*\/][^*]*\*+)*\//g,
-	
+
 	    R_STRINGS = /"[^"\\]*(?:\\[\S\s][^"\\]*)*"|'[^'\\]*(?:\\[\S\s][^'\\]*)*'/g,
-	
+
 	    S_QBLOCKS = R_STRINGS.source + '|' +
 	      /(?:\breturn\s+|(?:[$\w\)\]]|\+\+|--)\s*(\/)(?![*\/]))/.source + '|' +
 	      /\/(?=[^*\/])[^[\/\\]*(?:(?:\[(?:\\.|[^\]\\]*)*\]|\\.)[^[\/\\]*)*?(\/)[gim]*/.source,
-	
+
 	    FINDBRACES = {
 	      '(': RegExp('([()])|'   + S_QBLOCKS, REGLOB),
 	      '[': RegExp('([[\\]])|' + S_QBLOCKS, REGLOB),
 	      '{': RegExp('([{}])|'   + S_QBLOCKS, REGLOB)
 	    },
-	
+
 	    DEFAULT = '{ }'
-	
+
 	  var _pairs = [
 	    '{', '}',
 	    '{', '}',
@@ -666,32 +666,32 @@
 	    /^\s*{\^?\s*([$\w]+)(?:\s*,\s*(\S+))?\s+in\s+(\S.*)\s*}/,
 	    /(^|[^\\]){=[\S\s]*?}/
 	  ]
-	
+
 	  var
 	    cachedBrackets = UNDEF,
 	    _regex,
 	    _cache = [],
 	    _settings
-	
+
 	  function _loopback (re) { return re }
-	
+
 	  function _rewrite (re, bp) {
 	    if (!bp) bp = _cache
 	    return new RegExp(
 	      re.source.replace(/{/g, bp[2]).replace(/}/g, bp[3]), re.global ? REGLOB : ''
 	    )
 	  }
-	
+
 	  function _create (pair) {
 	    if (pair === DEFAULT) return _pairs
-	
+
 	    var arr = pair.split(' ')
-	
+
 	    if (arr.length !== 2 || /[\x00-\x1F<>a-zA-Z0-9'",;\\]/.test(pair)) { // eslint-disable-line
 	      throw new Error('Unsupported brackets "' + pair + '"')
 	    }
 	    arr = arr.concat(pair.replace(/(?=[[\]()*+?.^$|])/g, '\\').split(' '))
-	
+
 	    arr[4] = _rewrite(arr[1].length > 1 ? /{[\S\s]*?}/ : _pairs[4], arr)
 	    arr[5] = _rewrite(pair.length > 3 ? /\\({|})/g : _pairs[5], arr)
 	    arr[6] = _rewrite(_pairs[6], arr)
@@ -699,15 +699,15 @@
 	    arr[8] = pair
 	    return arr
 	  }
-	
+
 	  function _brackets (reOrIdx) {
 	    return reOrIdx instanceof RegExp ? _regex(reOrIdx) : _cache[reOrIdx]
 	  }
-	
+
 	  _brackets.split = function split (str, tmpl, _bp) {
 	    // istanbul ignore next: _bp is for the compiler
 	    if (!_bp) _bp = _cache
-	
+
 	    var
 	      parts = [],
 	      match,
@@ -715,15 +715,15 @@
 	      start,
 	      pos,
 	      re = _bp[6]
-	
+
 	    isexpr = start = re.lastIndex = 0
-	
+
 	    while ((match = re.exec(str))) {
-	
+
 	      pos = match.index
-	
+
 	      if (isexpr) {
-	
+
 	        if (match[2]) {
 	          re.lastIndex = skipBraces(str, match[2], re.lastIndex)
 	          continue
@@ -732,7 +732,7 @@
 	          continue
 	        }
 	      }
-	
+
 	      if (!match[1]) {
 	        unescapeStr(str.slice(start, pos))
 	        start = re.lastIndex
@@ -740,13 +740,13 @@
 	        re.lastIndex = start
 	      }
 	    }
-	
+
 	    if (str && start < str.length) {
 	      unescapeStr(str.slice(start))
 	    }
-	
+
 	    return parts
-	
+
 	    function unescapeStr (s) {
 	      if (tmpl || isexpr) {
 	        parts.push(s && s.replace(_bp[5], '$1'))
@@ -754,12 +754,12 @@
 	        parts.push(s)
 	      }
 	    }
-	
+
 	    function skipBraces (s, ch, ix) {
 	      var
 	        match,
 	        recch = FINDBRACES[ch]
-	
+
 	      recch.lastIndex = ix
 	      ix = 1
 	      while ((match = recch.exec(s))) {
@@ -769,23 +769,23 @@
 	      return ix ? s.length : recch.lastIndex
 	    }
 	  }
-	
+
 	  _brackets.hasExpr = function hasExpr (str) {
 	    return _cache[4].test(str)
 	  }
-	
+
 	  _brackets.loopKeys = function loopKeys (expr) {
 	    var m = expr.match(_cache[9])
-	
+
 	    return m
 	      ? { key: m[1], pos: m[2], val: _cache[0] + m[3].trim() + _cache[1] }
 	      : { val: expr.trim() }
 	  }
-	
+
 	  _brackets.array = function array (pair) {
 	    return pair ? _create(pair) : _cache
 	  }
-	
+
 	  function _reset (pair) {
 	    if ((pair || (pair = DEFAULT)) !== _cache[8]) {
 	      _cache = _create(pair)
@@ -794,10 +794,10 @@
 	    }
 	    cachedBrackets = pair
 	  }
-	
+
 	  function _setSettings (o) {
 	    var b
-	
+
 	    o = o || {}
 	    b = o.brackets
 	    Object.defineProperty(o, 'brackets', {
@@ -808,24 +808,24 @@
 	    _settings = o
 	    _reset(b)
 	  }
-	
+
 	  Object.defineProperty(_brackets, 'settings', {
 	    set: _setSettings,
 	    get: function () { return _settings }
 	  })
-	
+
 	  /* istanbul ignore next: in the browser riot is always in the scope */
 	  _brackets.settings = typeof riot !== 'undefined' && riot.settings || {}
 	  _brackets.set = _reset
-	
+
 	  _brackets.R_STRINGS = R_STRINGS
 	  _brackets.R_MLCOMMS = R_MLCOMMS
 	  _brackets.S_QBLOCKS = S_QBLOCKS
-	
+
 	  return _brackets
-	
+
 	})()
-	
+
 	/**
 	 * @module tmpl
 	 *
@@ -833,29 +833,29 @@
 	 * tmpl.hasExpr  - Test the existence of a expression inside a string
 	 * tmpl.loopKeys - Get the keys for an 'each' loop (used by `_each`)
 	 */
-	
+
 	var tmpl = (function () {
-	
+
 	  var _cache = {}
-	
+
 	  function _tmpl (str, data) {
 	    if (!str) return str
-	
+
 	    return (_cache[str] || (_cache[str] = _create(str))).call(data, _logErr)
 	  }
-	
+
 	  _tmpl.haveRaw = brackets.hasRaw
-	
+
 	  _tmpl.hasExpr = brackets.hasExpr
-	
+
 	  _tmpl.loopKeys = brackets.loopKeys
-	
+
 	  _tmpl.errorHandler = null
-	
+
 	  function _logErr (err, ctx) {
-	
+
 	    if (_tmpl.errorHandler) {
-	
+
 	      err.riotData = {
 	        tagName: ctx && ctx.root && ctx.root.tagName,
 	        _riot_id: ctx && ctx._riot_id  //eslint-disable-line camelcase
@@ -863,60 +863,60 @@
 	      _tmpl.errorHandler(err)
 	    }
 	  }
-	
+
 	  function _create (str) {
 	    var expr = _getTmpl(str)
-	
+
 	    if (expr.slice(0, 11) !== 'try{return ') expr = 'return ' + expr
-	
+
 	/* eslint-disable */
-	
+
 	    return new Function('E', expr + ';')
 	/* eslint-enable */
 	  }
-	
+
 	  var
 	    CH_IDEXPR = '\u2057',
 	    RE_CSNAME = /^(?:(-?[_A-Za-z\xA0-\xFF][-\w\xA0-\xFF]*)|\u2057(\d+)~):/,
 	    RE_QBLOCK = RegExp(brackets.S_QBLOCKS, 'g'),
 	    RE_DQUOTE = /\u2057/g,
 	    RE_QBMARK = /\u2057(\d+)~/g
-	
+
 	  function _getTmpl (str) {
 	    var
 	      qstr = [],
 	      expr,
 	      parts = brackets.split(str.replace(RE_DQUOTE, '"'), 1)
-	
+
 	    if (parts.length > 2 || parts[0]) {
 	      var i, j, list = []
-	
+
 	      for (i = j = 0; i < parts.length; ++i) {
-	
+
 	        expr = parts[i]
-	
+
 	        if (expr && (expr = i & 1
-	
+
 	            ? _parseExpr(expr, 1, qstr)
-	
+
 	            : '"' + expr
 	                .replace(/\\/g, '\\\\')
 	                .replace(/\r\n?|\n/g, '\\n')
 	                .replace(/"/g, '\\"') +
 	              '"'
-	
+
 	          )) list[j++] = expr
-	
+
 	      }
-	
+
 	      expr = j < 2 ? list[0]
 	           : '[' + list.join(',') + '].join("")'
-	
+
 	    } else {
-	
+
 	      expr = _parseExpr(parts[1], 0, qstr)
 	    }
-	
+
 	    if (qstr[0]) {
 	      expr = expr.replace(RE_QBMARK, function (_, pos) {
 	        return qstr[pos]
@@ -926,29 +926,29 @@
 	    }
 	    return expr
 	  }
-	
+
 	  var
 	    RE_BREND = {
 	      '(': /[()]/g,
 	      '[': /[[\]]/g,
 	      '{': /[{}]/g
 	    }
-	
+
 	  function _parseExpr (expr, asText, qstr) {
-	
+
 	    expr = expr
 	          .replace(RE_QBLOCK, function (s, div) {
 	            return s.length > 2 && !div ? CH_IDEXPR + (qstr.push(s) - 1) + '~' : s
 	          })
 	          .replace(/\s+/g, ' ').trim()
 	          .replace(/\ ?([[\({},?\.:])\ ?/g, '$1')
-	
+
 	    if (expr) {
 	      var
 	        list = [],
 	        cnt = 0,
 	        match
-	
+
 	      while (expr &&
 	            (match = expr.match(RE_CSNAME)) &&
 	            !match.index
@@ -957,29 +957,29 @@
 	          key,
 	          jsb,
 	          re = /,|([[{(])|$/g
-	
+
 	        expr = RegExp.rightContext
 	        key  = match[2] ? qstr[match[2]].slice(1, -1).trim().replace(/\s+/g, ' ') : match[1]
-	
+
 	        while (jsb = (match = re.exec(expr))[1]) skipBraces(jsb, re)
-	
+
 	        jsb  = expr.slice(0, match.index)
 	        expr = RegExp.rightContext
-	
+
 	        list[cnt++] = _wrapExpr(jsb, 1, key)
 	      }
-	
+
 	      expr = !cnt ? _wrapExpr(expr, asText)
 	           : cnt > 1 ? '[' + list.join(',') + '].join(" ").trim()' : list[0]
 	    }
 	    return expr
-	
+
 	    function skipBraces (ch, re) {
 	      var
 	        mm,
 	        lv = 1,
 	        ir = RE_BREND[ch]
-	
+
 	      ir.lastIndex = re.lastIndex
 	      while (mm = ir.exec(expr)) {
 	        if (mm[0] === ch) ++lv
@@ -988,20 +988,20 @@
 	      re.lastIndex = lv ? expr.length : ir.lastIndex
 	    }
 	  }
-	
+
 	  // istanbul ignore next: not both
 	  var // eslint-disable-next-line max-len
 	    JS_CONTEXT = '"in this?this:' + (typeof window !== 'object' ? 'global' : 'window') + ').',
 	    JS_VARNAME = /[,{][$\w]+:|(^ *|[^$\w\.])(?!(?:typeof|true|false|null|undefined|in|instanceof|is(?:Finite|NaN)|void|NaN|new|Date|RegExp|Math)(?![$\w]))([$_A-Za-z][$\w]*)/g,
 	    JS_NOPROPS = /^(?=(\.[$\w]+))\1(?:[^.[(]|$)/
-	
+
 	  function _wrapExpr (expr, asText, key) {
 	    var tb
-	
+
 	    expr = expr.replace(JS_VARNAME, function (match, p, mvar, pos, s) {
 	      if (mvar) {
 	        pos = tb ? 0 : pos + match.length
-	
+
 	        if (mvar !== 'this' && mvar !== 'global' && mvar !== 'window') {
 	          match = p + '("' + mvar + JS_CONTEXT + mvar
 	          if (pos) tb = (s = s[pos]) === '.' || s === '(' || s === '['
@@ -1011,39 +1011,39 @@
 	      }
 	      return match
 	    })
-	
+
 	    if (tb) {
 	      expr = 'try{return ' + expr + '}catch(e){E(e,this)}'
 	    }
-	
+
 	    if (key) {
-	
+
 	      expr = (tb
 	          ? 'function(){' + expr + '}.call(this)' : '(' + expr + ')'
 	        ) + '?"' + key + '":""'
-	
+
 	    } else if (asText) {
-	
+
 	      expr = 'function(v){' + (tb
 	          ? expr.replace('return ', 'v=') : 'v=(' + expr + ')'
 	        ) + ';return v||v===0?v:""}.call(this)'
 	    }
-	
+
 	    return expr
 	  }
-	
+
 	  // istanbul ignore next: compatibility fix for beta versions
 	  _tmpl.parse = function (s) { return s }
-	
+
 	  _tmpl.version = brackets.version = 'v2.4.0'
-	
+
 	  return _tmpl
-	
+
 	})()
-	
+
 	/*
 	  lib/browser/tag/mkdom.js
-	
+
 	  Includes hacks needed for the Internet Explorer version 9 and below
 	  See: http://kangax.github.io/compat-table/es5/#ie8
 	       http://codeplanet.io/dropping-ie8/
@@ -1058,7 +1058,7 @@
 	    rootEls = { tr: 'tbody', th: 'tr', td: 'tr', col: 'colgroup' },
 	    tblTags = IE_VERSION && IE_VERSION < 10
 	      ? SPECIAL_TAGS_REGEX : /^(?:t(?:body|head|foot|[rhd])|caption|col(?:group)?)$/
-	
+
 	  /**
 	   * Creates a DOM element to wrap the given content. Normally an `DIV`, but can be
 	   * also a `TABLE`, `SELECT`, `TBODY`, `TR`, or `COLGROUP` element.
@@ -1073,21 +1073,21 @@
 	      match   = templ && templ.match(/^\s*<([-\w]+)/),
 	      tagName = match && match[1].toLowerCase(),
 	      el = mkEl('div', isSVGTag(tagName))
-	
+
 	    // replace all the yield tags with the tag inner html
 	    templ = replaceYield(templ, html)
-	
+
 	    /* istanbul ignore next */
 	    if (tblTags.test(tagName))
 	      el = specialTags(el, templ, tagName)
 	    else
 	      setInnerHTML(el, templ)
-	
+
 	    el.stub = true
-	
+
 	    return el
 	  }
-	
+
 	  /*
 	    Creates the root element for table or select child elements:
 	    tr/th/td/thead/tfoot/tbody/caption/col/colgroup/option/optgroup
@@ -1096,12 +1096,12 @@
 	    var
 	      select = tagName[0] === 'o',
 	      parent = select ? 'select>' : 'table>'
-	
+
 	    // trim() is important here, this ensures we don't have artifacts,
 	    // so we can check if we have only one element inside the parent
 	    el.innerHTML = '<' + parent + templ.trim() + '</' + parent
 	    parent = el.firstChild
-	
+
 	    // returns the immediate parent if tr/th/td/col is the only element, if not
 	    // returns the whole tree, as this can include additional elements
 	    if (select) {
@@ -1113,7 +1113,7 @@
 	    }
 	    return parent
 	  }
-	
+
 	  /*
 	    Replace the yield tag from any tag template with the innerHTML of the
 	    original tag in the page
@@ -1121,15 +1121,15 @@
 	  function replaceYield(templ, html) {
 	    // do nothing if no yield
 	    if (!reHasYield.test(templ)) return templ
-	
+
 	    // be careful with #1343 - string on the source having `$1`
 	    var src = {}
-	
+
 	    html = html && html.replace(reYieldSrc, function (_, ref, text) {
 	      src[ref] = src[ref] || text   // preserve first definition
 	      return ''
 	    }).trim()
-	
+
 	    return templ
 	      .replace(reYieldDest, function (_, ref, def) {  // yield with from - to attrs
 	        return src[ref] || def || ''
@@ -1138,11 +1138,11 @@
 	        return html || def || ''
 	      })
 	  }
-	
+
 	  return _mkdom
-	
+
 	})()
-	
+
 	/**
 	 * Convert the item looped into an object used to extend the child tag properties
 	 * @param   { Object } expr - object containing the keys used to extend the children tags
@@ -1161,25 +1161,25 @@
 	  if (expr.pos) item[expr.pos] = val
 	  return item
 	}
-	
+
 	/**
 	 * Unmount the redundant tags
 	 * @param   { Array } items - array containing the current items to loop
 	 * @param   { Array } tags - array containing all the children tags
 	 */
 	function unmountRedundant(items, tags) {
-	
+
 	  var i = tags.length,
 	    j = items.length,
 	    t
-	
+
 	  while (i > j) {
 	    t = tags[--i]
 	    tags.splice(i, 1)
 	    t.unmount()
 	  }
 	}
-	
+
 	/**
 	 * Move the nested custom tags in non custom loop tags
 	 * @param   { Object } child - non custom loop tag
@@ -1196,7 +1196,7 @@
 	      moveChildTag(tag, tagName, i)
 	  })
 	}
-	
+
 	/**
 	 * Adds the elements for a virtual tag
 	 * @param { Tag } tag - the tag whose root's children will be inserted or appended
@@ -1212,12 +1212,12 @@
 	      src.insertBefore(el, target._root)
 	    else
 	      src.appendChild(el)
-	
+
 	    tag._virts.push(el) // hold for unmounting
 	    el = sib
 	  }
 	}
-	
+
 	/**
 	 * Move virtual tag and all child nodes
 	 * @param { Tag } tag - first child reference used to start move
@@ -1233,8 +1233,8 @@
 	    el = sib
 	  }
 	}
-	
-	
+
+
 	/**
 	 * Manage tags having the 'each'
 	 * @param   { Object } dom - DOM node we need to loop
@@ -1242,10 +1242,10 @@
 	 * @param   { String } expr - string contained in the 'each' attribute
 	 */
 	function _each(dom, parent, expr) {
-	
+
 	  // remove the each property from the original tag
 	  remAttr(dom, 'each')
-	
+
 	  var mustReorder = typeof getAttr(dom, 'no-reorder') !== T_STRING || remAttr(dom, 'no-reorder'),
 	    tagName = getTagName(dom),
 	    impl = __tagImpl[tagName] || { tmpl: getOuterHTML(dom) },
@@ -1258,26 +1258,26 @@
 	    oldItems = [],
 	    hasKeys,
 	    isVirtual = dom.tagName == 'VIRTUAL'
-	
+
 	  // parse the each expression
 	  expr = tmpl.loopKeys(expr)
-	
+
 	  // insert a marked where the loop tags will be injected
 	  root.insertBefore(ref, dom)
-	
+
 	  // clean template code
 	  parent.one('before-mount', function () {
-	
+
 	    // remove the original DOM node
 	    dom.parentNode.removeChild(dom)
 	    if (root.stub) root = parent.root
-	
+
 	  }).on('update', function () {
 	    // get the new items collection
 	    var items = tmpl(expr.val, parent),
 	      // create a fragment to hold the new DOM nodes to inject in the parent tag
 	      frag = document.createDocumentFragment()
-	
+
 	    // object loop. any changes cause full redraw
 	    if (!isArray(items)) {
 	      hasKeys = items || false
@@ -1286,11 +1286,11 @@
 	          return mkitem(expr, key, items[key])
 	        }) : []
 	    }
-	
+
 	    // loop all the new items
 	    var i = 0,
 	      itemsLength = items.length
-	
+
 	    for (; i < itemsLength; i++) {
 	      // reorder only if the items are objects
 	      var
@@ -1300,16 +1300,16 @@
 	        pos = ~oldPos && _mustReorder ? oldPos : i,
 	        // does a tag exist in this position?
 	        tag = tags[pos]
-	
+
 	      item = !hasKeys && expr.key ? mkitem(expr, item, i) : item
-	
+
 	      // new tag
 	      if (
 	        !_mustReorder && !tag // with no-reorder we just update the old tags
 	        ||
 	        _mustReorder && !~oldPos || !tag // by default we always try to reorder the DOM elements
 	      ) {
-	
+
 	        tag = new Tag(impl, {
 	          parent: parent,
 	          isLoop: true,
@@ -1317,9 +1317,9 @@
 	          root: useRoot ? root : dom.cloneNode(),
 	          item: item
 	        }, dom.innerHTML)
-	
+
 	        tag.mount()
-	
+
 	        if (isVirtual) tag._root = tag.root.firstChild // save reference for further moves or inserts
 	        // this tag must be appended
 	        if (i == tags.length || !tags[i]) { // fix 1581
@@ -1334,11 +1334,11 @@
 	          else root.insertBefore(tag.root, tags[i].root) // #1374 some browsers reset selected here
 	          oldItems.splice(i, 0, item)
 	        }
-	
+
 	        tags.splice(i, 0, tag)
 	        pos = i // handled here so no move
 	      } else tag.update(item, true)
-	
+
 	      // reorder the tag if it's not located in its previous position
 	      if (
 	        pos !== i && _mustReorder &&
@@ -1359,21 +1359,21 @@
 	        // we need to move all their custom tags into the right position
 	        if (!child && tag.tags) moveNestedTags(tag, i)
 	      }
-	
+
 	      // cache the original item to use it in the events bound to this node
 	      // and its children
 	      tag._item = item
 	      // cache the real parent tag internally
 	      defineProperty(tag, '_parent', parent)
 	    }
-	
+
 	    // remove the redundant tags
 	    unmountRedundant(items, tags)
-	
+
 	    // insert the new nodes
 	    if (isOption) {
 	      root.appendChild(frag)
-	
+
 	      // #1374 FireFox bug in <option selected={expression}>
 	      if (FIREFOX && !root.multiple) {
 	        for (var n = 0; n < root.length; n++) {
@@ -1386,35 +1386,35 @@
 	      }
 	    }
 	    else root.insertBefore(frag, ref)
-	
+
 	    // set the 'tags' property of the parent tag
 	    // if child is 'undefined' it means that we don't need to set this property
 	    // for example:
 	    // we don't need store the `myTag.tags['div']` property if we are looping a div tag
 	    // but we need to track the `myTag.tags['child']` property looping a custom child node named `child`
 	    if (child) parent.tags[tagName] = tags
-	
+
 	    // clone the items array
 	    oldItems = items.slice()
-	
+
 	  })
-	
+
 	}
 	/**
 	 * Object that will be used to inject and manage the css of every tag instance
 	 */
 	var styleManager = (function(_riot) {
-	
+
 	  if (!window) return { // skip injection on the server
 	    add: function () {},
 	    inject: function () {}
 	  }
-	
+
 	  var styleNode = (function () {
 	    // create a new style element with the correct type
 	    var newNode = mkEl('style')
 	    setAttr(newNode, 'type', 'text/css')
-	
+
 	    // replace any user node or insert the new one into the head
 	    var userNode = $('style[type=riot]')
 	    if (userNode) {
@@ -1422,20 +1422,20 @@
 	      userNode.parentNode.replaceChild(newNode, userNode)
 	    }
 	    else document.getElementsByTagName('head')[0].appendChild(newNode)
-	
+
 	    return newNode
 	  })()
-	
+
 	  // Create cache and shortcut to the correct property
 	  var cssTextProp = styleNode.styleSheet,
 	    stylesToInject = ''
-	
+
 	  // Expose the style node in a non-modificable property
 	  Object.defineProperty(_riot, 'styleNode', {
 	    value: styleNode,
 	    writable: true
 	  })
-	
+
 	  /**
 	   * Public api
 	   */
@@ -1459,75 +1459,75 @@
 	      }
 	    }
 	  }
-	
+
 	})(riot)
-	
-	
+
+
 	function parseNamedElements(root, tag, childTags, forceParsingNamed) {
-	
+
 	  walk(root, function(dom) {
 	    if (dom.nodeType == 1) {
 	      dom.isLoop = dom.isLoop ||
 	                  (dom.parentNode && dom.parentNode.isLoop || getAttr(dom, 'each'))
 	                    ? 1 : 0
-	
+
 	      // custom child tag
 	      if (childTags) {
 	        var child = getTag(dom)
-	
+
 	        if (child && !dom.isLoop)
 	          childTags.push(initChildTag(child, {root: dom, parent: tag}, dom.innerHTML, tag))
 	      }
-	
+
 	      if (!dom.isLoop || forceParsingNamed)
 	        setNamed(dom, tag, [])
 	    }
-	
+
 	  })
-	
+
 	}
-	
+
 	function parseExpressions(root, tag, expressions) {
-	
+
 	  function addExpr(dom, val, extra) {
 	    if (tmpl.hasExpr(val)) {
 	      expressions.push(extend({ dom: dom, expr: val }, extra))
 	    }
 	  }
-	
+
 	  walk(root, function(dom) {
 	    var type = dom.nodeType,
 	      attr
-	
+
 	    // text node
 	    if (type == 3 && dom.parentNode.tagName != 'STYLE') addExpr(dom, dom.nodeValue)
 	    if (type != 1) return
-	
+
 	    /* element */
-	
+
 	    // loop
 	    attr = getAttr(dom, 'each')
-	
+
 	    if (attr) { _each(dom, tag, attr); return false }
-	
+
 	    // attribute expressions
 	    each(dom.attributes, function(attr) {
 	      var name = attr.name,
 	        bool = name.split('__')[1]
-	
+
 	      addExpr(dom, attr.value, { attr: bool || name, bool: bool })
 	      if (bool) { remAttr(dom, name); return false }
-	
+
 	    })
-	
+
 	    // skip custom tags
 	    if (getTag(dom)) return false
-	
+
 	  })
-	
+
 	}
 	function Tag(impl, conf, innerHTML) {
-	
+
 	  var self = riot.observable(this),
 	    opts = inherit(conf.opts) || {},
 	    parent = conf.parent,
@@ -1541,37 +1541,37 @@
 	    attr = {},
 	    propsInSyncWithParent = [],
 	    dom
-	
+
 	  // only call unmount if we have a valid __tagImpl (has name property)
 	  if (impl.name && root._tag) root._tag.unmount(true)
-	
+
 	  // not yet mounted
 	  this.isMounted = false
 	  root.isLoop = isLoop
-	
+
 	  // keep a reference to the tag just created
 	  // so we will be able to mount this tag multiple times
 	  root._tag = this
-	
+
 	  // create a unique id to this tag
 	  // it could be handy to use it also to improve the virtual dom rendering speed
 	  defineProperty(this, '_riot_id', ++__uid) // base 1 allows test !t._riot_id
-	
+
 	  extend(this, { parent: parent, root: root, opts: opts, tags: {} }, item)
-	
+
 	  // grab attributes
 	  each(root.attributes, function(el) {
 	    var val = el.value
 	    // remember attributes with expressions only
 	    if (tmpl.hasExpr(val)) attr[el.name] = val
 	  })
-	
+
 	  dom = mkdom(impl.tmpl, innerHTML)
-	
+
 	  // options
 	  function updateOpts() {
 	    var ctx = hasImpl && isLoop ? self : parent || self
-	
+
 	    // update opts from current DOM attributes
 	    each(root.attributes, function(el) {
 	      var val = el.value
@@ -1582,14 +1582,14 @@
 	      opts[toCamel(name)] = tmpl(attr[name], ctx)
 	    })
 	  }
-	
+
 	  function normalizeData(data) {
 	    for (var key in item) {
 	      if (typeof self[key] !== T_UNDEF && isWritable(self, key))
 	        self[key] = data[key]
 	    }
 	  }
-	
+
 	  function inheritFromParent () {
 	    if (!self.parent || !isLoop) return
 	    each(Object.keys(self.parent), function(k) {
@@ -1603,7 +1603,7 @@
 	      }
 	    })
 	  }
-	
+
 	  /**
 	   * Update the tag expressions and options
 	   * @param   { * }  data - data we want to use to extend the tag properties
@@ -1611,7 +1611,7 @@
 	   * @returns { self }
 	   */
 	  defineProperty(this, 'update', function(data, isInherited) {
-	
+
 	    // make sure the data passed will not override
 	    // the component core methods
 	    data = cleanUpData(data)
@@ -1626,7 +1626,7 @@
 	    updateOpts()
 	    self.trigger('update', data)
 	    update(expressions, self)
-	
+
 	    // the updated event will be triggered
 	    // once the DOM will be ready and all the re-flows are completed
 	    // this is useful if you want to get the "real" root properties
@@ -1635,16 +1635,16 @@
 	      // closes #1599
 	      self.parent.one('updated', function() { self.trigger('updated') })
 	    else rAF(function() { self.trigger('updated') })
-	
+
 	    return this
 	  })
-	
+
 	  defineProperty(this, 'mixin', function() {
 	    each(arguments, function(mix) {
 	      var instance
-	
+
 	      mix = typeof mix === T_STRING ? riot.mixin(mix) : mix
-	
+
 	      // check if the mixin is a function
 	      if (isFunction(mix)) {
 	        // create the new mixin instance
@@ -1652,7 +1652,7 @@
 	        // save the prototype to loop it afterwards
 	        mix = mix.prototype
 	      } else instance = mix
-	
+
 	      // loop the keys in the function prototype or the all object keys
 	      each(Object.getOwnPropertyNames(mix), function(key) {
 	        // bind methods to self
@@ -1661,45 +1661,45 @@
 	                        instance[key].bind(self) :
 	                        instance[key]
 	      })
-	
+
 	      // init method will be called automatically
 	      if (instance.init) instance.init.bind(self)()
 	    })
 	    return this
 	  })
-	
+
 	  defineProperty(this, 'mount', function() {
-	
+
 	    updateOpts()
-	
+
 	    // add global mixins
 	    var globalMixin = riot.mixin(GLOBAL_MIXIN)
 	    if (globalMixin)
 	      for (var i in globalMixin)
 	        if (globalMixin.hasOwnProperty(i))
 	          self.mixin(globalMixin[i])
-	
+
 	    // initialiation
 	    if (impl.fn) impl.fn.call(self, opts)
-	
+
 	    // parse layout after init. fn may calculate args for nested custom tags
 	    parseExpressions(dom, self, expressions)
-	
+
 	    // mount the child tags
 	    toggle(true)
-	
+
 	    // update the root adding custom attributes coming from the compiler
 	    // it fixes also #1087
 	    if (impl.attrs)
 	      walkAttributes(impl.attrs, function (k, v) { setAttr(root, k, v) })
 	    if (impl.attrs || hasImpl)
 	      parseExpressions(self.root, self, expressions)
-	
+
 	    if (!self.parent || isLoop) self.update(item)
-	
+
 	    // internal use only, fixes #403
 	    self.trigger('before-mount')
-	
+
 	    if (isLoop && !hasImpl) {
 	      // update the root attribute for the looped elements
 	      root = dom.firstChild
@@ -1707,14 +1707,14 @@
 	      while (dom.firstChild) root.appendChild(dom.firstChild)
 	      if (root.stub) root = parent.root
 	    }
-	
+
 	    defineProperty(self, 'root', root)
-	
+
 	    // parse the named dom nodes in the looped child
 	    // adding them to the parent as well
 	    if (isLoop)
 	      parseNamedElements(self.root, self.parent, null, true)
-	
+
 	    // if it's not a child tag we can trigger its mount event
 	    if (!self.parent || self.parent.isMounted) {
 	      self.isMounted = true
@@ -1730,22 +1730,22 @@
 	      }
 	    })
 	  })
-	
-	
+
+
 	  defineProperty(this, 'unmount', function(keepRootTag) {
 	    var el = root,
 	      p = el.parentNode,
 	      ptag,
 	      tagIndex = __virtualDom.indexOf(self)
-	
+
 	    self.trigger('before-unmount')
-	
+
 	    // remove this tag instance from the global virtualDom variable
 	    if (~tagIndex)
 	      __virtualDom.splice(tagIndex, 1)
-	
+
 	    if (p) {
-	
+
 	      if (parent) {
 	        ptag = getImmediateCustomParentTag(parent)
 	        // remove this tag from the parent tags object
@@ -1760,10 +1760,10 @@
 	          // otherwise just delete the tag instance
 	          ptag.tags[tagName] = undefined
 	      }
-	
+
 	      else
 	        while (el.firstChild) el.removeChild(el.firstChild)
-	
+
 	      if (!keepRootTag)
 	        p.removeChild(el)
 	      else {
@@ -1771,36 +1771,36 @@
 	        remAttr(p, RIOT_TAG_IS)
 	        remAttr(p, RIOT_TAG) // this will be removed in riot 3.0.0
 	      }
-	
+
 	    }
-	
+
 	    if (this._virts) {
 	      each(this._virts, function(v) {
 	        if (v.parentNode) v.parentNode.removeChild(v)
 	      })
 	    }
-	
+
 	    self.trigger('unmount')
 	    toggle()
 	    self.off('*')
 	    self.isMounted = false
 	    delete root._tag
-	
+
 	  })
-	
+
 	  // proxy function to bind updates
 	  // dispatched from a parent tag
 	  function onChildUpdate(data) { self.update(data, true) }
-	
+
 	  function toggle(isMount) {
-	
+
 	    // mount/unmount children
 	    each(childTags, function(child) { child[isMount ? 'mount' : 'unmount']() })
-	
+
 	    // listen/unlisten parent (events flow one way from parent to children)
 	    if (!parent) return
 	    var evt = isMount ? 'on' : 'off'
-	
+
 	    // the loop tags will be always in sync with the parent automatically
 	    if (isLoop)
 	      parent[evt]('unmount', self.unmount)
@@ -1808,11 +1808,11 @@
 	      parent[evt]('update', onChildUpdate)[evt]('unmount', self.unmount)
 	    }
 	  }
-	
-	
+
+
 	  // named elements available for fn
 	  parseNamedElements(dom, this, childTags)
-	
+
 	}
 	/**
 	 * Attach an event to a DOM node
@@ -1822,45 +1822,45 @@
 	 * @param { Tag } tag - tag instance
 	 */
 	function setEventHandler(name, handler, dom, tag) {
-	
+
 	  dom[name] = function(e) {
-	
+
 	    var ptag = tag._parent,
 	      item = tag._item,
 	      el
-	
+
 	    if (!item)
 	      while (ptag && !item) {
 	        item = ptag._item
 	        ptag = ptag._parent
 	      }
-	
+
 	    // cross browser event fix
 	    e = e || window.event
-	
+
 	    // override the event properties
 	    if (isWritable(e, 'currentTarget')) e.currentTarget = dom
 	    if (isWritable(e, 'target')) e.target = e.srcElement
 	    if (isWritable(e, 'which')) e.which = e.charCode || e.keyCode
-	
+
 	    e.item = item
-	
+
 	    // prevent default behaviour (by default)
 	    if (handler.call(tag, e) !== true && !/radio|check/.test(dom.type)) {
 	      if (e.preventDefault) e.preventDefault()
 	      e.returnValue = false
 	    }
-	
+
 	    if (!e.preventUpdate) {
 	      el = item ? getImmediateCustomParentTag(ptag) : tag
 	      el.update()
 	    }
-	
+
 	  }
-	
+
 	}
-	
-	
+
+
 	/**
 	 * Insert a DOM node replacing another one (used by if- attribute)
 	 * @param   { Object } root - parent node
@@ -1872,34 +1872,34 @@
 	  root.insertBefore(before, node)
 	  root.removeChild(node)
 	}
-	
+
 	/**
 	 * Update the expressions in a Tag instance
 	 * @param   { Array } expressions - expression that must be re evaluated
 	 * @param   { Tag } tag - tag instance
 	 */
 	function update(expressions, tag) {
-	
+
 	  each(expressions, function(expr, i) {
-	
+
 	    var dom = expr.dom,
 	      attrName = expr.attr,
 	      value = tmpl(expr.expr, tag),
 	      parent = expr.dom.parentNode
-	
+
 	    if (expr.bool) {
 	      value = !!value
 	    } else if (value == null) {
 	      value = ''
 	    }
-	
+
 	    // #1638: regression of #1612, update the dom only if the value of the
 	    // expression was changed
 	    if (expr.value === value) {
 	      return
 	    }
 	    expr.value = value
-	
+
 	    // textarea and text nodes has no attribute name
 	    if (!attrName) {
 	      // about #815 w/o replace: the browser converts the value to a string,
@@ -1915,26 +1915,26 @@
 	      }
 	      return
 	    }
-	
+
 	    // ~~#1612: look for changes in dom.value when updating the value~~
 	    if (attrName === 'value') {
 	      dom.value = value
 	      return
 	    }
-	
+
 	    // remove original attribute
 	    remAttr(dom, attrName)
-	
+
 	    // event handler
 	    if (isFunction(value)) {
 	      setEventHandler(attrName, value, dom, tag)
-	
+
 	    // if- conditional
 	    } else if (attrName == 'if') {
 	      var stub = expr.stub,
 	        add = function() { insertTo(stub.parentNode, stub, dom) },
 	        remove = function() { insertTo(dom.parentNode, dom, stub) }
-	
+
 	      // add to DOM
 	      if (value) {
 	        if (stub) {
@@ -1957,23 +1957,23 @@
 	          remove()
 	        // otherwise we need to wait the updated event
 	        else (tag.parent || tag).one('updated', remove)
-	
+
 	        dom.inStub = true
 	      }
 	    // show / hide
 	    } else if (attrName === 'show') {
 	      dom.style.display = value ? '' : 'none'
-	
+
 	    } else if (attrName === 'hide') {
 	      dom.style.display = value ? 'none' : ''
-	
+
 	    } else if (expr.bool) {
 	      dom[attrName] = value
 	      if (value) setAttr(dom, attrName, attrName)
 	      if (FIREFOX && attrName === 'selected' && dom.tagName === 'OPTION') {
 	        dom.__riot1374 = value   // #1374
 	      }
-	
+
 	    } else if (value === 0 || value && typeof value !== T_OBJECT) {
 	      // <img src="{ expr }">
 	      if (startsWith(attrName, RIOT_PREFIX) && attrName != RIOT_TAG) {
@@ -1981,9 +1981,9 @@
 	      }
 	      setAttr(dom, attrName, value)
 	    }
-	
+
 	  })
-	
+
 	}
 	/**
 	 * Specialized function for looping an array-like collection with `each={}`
@@ -1993,7 +1993,7 @@
 	 */
 	function each(els, fn) {
 	  var len = els ? els.length : 0
-	
+
 	  for (var i = 0, el; i < len; i++) {
 	    el = els[i]
 	    // return false -> current item was removed by fn during the loop
@@ -2001,7 +2001,7 @@
 	  }
 	  return els
 	}
-	
+
 	/**
 	 * Detect if the argument passed is a function
 	 * @param   { * } v - whatever you want to pass to this function
@@ -2010,7 +2010,7 @@
 	function isFunction(v) {
 	  return typeof v === T_FUNCTION || false   // avoid IE problems
 	}
-	
+
 	/**
 	 * Get the outer html of any DOM node SVGs included
 	 * @param   { Object } el - DOM node to parse
@@ -2025,7 +2025,7 @@
 	    return container.innerHTML
 	  }
 	}
-	
+
 	/**
 	 * Set the inner html of any DOM node SVGs included
 	 * @param { Object } container - DOM node where we will inject the new html
@@ -2041,7 +2041,7 @@
 	    )
 	  }
 	}
-	
+
 	/**
 	 * Checks wether a DOM node must be considered part of an svg document
 	 * @param   { String }  name - tag name
@@ -2050,7 +2050,7 @@
 	function isSVGTag(name) {
 	  return ~SVG_TAGS_LIST.indexOf(name)
 	}
-	
+
 	/**
 	 * Detect if the argument passed is an object, exclude null.
 	 * NOTE: Use isObject(x) && !isArray(x) to excludes arrays.
@@ -2060,7 +2060,7 @@
 	function isObject(v) {
 	  return v && typeof v === T_OBJECT         // typeof null is 'object'
 	}
-	
+
 	/**
 	 * Remove any DOM attribute from a node
 	 * @param   { Object } dom - DOM node we want to update
@@ -2069,7 +2069,7 @@
 	function remAttr(dom, name) {
 	  dom.removeAttribute(name)
 	}
-	
+
 	/**
 	 * Convert a string containing dashes to camel case
 	 * @param   { String } string - input string
@@ -2080,7 +2080,7 @@
 	    return c.toUpperCase()
 	  })
 	}
-	
+
 	/**
 	 * Get the value of any DOM attribute on a node
 	 * @param   { Object } dom - DOM node we want to parse
@@ -2090,7 +2090,7 @@
 	function getAttr(dom, name) {
 	  return dom.getAttribute(name)
 	}
-	
+
 	/**
 	 * Set any DOM attribute
 	 * @param { Object } dom - DOM node we want to update
@@ -2100,7 +2100,7 @@
 	function setAttr(dom, name, val) {
 	  dom.setAttribute(name, val)
 	}
-	
+
 	/**
 	 * Detect the tag implementation by a DOM node
 	 * @param   { Object } dom - DOM node we need to parse to get its tag implementation
@@ -2118,7 +2118,7 @@
 	 */
 	function addChildTag(tag, tagName, parent) {
 	  var cachedTag = parent.tags[tagName]
-	
+
 	  // if there are multiple children tags having the same name
 	  if (cachedTag) {
 	    // if the parent tags property is not yet an array
@@ -2134,7 +2134,7 @@
 	    parent.tags[tagName] = tag
 	  }
 	}
-	
+
 	/**
 	 * Move the position of a custom tag in its parent tag
 	 * @param   { Object } tag - child tag instance
@@ -2146,14 +2146,14 @@
 	    tags
 	  // no parent no move
 	  if (!parent) return
-	
+
 	  tags = parent.tags[tagName]
-	
+
 	  if (isArray(tags))
 	    tags.splice(newPos, 0, tags.splice(tags.indexOf(tag), 1)[0])
 	  else addChildTag(tag, tagName, parent)
 	}
-	
+
 	/**
 	 * Create a new child tag including it correctly into its parent
 	 * @param   { Object } child - child tag implementation
@@ -2172,7 +2172,7 @@
 	  // in some cases this could be different from the custom parent tag
 	  // for example in nested loops
 	  tag._parent = parent
-	
+
 	  // add this tag to the custom parent tag
 	  addChildTag(tag, tagName, ptag)
 	  // and also to the real parent tag
@@ -2181,10 +2181,10 @@
 	  // empty the child node once we got its template
 	  // to avoid that its children get compiled multiple times
 	  opts.root.innerHTML = ''
-	
+
 	  return tag
 	}
-	
+
 	/**
 	 * Loop backward all the parents tree to detect the first custom parent tag
 	 * @param   { Object } tag - a Tag instance
@@ -2198,7 +2198,7 @@
 	  }
 	  return ptag
 	}
-	
+
 	/**
 	 * Helper function to set an immutable property
 	 * @param   { Object } el - object where the new property will be set
@@ -2216,7 +2216,7 @@
 	  }, options))
 	  return el
 	}
-	
+
 	/**
 	 * Get the tag name of any DOM node
 	 * @param   { Object } dom - DOM node we want to parse
@@ -2228,10 +2228,10 @@
 	    tagName = namedTag && !tmpl.hasExpr(namedTag) ?
 	                namedTag :
 	              child ? child.name : dom.tagName.toLowerCase()
-	
+
 	  return tagName
 	}
-	
+
 	/**
 	 * Extend any object with other properties
 	 * @param   { Object } src - source object
@@ -2255,7 +2255,7 @@
 	  }
 	  return src
 	}
-	
+
 	/**
 	 * Check whether an array contains an item
 	 * @param   { Array } arr - target array
@@ -2265,14 +2265,14 @@
 	function contains(arr, item) {
 	  return ~arr.indexOf(item)
 	}
-	
+
 	/**
 	 * Check whether an object is a kind of array
 	 * @param   { * } a - anything
 	 * @returns {Boolean} is 'a' an array?
 	 */
 	function isArray(a) { return Array.isArray(a) || a instanceof Array }
-	
+
 	/**
 	 * Detect whether a property of an object could be overridden
 	 * @param   { Object }  obj - source object
@@ -2283,8 +2283,8 @@
 	  var props = Object.getOwnPropertyDescriptor(obj, key)
 	  return typeof obj[key] === T_UNDEF || props && props.writable
 	}
-	
-	
+
+
 	/**
 	 * With this function we avoid that the internal Tag methods get overridden
 	 * @param   { Object } data - options we want to use to extend the tag instance
@@ -2293,14 +2293,14 @@
 	function cleanUpData(data) {
 	  if (!(data instanceof Tag) && !(data && typeof data.trigger == T_FUNCTION))
 	    return data
-	
+
 	  var o = {}
 	  for (var key in data) {
 	    if (!RESERVED_WORDS_BLACKLIST.test(key)) o[key] = data[key]
 	  }
 	  return o
 	}
-	
+
 	/**
 	 * Walk down recursively all the children tags starting dom node
 	 * @param   { Object }   dom - starting node where we will start the recursion
@@ -2312,7 +2312,7 @@
 	    if (fn(dom) === false) return
 	    else {
 	      dom = dom.firstChild
-	
+
 	      while (dom) {
 	        walk(dom, fn)
 	        dom = dom.nextSibling
@@ -2320,7 +2320,7 @@
 	    }
 	  }
 	}
-	
+
 	/**
 	 * Minimize risk: only zero or one _space_ between attr & value
 	 * @param   { String }   html - html string we want to parse
@@ -2329,12 +2329,12 @@
 	function walkAttributes(html, fn) {
 	  var m,
 	    re = /([-\w]+) ?= ?(?:"([^"]*)|'([^']*)|({[^}]*}))/g
-	
+
 	  while (m = re.exec(html)) {
 	    fn(m[1].toLowerCase(), m[2] || m[3] || m[4])
 	  }
 	}
-	
+
 	/**
 	 * Check whether a DOM node is in stub mode, useful for the riot 'if' directive
 	 * @param   { Object }  dom - DOM node we want to parse
@@ -2347,7 +2347,7 @@
 	  }
 	  return false
 	}
-	
+
 	/**
 	 * Create a generic DOM node
 	 * @param   { String } name - name of the DOM node we want to create
@@ -2359,7 +2359,7 @@
 	    document.createElementNS('http://www.w3.org/2000/svg', 'svg') :
 	    document.createElement(name)
 	}
-	
+
 	/**
 	 * Shorter and fast way to select multiple nodes in the DOM
 	 * @param   { String } selector - DOM selector
@@ -2369,7 +2369,7 @@
 	function $$(selector, ctx) {
 	  return (ctx || document).querySelectorAll(selector)
 	}
-	
+
 	/**
 	 * Shorter and fast way to select a single node in the DOM
 	 * @param   { String } selector - unique dom selector
@@ -2379,7 +2379,7 @@
 	function $(selector, ctx) {
 	  return (ctx || document).querySelector(selector)
 	}
-	
+
 	/**
 	 * Simple object prototypal inheritance
 	 * @param   { Object } parent - parent object
@@ -2390,7 +2390,7 @@
 	  Child.prototype = parent
 	  return new Child()
 	}
-	
+
 	/**
 	 * Get the name property needed to identify a DOM node in riot
 	 * @param   { Object } dom - DOM node we need to parse
@@ -2399,7 +2399,7 @@
 	function getNamedKey(dom) {
 	  return getAttr(dom, 'id') || getAttr(dom, 'name')
 	}
-	
+
 	/**
 	 * Set the named properties of a tag element
 	 * @param { Object } dom - DOM node we need to parse
@@ -2429,10 +2429,10 @@
 	          parent[key] = [value, dom]
 	      }
 	    }
-	
+
 	  // skip the elements with no named properties
 	  if (!key) return
-	
+
 	  // check whether this key has been already evaluated
 	  if (tmpl.hasExpr(key))
 	    // wait the first updated event only once
@@ -2442,9 +2442,9 @@
 	    })
 	  else
 	    add(parent[key])
-	
+
 	}
-	
+
 	/**
 	 * Faster String startsWith alternative
 	 * @param   { String } src - source string
@@ -2454,7 +2454,7 @@
 	function startsWith(src, str) {
 	  return src.slice(0, str.length) === str
 	}
-	
+
 	/**
 	 * requestAnimationFrame function
 	 * Adapted from https://gist.github.com/paulirish/1579671, license MIT
@@ -2462,19 +2462,19 @@
 	var rAF = (function (w) {
 	  var raf = w.requestAnimationFrame    ||
 	            w.mozRequestAnimationFrame || w.webkitRequestAnimationFrame
-	
+
 	  if (!raf || /iP(ad|hone|od).*OS 6/.test(w.navigator.userAgent)) {  // buggy iOS6
 	    var lastTime = 0
-	
+
 	    raf = function (cb) {
 	      var nowtime = Date.now(), timeout = Math.max(16 - (nowtime - lastTime), 0)
 	      setTimeout(function () { cb(lastTime = nowtime + timeout) }, timeout)
 	    }
 	  }
 	  return raf
-	
+
 	})(window || {})
-	
+
 	/**
 	 * Mount a tag creating new Tag instance
 	 * @param   { Object } root - dom node where the tag will be mounted
@@ -2486,27 +2486,27 @@
 	  var tag = __tagImpl[tagName],
 	    // cache the inner HTML to fix #855
 	    innerHTML = root._innerHTML = root._innerHTML || root.innerHTML
-	
+
 	  // clear the inner html
 	  root.innerHTML = ''
-	
+
 	  if (tag && root) tag = new Tag(tag, { root: root, opts: opts }, innerHTML)
-	
+
 	  if (tag && tag.mount) {
 	    tag.mount()
 	    // add this tag to the virtualDom variable
 	    if (!contains(__virtualDom, tag)) __virtualDom.push(tag)
 	  }
-	
+
 	  return tag
 	}
 	/**
 	 * Riot public api
 	 */
-	
+
 	// share methods for other riot parts, e.g. compiler
 	riot.util = { brackets: brackets, tmpl: tmpl }
-	
+
 	/**
 	 * Create a mixin that could be globally shared across all the tags
 	 */
@@ -2514,7 +2514,7 @@
 	  var mixins = {},
 	    globals = mixins[GLOBAL_MIXIN] = {},
 	    _id = 0
-	
+
 	  /**
 	   * Create/Return a mixin by its name
 	   * @param   { String }  name - mixin name (global mixin if object)
@@ -2528,17 +2528,17 @@
 	      riot.mixin('__unnamed_'+_id++, name, true)
 	      return
 	    }
-	
+
 	    var store = g ? globals : mixins
-	
+
 	    // Getter
 	    if (!mixin) return store[name]
 	    // Setter
 	    store[name] = extend(store[name] || {}, mixin)
 	  }
-	
+
 	})()
-	
+
 	/**
 	 * Create a new riot tag implementation
 	 * @param   { String }   name - name/id of the new riot tag
@@ -2564,7 +2564,7 @@
 	  __tagImpl[name] = { name: name, tmpl: html, attrs: attrs, fn: fn }
 	  return name
 	}
-	
+
 	/**
 	 * Create a new riot tag implementation (for use by the compiler)
 	 * @param   { String }   name - name/id of the new riot tag
@@ -2580,7 +2580,7 @@
 	  __tagImpl[name] = { name: name, tmpl: html, attrs: attrs, fn: fn }
 	  return name
 	}
-	
+
 	/**
 	 * Mount a tag using a specific tag implementation
 	 * @param   { String } selector - tag DOM selector
@@ -2589,13 +2589,13 @@
 	 * @returns { Array } new tags instances
 	 */
 	riot.mount = function(selector, tagName, opts) {
-	
+
 	  var els,
 	    allTags,
 	    tags = []
-	
+
 	  // helper functions
-	
+
 	  function addRiotTags(arr) {
 	    var list = ''
 	    each(arr, function (e) {
@@ -2606,16 +2606,16 @@
 	    })
 	    return list
 	  }
-	
+
 	  function selectAllTags() {
 	    var keys = Object.keys(__tagImpl)
 	    return keys + addRiotTags(keys)
 	  }
-	
+
 	  function pushTags(root) {
 	    if (root.tagName) {
 	      var riotTag = getAttr(root, RIOT_TAG_IS) || getAttr(root, RIOT_TAG)
-	
+
 	      // have tagName? force riot-tag to be the same
 	      if (tagName && riotTag !== tagName) {
 	        riotTag = tagName
@@ -2623,23 +2623,23 @@
 	        setAttr(root, RIOT_TAG, tagName) // this will be removed in riot 3.0.0
 	      }
 	      var tag = mountTo(root, riotTag || root.tagName.toLowerCase(), opts)
-	
+
 	      if (tag) tags.push(tag)
 	    } else if (root.length) {
 	      each(root, pushTags)   // assume nodeList
 	    }
 	  }
-	
+
 	  // ----- mount code -----
-	
+
 	  // inject styles into DOM
 	  styleManager.inject()
-	
+
 	  if (isObject(tagName)) {
 	    opts = tagName
 	    tagName = 0
 	  }
-	
+
 	  // crawl the DOM to find the tag
 	  if (typeof selector === T_STRING) {
 	    if (selector === '*')
@@ -2649,7 +2649,7 @@
 	    else
 	      // or just the ones named like the selector
 	      selector += addRiotTags(selector.split(/, */))
-	
+
 	    // make sure to pass always a selector
 	    // to the querySelectorAll function
 	    els = selector ? $$(selector) : []
@@ -2657,7 +2657,7 @@
 	  else
 	    // probably you have passed already a tag or a NodeList
 	    els = selector
-	
+
 	  // select all the registered and mount them inside their root elements
 	  if (tagName === '*') {
 	    // get all custom tags
@@ -2676,12 +2676,12 @@
 	    // get rid of the tagName
 	    tagName = 0
 	  }
-	
+
 	  pushTags(els)
-	
+
 	  return tags
 	}
-	
+
 	/**
 	 * Update all the tags instances created
 	 * @returns { Array } all the tags instances
@@ -2691,12 +2691,12 @@
 	    tag.update()
 	  })
 	}
-	
+
 	/**
 	 * Export the Virtual DOM
 	 */
 	riot.vdom = __virtualDom
-	
+
 	/**
 	 * Export the Tag constructor
 	 */
@@ -2709,7 +2709,7 @@
 	    !(__WEBPACK_AMD_DEFINE_RESULT__ = function() { return riot }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
 	  else
 	    window.riot = riot
-	
+
 	})(typeof window != 'undefined' ? window : void 0);
 
 
@@ -2718,7 +2718,7 @@
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
-	
+
 	/* WEBPACK VAR INJECTION */}.call(exports, {}))
 
 /***/ },
@@ -2726,19 +2726,19 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	
+
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
-	
+
 	var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
-	
+
 	var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-	
+
 	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
-	
+
 	var riot = _interopRequire(__webpack_require__(1));
-	
+
 	var request = _interopRequire(__webpack_require__(4));
-	
+
 	var apis = {
 	  unauthenticatedRoot: "/",
 	  authenticatedRoot: "/projects",
@@ -2747,14 +2747,14 @@
 	  passwords: riot.observable(),
 	  invitations: riot.observable()
 	};
-	
+
 	var Account = (function () {
 	  function Account(account) {
 	    _classCallCheck(this, Account);
-	
+
 	    _.extend(this, account);
 	  }
-	
+
 	  _createClass(Account, {
 	    isCustomer: {
 	      get: function () {
@@ -2772,15 +2772,15 @@
 	      }
 	    }
 	  });
-	
+
 	  return Account;
 	})();
-	
+
 	var resources = ["customers", "professionals", "administrators", "leads", "accounts", "projects", "payments", "quotes", "tenders", "tender_templates", "materials", "tasks", "appointments", "assets", "comments", "content/templates", "content/pages"];
 	resources.forEach(function (api) {
 	  apis[api] = riot.observable();
 	  apis[api].cache = {};
-	
+
 	  apis[api]["new"] = function () {
 	    return request({
 	      url: "/api/" + api + "/new" }).fail(function (xhr) {
@@ -2791,7 +2791,7 @@
 	      return data;
 	    });
 	  };
-	
+
 	  apis[api].index = function (data) {
 	    return request({
 	      url: "/api/" + api,
@@ -2808,7 +2808,7 @@
 	      return data;
 	    });
 	  };
-	
+
 	  apis[api].show = function (id) {
 	    return request({ url: "/api/" + api + "/" + id }).fail(function (xhr) {
 	      apis[api].trigger("show.fail", xhr);
@@ -2818,7 +2818,7 @@
 	      return data;
 	    });
 	  };
-	
+
 	  apis[api].create = function (data) {
 	    return request({
 	      url: "/api/" + api,
@@ -2832,7 +2832,7 @@
 	      return data;
 	    });
 	  };
-	
+
 	  apis[api].update = function (id, data) {
 	    return request({
 	      url: "/api/" + api + "/" + id,
@@ -2846,7 +2846,7 @@
 	      return id;
 	    });
 	  };
-	
+
 	  apis[api]["delete"] = function (id) {
 	    return request({ url: "/api/" + api + "/" + id, type: "delete" }).fail(function (xhr) {
 	      apis[api].trigger("delete.fail", xhr);
@@ -2857,7 +2857,7 @@
 	    });
 	  };
 	});
-	
+
 	apis.sessions.check = function () {
 	  return request({
 	    type: "get",
@@ -2939,7 +2939,7 @@
 	    window.location.href = "/app";
 	  });
 	};
-	
+
 	apis.passwords.create = function (data) {
 	  return request({
 	    url: "/api/auth/password",
@@ -2953,7 +2953,7 @@
 	    return data;
 	  });
 	};
-	
+
 	apis.passwords.update = function (data) {
 	  return request({
 	    url: "/api/auth/password",
@@ -2967,7 +2967,7 @@
 	    return id;
 	  });
 	};
-	
+
 	apis.registrations.signup = function (data) {
 	  return request({
 	    type: "post",
@@ -2996,7 +2996,7 @@
 	    return apis.currentAccount;
 	  });
 	};
-	
+
 	apis.quotes.submit = function (id, data) {
 	  return request({
 	    url: "/api/quotes/" + id + "/submit",
@@ -3022,7 +3022,7 @@
 	    return id;
 	  });
 	};
-	
+
 	apis.invitations.invite = function (data) {
 	  return request({
 	    url: "/api/invitations/invite",
@@ -3052,7 +3052,7 @@
 	    return data;
 	  });
 	};
-	
+
 	apis.payments.approve = function (id, data) {
 	  return request({
 	    url: "/api/payments/" + id + "/approve",
@@ -3103,7 +3103,7 @@
 	    return id;
 	  });
 	};
-	
+
 	module.exports = apis;
 
 /***/ },
@@ -3111,21 +3111,21 @@
 /***/ function(module, exports) {
 
 	"use strict";
-	
+
 	module.exports = function (_ref) {
 	  var url = _ref.url;
 	  var _ref$type = _ref.type;
 	  var type = _ref$type === undefined ? "get" : _ref$type;
 	  var _ref$data = _ref.data;
 	  var data = _ref$data === undefined ? null : _ref$data;
-	
+
 	  if (!$.csrfToken) {
 	    return $.getJSON("/api/auth/csrf_token.json").then(function (d, x, r) {
 	      var token = r.getResponseHeader("X-CSRF-Token");
 	      if (token) {
 	        $.csrfToken = token;
 	        $("meta[name=csrf-token]").attr("content", token);
-	
+
 	        return $.ajax({
 	          url: url,
 	          type: type,
@@ -3157,23 +3157,23 @@
 /* 5 */
 /***/ function(module, exports) {
 
-	
+
 	/*!
 	 * Inflector
 	 * Copyright(c) 2011 Vadim Demedes <sbioko@gmail.com>
 	 * MIT Licensed
 	 */
-	
+
 	/**
 	 * Library version.
 	 */
-	
+
 	exports.version = '0.0.1';
-	
+
 	String.prototype.trim = function() { // not inflector, just helper for its libraries
 		return this.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 	}
-	
+
 	String.prototype.plural = function() {
 		var s = this.trim().toLowerCase();
 		end = s.substr(-1);
@@ -3189,7 +3189,7 @@
 		}
 		return s;
 	}
-	
+
 	String.prototype.singular = function() {
 		var s = this.trim().toLowerCase();
 		var end = s.substr(-3);
@@ -3205,7 +3205,7 @@
 		}
 		return s;
 	}
-	
+
 	String.prototype.camelize = function() {
 		var s = 'x_' + this.trim().toLowerCase();
 		s = s.replace(/[\s_]/g, ' ');
@@ -3214,11 +3214,11 @@
 		});
 		return s.replace(/ /g, '').substr(1);
 	}
-	
+
 	String.prototype.underscore = function() {
 		return this.trim().toLowerCase().replace(/[\s]+/g, '_');
 	}
-	
+
 	String.prototype.humanize = function() {
 		var s = this.trim().toLowerCase().replace(/[_]+/g, ' ');
 		s = s.replace(/^(.)|\s(.)/g, function($1) {
@@ -3226,7 +3226,7 @@
 		});
 		return s;
 	}
-	
+
 
 
 /***/ },
@@ -3234,24 +3234,24 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
-	
+
 	var request = _interopRequire(__webpack_require__(4));
-	
+
 	var dot = _interopRequire(__webpack_require__(7));
-	
+
 	var moment = _interopRequire(__webpack_require__(8));
-	
+
 	var numeral = _interopRequire(__webpack_require__(111));
-	
+
 	var language = _interopRequire(__webpack_require__(112));
-	
+
 	var Autolinker = _interopRequire(__webpack_require__(113));
-	
+
 	numeral.language("en-gb", language);
 	numeral.language("en-gb");
-	
+
 	riot.mixin({
 	  ERRORS: {
 	    0: "Hmm, something not right, you may try again later or contact with us.",
@@ -3275,7 +3275,7 @@
 	  dot: new dot(".", true), // allow overrides!
 	  serializeForm: function serializeForm(form) {
 	    var options = arguments[1] === undefined ? { parseAll: true } : arguments[1];
-	
+
 	    return $(form).serializeJSON(options);
 	  },
 	  errorHandler: function errorHandler(xhr) {
@@ -3346,9 +3346,9 @@
 	  },
 	  loadResources: function loadResources(resource) {
 	    var _this = this;
-	
+
 	    var options = arguments[1] === undefined ? {} : arguments[1];
-	
+
 	    // BUGYY!!!!
 	    // let key = `index.${resource}:${JSON.stringify(options)}`
 	    // if (this.opts.api[resource].cache[key]) {
@@ -3402,11 +3402,11 @@
 /***/ function(module, exports) {
 
 	'use strict'
-	
+
 	function _process (v, mod) {
 	  var i
 	  var r
-	
+
 	  if (typeof mod === 'function') {
 	    r = mod(v)
 	    if (r !== undefined) {
@@ -3420,10 +3420,10 @@
 	      }
 	    }
 	  }
-	
+
 	  return v
 	}
-	
+
 	function parseKey (key, val) {
 	  // detect negative index notation
 	  if (key[0] === '-' && Array.isArray(val) && /^-\d+$/.test(key)) {
@@ -3431,48 +3431,48 @@
 	  }
 	  return key
 	}
-	
+
 	function isIndex (k) {
 	  return /^\d+/.test(k)
 	}
-	
+
 	function parsePath (path, sep) {
 	  if (path.indexOf('[') >= 0) {
 	    path = path.replace(/\[/g, '.').replace(/]/g, '')
 	  }
 	  return path.split(sep)
 	}
-	
+
 	function DotObject (seperator, override, useArray) {
 	  if (!(this instanceof DotObject)) {
 	    return new DotObject(seperator, override, useArray)
 	  }
-	
+
 	  if (typeof seperator === 'undefined') seperator = '.'
 	  if (typeof override === 'undefined') override = false
 	  if (typeof useArray === 'undefined') useArray = true
 	  this.seperator = seperator
 	  this.override = override
 	  this.useArray = useArray
-	
+
 	  // contains touched arrays
 	  this.cleanup = []
 	}
-	
+
 	var dotDefault = new DotObject('.', false, true)
 	function wrap (method) {
 	  return function () {
 	    return dotDefault[method].apply(dotDefault, arguments)
 	  }
 	}
-	
+
 	DotObject.prototype._fill = function (a, obj, v, mod) {
 	  var k = a.shift()
-	
+
 	  if (a.length > 0) {
 	    obj[k] = obj[k] ||
 	      (this.useArray && isIndex(a[0]) ? [] : {})
-	
+
 	    if (obj[k] !== Object(obj[k])) {
 	      if (this.override) {
 	        obj[k] = {}
@@ -3482,18 +3482,18 @@
 	        )
 	      }
 	    }
-	
+
 	    this._fill(a, obj[k], v, mod)
 	  } else {
 	    if (!this.override &&
 	      obj[k] === Object(obj[k]) && Object.keys(obj[k]).length) {
 	      throw new Error("Trying to redefine non-empty obj['" + k + "']")
 	    }
-	
+
 	    obj[k] = _process(v, mod)
 	  }
 	}
-	
+
 	/**
 	 *
 	 * Converts an object with dotted-key/value pairs to it's expanded version
@@ -3518,12 +3518,12 @@
 	 */
 	DotObject.prototype.object = function (obj, mods) {
 	  var self = this
-	
+
 	  Object.keys(obj).forEach(function (k) {
 	    var mod = mods === undefined ? null : mods[k]
 	    // normalize array notation.
 	    var ok = parsePath(k, self.seperator).join(self.seperator)
-	
+
 	    if (ok.indexOf(self.seperator) !== -1) {
 	      self._fill(ok.split(self.seperator), obj, obj[k], mod)
 	      delete obj[k]
@@ -3531,10 +3531,10 @@
 	      obj[k] = _process(obj[k], mod)
 	    }
 	  })
-	
+
 	  return obj
 	}
-	
+
 	/**
 	 * @param {String} path dotted path
 	 * @param {String} v value to be set
@@ -3547,10 +3547,10 @@
 	  } else if (this.override) {
 	    obj[path] = _process(v, mod)
 	  }
-	
+
 	  return obj
 	}
-	
+
 	/**
 	 *
 	 * Pick a value from an object using dot notation.
@@ -3567,7 +3567,7 @@
 	  var val
 	  var key
 	  var cp
-	
+
 	  keys = parsePath(path, this.seperator)
 	  for (i = 0; i < keys.length; i++) {
 	    key = parseKey(keys[i], obj)
@@ -3598,7 +3598,7 @@
 	  }
 	  return obj
 	}
-	
+
 	/**
 	 *
 	 * Remove value from an object using dot notation.
@@ -3609,7 +3609,7 @@
 	 */
 	DotObject.prototype.remove = function (path, obj) {
 	  var i
-	
+
 	  this.cleanup = []
 	  if (Array.isArray(path)) {
 	    for (i = 0; i < path.length; i++) {
@@ -3621,7 +3621,7 @@
 	    return this.pick(path, obj, true)
 	  }
 	}
-	
+
 	DotObject.prototype._cleanup = function (obj) {
 	  var ret
 	  var i
@@ -3638,10 +3638,10 @@
 	    this.cleanup = []
 	  }
 	}
-	
+
 	// alias method
 	DotObject.prototype.del = DotObject.prototype.remove
-	
+
 	/**
 	 *
 	 * Move a property from one place to the other.
@@ -3662,10 +3662,10 @@
 	    merge = mods
 	    this.set(target, this.pick(source, obj, true), obj, merge)
 	  }
-	
+
 	  return obj
 	}
-	
+
 	/**
 	 *
 	 * Transfer a property from one object to another object.
@@ -3691,10 +3691,10 @@
 	    merge = mods
 	    this.set(target, this.pick(source, obj1, true), obj2, merge)
 	  }
-	
+
 	  return obj2
 	}
-	
+
 	/**
 	 *
 	 * Copy a property from one object to another object.
@@ -3725,14 +3725,14 @@
 	    merge = mods
 	    this.set(target, this.pick(source, obj1, false), obj2, merge)
 	  }
-	
+
 	  return obj2
 	}
-	
+
 	function isObject (val) {
 	  return Object.prototype.toString.call(val) === '[object Object]'
 	}
-	
+
 	/**
 	 *
 	 * Set a property on an object using dot notation.
@@ -3747,13 +3747,13 @@
 	  var k
 	  var keys
 	  var key
-	
+
 	  // Do not operate if the value is undefined.
 	  if (typeof val === 'undefined') {
 	    return obj
 	  }
 	  keys = parsePath(path, this.seperator)
-	
+
 	  for (i = 0; i < keys.length; i++) {
 	    key = keys[i]
 	    if (i === (keys.length - 1)) {
@@ -3786,7 +3786,7 @@
 	  }
 	  return obj
 	}
-	
+
 	/**
 	 *
 	 * Transform an object
@@ -3819,7 +3819,7 @@
 	  }.bind(this))
 	  return tgt
 	}
-	
+
 	/**
 	 *
 	 * Convert object to dotted-key/value pair
@@ -3849,7 +3849,7 @@
 	  }.bind(this))
 	  return tgt
 	}
-	
+
 	DotObject.pick = wrap('pick')
 	DotObject.move = wrap('move')
 	DotObject.transfer = wrap('transfer')
@@ -3860,7 +3860,7 @@
 	DotObject.set = wrap('set')
 	DotObject.del = DotObject.remove = wrap('remove')
 	DotObject.dot = wrap('dot')
-	
+
 	;['override', 'overwrite'].forEach(function (prop) {
 	  Object.defineProperty(DotObject, prop, {
 	    get: function () {
@@ -3871,7 +3871,7 @@
 	    }
 	  })
 	})
-	
+
 	Object.defineProperty(DotObject, 'useArray', {
 	  get: function () {
 	    return dotDefault.useArray
@@ -3880,9 +3880,9 @@
 	    dotDefault.useArray = val
 	  }
 	})
-	
+
 	DotObject._process = _process
-	
+
 	module.exports = DotObject;
 
 
@@ -3895,33 +3895,33 @@
 	//! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 	//! license : MIT
 	//! momentjs.com
-	
+
 	;(function (global, factory) {
 	     true ? module.exports = factory() :
 	    typeof define === 'function' && define.amd ? define(factory) :
 	    global.moment = factory()
 	}(this, function () { 'use strict';
-	
+
 	    var hookCallback;
-	
+
 	    function utils_hooks__hooks () {
 	        return hookCallback.apply(null, arguments);
 	    }
-	
+
 	    // This is done to register the method called with moment()
 	    // without creating circular dependencies.
 	    function setHookCallback (callback) {
 	        hookCallback = callback;
 	    }
-	
+
 	    function isArray(input) {
 	        return input instanceof Array || Object.prototype.toString.call(input) === '[object Array]';
 	    }
-	
+
 	    function isDate(input) {
 	        return input instanceof Date || Object.prototype.toString.call(input) === '[object Date]';
 	    }
-	
+
 	    function map(arr, fn) {
 	        var res = [], i;
 	        for (i = 0; i < arr.length; ++i) {
@@ -3929,33 +3929,33 @@
 	        }
 	        return res;
 	    }
-	
+
 	    function hasOwnProp(a, b) {
 	        return Object.prototype.hasOwnProperty.call(a, b);
 	    }
-	
+
 	    function extend(a, b) {
 	        for (var i in b) {
 	            if (hasOwnProp(b, i)) {
 	                a[i] = b[i];
 	            }
 	        }
-	
+
 	        if (hasOwnProp(b, 'toString')) {
 	            a.toString = b.toString;
 	        }
-	
+
 	        if (hasOwnProp(b, 'valueOf')) {
 	            a.valueOf = b.valueOf;
 	        }
-	
+
 	        return a;
 	    }
-	
+
 	    function create_utc__createUTC (input, format, locale, strict) {
 	        return createLocalOrUTC(input, format, locale, strict, true).utc();
 	    }
-	
+
 	    function defaultParsingFlags() {
 	        // We need to deep clone this object.
 	        return {
@@ -3973,14 +3973,14 @@
 	            meridiem        : null
 	        };
 	    }
-	
+
 	    function getParsingFlags(m) {
 	        if (m._pf == null) {
 	            m._pf = defaultParsingFlags();
 	        }
 	        return m._pf;
 	    }
-	
+
 	    var some;
 	    if (Array.prototype.some) {
 	        some = Array.prototype.some;
@@ -3988,17 +3988,17 @@
 	        some = function (fun) {
 	            var t = Object(this);
 	            var len = t.length >>> 0;
-	
+
 	            for (var i = 0; i < len; i++) {
 	                if (i in t && fun.call(this, t[i], i, t)) {
 	                    return true;
 	                }
 	            }
-	
+
 	            return false;
 	        };
 	    }
-	
+
 	    function valid__isValid(m) {
 	        if (m._isValid == null) {
 	            var flags = getParsingFlags(m);
@@ -4014,7 +4014,7 @@
 	                !flags.invalidFormat &&
 	                !flags.userInvalidated &&
 	                (!flags.meridiem || (flags.meridiem && parsedParts));
-	
+
 	            if (m._strict) {
 	                m._isValid = m._isValid &&
 	                    flags.charsLeftOver === 0 &&
@@ -4024,7 +4024,7 @@
 	        }
 	        return m._isValid;
 	    }
-	
+
 	    function valid__createInvalid (flags) {
 	        var m = create_utc__createUTC(NaN);
 	        if (flags != null) {
@@ -4033,21 +4033,21 @@
 	        else {
 	            getParsingFlags(m).userInvalidated = true;
 	        }
-	
+
 	        return m;
 	    }
-	
+
 	    function isUndefined(input) {
 	        return input === void 0;
 	    }
-	
+
 	    // Plugins that add properties should also add the key here (null value),
 	    // so we can properly clone ourselves.
 	    var momentProperties = utils_hooks__hooks.momentProperties = [];
-	
+
 	    function copyConfig(to, from) {
 	        var i, prop, val;
-	
+
 	        if (!isUndefined(from._isAMomentObject)) {
 	            to._isAMomentObject = from._isAMomentObject;
 	        }
@@ -4078,7 +4078,7 @@
 	        if (!isUndefined(from._locale)) {
 	            to._locale = from._locale;
 	        }
-	
+
 	        if (momentProperties.length > 0) {
 	            for (i in momentProperties) {
 	                prop = momentProperties[i];
@@ -4088,12 +4088,12 @@
 	                }
 	            }
 	        }
-	
+
 	        return to;
 	    }
-	
+
 	    var updateInProgress = false;
-	
+
 	    // Moment prototype object
 	    function Moment(config) {
 	        copyConfig(this, config);
@@ -4106,11 +4106,11 @@
 	            updateInProgress = false;
 	        }
 	    }
-	
+
 	    function isMoment (obj) {
 	        return obj instanceof Moment || (obj != null && obj._isAMomentObject != null);
 	    }
-	
+
 	    function absFloor (number) {
 	        if (number < 0) {
 	            return Math.ceil(number);
@@ -4118,18 +4118,18 @@
 	            return Math.floor(number);
 	        }
 	    }
-	
+
 	    function toInt(argumentForCoercion) {
 	        var coercedNumber = +argumentForCoercion,
 	            value = 0;
-	
+
 	        if (coercedNumber !== 0 && isFinite(coercedNumber)) {
 	            value = absFloor(coercedNumber);
 	        }
-	
+
 	        return value;
 	    }
-	
+
 	    // compare two arrays, return the number of differences
 	    function compareArrays(array1, array2, dontConvert) {
 	        var len = Math.min(array1.length, array2.length),
@@ -4144,17 +4144,17 @@
 	        }
 	        return diffs + lengthDiff;
 	    }
-	
+
 	    function warn(msg) {
 	        if (utils_hooks__hooks.suppressDeprecationWarnings === false &&
 	                (typeof console !==  'undefined') && console.warn) {
 	            console.warn('Deprecation warning: ' + msg);
 	        }
 	    }
-	
+
 	    function deprecate(msg, fn) {
 	        var firstTime = true;
-	
+
 	        return extend(function () {
 	            if (utils_hooks__hooks.deprecationHandler != null) {
 	                utils_hooks__hooks.deprecationHandler(null, msg);
@@ -4166,9 +4166,9 @@
 	            return fn.apply(this, arguments);
 	        }, fn);
 	    }
-	
+
 	    var deprecations = {};
-	
+
 	    function deprecateSimple(name, msg) {
 	        if (utils_hooks__hooks.deprecationHandler != null) {
 	            utils_hooks__hooks.deprecationHandler(name, msg);
@@ -4178,18 +4178,18 @@
 	            deprecations[name] = true;
 	        }
 	    }
-	
+
 	    utils_hooks__hooks.suppressDeprecationWarnings = false;
 	    utils_hooks__hooks.deprecationHandler = null;
-	
+
 	    function isFunction(input) {
 	        return input instanceof Function || Object.prototype.toString.call(input) === '[object Function]';
 	    }
-	
+
 	    function isObject(input) {
 	        return Object.prototype.toString.call(input) === '[object Object]';
 	    }
-	
+
 	    function locale_set__set (config) {
 	        var prop, i;
 	        for (i in config) {
@@ -4205,7 +4205,7 @@
 	        // number + (possibly) stuff coming from _ordinalParseLenient.
 	        this._ordinalParseLenient = new RegExp(this._ordinalParse.source + '|' + (/\d{1,2}/).source);
 	    }
-	
+
 	    function mergeConfigs(parentConfig, childConfig) {
 	        var res = extend({}, parentConfig), prop;
 	        for (prop in childConfig) {
@@ -4223,15 +4223,15 @@
 	        }
 	        return res;
 	    }
-	
+
 	    function Locale(config) {
 	        if (config != null) {
 	            this.set(config);
 	        }
 	    }
-	
+
 	    var keys;
-	
+
 	    if (Object.keys) {
 	        keys = Object.keys;
 	    } else {
@@ -4245,21 +4245,21 @@
 	            return res;
 	        };
 	    }
-	
+
 	    // internal storage for locale config files
 	    var locales = {};
 	    var globalLocale;
-	
+
 	    function normalizeLocale(key) {
 	        return key ? key.toLowerCase().replace('_', '-') : key;
 	    }
-	
+
 	    // pick the locale from the array
 	    // try ['en-au', 'en-gb'] as 'en-au', 'en-gb', 'en', as in move through the list trying each
 	    // substring from most specific to least, but move to the next array item if it's a more specific variant than the current root
 	    function chooseLocale(names) {
 	        var i = 0, j, next, locale, split;
-	
+
 	        while (i < names.length) {
 	            split = normalizeLocale(names[i]).split('-');
 	            j = split.length;
@@ -4280,7 +4280,7 @@
 	        }
 	        return null;
 	    }
-	
+
 	    function loadLocale(name) {
 	        var oldLocale = null;
 	        // TODO: Find a better way to register and load all the locales in Node
@@ -4296,7 +4296,7 @@
 	        }
 	        return locales[name];
 	    }
-	
+
 	    // This function will load locale and then set the global locale.  If
 	    // no arguments are passed in, it will simply return the current global
 	    // locale key.
@@ -4309,16 +4309,16 @@
 	            else {
 	                data = defineLocale(key, values);
 	            }
-	
+
 	            if (data) {
 	                // moment.duration._locale = moment._locale = data;
 	                globalLocale = data;
 	            }
 	        }
-	
+
 	        return globalLocale._abbr;
 	    }
-	
+
 	    function defineLocale (name, config) {
 	        if (config !== null) {
 	            config.abbr = name;
@@ -4338,10 +4338,10 @@
 	                }
 	            }
 	            locales[name] = new Locale(config);
-	
+
 	            // backwards compat for now: also set the locale
 	            locale_locales__getSetGlobalLocale(name);
-	
+
 	            return locales[name];
 	        } else {
 	            // useful for testing
@@ -4349,7 +4349,7 @@
 	            return null;
 	        }
 	    }
-	
+
 	    function updateLocale(name, config) {
 	        if (config != null) {
 	            var locale;
@@ -4359,7 +4359,7 @@
 	            locale = new Locale(config);
 	            locale.parentLocale = locales[name];
 	            locales[name] = locale;
-	
+
 	            // backwards compat for now: also set the locale
 	            locale_locales__getSetGlobalLocale(name);
 	        } else {
@@ -4374,19 +4374,19 @@
 	        }
 	        return locales[name];
 	    }
-	
+
 	    // returns locale data
 	    function locale_locales__getLocale (key) {
 	        var locale;
-	
+
 	        if (key && key._locale && key._locale._abbr) {
 	            key = key._locale._abbr;
 	        }
-	
+
 	        if (!key) {
 	            return globalLocale;
 	        }
-	
+
 	        if (!isArray(key)) {
 	            //short-circuit everything else
 	            locale = loadLocale(key);
@@ -4395,30 +4395,30 @@
 	            }
 	            key = [key];
 	        }
-	
+
 	        return chooseLocale(key);
 	    }
-	
+
 	    function locale_locales__listLocales() {
 	        return keys(locales);
 	    }
-	
+
 	    var aliases = {};
-	
+
 	    function addUnitAlias (unit, shorthand) {
 	        var lowerCase = unit.toLowerCase();
 	        aliases[lowerCase] = aliases[lowerCase + 's'] = aliases[shorthand] = unit;
 	    }
-	
+
 	    function normalizeUnits(units) {
 	        return typeof units === 'string' ? aliases[units] || aliases[units.toLowerCase()] : undefined;
 	    }
-	
+
 	    function normalizeObjectUnits(inputObject) {
 	        var normalizedInput = {},
 	            normalizedProp,
 	            prop;
-	
+
 	        for (prop in inputObject) {
 	            if (hasOwnProp(inputObject, prop)) {
 	                normalizedProp = normalizeUnits(prop);
@@ -4427,10 +4427,10 @@
 	                }
 	            }
 	        }
-	
+
 	        return normalizedInput;
 	    }
-	
+
 	    function makeGetSet (unit, keepTime) {
 	        return function (value) {
 	            if (value != null) {
@@ -4442,20 +4442,20 @@
 	            }
 	        };
 	    }
-	
+
 	    function get_set__get (mom, unit) {
 	        return mom.isValid() ?
 	            mom._d['get' + (mom._isUTC ? 'UTC' : '') + unit]() : NaN;
 	    }
-	
+
 	    function get_set__set (mom, unit, value) {
 	        if (mom.isValid()) {
 	            mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value);
 	        }
 	    }
-	
+
 	    // MOMENTS
-	
+
 	    function getSet (units, value) {
 	        var unit;
 	        if (typeof units === 'object') {
@@ -4470,7 +4470,7 @@
 	        }
 	        return this;
 	    }
-	
+
 	    function zeroFill(number, targetLength, forceSign) {
 	        var absNumber = '' + Math.abs(number),
 	            zerosToFill = targetLength - absNumber.length,
@@ -4478,15 +4478,15 @@
 	        return (sign ? (forceSign ? '+' : '') : '-') +
 	            Math.pow(10, Math.max(0, zerosToFill)).toString().substr(1) + absNumber;
 	    }
-	
+
 	    var formattingTokens = /(\[[^\[]*\])|(\\)?([Hh]mm(ss)?|Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|Qo?|YYYYYY|YYYYY|YYYY|YY|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|kk?|mm?|ss?|S{1,9}|x|X|zz?|ZZ?|.)/g;
-	
+
 	    var localFormattingTokens = /(\[[^\[]*\])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g;
-	
+
 	    var formatFunctions = {};
-	
+
 	    var formatTokenFunctions = {};
-	
+
 	    // token:    'M'
 	    // padded:   ['MM', 2]
 	    // ordinal:  'Mo'
@@ -4512,17 +4512,17 @@
 	            };
 	        }
 	    }
-	
+
 	    function removeFormattingTokens(input) {
 	        if (input.match(/\[[\s\S]/)) {
 	            return input.replace(/^\[|\]$/g, '');
 	        }
 	        return input.replace(/\\/g, '');
 	    }
-	
+
 	    function makeFormatFunction(format) {
 	        var array = format.match(formattingTokens), i, length;
-	
+
 	        for (i = 0, length = array.length; i < length; i++) {
 	            if (formatTokenFunctions[array[i]]) {
 	                array[i] = formatTokenFunctions[array[i]];
@@ -4530,7 +4530,7 @@
 	                array[i] = removeFormattingTokens(array[i]);
 	            }
 	        }
-	
+
 	        return function (mom) {
 	            var output = '', i;
 	            for (i = 0; i < length; i++) {
@@ -4539,36 +4539,36 @@
 	            return output;
 	        };
 	    }
-	
+
 	    // format date using native date object
 	    function formatMoment(m, format) {
 	        if (!m.isValid()) {
 	            return m.localeData().invalidDate();
 	        }
-	
+
 	        format = expandFormat(format, m.localeData());
 	        formatFunctions[format] = formatFunctions[format] || makeFormatFunction(format);
-	
+
 	        return formatFunctions[format](m);
 	    }
-	
+
 	    function expandFormat(format, locale) {
 	        var i = 5;
-	
+
 	        function replaceLongDateFormatTokens(input) {
 	            return locale.longDateFormat(input) || input;
 	        }
-	
+
 	        localFormattingTokens.lastIndex = 0;
 	        while (i >= 0 && localFormattingTokens.test(format)) {
 	            format = format.replace(localFormattingTokens, replaceLongDateFormatTokens);
 	            localFormattingTokens.lastIndex = 0;
 	            i -= 1;
 	        }
-	
+
 	        return format;
 	    }
-	
+
 	    var match1         = /\d/;            //       0 - 9
 	    var match2         = /\d\d/;          //      00 - 99
 	    var match3         = /\d{3}/;         //     000 - 999
@@ -4580,49 +4580,49 @@
 	    var match1to3      = /\d{1,3}/;       //       0 - 999
 	    var match1to4      = /\d{1,4}/;       //       0 - 9999
 	    var match1to6      = /[+-]?\d{1,6}/;  // -999999 - 999999
-	
+
 	    var matchUnsigned  = /\d+/;           //       0 - inf
 	    var matchSigned    = /[+-]?\d+/;      //    -inf - inf
-	
+
 	    var matchOffset    = /Z|[+-]\d\d:?\d\d/gi; // +00:00 -00:00 +0000 -0000 or Z
 	    var matchShortOffset = /Z|[+-]\d\d(?::?\d\d)?/gi; // +00 -00 +00:00 -00:00 +0000 -0000 or Z
-	
+
 	    var matchTimestamp = /[+-]?\d+(\.\d{1,3})?/; // 123456789 123456789.123
-	
+
 	    // any word (or two) characters or numbers including two/three word month in arabic.
 	    // includes scottish gaelic two word and hyphenated months
 	    var matchWord = /[0-9]*['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+|[\u0600-\u06FF\/]+(\s*?[\u0600-\u06FF]+){1,2}/i;
-	
-	
+
+
 	    var regexes = {};
-	
+
 	    function addRegexToken (token, regex, strictRegex) {
 	        regexes[token] = isFunction(regex) ? regex : function (isStrict, localeData) {
 	            return (isStrict && strictRegex) ? strictRegex : regex;
 	        };
 	    }
-	
+
 	    function getParseRegexForToken (token, config) {
 	        if (!hasOwnProp(regexes, token)) {
 	            return new RegExp(unescapeFormat(token));
 	        }
-	
+
 	        return regexes[token](config._strict, config._locale);
 	    }
-	
+
 	    // Code from http://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript
 	    function unescapeFormat(s) {
 	        return regexEscape(s.replace('\\', '').replace(/\\(\[)|\\(\])|\[([^\]\[]*)\]|\\(.)/g, function (matched, p1, p2, p3, p4) {
 	            return p1 || p2 || p3 || p4;
 	        }));
 	    }
-	
+
 	    function regexEscape(s) {
 	        return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 	    }
-	
+
 	    var tokens = {};
-	
+
 	    function addParseToken (token, callback) {
 	        var i, func = callback;
 	        if (typeof token === 'string') {
@@ -4637,20 +4637,20 @@
 	            tokens[token[i]] = func;
 	        }
 	    }
-	
+
 	    function addWeekParseToken (token, callback) {
 	        addParseToken(token, function (input, array, config, token) {
 	            config._w = config._w || {};
 	            callback(input, config._w, config, token);
 	        });
 	    }
-	
+
 	    function addTimeToArrayFromToken(token, input, config) {
 	        if (input != null && hasOwnProp(tokens, token)) {
 	            tokens[token](input, config._a, config, token);
 	        }
 	    }
-	
+
 	    var YEAR = 0;
 	    var MONTH = 1;
 	    var DATE = 2;
@@ -4660,9 +4660,9 @@
 	    var MILLISECOND = 6;
 	    var WEEK = 7;
 	    var WEEKDAY = 8;
-	
+
 	    var indexOf;
-	
+
 	    if (Array.prototype.indexOf) {
 	        indexOf = Array.prototype.indexOf;
 	    } else {
@@ -4677,31 +4677,31 @@
 	            return -1;
 	        };
 	    }
-	
+
 	    function daysInMonth(year, month) {
 	        return new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
 	    }
-	
+
 	    // FORMATTING
-	
+
 	    addFormatToken('M', ['MM', 2], 'Mo', function () {
 	        return this.month() + 1;
 	    });
-	
+
 	    addFormatToken('MMM', 0, 0, function (format) {
 	        return this.localeData().monthsShort(this, format);
 	    });
-	
+
 	    addFormatToken('MMMM', 0, 0, function (format) {
 	        return this.localeData().months(this, format);
 	    });
-	
+
 	    // ALIASES
-	
+
 	    addUnitAlias('month', 'M');
-	
+
 	    // PARSING
-	
+
 	    addRegexToken('M',    match1to2);
 	    addRegexToken('MM',   match1to2, match2);
 	    addRegexToken('MMM',  function (isStrict, locale) {
@@ -4710,11 +4710,11 @@
 	    addRegexToken('MMMM', function (isStrict, locale) {
 	        return locale.monthsRegex(isStrict);
 	    });
-	
+
 	    addParseToken(['M', 'MM'], function (input, array) {
 	        array[MONTH] = toInt(input) - 1;
 	    });
-	
+
 	    addParseToken(['MMM', 'MMMM'], function (input, array, config, token) {
 	        var month = config._locale.monthsParse(input, token, config._strict);
 	        // if we didn't find a month name, mark the date as invalid.
@@ -4724,22 +4724,22 @@
 	            getParsingFlags(config).invalidMonth = input;
 	        }
 	    });
-	
+
 	    // LOCALES
-	
+
 	    var MONTHS_IN_FORMAT = /D[oD]?(\[[^\[\]]*\]|\s+)+MMMM?/;
 	    var defaultLocaleMonths = 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_');
 	    function localeMonths (m, format) {
 	        return isArray(this._months) ? this._months[m.month()] :
 	            this._months[MONTHS_IN_FORMAT.test(format) ? 'format' : 'standalone'][m.month()];
 	    }
-	
+
 	    var defaultLocaleMonthsShort = 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_');
 	    function localeMonthsShort (m, format) {
 	        return isArray(this._monthsShort) ? this._monthsShort[m.month()] :
 	            this._monthsShort[MONTHS_IN_FORMAT.test(format) ? 'format' : 'standalone'][m.month()];
 	    }
-	
+
 	    function units_month__handleStrictParse(monthName, format, strict) {
 	        var i, ii, mom, llc = monthName.toLocaleLowerCase();
 	        if (!this._monthsParse) {
@@ -4753,7 +4753,7 @@
 	                this._longMonthsParse[i] = this.months(mom, '').toLocaleLowerCase();
 	            }
 	        }
-	
+
 	        if (strict) {
 	            if (format === 'MMM') {
 	                ii = indexOf.call(this._shortMonthsParse, llc);
@@ -4780,20 +4780,20 @@
 	            }
 	        }
 	    }
-	
+
 	    function localeMonthsParse (monthName, format, strict) {
 	        var i, mom, regex;
-	
+
 	        if (this._monthsParseExact) {
 	            return units_month__handleStrictParse.call(this, monthName, format, strict);
 	        }
-	
+
 	        if (!this._monthsParse) {
 	            this._monthsParse = [];
 	            this._longMonthsParse = [];
 	            this._shortMonthsParse = [];
 	        }
-	
+
 	        // TODO: add sorting
 	        // Sorting makes sure if one month (or abbr) is a prefix of another
 	        // see sorting in computeMonthsParse
@@ -4818,17 +4818,17 @@
 	            }
 	        }
 	    }
-	
+
 	    // MOMENTS
-	
+
 	    function setMonth (mom, value) {
 	        var dayOfMonth;
-	
+
 	        if (!mom.isValid()) {
 	            // No op
 	            return mom;
 	        }
-	
+
 	        if (typeof value === 'string') {
 	            if (/^\d+$/.test(value)) {
 	                value = toInt(value);
@@ -4840,12 +4840,12 @@
 	                }
 	            }
 	        }
-	
+
 	        dayOfMonth = Math.min(mom.date(), daysInMonth(mom.year(), value));
 	        mom._d['set' + (mom._isUTC ? 'UTC' : '') + 'Month'](value, dayOfMonth);
 	        return mom;
 	    }
-	
+
 	    function getSetMonth (value) {
 	        if (value != null) {
 	            setMonth(this, value);
@@ -4855,11 +4855,11 @@
 	            return get_set__get(this, 'Month');
 	        }
 	    }
-	
+
 	    function getDaysInMonth () {
 	        return daysInMonth(this.year(), this.month());
 	    }
-	
+
 	    var defaultMonthsShortRegex = matchWord;
 	    function monthsShortRegex (isStrict) {
 	        if (this._monthsParseExact) {
@@ -4876,7 +4876,7 @@
 	                this._monthsShortStrictRegex : this._monthsShortRegex;
 	        }
 	    }
-	
+
 	    var defaultMonthsRegex = matchWord;
 	    function monthsRegex (isStrict) {
 	        if (this._monthsParseExact) {
@@ -4893,12 +4893,12 @@
 	                this._monthsStrictRegex : this._monthsRegex;
 	        }
 	    }
-	
+
 	    function computeMonthsParse () {
 	        function cmpLenRev(a, b) {
 	            return b.length - a.length;
 	        }
-	
+
 	        var shortPieces = [], longPieces = [], mixedPieces = [],
 	            i, mom;
 	        for (i = 0; i < 12; i++) {
@@ -4919,17 +4919,17 @@
 	            longPieces[i] = regexEscape(longPieces[i]);
 	            mixedPieces[i] = regexEscape(mixedPieces[i]);
 	        }
-	
+
 	        this._monthsRegex = new RegExp('^(' + mixedPieces.join('|') + ')', 'i');
 	        this._monthsShortRegex = this._monthsRegex;
 	        this._monthsStrictRegex = new RegExp('^(' + longPieces.join('|') + ')', 'i');
 	        this._monthsShortStrictRegex = new RegExp('^(' + shortPieces.join('|') + ')', 'i');
 	    }
-	
+
 	    function checkOverflow (m) {
 	        var overflow;
 	        var a = m._a;
-	
+
 	        if (a && getParsingFlags(m).overflow === -2) {
 	            overflow =
 	                a[MONTH]       < 0 || a[MONTH]       > 11  ? MONTH :
@@ -4939,7 +4939,7 @@
 	                a[SECOND]      < 0 || a[SECOND]      > 59  ? SECOND :
 	                a[MILLISECOND] < 0 || a[MILLISECOND] > 999 ? MILLISECOND :
 	                -1;
-	
+
 	            if (getParsingFlags(m)._overflowDayOfYear && (overflow < YEAR || overflow > DATE)) {
 	                overflow = DATE;
 	            }
@@ -4949,20 +4949,20 @@
 	            if (getParsingFlags(m)._overflowWeekday && overflow === -1) {
 	                overflow = WEEKDAY;
 	            }
-	
+
 	            getParsingFlags(m).overflow = overflow;
 	        }
-	
+
 	        return m;
 	    }
-	
+
 	    // iso 8601 regex
 	    // 0000-00-00 0000-W00 or 0000-W00-0 + T + 00 or 00:00 or 00:00:00 or 00:00:00.000 + +00:00 or +0000 or +00)
 	    var extendedIsoRegex = /^\s*((?:[+-]\d{6}|\d{4})-(?:\d\d-\d\d|W\d\d-\d|W\d\d|\d\d\d|\d\d))(?:(T| )(\d\d(?::\d\d(?::\d\d(?:[.,]\d+)?)?)?)([\+\-]\d\d(?::?\d\d)?|\s*Z)?)?/;
 	    var basicIsoRegex = /^\s*((?:[+-]\d{6}|\d{4})(?:\d\d\d\d|W\d\d\d|W\d\d|\d\d\d|\d\d))(?:(T| )(\d\d(?:\d\d(?:\d\d(?:[.,]\d+)?)?)?)([\+\-]\d\d(?::?\d\d)?|\s*Z)?)?/;
-	
+
 	    var tzRegex = /Z|[+-]\d\d(?::?\d\d)?/;
-	
+
 	    var isoDates = [
 	        ['YYYYYY-MM-DD', /[+-]\d{6}-\d\d-\d\d/],
 	        ['YYYY-MM-DD', /\d{4}-\d\d-\d\d/],
@@ -4977,7 +4977,7 @@
 	        ['GGGG[W]WW', /\d{4}W\d{2}/, false],
 	        ['YYYYDDD', /\d{7}/]
 	    ];
-	
+
 	    // iso time formats and regexes
 	    var isoTimes = [
 	        ['HH:mm:ss.SSSS', /\d\d:\d\d:\d\d\.\d+/],
@@ -4990,19 +4990,19 @@
 	        ['HHmm', /\d\d\d\d/],
 	        ['HH', /\d\d/]
 	    ];
-	
+
 	    var aspNetJsonRegex = /^\/?Date\((\-?\d+)/i;
-	
+
 	    // date from iso format
 	    function configFromISO(config) {
 	        var i, l,
 	            string = config._i,
 	            match = extendedIsoRegex.exec(string) || basicIsoRegex.exec(string),
 	            allowTime, dateFormat, timeFormat, tzFormat;
-	
+
 	        if (match) {
 	            getParsingFlags(config).iso = true;
-	
+
 	            for (i = 0, l = isoDates.length; i < l; i++) {
 	                if (isoDates[i][1].exec(match[1])) {
 	                    dateFormat = isoDates[i][0];
@@ -5045,23 +5045,23 @@
 	            config._isValid = false;
 	        }
 	    }
-	
+
 	    // date from iso format or fallback
 	    function configFromString(config) {
 	        var matched = aspNetJsonRegex.exec(config._i);
-	
+
 	        if (matched !== null) {
 	            config._d = new Date(+matched[1]);
 	            return;
 	        }
-	
+
 	        configFromISO(config);
 	        if (config._isValid === false) {
 	            delete config._isValid;
 	            utils_hooks__hooks.createFromInputFallback(config);
 	        }
 	    }
-	
+
 	    utils_hooks__hooks.createFromInputFallback = deprecate(
 	        'moment construction falls back to js Date. This is ' +
 	        'discouraged and will be removed in upcoming major ' +
@@ -5071,56 +5071,56 @@
 	            config._d = new Date(config._i + (config._useUTC ? ' UTC' : ''));
 	        }
 	    );
-	
+
 	    function createDate (y, m, d, h, M, s, ms) {
 	        //can't just apply() to create a date:
 	        //http://stackoverflow.com/questions/181348/instantiating-a-javascript-object-by-calling-prototype-constructor-apply
 	        var date = new Date(y, m, d, h, M, s, ms);
-	
+
 	        //the date constructor remaps years 0-99 to 1900-1999
 	        if (y < 100 && y >= 0 && isFinite(date.getFullYear())) {
 	            date.setFullYear(y);
 	        }
 	        return date;
 	    }
-	
+
 	    function createUTCDate (y) {
 	        var date = new Date(Date.UTC.apply(null, arguments));
-	
+
 	        //the Date.UTC function remaps years 0-99 to 1900-1999
 	        if (y < 100 && y >= 0 && isFinite(date.getUTCFullYear())) {
 	            date.setUTCFullYear(y);
 	        }
 	        return date;
 	    }
-	
+
 	    // FORMATTING
-	
+
 	    addFormatToken('Y', 0, 0, function () {
 	        var y = this.year();
 	        return y <= 9999 ? '' + y : '+' + y;
 	    });
-	
+
 	    addFormatToken(0, ['YY', 2], 0, function () {
 	        return this.year() % 100;
 	    });
-	
+
 	    addFormatToken(0, ['YYYY',   4],       0, 'year');
 	    addFormatToken(0, ['YYYYY',  5],       0, 'year');
 	    addFormatToken(0, ['YYYYYY', 6, true], 0, 'year');
-	
+
 	    // ALIASES
-	
+
 	    addUnitAlias('year', 'y');
-	
+
 	    // PARSING
-	
+
 	    addRegexToken('Y',      matchSigned);
 	    addRegexToken('YY',     match1to2, match2);
 	    addRegexToken('YYYY',   match1to4, match4);
 	    addRegexToken('YYYYY',  match1to6, match6);
 	    addRegexToken('YYYYYY', match1to6, match6);
-	
+
 	    addParseToken(['YYYYY', 'YYYYYY'], YEAR);
 	    addParseToken('YYYY', function (input, array) {
 	        array[YEAR] = input.length === 2 ? utils_hooks__hooks.parseTwoDigitYear(input) : toInt(input);
@@ -5131,48 +5131,48 @@
 	    addParseToken('Y', function (input, array) {
 	        array[YEAR] = parseInt(input, 10);
 	    });
-	
+
 	    // HELPERS
-	
+
 	    function daysInYear(year) {
 	        return isLeapYear(year) ? 366 : 365;
 	    }
-	
+
 	    function isLeapYear(year) {
 	        return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
 	    }
-	
+
 	    // HOOKS
-	
+
 	    utils_hooks__hooks.parseTwoDigitYear = function (input) {
 	        return toInt(input) + (toInt(input) > 68 ? 1900 : 2000);
 	    };
-	
+
 	    // MOMENTS
-	
+
 	    var getSetYear = makeGetSet('FullYear', true);
-	
+
 	    function getIsLeapYear () {
 	        return isLeapYear(this.year());
 	    }
-	
+
 	    // start-of-first-week - start-of-year
 	    function firstWeekOffset(year, dow, doy) {
 	        var // first-week day -- which january is always in the first week (4 for iso, 1 for other)
 	            fwd = 7 + dow - doy,
 	            // first-week day local weekday -- which local weekday is fwd
 	            fwdlw = (7 + createUTCDate(year, 0, fwd).getUTCDay() - dow) % 7;
-	
+
 	        return -fwdlw + fwd - 1;
 	    }
-	
+
 	    //http://en.wikipedia.org/wiki/ISO_week_date#Calculating_a_date_given_the_year.2C_week_number_and_weekday
 	    function dayOfYearFromWeeks(year, week, weekday, dow, doy) {
 	        var localWeekday = (7 + weekday - dow) % 7,
 	            weekOffset = firstWeekOffset(year, dow, doy),
 	            dayOfYear = 1 + 7 * (week - 1) + localWeekday + weekOffset,
 	            resYear, resDayOfYear;
-	
+
 	        if (dayOfYear <= 0) {
 	            resYear = year - 1;
 	            resDayOfYear = daysInYear(resYear) + dayOfYear;
@@ -5183,18 +5183,18 @@
 	            resYear = year;
 	            resDayOfYear = dayOfYear;
 	        }
-	
+
 	        return {
 	            year: resYear,
 	            dayOfYear: resDayOfYear
 	        };
 	    }
-	
+
 	    function weekOfYear(mom, dow, doy) {
 	        var weekOffset = firstWeekOffset(mom.year(), dow, doy),
 	            week = Math.floor((mom.dayOfYear() - weekOffset - 1) / 7) + 1,
 	            resWeek, resYear;
-	
+
 	        if (week < 1) {
 	            resYear = mom.year() - 1;
 	            resWeek = week + weeksInYear(resYear, dow, doy);
@@ -5205,19 +5205,19 @@
 	            resYear = mom.year();
 	            resWeek = week;
 	        }
-	
+
 	        return {
 	            week: resWeek,
 	            year: resYear
 	        };
 	    }
-	
+
 	    function weeksInYear(year, dow, doy) {
 	        var weekOffset = firstWeekOffset(year, dow, doy),
 	            weekOffsetNext = firstWeekOffset(year + 1, dow, doy);
 	        return (daysInYear(year) - weekOffset + weekOffsetNext) / 7;
 	    }
-	
+
 	    // Pick the first defined of two or three arguments.
 	    function defaults(a, b, c) {
 	        if (a != null) {
@@ -5228,7 +5228,7 @@
 	        }
 	        return c;
 	    }
-	
+
 	    function currentDateArray(config) {
 	        // hooks is actually the exported moment object
 	        var nowValue = new Date(utils_hooks__hooks.now());
@@ -5237,38 +5237,38 @@
 	        }
 	        return [nowValue.getFullYear(), nowValue.getMonth(), nowValue.getDate()];
 	    }
-	
+
 	    // convert an array to a date.
 	    // the array should mirror the parameters below
 	    // note: all values past the year are optional and will default to the lowest possible value.
 	    // [year, month, day , hour, minute, second, millisecond]
 	    function configFromArray (config) {
 	        var i, date, input = [], currentDate, yearToUse;
-	
+
 	        if (config._d) {
 	            return;
 	        }
-	
+
 	        currentDate = currentDateArray(config);
-	
+
 	        //compute day of the year from weeks and weekdays
 	        if (config._w && config._a[DATE] == null && config._a[MONTH] == null) {
 	            dayOfYearFromWeekInfo(config);
 	        }
-	
+
 	        //if the day of the year is set, figure out what it is
 	        if (config._dayOfYear) {
 	            yearToUse = defaults(config._a[YEAR], currentDate[YEAR]);
-	
+
 	            if (config._dayOfYear > daysInYear(yearToUse)) {
 	                getParsingFlags(config)._overflowDayOfYear = true;
 	            }
-	
+
 	            date = createUTCDate(yearToUse, 0, config._dayOfYear);
 	            config._a[MONTH] = date.getUTCMonth();
 	            config._a[DATE] = date.getUTCDate();
 	        }
-	
+
 	        // Default to current date.
 	        // * if no year, month, day of month are given, default to today
 	        // * if day of month is given, default month and year
@@ -5277,12 +5277,12 @@
 	        for (i = 0; i < 3 && config._a[i] == null; ++i) {
 	            config._a[i] = input[i] = currentDate[i];
 	        }
-	
+
 	        // Zero out whatever was not defaulted, including time
 	        for (; i < 7; i++) {
 	            config._a[i] = input[i] = (config._a[i] == null) ? (i === 2 ? 1 : 0) : config._a[i];
 	        }
-	
+
 	        // Check for 24:00:00.000
 	        if (config._a[HOUR] === 24 &&
 	                config._a[MINUTE] === 0 &&
@@ -5291,27 +5291,27 @@
 	            config._nextDay = true;
 	            config._a[HOUR] = 0;
 	        }
-	
+
 	        config._d = (config._useUTC ? createUTCDate : createDate).apply(null, input);
 	        // Apply timezone offset from input. The actual utcOffset can be changed
 	        // with parseZone.
 	        if (config._tzm != null) {
 	            config._d.setUTCMinutes(config._d.getUTCMinutes() - config._tzm);
 	        }
-	
+
 	        if (config._nextDay) {
 	            config._a[HOUR] = 24;
 	        }
 	    }
-	
+
 	    function dayOfYearFromWeekInfo(config) {
 	        var w, weekYear, week, weekday, dow, doy, temp, weekdayOverflow;
-	
+
 	        w = config._w;
 	        if (w.GG != null || w.W != null || w.E != null) {
 	            dow = 1;
 	            doy = 4;
-	
+
 	            // TODO: We need to take the current isoWeekYear, but that depends on
 	            // how we interpret now (local, utc, fixed offset). So create
 	            // a now version of current config (take local/utc/offset flags, and
@@ -5325,10 +5325,10 @@
 	        } else {
 	            dow = config._locale._week.dow;
 	            doy = config._locale._week.doy;
-	
+
 	            weekYear = defaults(w.gg, config._a[YEAR], weekOfYear(local__createLocal(), dow, doy).year);
 	            week = defaults(w.w, 1);
-	
+
 	            if (w.d != null) {
 	                // weekday -- low day numbers are considered next week
 	                weekday = w.d;
@@ -5356,10 +5356,10 @@
 	            config._dayOfYear = temp.dayOfYear;
 	        }
 	    }
-	
+
 	    // constant that refers to the ISO standard
 	    utils_hooks__hooks.ISO_8601 = function () {};
-	
+
 	    // date from string and format string
 	    function configFromStringAndFormat(config) {
 	        // TODO: Move this to another part of the creation flow to prevent circular deps
@@ -5367,18 +5367,18 @@
 	            configFromISO(config);
 	            return;
 	        }
-	
+
 	        config._a = [];
 	        getParsingFlags(config).empty = true;
-	
+
 	        // This array is used to make a Date, either with `new Date` or `Date.UTC`
 	        var string = '' + config._i,
 	            i, parsedInput, tokens, token, skipped,
 	            stringLength = string.length,
 	            totalParsedInputLength = 0;
-	
+
 	        tokens = expandFormat(config._f, config._locale).match(formattingTokens) || [];
-	
+
 	        for (i = 0; i < tokens.length; i++) {
 	            token = tokens[i];
 	            parsedInput = (string.match(getParseRegexForToken(token, config)) || [])[0];
@@ -5406,33 +5406,33 @@
 	                getParsingFlags(config).unusedTokens.push(token);
 	            }
 	        }
-	
+
 	        // add remaining unparsed input length to the string
 	        getParsingFlags(config).charsLeftOver = stringLength - totalParsedInputLength;
 	        if (string.length > 0) {
 	            getParsingFlags(config).unusedInput.push(string);
 	        }
-	
+
 	        // clear _12h flag if hour is <= 12
 	        if (getParsingFlags(config).bigHour === true &&
 	                config._a[HOUR] <= 12 &&
 	                config._a[HOUR] > 0) {
 	            getParsingFlags(config).bigHour = undefined;
 	        }
-	
+
 	        getParsingFlags(config).parsedDateParts = config._a.slice(0);
 	        getParsingFlags(config).meridiem = config._meridiem;
 	        // handle meridiem
 	        config._a[HOUR] = meridiemFixWrap(config._locale, config._a[HOUR], config._meridiem);
-	
+
 	        configFromArray(config);
 	        checkOverflow(config);
 	    }
-	
-	
+
+
 	    function meridiemFixWrap (locale, hour, meridiem) {
 	        var isPm;
-	
+
 	        if (meridiem == null) {
 	            // nothing to do
 	            return hour;
@@ -5454,22 +5454,22 @@
 	            return hour;
 	        }
 	    }
-	
+
 	    // date from string and array of format strings
 	    function configFromStringAndArray(config) {
 	        var tempConfig,
 	            bestMoment,
-	
+
 	            scoreToBeat,
 	            i,
 	            currentScore;
-	
+
 	        if (config._f.length === 0) {
 	            getParsingFlags(config).invalidFormat = true;
 	            config._d = new Date(NaN);
 	            return;
 	        }
-	
+
 	        for (i = 0; i < config._f.length; i++) {
 	            currentScore = 0;
 	            tempConfig = copyConfig({}, config);
@@ -5478,41 +5478,41 @@
 	            }
 	            tempConfig._f = config._f[i];
 	            configFromStringAndFormat(tempConfig);
-	
+
 	            if (!valid__isValid(tempConfig)) {
 	                continue;
 	            }
-	
+
 	            // if there is any input that was not parsed add a penalty for that format
 	            currentScore += getParsingFlags(tempConfig).charsLeftOver;
-	
+
 	            //or tokens
 	            currentScore += getParsingFlags(tempConfig).unusedTokens.length * 10;
-	
+
 	            getParsingFlags(tempConfig).score = currentScore;
-	
+
 	            if (scoreToBeat == null || currentScore < scoreToBeat) {
 	                scoreToBeat = currentScore;
 	                bestMoment = tempConfig;
 	            }
 	        }
-	
+
 	        extend(config, bestMoment || tempConfig);
 	    }
-	
+
 	    function configFromObject(config) {
 	        if (config._d) {
 	            return;
 	        }
-	
+
 	        var i = normalizeObjectUnits(config._i);
 	        config._a = map([i.year, i.month, i.day || i.date, i.hour, i.minute, i.second, i.millisecond], function (obj) {
 	            return obj && parseInt(obj, 10);
 	        });
-	
+
 	        configFromArray(config);
 	    }
-	
+
 	    function createFromConfig (config) {
 	        var res = new Moment(checkOverflow(prepareConfig(config)));
 	        if (res._nextDay) {
@@ -5520,24 +5520,24 @@
 	            res.add(1, 'd');
 	            res._nextDay = undefined;
 	        }
-	
+
 	        return res;
 	    }
-	
+
 	    function prepareConfig (config) {
 	        var input = config._i,
 	            format = config._f;
-	
+
 	        config._locale = config._locale || locale_locales__getLocale(config._l);
-	
+
 	        if (input === null || (format === undefined && input === '')) {
 	            return valid__createInvalid({nullInput: true});
 	        }
-	
+
 	        if (typeof input === 'string') {
 	            config._i = input = config._locale.preparse(input);
 	        }
-	
+
 	        if (isMoment(input)) {
 	            return new Moment(checkOverflow(input));
 	        } else if (isArray(format)) {
@@ -5549,14 +5549,14 @@
 	        } else {
 	            configFromInput(config);
 	        }
-	
+
 	        if (!valid__isValid(config)) {
 	            config._d = null;
 	        }
-	
+
 	        return config;
 	    }
-	
+
 	    function configFromInput(config) {
 	        var input = config._i;
 	        if (input === undefined) {
@@ -5579,10 +5579,10 @@
 	            utils_hooks__hooks.createFromInputFallback(config);
 	        }
 	    }
-	
+
 	    function createLocalOrUTC (input, format, locale, strict, isUTC) {
 	        var c = {};
-	
+
 	        if (typeof(locale) === 'boolean') {
 	            strict = locale;
 	            locale = undefined;
@@ -5595,14 +5595,14 @@
 	        c._i = input;
 	        c._f = format;
 	        c._strict = strict;
-	
+
 	        return createFromConfig(c);
 	    }
-	
+
 	    function local__createLocal (input, format, locale, strict) {
 	        return createLocalOrUTC(input, format, locale, strict, false);
 	    }
-	
+
 	    var prototypeMin = deprecate(
 	         'moment().min is deprecated, use moment.max instead. https://github.com/moment/moment/issues/1548',
 	         function () {
@@ -5614,7 +5614,7 @@
 	             }
 	         }
 	     );
-	
+
 	    var prototypeMax = deprecate(
 	        'moment().max is deprecated, use moment.min instead. https://github.com/moment/moment/issues/1548',
 	        function () {
@@ -5626,7 +5626,7 @@
 	            }
 	        }
 	    );
-	
+
 	    // Pick a moment m from moments so that m[fn](other) is true for all
 	    // other. This relies on the function fn to be transitive.
 	    //
@@ -5648,24 +5648,24 @@
 	        }
 	        return res;
 	    }
-	
+
 	    // TODO: Use [].sort instead?
 	    function min () {
 	        var args = [].slice.call(arguments, 0);
-	
+
 	        return pickBy('isBefore', args);
 	    }
-	
+
 	    function max () {
 	        var args = [].slice.call(arguments, 0);
-	
+
 	        return pickBy('isAfter', args);
 	    }
-	
+
 	    var now = function () {
 	        return Date.now ? Date.now() : +(new Date());
 	    };
-	
+
 	    function Duration (duration) {
 	        var normalizedInput = normalizeObjectUnits(duration),
 	            years = normalizedInput.year || 0,
@@ -5677,7 +5677,7 @@
 	            minutes = normalizedInput.minute || 0,
 	            seconds = normalizedInput.second || 0,
 	            milliseconds = normalizedInput.millisecond || 0;
-	
+
 	        // representation for dateAddRemove
 	        this._milliseconds = +milliseconds +
 	            seconds * 1e3 + // 1000
@@ -5693,20 +5693,20 @@
 	        this._months = +months +
 	            quarters * 3 +
 	            years * 12;
-	
+
 	        this._data = {};
-	
+
 	        this._locale = locale_locales__getLocale();
-	
+
 	        this._bubble();
 	    }
-	
+
 	    function isDuration (obj) {
 	        return obj instanceof Duration;
 	    }
-	
+
 	    // FORMATTING
-	
+
 	    function offset (token, separator) {
 	        addFormatToken(token, 0, 0, function () {
 	            var offset = this.utcOffset();
@@ -5718,35 +5718,35 @@
 	            return sign + zeroFill(~~(offset / 60), 2) + separator + zeroFill(~~(offset) % 60, 2);
 	        });
 	    }
-	
+
 	    offset('Z', ':');
 	    offset('ZZ', '');
-	
+
 	    // PARSING
-	
+
 	    addRegexToken('Z',  matchShortOffset);
 	    addRegexToken('ZZ', matchShortOffset);
 	    addParseToken(['Z', 'ZZ'], function (input, array, config) {
 	        config._useUTC = true;
 	        config._tzm = offsetFromString(matchShortOffset, input);
 	    });
-	
+
 	    // HELPERS
-	
+
 	    // timezone chunker
 	    // '+10:00' > ['10',  '00']
 	    // '-1530'  > ['-15', '30']
 	    var chunkOffset = /([\+\-]|\d\d)/gi;
-	
+
 	    function offsetFromString(matcher, string) {
 	        var matches = ((string || '').match(matcher) || []);
 	        var chunk   = matches[matches.length - 1] || [];
 	        var parts   = (chunk + '').match(chunkOffset) || ['-', 0, 0];
 	        var minutes = +(parts[1] * 60) + toInt(parts[2]);
-	
+
 	        return parts[0] === '+' ? minutes : -minutes;
 	    }
-	
+
 	    // Return a moment from input, that is local/utc/zone equivalent to model.
 	    function cloneWithOffset(input, model) {
 	        var res, diff;
@@ -5761,21 +5761,21 @@
 	            return local__createLocal(input).local();
 	        }
 	    }
-	
+
 	    function getDateOffset (m) {
 	        // On Firefox.24 Date#getTimezoneOffset returns a floating point.
 	        // https://github.com/moment/moment/pull/1871
 	        return -Math.round(m._d.getTimezoneOffset() / 15) * 15;
 	    }
-	
+
 	    // HOOKS
-	
+
 	    // This function will be called whenever a moment is mutated.
 	    // It is intended to keep the offset in sync with the timezone.
 	    utils_hooks__hooks.updateOffset = function () {};
-	
+
 	    // MOMENTS
-	
+
 	    // keepLocalTime = true means only change the timezone, without
 	    // affecting the local hour. So 5:31:26 +0300 --[utcOffset(2, true)]-->
 	    // 5:31:26 +0200 It is possible that 5:31:26 doesn't exist with offset
@@ -5820,37 +5820,37 @@
 	            return this._isUTC ? offset : getDateOffset(this);
 	        }
 	    }
-	
+
 	    function getSetZone (input, keepLocalTime) {
 	        if (input != null) {
 	            if (typeof input !== 'string') {
 	                input = -input;
 	            }
-	
+
 	            this.utcOffset(input, keepLocalTime);
-	
+
 	            return this;
 	        } else {
 	            return -this.utcOffset();
 	        }
 	    }
-	
+
 	    function setOffsetToUTC (keepLocalTime) {
 	        return this.utcOffset(0, keepLocalTime);
 	    }
-	
+
 	    function setOffsetToLocal (keepLocalTime) {
 	        if (this._isUTC) {
 	            this.utcOffset(0, keepLocalTime);
 	            this._isUTC = false;
-	
+
 	            if (keepLocalTime) {
 	                this.subtract(getDateOffset(this), 'm');
 	            }
 	        }
 	        return this;
 	    }
-	
+
 	    function setOffsetToParsedOffset () {
 	        if (this._tzm) {
 	            this.utcOffset(this._tzm);
@@ -5859,33 +5859,33 @@
 	        }
 	        return this;
 	    }
-	
+
 	    function hasAlignedHourOffset (input) {
 	        if (!this.isValid()) {
 	            return false;
 	        }
 	        input = input ? local__createLocal(input).utcOffset() : 0;
-	
+
 	        return (this.utcOffset() - input) % 60 === 0;
 	    }
-	
+
 	    function isDaylightSavingTime () {
 	        return (
 	            this.utcOffset() > this.clone().month(0).utcOffset() ||
 	            this.utcOffset() > this.clone().month(5).utcOffset()
 	        );
 	    }
-	
+
 	    function isDaylightSavingTimeShifted () {
 	        if (!isUndefined(this._isDSTShifted)) {
 	            return this._isDSTShifted;
 	        }
-	
+
 	        var c = {};
-	
+
 	        copyConfig(c, this);
 	        c = prepareConfig(c);
-	
+
 	        if (c._a) {
 	            var other = c._isUTC ? create_utc__createUTC(c._a) : local__createLocal(c._a);
 	            this._isDSTShifted = this.isValid() &&
@@ -5893,30 +5893,30 @@
 	        } else {
 	            this._isDSTShifted = false;
 	        }
-	
+
 	        return this._isDSTShifted;
 	    }
-	
+
 	    function isLocal () {
 	        return this.isValid() ? !this._isUTC : false;
 	    }
-	
+
 	    function isUtcOffset () {
 	        return this.isValid() ? this._isUTC : false;
 	    }
-	
+
 	    function isUtc () {
 	        return this.isValid() ? this._isUTC && this._offset === 0 : false;
 	    }
-	
+
 	    // ASP.NET json date format regex
 	    var aspNetRegex = /^(\-)?(?:(\d*)[. ])?(\d+)\:(\d+)(?:\:(\d+)\.?(\d{3})?\d*)?$/;
-	
+
 	    // from http://docs.closure-library.googlecode.com/git/closure_goog_date_date.js.source.html
 	    // somewhat more in line with 4.4.3.2 2004 spec, but allows decimal anywhere
 	    // and further modified to allow for strings containing both week and day
 	    var isoRegex = /^(-)?P(?:(-?[0-9,.]*)Y)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)W)?(?:(-?[0-9,.]*)D)?(?:T(?:(-?[0-9,.]*)H)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)S)?)?$/;
-	
+
 	    function create__createDuration (input, key) {
 	        var duration = input,
 	            // matching against regexp is expensive, do it on demand
@@ -5924,7 +5924,7 @@
 	            sign,
 	            ret,
 	            diffRes;
-	
+
 	        if (isDuration(input)) {
 	            duration = {
 	                ms : input._milliseconds,
@@ -5963,23 +5963,23 @@
 	            duration = {};
 	        } else if (typeof duration === 'object' && ('from' in duration || 'to' in duration)) {
 	            diffRes = momentsDifference(local__createLocal(duration.from), local__createLocal(duration.to));
-	
+
 	            duration = {};
 	            duration.ms = diffRes.milliseconds;
 	            duration.M = diffRes.months;
 	        }
-	
+
 	        ret = new Duration(duration);
-	
+
 	        if (isDuration(input) && hasOwnProp(input, '_locale')) {
 	            ret._locale = input._locale;
 	        }
-	
+
 	        return ret;
 	    }
-	
+
 	    create__createDuration.fn = Duration.prototype;
-	
+
 	    function parseIso (inp, sign) {
 	        // We'd normally use ~~inp for this, but unfortunately it also
 	        // converts floats to ints.
@@ -5988,27 +5988,27 @@
 	        // apply sign while we're at it
 	        return (isNaN(res) ? 0 : res) * sign;
 	    }
-	
+
 	    function positiveMomentsDifference(base, other) {
 	        var res = {milliseconds: 0, months: 0};
-	
+
 	        res.months = other.month() - base.month() +
 	            (other.year() - base.year()) * 12;
 	        if (base.clone().add(res.months, 'M').isAfter(other)) {
 	            --res.months;
 	        }
-	
+
 	        res.milliseconds = +other - +(base.clone().add(res.months, 'M'));
-	
+
 	        return res;
 	    }
-	
+
 	    function momentsDifference(base, other) {
 	        var res;
 	        if (!(base.isValid() && other.isValid())) {
 	            return {milliseconds: 0, months: 0};
 	        }
-	
+
 	        other = cloneWithOffset(other, base);
 	        if (base.isBefore(other)) {
 	            res = positiveMomentsDifference(base, other);
@@ -6017,10 +6017,10 @@
 	            res.milliseconds = -res.milliseconds;
 	            res.months = -res.months;
 	        }
-	
+
 	        return res;
 	    }
-	
+
 	    function absRound (number) {
 	        if (number < 0) {
 	            return Math.round(-1 * number) * -1;
@@ -6028,7 +6028,7 @@
 	            return Math.round(number);
 	        }
 	    }
-	
+
 	    // TODO: remove 'name' arg after deprecation is removed
 	    function createAdder(direction, name) {
 	        return function (val, period) {
@@ -6038,26 +6038,26 @@
 	                deprecateSimple(name, 'moment().' + name  + '(period, number) is deprecated. Please use moment().' + name + '(number, period).');
 	                tmp = val; val = period; period = tmp;
 	            }
-	
+
 	            val = typeof val === 'string' ? +val : val;
 	            dur = create__createDuration(val, period);
 	            add_subtract__addSubtract(this, dur, direction);
 	            return this;
 	        };
 	    }
-	
+
 	    function add_subtract__addSubtract (mom, duration, isAdding, updateOffset) {
 	        var milliseconds = duration._milliseconds,
 	            days = absRound(duration._days),
 	            months = absRound(duration._months);
-	
+
 	        if (!mom.isValid()) {
 	            // No op
 	            return;
 	        }
-	
+
 	        updateOffset = updateOffset == null ? true : updateOffset;
-	
+
 	        if (milliseconds) {
 	            mom._d.setTime(mom._d.valueOf() + milliseconds * isAdding);
 	        }
@@ -6071,10 +6071,10 @@
 	            utils_hooks__hooks.updateOffset(mom, days || months);
 	        }
 	    }
-	
+
 	    var add_subtract__add      = createAdder(1, 'add');
 	    var add_subtract__subtract = createAdder(-1, 'subtract');
-	
+
 	    function moment_calendar__calendar (time, formats) {
 	        // We want to compare the start of today, vs this.
 	        // Getting start-of-today depends on whether we're local/utc/offset or not.
@@ -6087,16 +6087,16 @@
 	                diff < 1 ? 'sameDay' :
 	                diff < 2 ? 'nextDay' :
 	                diff < 7 ? 'nextWeek' : 'sameElse';
-	
+
 	        var output = formats && (isFunction(formats[format]) ? formats[format]() : formats[format]);
-	
+
 	        return this.format(output || this.localeData().calendar(format, this, local__createLocal(now)));
 	    }
-	
+
 	    function clone () {
 	        return new Moment(this);
 	    }
-	
+
 	    function isAfter (input, units) {
 	        var localInput = isMoment(input) ? input : local__createLocal(input);
 	        if (!(this.isValid() && localInput.isValid())) {
@@ -6109,7 +6109,7 @@
 	            return localInput.valueOf() < this.clone().startOf(units).valueOf();
 	        }
 	    }
-	
+
 	    function isBefore (input, units) {
 	        var localInput = isMoment(input) ? input : local__createLocal(input);
 	        if (!(this.isValid() && localInput.isValid())) {
@@ -6122,13 +6122,13 @@
 	            return this.clone().endOf(units).valueOf() < localInput.valueOf();
 	        }
 	    }
-	
+
 	    function isBetween (from, to, units, inclusivity) {
 	        inclusivity = inclusivity || '()';
 	        return (inclusivity[0] === '(' ? this.isAfter(from, units) : !this.isBefore(from, units)) &&
 	            (inclusivity[1] === ')' ? this.isBefore(to, units) : !this.isAfter(to, units));
 	    }
-	
+
 	    function isSame (input, units) {
 	        var localInput = isMoment(input) ? input : local__createLocal(input),
 	            inputMs;
@@ -6143,34 +6143,34 @@
 	            return this.clone().startOf(units).valueOf() <= inputMs && inputMs <= this.clone().endOf(units).valueOf();
 	        }
 	    }
-	
+
 	    function isSameOrAfter (input, units) {
 	        return this.isSame(input, units) || this.isAfter(input,units);
 	    }
-	
+
 	    function isSameOrBefore (input, units) {
 	        return this.isSame(input, units) || this.isBefore(input,units);
 	    }
-	
+
 	    function diff (input, units, asFloat) {
 	        var that,
 	            zoneDelta,
 	            delta, output;
-	
+
 	        if (!this.isValid()) {
 	            return NaN;
 	        }
-	
+
 	        that = cloneWithOffset(input, this);
-	
+
 	        if (!that.isValid()) {
 	            return NaN;
 	        }
-	
+
 	        zoneDelta = (that.utcOffset() - this.utcOffset()) * 6e4;
-	
+
 	        units = normalizeUnits(units);
-	
+
 	        if (units === 'year' || units === 'month' || units === 'quarter') {
 	            output = monthDiff(this, that);
 	            if (units === 'quarter') {
@@ -6189,14 +6189,14 @@
 	        }
 	        return asFloat ? output : absFloor(output);
 	    }
-	
+
 	    function monthDiff (a, b) {
 	        // difference in months
 	        var wholeMonthDiff = ((b.year() - a.year()) * 12) + (b.month() - a.month()),
 	            // b is in (anchor - 1 month, anchor + 1 month)
 	            anchor = a.clone().add(wholeMonthDiff, 'months'),
 	            anchor2, adjust;
-	
+
 	        if (b - anchor < 0) {
 	            anchor2 = a.clone().add(wholeMonthDiff - 1, 'months');
 	            // linear across the month
@@ -6206,18 +6206,18 @@
 	            // linear across the month
 	            adjust = (b - anchor) / (anchor2 - anchor);
 	        }
-	
+
 	        //check for negative zero, return zero if negative zero
 	        return -(wholeMonthDiff + adjust) || 0;
 	    }
-	
+
 	    utils_hooks__hooks.defaultFormat = 'YYYY-MM-DDTHH:mm:ssZ';
 	    utils_hooks__hooks.defaultFormatUtc = 'YYYY-MM-DDTHH:mm:ss[Z]';
-	
+
 	    function toString () {
 	        return this.clone().locale('en').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ');
 	    }
-	
+
 	    function moment_format__toISOString () {
 	        var m = this.clone().utc();
 	        if (0 < m.year() && m.year() <= 9999) {
@@ -6231,7 +6231,7 @@
 	            return formatMoment(m, 'YYYYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
 	        }
 	    }
-	
+
 	    function format (inputString) {
 	        if (!inputString) {
 	            inputString = this.isUtc() ? utils_hooks__hooks.defaultFormatUtc : utils_hooks__hooks.defaultFormat;
@@ -6239,7 +6239,7 @@
 	        var output = formatMoment(this, inputString);
 	        return this.localeData().postformat(output);
 	    }
-	
+
 	    function from (time, withoutSuffix) {
 	        if (this.isValid() &&
 	                ((isMoment(time) && time.isValid()) ||
@@ -6249,11 +6249,11 @@
 	            return this.localeData().invalidDate();
 	        }
 	    }
-	
+
 	    function fromNow (withoutSuffix) {
 	        return this.from(local__createLocal(), withoutSuffix);
 	    }
-	
+
 	    function to (time, withoutSuffix) {
 	        if (this.isValid() &&
 	                ((isMoment(time) && time.isValid()) ||
@@ -6263,17 +6263,17 @@
 	            return this.localeData().invalidDate();
 	        }
 	    }
-	
+
 	    function toNow (withoutSuffix) {
 	        return this.to(local__createLocal(), withoutSuffix);
 	    }
-	
+
 	    // If passed a locale key, it will set the locale for this
 	    // instance.  Otherwise, it will return the locale configuration
 	    // variables for this instance.
 	    function locale (key) {
 	        var newLocaleData;
-	
+
 	        if (key === undefined) {
 	            return this._locale._abbr;
 	        } else {
@@ -6284,7 +6284,7 @@
 	            return this;
 	        }
 	    }
-	
+
 	    var lang = deprecate(
 	        'moment().lang() is deprecated. Instead, use moment().localeData() to get the language configuration. Use moment().locale() to change languages.',
 	        function (key) {
@@ -6295,11 +6295,11 @@
 	            }
 	        }
 	    );
-	
+
 	    function localeData () {
 	        return this._locale;
 	    }
-	
+
 	    function startOf (units) {
 	        units = normalizeUnits(units);
 	        // the following switch intentionally omits break keywords
@@ -6327,7 +6327,7 @@
 	        case 'second':
 	            this.milliseconds(0);
 	        }
-	
+
 	        // weeks are a special case
 	        if (units === 'week') {
 	            this.weekday(0);
@@ -6335,46 +6335,46 @@
 	        if (units === 'isoWeek') {
 	            this.isoWeekday(1);
 	        }
-	
+
 	        // quarters are also special
 	        if (units === 'quarter') {
 	            this.month(Math.floor(this.month() / 3) * 3);
 	        }
-	
+
 	        return this;
 	    }
-	
+
 	    function endOf (units) {
 	        units = normalizeUnits(units);
 	        if (units === undefined || units === 'millisecond') {
 	            return this;
 	        }
-	
+
 	        // 'date' is an alias for 'day', so it should be considered as such.
 	        if (units === 'date') {
 	            units = 'day';
 	        }
-	
+
 	        return this.startOf(units).add(1, (units === 'isoWeek' ? 'week' : units)).subtract(1, 'ms');
 	    }
-	
+
 	    function to_type__valueOf () {
 	        return this._d.valueOf() - ((this._offset || 0) * 60000);
 	    }
-	
+
 	    function unix () {
 	        return Math.floor(this.valueOf() / 1000);
 	    }
-	
+
 	    function toDate () {
 	        return this._offset ? new Date(this.valueOf()) : this._d;
 	    }
-	
+
 	    function toArray () {
 	        var m = this;
 	        return [m.year(), m.month(), m.date(), m.hour(), m.minute(), m.second(), m.millisecond()];
 	    }
-	
+
 	    function toObject () {
 	        var m = this;
 	        return {
@@ -6387,24 +6387,24 @@
 	            milliseconds: m.milliseconds()
 	        };
 	    }
-	
+
 	    function toJSON () {
 	        // new Date(NaN).toJSON() === null
 	        return this.isValid() ? this.toISOString() : null;
 	    }
-	
+
 	    function moment_valid__isValid () {
 	        return valid__isValid(this);
 	    }
-	
+
 	    function parsingFlags () {
 	        return extend({}, getParsingFlags(this));
 	    }
-	
+
 	    function invalidAt () {
 	        return getParsingFlags(this).overflow;
 	    }
-	
+
 	    function creationData() {
 	        return {
 	            input: this._i,
@@ -6414,33 +6414,33 @@
 	            strict: this._strict
 	        };
 	    }
-	
+
 	    // FORMATTING
-	
+
 	    addFormatToken(0, ['gg', 2], 0, function () {
 	        return this.weekYear() % 100;
 	    });
-	
+
 	    addFormatToken(0, ['GG', 2], 0, function () {
 	        return this.isoWeekYear() % 100;
 	    });
-	
+
 	    function addWeekYearFormatToken (token, getter) {
 	        addFormatToken(0, [token, token.length], 0, getter);
 	    }
-	
+
 	    addWeekYearFormatToken('gggg',     'weekYear');
 	    addWeekYearFormatToken('ggggg',    'weekYear');
 	    addWeekYearFormatToken('GGGG',  'isoWeekYear');
 	    addWeekYearFormatToken('GGGGG', 'isoWeekYear');
-	
+
 	    // ALIASES
-	
+
 	    addUnitAlias('weekYear', 'gg');
 	    addUnitAlias('isoWeekYear', 'GG');
-	
+
 	    // PARSING
-	
+
 	    addRegexToken('G',      matchSigned);
 	    addRegexToken('g',      matchSigned);
 	    addRegexToken('GG',     match1to2, match2);
@@ -6449,17 +6449,17 @@
 	    addRegexToken('gggg',   match1to4, match4);
 	    addRegexToken('GGGGG',  match1to6, match6);
 	    addRegexToken('ggggg',  match1to6, match6);
-	
+
 	    addWeekParseToken(['gggg', 'ggggg', 'GGGG', 'GGGGG'], function (input, week, config, token) {
 	        week[token.substr(0, 2)] = toInt(input);
 	    });
-	
+
 	    addWeekParseToken(['gg', 'GG'], function (input, week, config, token) {
 	        week[token] = utils_hooks__hooks.parseTwoDigitYear(input);
 	    });
-	
+
 	    // MOMENTS
-	
+
 	    function getSetWeekYear (input) {
 	        return getSetWeekYearHelper.call(this,
 	                input,
@@ -6468,21 +6468,21 @@
 	                this.localeData()._week.dow,
 	                this.localeData()._week.doy);
 	    }
-	
+
 	    function getSetISOWeekYear (input) {
 	        return getSetWeekYearHelper.call(this,
 	                input, this.isoWeek(), this.isoWeekday(), 1, 4);
 	    }
-	
+
 	    function getISOWeeksInYear () {
 	        return weeksInYear(this.year(), 1, 4);
 	    }
-	
+
 	    function getWeeksInYear () {
 	        var weekInfo = this.localeData()._week;
 	        return weeksInYear(this.year(), weekInfo.dow, weekInfo.doy);
 	    }
-	
+
 	    function getSetWeekYearHelper(input, week, weekday, dow, doy) {
 	        var weeksTarget;
 	        if (input == null) {
@@ -6495,144 +6495,144 @@
 	            return setWeekAll.call(this, input, week, weekday, dow, doy);
 	        }
 	    }
-	
+
 	    function setWeekAll(weekYear, week, weekday, dow, doy) {
 	        var dayOfYearData = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy),
 	            date = createUTCDate(dayOfYearData.year, 0, dayOfYearData.dayOfYear);
-	
+
 	        this.year(date.getUTCFullYear());
 	        this.month(date.getUTCMonth());
 	        this.date(date.getUTCDate());
 	        return this;
 	    }
-	
+
 	    // FORMATTING
-	
+
 	    addFormatToken('Q', 0, 'Qo', 'quarter');
-	
+
 	    // ALIASES
-	
+
 	    addUnitAlias('quarter', 'Q');
-	
+
 	    // PARSING
-	
+
 	    addRegexToken('Q', match1);
 	    addParseToken('Q', function (input, array) {
 	        array[MONTH] = (toInt(input) - 1) * 3;
 	    });
-	
+
 	    // MOMENTS
-	
+
 	    function getSetQuarter (input) {
 	        return input == null ? Math.ceil((this.month() + 1) / 3) : this.month((input - 1) * 3 + this.month() % 3);
 	    }
-	
+
 	    // FORMATTING
-	
+
 	    addFormatToken('w', ['ww', 2], 'wo', 'week');
 	    addFormatToken('W', ['WW', 2], 'Wo', 'isoWeek');
-	
+
 	    // ALIASES
-	
+
 	    addUnitAlias('week', 'w');
 	    addUnitAlias('isoWeek', 'W');
-	
+
 	    // PARSING
-	
+
 	    addRegexToken('w',  match1to2);
 	    addRegexToken('ww', match1to2, match2);
 	    addRegexToken('W',  match1to2);
 	    addRegexToken('WW', match1to2, match2);
-	
+
 	    addWeekParseToken(['w', 'ww', 'W', 'WW'], function (input, week, config, token) {
 	        week[token.substr(0, 1)] = toInt(input);
 	    });
-	
+
 	    // HELPERS
-	
+
 	    // LOCALES
-	
+
 	    function localeWeek (mom) {
 	        return weekOfYear(mom, this._week.dow, this._week.doy).week;
 	    }
-	
+
 	    var defaultLocaleWeek = {
 	        dow : 0, // Sunday is the first day of the week.
 	        doy : 6  // The week that contains Jan 1st is the first week of the year.
 	    };
-	
+
 	    function localeFirstDayOfWeek () {
 	        return this._week.dow;
 	    }
-	
+
 	    function localeFirstDayOfYear () {
 	        return this._week.doy;
 	    }
-	
+
 	    // MOMENTS
-	
+
 	    function getSetWeek (input) {
 	        var week = this.localeData().week(this);
 	        return input == null ? week : this.add((input - week) * 7, 'd');
 	    }
-	
+
 	    function getSetISOWeek (input) {
 	        var week = weekOfYear(this, 1, 4).week;
 	        return input == null ? week : this.add((input - week) * 7, 'd');
 	    }
-	
+
 	    // FORMATTING
-	
+
 	    addFormatToken('D', ['DD', 2], 'Do', 'date');
-	
+
 	    // ALIASES
-	
+
 	    addUnitAlias('date', 'D');
-	
+
 	    // PARSING
-	
+
 	    addRegexToken('D',  match1to2);
 	    addRegexToken('DD', match1to2, match2);
 	    addRegexToken('Do', function (isStrict, locale) {
 	        return isStrict ? locale._ordinalParse : locale._ordinalParseLenient;
 	    });
-	
+
 	    addParseToken(['D', 'DD'], DATE);
 	    addParseToken('Do', function (input, array) {
 	        array[DATE] = toInt(input.match(match1to2)[0], 10);
 	    });
-	
+
 	    // MOMENTS
-	
+
 	    var getSetDayOfMonth = makeGetSet('Date', true);
-	
+
 	    // FORMATTING
-	
+
 	    addFormatToken('d', 0, 'do', 'day');
-	
+
 	    addFormatToken('dd', 0, 0, function (format) {
 	        return this.localeData().weekdaysMin(this, format);
 	    });
-	
+
 	    addFormatToken('ddd', 0, 0, function (format) {
 	        return this.localeData().weekdaysShort(this, format);
 	    });
-	
+
 	    addFormatToken('dddd', 0, 0, function (format) {
 	        return this.localeData().weekdays(this, format);
 	    });
-	
+
 	    addFormatToken('e', 0, 0, 'weekday');
 	    addFormatToken('E', 0, 0, 'isoWeekday');
-	
+
 	    // ALIASES
-	
+
 	    addUnitAlias('day', 'd');
 	    addUnitAlias('weekday', 'e');
 	    addUnitAlias('isoWeekday', 'E');
-	
+
 	    // PARSING
-	
+
 	    addRegexToken('d',    match1to2);
 	    addRegexToken('e',    match1to2);
 	    addRegexToken('E',    match1to2);
@@ -6645,7 +6645,7 @@
 	    addRegexToken('dddd',   function (isStrict, locale) {
 	        return locale.weekdaysRegex(isStrict);
 	    });
-	
+
 	    addWeekParseToken(['dd', 'ddd', 'dddd'], function (input, week, config, token) {
 	        var weekday = config._locale.weekdaysParse(input, token, config._strict);
 	        // if we didn't get a weekday name, mark the date as invalid
@@ -6655,55 +6655,55 @@
 	            getParsingFlags(config).invalidWeekday = input;
 	        }
 	    });
-	
+
 	    addWeekParseToken(['d', 'e', 'E'], function (input, week, config, token) {
 	        week[token] = toInt(input);
 	    });
-	
+
 	    // HELPERS
-	
+
 	    function parseWeekday(input, locale) {
 	        if (typeof input !== 'string') {
 	            return input;
 	        }
-	
+
 	        if (!isNaN(input)) {
 	            return parseInt(input, 10);
 	        }
-	
+
 	        input = locale.weekdaysParse(input);
 	        if (typeof input === 'number') {
 	            return input;
 	        }
-	
+
 	        return null;
 	    }
-	
+
 	    // LOCALES
-	
+
 	    var defaultLocaleWeekdays = 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_');
 	    function localeWeekdays (m, format) {
 	        return isArray(this._weekdays) ? this._weekdays[m.day()] :
 	            this._weekdays[this._weekdays.isFormat.test(format) ? 'format' : 'standalone'][m.day()];
 	    }
-	
+
 	    var defaultLocaleWeekdaysShort = 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_');
 	    function localeWeekdaysShort (m) {
 	        return this._weekdaysShort[m.day()];
 	    }
-	
+
 	    var defaultLocaleWeekdaysMin = 'Su_Mo_Tu_We_Th_Fr_Sa'.split('_');
 	    function localeWeekdaysMin (m) {
 	        return this._weekdaysMin[m.day()];
 	    }
-	
+
 	    function day_of_week__handleStrictParse(weekdayName, format, strict) {
 	        var i, ii, mom, llc = weekdayName.toLocaleLowerCase();
 	        if (!this._weekdaysParse) {
 	            this._weekdaysParse = [];
 	            this._shortWeekdaysParse = [];
 	            this._minWeekdaysParse = [];
-	
+
 	            for (i = 0; i < 7; ++i) {
 	                mom = create_utc__createUTC([2000, 1]).day(i);
 	                this._minWeekdaysParse[i] = this.weekdaysMin(mom, '').toLocaleLowerCase();
@@ -6711,7 +6711,7 @@
 	                this._weekdaysParse[i] = this.weekdays(mom, '').toLocaleLowerCase();
 	            }
 	        }
-	
+
 	        if (strict) {
 	            if (format === 'dddd') {
 	                ii = indexOf.call(this._weekdaysParse, llc);
@@ -6760,24 +6760,24 @@
 	            }
 	        }
 	    }
-	
+
 	    function localeWeekdaysParse (weekdayName, format, strict) {
 	        var i, mom, regex;
-	
+
 	        if (this._weekdaysParseExact) {
 	            return day_of_week__handleStrictParse.call(this, weekdayName, format, strict);
 	        }
-	
+
 	        if (!this._weekdaysParse) {
 	            this._weekdaysParse = [];
 	            this._minWeekdaysParse = [];
 	            this._shortWeekdaysParse = [];
 	            this._fullWeekdaysParse = [];
 	        }
-	
+
 	        for (i = 0; i < 7; i++) {
 	            // make the regex if we don't have it already
-	
+
 	            mom = create_utc__createUTC([2000, 1]).day(i);
 	            if (strict && !this._fullWeekdaysParse[i]) {
 	                this._fullWeekdaysParse[i] = new RegExp('^' + this.weekdays(mom, '').replace('.', '\.?') + '$', 'i');
@@ -6800,9 +6800,9 @@
 	            }
 	        }
 	    }
-	
+
 	    // MOMENTS
-	
+
 	    function getSetDayOfWeek (input) {
 	        if (!this.isValid()) {
 	            return input != null ? this : NaN;
@@ -6815,7 +6815,7 @@
 	            return day;
 	        }
 	    }
-	
+
 	    function getSetLocaleDayOfWeek (input) {
 	        if (!this.isValid()) {
 	            return input != null ? this : NaN;
@@ -6823,7 +6823,7 @@
 	        var weekday = (this.day() + 7 - this.localeData()._week.dow) % 7;
 	        return input == null ? weekday : this.add(input - weekday, 'd');
 	    }
-	
+
 	    function getSetISODayOfWeek (input) {
 	        if (!this.isValid()) {
 	            return input != null ? this : NaN;
@@ -6833,7 +6833,7 @@
 	        // as a setter, sunday should belong to the previous week.
 	        return input == null ? this.day() || 7 : this.day(this.day() % 7 ? input : input - 7);
 	    }
-	
+
 	    var defaultWeekdaysRegex = matchWord;
 	    function weekdaysRegex (isStrict) {
 	        if (this._weekdaysParseExact) {
@@ -6850,7 +6850,7 @@
 	                this._weekdaysStrictRegex : this._weekdaysRegex;
 	        }
 	    }
-	
+
 	    var defaultWeekdaysShortRegex = matchWord;
 	    function weekdaysShortRegex (isStrict) {
 	        if (this._weekdaysParseExact) {
@@ -6867,7 +6867,7 @@
 	                this._weekdaysShortStrictRegex : this._weekdaysShortRegex;
 	        }
 	    }
-	
+
 	    var defaultWeekdaysMinRegex = matchWord;
 	    function weekdaysMinRegex (isStrict) {
 	        if (this._weekdaysParseExact) {
@@ -6884,13 +6884,13 @@
 	                this._weekdaysMinStrictRegex : this._weekdaysMinRegex;
 	        }
 	    }
-	
-	
+
+
 	    function computeWeekdaysParse () {
 	        function cmpLenRev(a, b) {
 	            return b.length - a.length;
 	        }
-	
+
 	        var minPieces = [], shortPieces = [], longPieces = [], mixedPieces = [],
 	            i, mom, minp, shortp, longp;
 	        for (i = 0; i < 7; i++) {
@@ -6917,104 +6917,104 @@
 	            longPieces[i] = regexEscape(longPieces[i]);
 	            mixedPieces[i] = regexEscape(mixedPieces[i]);
 	        }
-	
+
 	        this._weekdaysRegex = new RegExp('^(' + mixedPieces.join('|') + ')', 'i');
 	        this._weekdaysShortRegex = this._weekdaysRegex;
 	        this._weekdaysMinRegex = this._weekdaysRegex;
-	
+
 	        this._weekdaysStrictRegex = new RegExp('^(' + longPieces.join('|') + ')', 'i');
 	        this._weekdaysShortStrictRegex = new RegExp('^(' + shortPieces.join('|') + ')', 'i');
 	        this._weekdaysMinStrictRegex = new RegExp('^(' + minPieces.join('|') + ')', 'i');
 	    }
-	
+
 	    // FORMATTING
-	
+
 	    addFormatToken('DDD', ['DDDD', 3], 'DDDo', 'dayOfYear');
-	
+
 	    // ALIASES
-	
+
 	    addUnitAlias('dayOfYear', 'DDD');
-	
+
 	    // PARSING
-	
+
 	    addRegexToken('DDD',  match1to3);
 	    addRegexToken('DDDD', match3);
 	    addParseToken(['DDD', 'DDDD'], function (input, array, config) {
 	        config._dayOfYear = toInt(input);
 	    });
-	
+
 	    // HELPERS
-	
+
 	    // MOMENTS
-	
+
 	    function getSetDayOfYear (input) {
 	        var dayOfYear = Math.round((this.clone().startOf('day') - this.clone().startOf('year')) / 864e5) + 1;
 	        return input == null ? dayOfYear : this.add((input - dayOfYear), 'd');
 	    }
-	
+
 	    // FORMATTING
-	
+
 	    function hFormat() {
 	        return this.hours() % 12 || 12;
 	    }
-	
+
 	    function kFormat() {
 	        return this.hours() || 24;
 	    }
-	
+
 	    addFormatToken('H', ['HH', 2], 0, 'hour');
 	    addFormatToken('h', ['hh', 2], 0, hFormat);
 	    addFormatToken('k', ['kk', 2], 0, kFormat);
-	
+
 	    addFormatToken('hmm', 0, 0, function () {
 	        return '' + hFormat.apply(this) + zeroFill(this.minutes(), 2);
 	    });
-	
+
 	    addFormatToken('hmmss', 0, 0, function () {
 	        return '' + hFormat.apply(this) + zeroFill(this.minutes(), 2) +
 	            zeroFill(this.seconds(), 2);
 	    });
-	
+
 	    addFormatToken('Hmm', 0, 0, function () {
 	        return '' + this.hours() + zeroFill(this.minutes(), 2);
 	    });
-	
+
 	    addFormatToken('Hmmss', 0, 0, function () {
 	        return '' + this.hours() + zeroFill(this.minutes(), 2) +
 	            zeroFill(this.seconds(), 2);
 	    });
-	
+
 	    function meridiem (token, lowercase) {
 	        addFormatToken(token, 0, 0, function () {
 	            return this.localeData().meridiem(this.hours(), this.minutes(), lowercase);
 	        });
 	    }
-	
+
 	    meridiem('a', true);
 	    meridiem('A', false);
-	
+
 	    // ALIASES
-	
+
 	    addUnitAlias('hour', 'h');
-	
+
 	    // PARSING
-	
+
 	    function matchMeridiem (isStrict, locale) {
 	        return locale._meridiemParse;
 	    }
-	
+
 	    addRegexToken('a',  matchMeridiem);
 	    addRegexToken('A',  matchMeridiem);
 	    addRegexToken('H',  match1to2);
 	    addRegexToken('h',  match1to2);
 	    addRegexToken('HH', match1to2, match2);
 	    addRegexToken('hh', match1to2, match2);
-	
+
 	    addRegexToken('hmm', match3to4);
 	    addRegexToken('hmmss', match5to6);
 	    addRegexToken('Hmm', match3to4);
 	    addRegexToken('Hmmss', match5to6);
-	
+
 	    addParseToken(['H', 'HH'], HOUR);
 	    addParseToken(['a', 'A'], function (input, array, config) {
 	        config._isPm = config._locale.isPM(input);
@@ -7050,15 +7050,15 @@
 	        array[MINUTE] = toInt(input.substr(pos1, 2));
 	        array[SECOND] = toInt(input.substr(pos2));
 	    });
-	
+
 	    // LOCALES
-	
+
 	    function localeIsPM (input) {
 	        // IE8 Quirks Mode & IE7 Standards Mode do not allow accessing strings like arrays
 	        // Using charAt should be more compatible.
 	        return ((input + '').toLowerCase().charAt(0) === 'p');
 	    }
-	
+
 	    var defaultLocaleMeridiemParse = /[ap]\.?m?\.?/i;
 	    function localeMeridiem (hours, minutes, isLower) {
 	        if (hours > 11) {
@@ -7067,62 +7067,62 @@
 	            return isLower ? 'am' : 'AM';
 	        }
 	    }
-	
-	
+
+
 	    // MOMENTS
-	
+
 	    // Setting the hour should keep the time, because the user explicitly
 	    // specified which hour he wants. So trying to maintain the same hour (in
 	    // a new timezone) makes sense. Adding/subtracting hours does not follow
 	    // this rule.
 	    var getSetHour = makeGetSet('Hours', true);
-	
+
 	    // FORMATTING
-	
+
 	    addFormatToken('m', ['mm', 2], 0, 'minute');
-	
+
 	    // ALIASES
-	
+
 	    addUnitAlias('minute', 'm');
-	
+
 	    // PARSING
-	
+
 	    addRegexToken('m',  match1to2);
 	    addRegexToken('mm', match1to2, match2);
 	    addParseToken(['m', 'mm'], MINUTE);
-	
+
 	    // MOMENTS
-	
+
 	    var getSetMinute = makeGetSet('Minutes', false);
-	
+
 	    // FORMATTING
-	
+
 	    addFormatToken('s', ['ss', 2], 0, 'second');
-	
+
 	    // ALIASES
-	
+
 	    addUnitAlias('second', 's');
-	
+
 	    // PARSING
-	
+
 	    addRegexToken('s',  match1to2);
 	    addRegexToken('ss', match1to2, match2);
 	    addParseToken(['s', 'ss'], SECOND);
-	
+
 	    // MOMENTS
-	
+
 	    var getSetSecond = makeGetSet('Seconds', false);
-	
+
 	    // FORMATTING
-	
+
 	    addFormatToken('S', 0, 0, function () {
 	        return ~~(this.millisecond() / 100);
 	    });
-	
+
 	    addFormatToken(0, ['SS', 2], 0, function () {
 	        return ~~(this.millisecond() / 10);
 	    });
-	
+
 	    addFormatToken(0, ['SSS', 3], 0, 'millisecond');
 	    addFormatToken(0, ['SSSS', 4], 0, function () {
 	        return this.millisecond() * 10;
@@ -7142,51 +7142,51 @@
 	    addFormatToken(0, ['SSSSSSSSS', 9], 0, function () {
 	        return this.millisecond() * 1000000;
 	    });
-	
-	
+
+
 	    // ALIASES
-	
+
 	    addUnitAlias('millisecond', 'ms');
-	
+
 	    // PARSING
-	
+
 	    addRegexToken('S',    match1to3, match1);
 	    addRegexToken('SS',   match1to3, match2);
 	    addRegexToken('SSS',  match1to3, match3);
-	
+
 	    var token;
 	    for (token = 'SSSS'; token.length <= 9; token += 'S') {
 	        addRegexToken(token, matchUnsigned);
 	    }
-	
+
 	    function parseMs(input, array) {
 	        array[MILLISECOND] = toInt(('0.' + input) * 1000);
 	    }
-	
+
 	    for (token = 'S'; token.length <= 9; token += 'S') {
 	        addParseToken(token, parseMs);
 	    }
 	    // MOMENTS
-	
+
 	    var getSetMillisecond = makeGetSet('Milliseconds', false);
-	
+
 	    // FORMATTING
-	
+
 	    addFormatToken('z',  0, 0, 'zoneAbbr');
 	    addFormatToken('zz', 0, 0, 'zoneName');
-	
+
 	    // MOMENTS
-	
+
 	    function getZoneAbbr () {
 	        return this._isUTC ? 'UTC' : '';
 	    }
-	
+
 	    function getZoneName () {
 	        return this._isUTC ? 'Coordinated Universal Time' : '';
 	    }
-	
+
 	    var momentPrototype__proto = Moment.prototype;
-	
+
 	    momentPrototype__proto.add               = add_subtract__add;
 	    momentPrototype__proto.calendar          = moment_calendar__calendar;
 	    momentPrototype__proto.clone             = clone;
@@ -7224,47 +7224,47 @@
 	    momentPrototype__proto.unix              = unix;
 	    momentPrototype__proto.valueOf           = to_type__valueOf;
 	    momentPrototype__proto.creationData      = creationData;
-	
+
 	    // Year
 	    momentPrototype__proto.year       = getSetYear;
 	    momentPrototype__proto.isLeapYear = getIsLeapYear;
-	
+
 	    // Week Year
 	    momentPrototype__proto.weekYear    = getSetWeekYear;
 	    momentPrototype__proto.isoWeekYear = getSetISOWeekYear;
-	
+
 	    // Quarter
 	    momentPrototype__proto.quarter = momentPrototype__proto.quarters = getSetQuarter;
-	
+
 	    // Month
 	    momentPrototype__proto.month       = getSetMonth;
 	    momentPrototype__proto.daysInMonth = getDaysInMonth;
-	
+
 	    // Week
 	    momentPrototype__proto.week           = momentPrototype__proto.weeks        = getSetWeek;
 	    momentPrototype__proto.isoWeek        = momentPrototype__proto.isoWeeks     = getSetISOWeek;
 	    momentPrototype__proto.weeksInYear    = getWeeksInYear;
 	    momentPrototype__proto.isoWeeksInYear = getISOWeeksInYear;
-	
+
 	    // Day
 	    momentPrototype__proto.date       = getSetDayOfMonth;
 	    momentPrototype__proto.day        = momentPrototype__proto.days             = getSetDayOfWeek;
 	    momentPrototype__proto.weekday    = getSetLocaleDayOfWeek;
 	    momentPrototype__proto.isoWeekday = getSetISODayOfWeek;
 	    momentPrototype__proto.dayOfYear  = getSetDayOfYear;
-	
+
 	    // Hour
 	    momentPrototype__proto.hour = momentPrototype__proto.hours = getSetHour;
-	
+
 	    // Minute
 	    momentPrototype__proto.minute = momentPrototype__proto.minutes = getSetMinute;
-	
+
 	    // Second
 	    momentPrototype__proto.second = momentPrototype__proto.seconds = getSetSecond;
-	
+
 	    // Millisecond
 	    momentPrototype__proto.millisecond = momentPrototype__proto.milliseconds = getSetMillisecond;
-	
+
 	    // Offset
 	    momentPrototype__proto.utcOffset            = getSetOffset;
 	    momentPrototype__proto.utc                  = setOffsetToUTC;
@@ -7277,27 +7277,27 @@
 	    momentPrototype__proto.isUtcOffset          = isUtcOffset;
 	    momentPrototype__proto.isUtc                = isUtc;
 	    momentPrototype__proto.isUTC                = isUtc;
-	
+
 	    // Timezone
 	    momentPrototype__proto.zoneAbbr = getZoneAbbr;
 	    momentPrototype__proto.zoneName = getZoneName;
-	
+
 	    // Deprecations
 	    momentPrototype__proto.dates  = deprecate('dates accessor is deprecated. Use date instead.', getSetDayOfMonth);
 	    momentPrototype__proto.months = deprecate('months accessor is deprecated. Use month instead', getSetMonth);
 	    momentPrototype__proto.years  = deprecate('years accessor is deprecated. Use year instead', getSetYear);
 	    momentPrototype__proto.zone   = deprecate('moment().zone is deprecated, use moment().utcOffset instead. https://github.com/moment/moment/issues/1779', getSetZone);
-	
+
 	    var momentPrototype = momentPrototype__proto;
-	
+
 	    function moment__createUnix (input) {
 	        return local__createLocal(input * 1000);
 	    }
-	
+
 	    function moment__createInZone () {
 	        return local__createLocal.apply(null, arguments).parseZone();
 	    }
-	
+
 	    var defaultCalendar = {
 	        sameDay : '[Today at] LT',
 	        nextDay : '[Tomorrow at] LT',
@@ -7306,12 +7306,12 @@
 	        lastWeek : '[Last] dddd [at] LT',
 	        sameElse : 'L'
 	    };
-	
+
 	    function locale_calendar__calendar (key, mom, now) {
 	        var output = this._calendar[key];
 	        return isFunction(output) ? output.call(mom, now) : output;
 	    }
-	
+
 	    var defaultLongDateFormat = {
 	        LTS  : 'h:mm:ss A',
 	        LT   : 'h:mm A',
@@ -7320,39 +7320,39 @@
 	        LLL  : 'MMMM D, YYYY h:mm A',
 	        LLLL : 'dddd, MMMM D, YYYY h:mm A'
 	    };
-	
+
 	    function longDateFormat (key) {
 	        var format = this._longDateFormat[key],
 	            formatUpper = this._longDateFormat[key.toUpperCase()];
-	
+
 	        if (format || !formatUpper) {
 	            return format;
 	        }
-	
+
 	        this._longDateFormat[key] = formatUpper.replace(/MMMM|MM|DD|dddd/g, function (val) {
 	            return val.slice(1);
 	        });
-	
+
 	        return this._longDateFormat[key];
 	    }
-	
+
 	    var defaultInvalidDate = 'Invalid date';
-	
+
 	    function invalidDate () {
 	        return this._invalidDate;
 	    }
-	
+
 	    var defaultOrdinal = '%d';
 	    var defaultOrdinalParse = /\d{1,2}/;
-	
+
 	    function ordinal (number) {
 	        return this._ordinal.replace('%d', number);
 	    }
-	
+
 	    function preParsePostFormat (string) {
 	        return string;
 	    }
-	
+
 	    var defaultRelativeTime = {
 	        future : 'in %s',
 	        past   : '%s ago',
@@ -7368,21 +7368,21 @@
 	        y  : 'a year',
 	        yy : '%d years'
 	    };
-	
+
 	    function relative__relativeTime (number, withoutSuffix, string, isFuture) {
 	        var output = this._relativeTime[string];
 	        return (isFunction(output)) ?
 	            output(number, withoutSuffix, string, isFuture) :
 	            output.replace(/%d/i, number);
 	    }
-	
+
 	    function pastFuture (diff, output) {
 	        var format = this._relativeTime[diff > 0 ? 'future' : 'past'];
 	        return isFunction(format) ? format(output) : format.replace(/%s/i, output);
 	    }
-	
+
 	    var prototype__proto = Locale.prototype;
-	
+
 	    prototype__proto._calendar       = defaultCalendar;
 	    prototype__proto.calendar        = locale_calendar__calendar;
 	    prototype__proto._longDateFormat = defaultLongDateFormat;
@@ -7398,7 +7398,7 @@
 	    prototype__proto.relativeTime    = relative__relativeTime;
 	    prototype__proto.pastFuture      = pastFuture;
 	    prototype__proto.set             = locale_set__set;
-	
+
 	    // Month
 	    prototype__proto.months            =        localeMonths;
 	    prototype__proto._months           = defaultLocaleMonths;
@@ -7409,13 +7409,13 @@
 	    prototype__proto.monthsRegex       = monthsRegex;
 	    prototype__proto._monthsShortRegex = defaultMonthsShortRegex;
 	    prototype__proto.monthsShortRegex  = monthsShortRegex;
-	
+
 	    // Week
 	    prototype__proto.week = localeWeek;
 	    prototype__proto._week = defaultLocaleWeek;
 	    prototype__proto.firstDayOfYear = localeFirstDayOfYear;
 	    prototype__proto.firstDayOfWeek = localeFirstDayOfWeek;
-	
+
 	    // Day of Week
 	    prototype__proto.weekdays       =        localeWeekdays;
 	    prototype__proto._weekdays      = defaultLocaleWeekdays;
@@ -7424,37 +7424,37 @@
 	    prototype__proto.weekdaysShort  =        localeWeekdaysShort;
 	    prototype__proto._weekdaysShort = defaultLocaleWeekdaysShort;
 	    prototype__proto.weekdaysParse  =        localeWeekdaysParse;
-	
+
 	    prototype__proto._weekdaysRegex      = defaultWeekdaysRegex;
 	    prototype__proto.weekdaysRegex       =        weekdaysRegex;
 	    prototype__proto._weekdaysShortRegex = defaultWeekdaysShortRegex;
 	    prototype__proto.weekdaysShortRegex  =        weekdaysShortRegex;
 	    prototype__proto._weekdaysMinRegex   = defaultWeekdaysMinRegex;
 	    prototype__proto.weekdaysMinRegex    =        weekdaysMinRegex;
-	
+
 	    // Hours
 	    prototype__proto.isPM = localeIsPM;
 	    prototype__proto._meridiemParse = defaultLocaleMeridiemParse;
 	    prototype__proto.meridiem = localeMeridiem;
-	
+
 	    function lists__get (format, index, field, setter) {
 	        var locale = locale_locales__getLocale();
 	        var utc = create_utc__createUTC().set(setter, index);
 	        return locale[field](utc, format);
 	    }
-	
+
 	    function listMonthsImpl (format, index, field) {
 	        if (typeof format === 'number') {
 	            index = format;
 	            format = undefined;
 	        }
-	
+
 	        format = format || '';
-	
+
 	        if (index != null) {
 	            return lists__get(format, index, field, 'month');
 	        }
-	
+
 	        var i;
 	        var out = [];
 	        for (i = 0; i < 12; i++) {
@@ -7462,7 +7462,7 @@
 	        }
 	        return out;
 	    }
-	
+
 	    // ()
 	    // (5)
 	    // (fmt, 5)
@@ -7477,28 +7477,28 @@
 	                index = format;
 	                format = undefined;
 	            }
-	
+
 	            format = format || '';
 	        } else {
 	            format = localeSorted;
 	            index = format;
 	            localeSorted = false;
-	
+
 	            if (typeof format === 'number') {
 	                index = format;
 	                format = undefined;
 	            }
-	
+
 	            format = format || '';
 	        }
-	
+
 	        var locale = locale_locales__getLocale(),
 	            shift = localeSorted ? locale._week.dow : 0;
-	
+
 	        if (index != null) {
 	            return lists__get(format, (index + shift) % 7, field, 'day');
 	        }
-	
+
 	        var i;
 	        var out = [];
 	        for (i = 0; i < 7; i++) {
@@ -7506,27 +7506,27 @@
 	        }
 	        return out;
 	    }
-	
+
 	    function lists__listMonths (format, index) {
 	        return listMonthsImpl(format, index, 'months');
 	    }
-	
+
 	    function lists__listMonthsShort (format, index) {
 	        return listMonthsImpl(format, index, 'monthsShort');
 	    }
-	
+
 	    function lists__listWeekdays (localeSorted, format, index) {
 	        return listWeekdaysImpl(localeSorted, format, index, 'weekdays');
 	    }
-	
+
 	    function lists__listWeekdaysShort (localeSorted, format, index) {
 	        return listWeekdaysImpl(localeSorted, format, index, 'weekdaysShort');
 	    }
-	
+
 	    function lists__listWeekdaysMin (localeSorted, format, index) {
 	        return listWeekdaysImpl(localeSorted, format, index, 'weekdaysMin');
 	    }
-	
+
 	    locale_locales__getSetGlobalLocale('en', {
 	        ordinalParse: /\d{1,2}(th|st|nd|rd)/,
 	        ordinal : function (number) {
@@ -7538,50 +7538,50 @@
 	            return number + output;
 	        }
 	    });
-	
+
 	    // Side effect imports
 	    utils_hooks__hooks.lang = deprecate('moment.lang is deprecated. Use moment.locale instead.', locale_locales__getSetGlobalLocale);
 	    utils_hooks__hooks.langData = deprecate('moment.langData is deprecated. Use moment.localeData instead.', locale_locales__getLocale);
-	
+
 	    var mathAbs = Math.abs;
-	
+
 	    function duration_abs__abs () {
 	        var data           = this._data;
-	
+
 	        this._milliseconds = mathAbs(this._milliseconds);
 	        this._days         = mathAbs(this._days);
 	        this._months       = mathAbs(this._months);
-	
+
 	        data.milliseconds  = mathAbs(data.milliseconds);
 	        data.seconds       = mathAbs(data.seconds);
 	        data.minutes       = mathAbs(data.minutes);
 	        data.hours         = mathAbs(data.hours);
 	        data.months        = mathAbs(data.months);
 	        data.years         = mathAbs(data.years);
-	
+
 	        return this;
 	    }
-	
+
 	    function duration_add_subtract__addSubtract (duration, input, value, direction) {
 	        var other = create__createDuration(input, value);
-	
+
 	        duration._milliseconds += direction * other._milliseconds;
 	        duration._days         += direction * other._days;
 	        duration._months       += direction * other._months;
-	
+
 	        return duration._bubble();
 	    }
-	
+
 	    // supports only 2.0-style add(1, 's') or add(duration)
 	    function duration_add_subtract__add (input, value) {
 	        return duration_add_subtract__addSubtract(this, input, value, 1);
 	    }
-	
+
 	    // supports only 2.0-style subtract(1, 's') or subtract(duration)
 	    function duration_add_subtract__subtract (input, value) {
 	        return duration_add_subtract__addSubtract(this, input, value, -1);
 	    }
-	
+
 	    function absCeil (number) {
 	        if (number < 0) {
 	            return Math.floor(number);
@@ -7589,14 +7589,14 @@
 	            return Math.ceil(number);
 	        }
 	    }
-	
+
 	    function bubble () {
 	        var milliseconds = this._milliseconds;
 	        var days         = this._days;
 	        var months       = this._months;
 	        var data         = this._data;
 	        var seconds, minutes, hours, years, monthsFromDays;
-	
+
 	        // if we have a mix of positive and negative values, bubble down first
 	        // check: https://github.com/moment/moment/issues/2166
 	        if (!((milliseconds >= 0 && days >= 0 && months >= 0) ||
@@ -7605,56 +7605,56 @@
 	            days = 0;
 	            months = 0;
 	        }
-	
+
 	        // The following code bubbles up values, see the tests for
 	        // examples of what that means.
 	        data.milliseconds = milliseconds % 1000;
-	
+
 	        seconds           = absFloor(milliseconds / 1000);
 	        data.seconds      = seconds % 60;
-	
+
 	        minutes           = absFloor(seconds / 60);
 	        data.minutes      = minutes % 60;
-	
+
 	        hours             = absFloor(minutes / 60);
 	        data.hours        = hours % 24;
-	
+
 	        days += absFloor(hours / 24);
-	
+
 	        // convert days to months
 	        monthsFromDays = absFloor(daysToMonths(days));
 	        months += monthsFromDays;
 	        days -= absCeil(monthsToDays(monthsFromDays));
-	
+
 	        // 12 months -> 1 year
 	        years = absFloor(months / 12);
 	        months %= 12;
-	
+
 	        data.days   = days;
 	        data.months = months;
 	        data.years  = years;
-	
+
 	        return this;
 	    }
-	
+
 	    function daysToMonths (days) {
 	        // 400 years have 146097 days (taking into account leap year rules)
 	        // 400 years have 12 months === 4800
 	        return days * 4800 / 146097;
 	    }
-	
+
 	    function monthsToDays (months) {
 	        // the reverse of daysToMonths
 	        return months * 146097 / 4800;
 	    }
-	
+
 	    function as (units) {
 	        var days;
 	        var months;
 	        var milliseconds = this._milliseconds;
-	
+
 	        units = normalizeUnits(units);
-	
+
 	        if (units === 'month' || units === 'year') {
 	            days   = this._days   + milliseconds / 864e5;
 	            months = this._months + daysToMonths(days);
@@ -7674,7 +7674,7 @@
 	            }
 	        }
 	    }
-	
+
 	    // TODO: Use this.as('ms')?
 	    function duration_as__valueOf () {
 	        return (
@@ -7684,13 +7684,13 @@
 	            toInt(this._months / 12) * 31536e6
 	        );
 	    }
-	
+
 	    function makeAs (alias) {
 	        return function () {
 	            return this.as(alias);
 	        };
 	    }
-	
+
 	    var asMilliseconds = makeAs('ms');
 	    var asSeconds      = makeAs('s');
 	    var asMinutes      = makeAs('m');
@@ -7699,18 +7699,18 @@
 	    var asWeeks        = makeAs('w');
 	    var asMonths       = makeAs('M');
 	    var asYears        = makeAs('y');
-	
+
 	    function duration_get__get (units) {
 	        units = normalizeUnits(units);
 	        return this[units + 's']();
 	    }
-	
+
 	    function makeGetter(name) {
 	        return function () {
 	            return this._data[name];
 	        };
 	    }
-	
+
 	    var milliseconds = makeGetter('milliseconds');
 	    var seconds      = makeGetter('seconds');
 	    var minutes      = makeGetter('minutes');
@@ -7718,11 +7718,11 @@
 	    var days         = makeGetter('days');
 	    var months       = makeGetter('months');
 	    var years        = makeGetter('years');
-	
+
 	    function weeks () {
 	        return absFloor(this.days() / 7);
 	    }
-	
+
 	    var round = Math.round;
 	    var thresholds = {
 	        s: 45,  // seconds to minute
@@ -7731,12 +7731,12 @@
 	        d: 26,  // days to month
 	        M: 11   // months to year
 	    };
-	
+
 	    // helper function for moment.fn.from, moment.fn.fromNow, and moment.duration.fn.humanize
 	    function substituteTimeAgo(string, number, withoutSuffix, isFuture, locale) {
 	        return locale.relativeTime(number || 1, !!withoutSuffix, string, isFuture);
 	    }
-	
+
 	    function duration_humanize__relativeTime (posNegDuration, withoutSuffix, locale) {
 	        var duration = create__createDuration(posNegDuration).abs();
 	        var seconds  = round(duration.as('s'));
@@ -7745,7 +7745,7 @@
 	        var days     = round(duration.as('d'));
 	        var months   = round(duration.as('M'));
 	        var years    = round(duration.as('y'));
-	
+
 	        var a = seconds < thresholds.s && ['s', seconds]  ||
 	                minutes <= 1           && ['m']           ||
 	                minutes < thresholds.m && ['mm', minutes] ||
@@ -7756,13 +7756,13 @@
 	                months  <= 1           && ['M']           ||
 	                months  < thresholds.M && ['MM', months]  ||
 	                years   <= 1           && ['y']           || ['yy', years];
-	
+
 	        a[2] = withoutSuffix;
 	        a[3] = +posNegDuration > 0;
 	        a[4] = locale;
 	        return substituteTimeAgo.apply(null, a);
 	    }
-	
+
 	    // This function allows you to set a threshold for relative time strings
 	    function duration_humanize__getSetRelativeTimeThreshold (threshold, limit) {
 	        if (thresholds[threshold] === undefined) {
@@ -7774,20 +7774,20 @@
 	        thresholds[threshold] = limit;
 	        return true;
 	    }
-	
+
 	    function humanize (withSuffix) {
 	        var locale = this.localeData();
 	        var output = duration_humanize__relativeTime(this, !withSuffix, locale);
-	
+
 	        if (withSuffix) {
 	            output = locale.pastFuture(+this, output);
 	        }
-	
+
 	        return locale.postformat(output);
 	    }
-	
+
 	    var iso_string__abs = Math.abs;
-	
+
 	    function iso_string__toISOString() {
 	        // for ISO strings we do not use the normal bubbling rules:
 	        //  * milliseconds bubble up until they become hours
@@ -7800,18 +7800,18 @@
 	        var days         = iso_string__abs(this._days);
 	        var months       = iso_string__abs(this._months);
 	        var minutes, hours, years;
-	
+
 	        // 3600 seconds -> 60 minutes -> 1 hour
 	        minutes           = absFloor(seconds / 60);
 	        hours             = absFloor(minutes / 60);
 	        seconds %= 60;
 	        minutes %= 60;
-	
+
 	        // 12 months -> 1 year
 	        years  = absFloor(months / 12);
 	        months %= 12;
-	
-	
+
+
 	        // inspired by https://github.com/dordille/moment-isoduration/blob/master/moment.isoduration.js
 	        var Y = years;
 	        var M = months;
@@ -7820,13 +7820,13 @@
 	        var m = minutes;
 	        var s = seconds;
 	        var total = this.asSeconds();
-	
+
 	        if (!total) {
 	            // this is the same as C#'s (Noda) and python (isodate)...
 	            // but not other JS (goog.date)
 	            return 'P0D';
 	        }
-	
+
 	        return (total < 0 ? '-' : '') +
 	            'P' +
 	            (Y ? Y + 'Y' : '') +
@@ -7837,9 +7837,9 @@
 	            (m ? m + 'M' : '') +
 	            (s ? s + 'S' : '');
 	    }
-	
+
 	    var duration_prototype__proto = Duration.prototype;
-	
+
 	    duration_prototype__proto.abs            = duration_abs__abs;
 	    duration_prototype__proto.add            = duration_add_subtract__add;
 	    duration_prototype__proto.subtract       = duration_add_subtract__subtract;
@@ -7869,20 +7869,20 @@
 	    duration_prototype__proto.toJSON         = iso_string__toISOString;
 	    duration_prototype__proto.locale         = locale;
 	    duration_prototype__proto.localeData     = localeData;
-	
+
 	    // Deprecations
 	    duration_prototype__proto.toIsoString = deprecate('toIsoString() is deprecated. Please use toISOString() instead (notice the capitals)', iso_string__toISOString);
 	    duration_prototype__proto.lang = lang;
-	
+
 	    // Side effect imports
-	
+
 	    // FORMATTING
-	
+
 	    addFormatToken('X', 0, 0, 'unix');
 	    addFormatToken('x', 0, 0, 'valueOf');
-	
+
 	    // PARSING
-	
+
 	    addRegexToken('x', matchSigned);
 	    addRegexToken('X', matchTimestamp);
 	    addParseToken('X', function (input, array, config) {
@@ -7891,14 +7891,14 @@
 	    addParseToken('x', function (input, array, config) {
 	        config._d = new Date(toInt(input));
 	    });
-	
+
 	    // Side effect imports
-	
-	
+
+
 	    utils_hooks__hooks.version = '2.13.0';
-	
+
 	    setHookCallback(local__createLocal);
-	
+
 	    utils_hooks__hooks.fn                    = momentPrototype;
 	    utils_hooks__hooks.min                   = min;
 	    utils_hooks__hooks.max                   = max;
@@ -7924,11 +7924,11 @@
 	    utils_hooks__hooks.normalizeUnits        = normalizeUnits;
 	    utils_hooks__hooks.relativeTimeThreshold = duration_humanize__getSetRelativeTimeThreshold;
 	    utils_hooks__hooks.prototype             = momentPrototype;
-	
+
 	    var _moment = utils_hooks__hooks;
-	
+
 	    return _moment;
-	
+
 	}));
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)(module)))
 
@@ -8175,14 +8175,14 @@
 	//! moment.js locale configuration
 	//! locale : afrikaans (af)
 	//! author : Werner Mollentze : https://github.com/wernerm
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var af = moment.defineLocale('af', {
 	        months : 'Januarie_Februarie_Maart_April_Mei_Junie_Julie_Augustus_September_Oktober_November_Desember'.split('_'),
 	        monthsShort : 'Jan_Feb_Mar_Apr_Mei_Jun_Jul_Aug_Sep_Okt_Nov_Des'.split('_'),
@@ -8240,9 +8240,9 @@
 	            doy : 4  // Die week wat die 4de Januarie bevat is die eerste week van die jaar.
 	        }
 	    });
-	
+
 	    return af;
-	
+
 	}));
 
 /***/ },
@@ -8254,14 +8254,14 @@
 	//! Author: Abdel Said: https://github.com/abdelsaid
 	//! Changes in months, weekdays: Ahmed Elkhatib
 	//! Native plural forms: forabi https://github.com/forabi
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var symbolMap = {
 	        '1': '١',
 	        '2': '٢',
@@ -8316,7 +8316,7 @@
 	        'تشرين الثاني نوفمبر',
 	        'كانون الأول ديسمبر'
 	    ];
-	
+
 	    var ar = moment.defineLocale('ar', {
 	        months : months,
 	        monthsShort : months,
@@ -8381,9 +8381,9 @@
 	            doy : 12  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return ar;
-	
+
 	}));
 
 /***/ },
@@ -8394,14 +8394,14 @@
 	//! locale : Moroccan Arabic (ar-ma)
 	//! author : ElFadili Yassine : https://github.com/ElFadiliY
 	//! author : Abdel Said : https://github.com/abdelsaid
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var ar_ma = moment.defineLocale('ar-ma', {
 	        months : 'يناير_فبراير_مارس_أبريل_ماي_يونيو_يوليوز_غشت_شتنبر_أكتوبر_نونبر_دجنبر'.split('_'),
 	        monthsShort : 'يناير_فبراير_مارس_أبريل_ماي_يونيو_يوليوز_غشت_شتنبر_أكتوبر_نونبر_دجنبر'.split('_'),
@@ -8445,9 +8445,9 @@
 	            doy : 12  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return ar_ma;
-	
+
 	}));
 
 /***/ },
@@ -8457,14 +8457,14 @@
 	//! moment.js locale configuration
 	//! locale : Arabic Saudi Arabia (ar-sa)
 	//! author : Suhail Alkowaileet : https://github.com/xsoh
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var symbolMap = {
 	        '1': '١',
 	        '2': '٢',
@@ -8488,7 +8488,7 @@
 	        '٩': '9',
 	        '٠': '0'
 	    };
-	
+
 	    var ar_sa = moment.defineLocale('ar-sa', {
 	        months : 'يناير_فبراير_مارس_أبريل_مايو_يونيو_يوليو_أغسطس_سبتمبر_أكتوبر_نوفمبر_ديسمبر'.split('_'),
 	        monthsShort : 'يناير_فبراير_مارس_أبريل_مايو_يونيو_يوليو_أغسطس_سبتمبر_أكتوبر_نوفمبر_ديسمبر'.split('_'),
@@ -8553,9 +8553,9 @@
 	            doy : 12  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return ar_sa;
-	
+
 	}));
 
 /***/ },
@@ -8564,14 +8564,14 @@
 
 	//! moment.js locale configuration
 	//! locale  : Tunisian Arabic (ar-tn)
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var ar_tn = moment.defineLocale('ar-tn', {
 	        months: 'جانفي_فيفري_مارس_أفريل_ماي_جوان_جويلية_أوت_سبتمبر_أكتوبر_نوفمبر_ديسمبر'.split('_'),
 	        monthsShort: 'جانفي_فيفري_مارس_أفريل_ماي_جوان_جويلية_أوت_سبتمبر_أكتوبر_نوفمبر_ديسمبر'.split('_'),
@@ -8615,9 +8615,9 @@
 	            doy: 4 // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return ar_tn;
-	
+
 	}));
 
 /***/ },
@@ -8627,14 +8627,14 @@
 	//! moment.js locale configuration
 	//! locale : azerbaijani (az)
 	//! author : topchiyev : https://github.com/topchiyev
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var suffixes = {
 	        1: '-inci',
 	        5: '-inci',
@@ -8655,7 +8655,7 @@
 	        60: '-ıncı',
 	        90: '-ıncı'
 	    };
-	
+
 	    var az = moment.defineLocale('az', {
 	        months : 'yanvar_fevral_mart_aprel_may_iyun_iyul_avqust_sentyabr_oktyabr_noyabr_dekabr'.split('_'),
 	        monthsShort : 'yan_fev_mar_apr_may_iyn_iyl_avq_sen_okt_noy_dek'.split('_'),
@@ -8724,9 +8724,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return az;
-	
+
 	}));
 
 /***/ },
@@ -8738,14 +8738,14 @@
 	//! author : Dmitry Demidov : https://github.com/demidov91
 	//! author: Praleska: http://praleska.pro/
 	//! Author : Menelion Elensúle : https://github.com/Oire
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    function plural(word, num) {
 	        var forms = word.split('_');
 	        return num % 10 === 1 && num % 100 !== 11 ? forms[0] : (num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2]);
@@ -8768,7 +8768,7 @@
 	            return number + ' ' + plural(format[key], +number);
 	        }
 	    }
-	
+
 	    var be = moment.defineLocale('be', {
 	        months : {
 	            format: 'студзеня_лютага_сакавіка_красавіка_траўня_чэрвеня_ліпеня_жніўня_верасня_кастрычніка_лістапада_снежня'.split('_'),
@@ -8862,9 +8862,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return be;
-	
+
 	}));
 
 /***/ },
@@ -8874,14 +8874,14 @@
 	//! moment.js locale configuration
 	//! locale : bulgarian (bg)
 	//! author : Krasen Borisov : https://github.com/kraz
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var bg = moment.defineLocale('bg', {
 	        months : 'януари_февруари_март_април_май_юни_юли_август_септември_октомври_ноември_декември'.split('_'),
 	        monthsShort : 'янр_фев_мар_апр_май_юни_юли_авг_сеп_окт_ное_дек'.split('_'),
@@ -8956,9 +8956,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return bg;
-	
+
 	}));
 
 /***/ },
@@ -8968,14 +8968,14 @@
 	//! moment.js locale configuration
 	//! locale : Bengali (bn)
 	//! author : Kaushik Gandhi : https://github.com/kaushikgandhi
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var symbolMap = {
 	        '1': '১',
 	        '2': '২',
@@ -9000,7 +9000,7 @@
 	        '৯': '9',
 	        '০': '0'
 	    };
-	
+
 	    var bn = moment.defineLocale('bn', {
 	        months : 'জানুয়ারী_ফেবুয়ারী_মার্চ_এপ্রিল_মে_জুন_জুলাই_অগাস্ট_সেপ্টেম্বর_অক্টোবর_নভেম্বর_ডিসেম্বর'.split('_'),
 	        monthsShort : 'জানু_ফেব_মার্চ_এপর_মে_জুন_জুল_অগ_সেপ্ট_অক্টো_নভ_ডিসেম্'.split('_'),
@@ -9079,9 +9079,9 @@
 	            doy : 6  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return bn;
-	
+
 	}));
 
 /***/ },
@@ -9091,14 +9091,14 @@
 	//! moment.js locale configuration
 	//! locale : tibetan (bo)
 	//! author : Thupten N. Chakrishar : https://github.com/vajradog
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var symbolMap = {
 	        '1': '༡',
 	        '2': '༢',
@@ -9123,7 +9123,7 @@
 	        '༩': '9',
 	        '༠': '0'
 	    };
-	
+
 	    var bo = moment.defineLocale('bo', {
 	        months : 'ཟླ་བ་དང་པོ_ཟླ་བ་གཉིས་པ_ཟླ་བ་གསུམ་པ_ཟླ་བ་བཞི་པ_ཟླ་བ་ལྔ་པ_ཟླ་བ་དྲུག་པ_ཟླ་བ་བདུན་པ_ཟླ་བ་བརྒྱད་པ_ཟླ་བ་དགུ་པ_ཟླ་བ་བཅུ་པ_ཟླ་བ་བཅུ་གཅིག་པ_ཟླ་བ་བཅུ་གཉིས་པ'.split('_'),
 	        monthsShort : 'ཟླ་བ་དང་པོ_ཟླ་བ་གཉིས་པ_ཟླ་བ་གསུམ་པ_ཟླ་བ་བཞི་པ_ཟླ་བ་ལྔ་པ_ཟླ་བ་དྲུག་པ_ཟླ་བ་བདུན་པ_ཟླ་བ་བརྒྱད་པ_ཟླ་བ་དགུ་པ_ཟླ་བ་བཅུ་པ_ཟླ་བ་བཅུ་གཅིག་པ_ཟླ་བ་བཅུ་གཉིས་པ'.split('_'),
@@ -9202,9 +9202,9 @@
 	            doy : 6  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return bo;
-	
+
 	}));
 
 /***/ },
@@ -9214,14 +9214,14 @@
 	//! moment.js locale configuration
 	//! locale : breton (br)
 	//! author : Jean-Baptiste Le Duigou : https://github.com/jbleduigou
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    function relativeTimeWithMutation(number, withoutSuffix, key) {
 	        var format = {
 	            'mm': 'munutenn',
@@ -9265,7 +9265,7 @@
 	        }
 	        return mutationTable[text.charAt(0)] + text.substring(1);
 	    }
-	
+
 	    var br = moment.defineLocale('br', {
 	        months : 'Genver_C\'hwevrer_Meurzh_Ebrel_Mae_Mezheven_Gouere_Eost_Gwengolo_Here_Du_Kerzu'.split('_'),
 	        monthsShort : 'Gen_C\'hwe_Meu_Ebr_Mae_Eve_Gou_Eos_Gwe_Her_Du_Ker'.split('_'),
@@ -9314,9 +9314,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return br;
-	
+
 	}));
 
 /***/ },
@@ -9327,14 +9327,14 @@
 	//! locale : bosnian (bs)
 	//! author : Nedim Cholich : https://github.com/frontyard
 	//! based on (hr) translation by Bojan Marković
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    function translate(number, withoutSuffix, key) {
 	        var result = number + ' ';
 	        switch (key) {
@@ -9387,7 +9387,7 @@
 	            return result;
 	        }
 	    }
-	
+
 	    var bs = moment.defineLocale('bs', {
 	        months : 'januar_februar_mart_april_maj_juni_juli_august_septembar_oktobar_novembar_decembar'.split('_'),
 	        monthsShort : 'jan._feb._mar._apr._maj._jun._jul._aug._sep._okt._nov._dec.'.split('_'),
@@ -9461,9 +9461,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return bs;
-	
+
 	}));
 
 /***/ },
@@ -9473,14 +9473,14 @@
 	//! moment.js locale configuration
 	//! locale : catalan (ca)
 	//! author : Juan G. Hurtado : https://github.com/juanghurtado
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var ca = moment.defineLocale('ca', {
 	        months : 'gener_febrer_març_abril_maig_juny_juliol_agost_setembre_octubre_novembre_desembre'.split('_'),
 	        monthsShort : 'gen._febr._mar._abr._mai._jun._jul._ag._set._oct._nov._des.'.split('_'),
@@ -9546,9 +9546,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return ca;
-	
+
 	}));
 
 /***/ },
@@ -9558,14 +9558,14 @@
 	//! moment.js locale configuration
 	//! locale : czech (cs)
 	//! author : petrbela : https://github.com/petrbela
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var months = 'leden_únor_březen_duben_květen_červen_červenec_srpen_září_říjen_listopad_prosinec'.split('_'),
 	        monthsShort = 'led_úno_bře_dub_kvě_čvn_čvc_srp_zář_říj_lis_pro'.split('_');
 	    function plural(n) {
@@ -9623,7 +9623,7 @@
 	            break;
 	        }
 	    }
-	
+
 	    var cs = moment.defineLocale('cs', {
 	        months : months,
 	        monthsShort : monthsShort,
@@ -9721,9 +9721,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return cs;
-	
+
 	}));
 
 /***/ },
@@ -9733,14 +9733,14 @@
 	//! moment.js locale configuration
 	//! locale : chuvash (cv)
 	//! author : Anatoly Mironov : https://github.com/mirontoli
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var cv = moment.defineLocale('cv', {
 	        months : 'кӑрлач_нарӑс_пуш_ака_май_ҫӗртме_утӑ_ҫурла_авӑн_юпа_чӳк_раштав'.split('_'),
 	        monthsShort : 'кӑр_нар_пуш_ака_май_ҫӗр_утӑ_ҫур_авн_юпа_чӳк_раш'.split('_'),
@@ -9788,9 +9788,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return cv;
-	
+
 	}));
 
 /***/ },
@@ -9800,14 +9800,14 @@
 	//! moment.js locale configuration
 	//! locale : Welsh (cy)
 	//! author : Robert Allen
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var cy = moment.defineLocale('cy', {
 	        months: 'Ionawr_Chwefror_Mawrth_Ebrill_Mai_Mehefin_Gorffennaf_Awst_Medi_Hydref_Tachwedd_Rhagfyr'.split('_'),
 	        monthsShort: 'Ion_Chwe_Maw_Ebr_Mai_Meh_Gor_Aws_Med_Hyd_Tach_Rhag'.split('_'),
@@ -9872,9 +9872,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return cy;
-	
+
 	}));
 
 /***/ },
@@ -9884,14 +9884,14 @@
 	//! moment.js locale configuration
 	//! locale : danish (da)
 	//! author : Ulrik Nielsen : https://github.com/mrbase
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var da = moment.defineLocale('da', {
 	        months : 'januar_februar_marts_april_maj_juni_juli_august_september_oktober_november_december'.split('_'),
 	        monthsShort : 'jan_feb_mar_apr_maj_jun_jul_aug_sep_okt_nov_dec'.split('_'),
@@ -9936,9 +9936,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return da;
-	
+
 	}));
 
 /***/ },
@@ -9950,14 +9950,14 @@
 	//! author : lluchs : https://github.com/lluchs
 	//! author: Menelion Elensúle: https://github.com/Oire
 	//! author : Mikolaj Dadela : https://github.com/mik01aj
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    function processRelativeTime(number, withoutSuffix, key, isFuture) {
 	        var format = {
 	            'm': ['eine Minute', 'einer Minute'],
@@ -9971,7 +9971,7 @@
 	        };
 	        return withoutSuffix ? format[key][0] : format[key][1];
 	    }
-	
+
 	    var de = moment.defineLocale('de', {
 	        months : 'Januar_Februar_März_April_Mai_Juni_Juli_August_September_Oktober_November_Dezember'.split('_'),
 	        monthsShort : 'Jan._Febr._Mrz._Apr._Mai_Jun._Jul._Aug._Sept._Okt._Nov._Dez.'.split('_'),
@@ -10018,9 +10018,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return de;
-	
+
 	}));
 
 /***/ },
@@ -10033,14 +10033,14 @@
 	//! author: Menelion Elensúle: https://github.com/Oire
 	//! author : Martin Groller : https://github.com/MadMG
 	//! author : Mikolaj Dadela : https://github.com/mik01aj
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    function processRelativeTime(number, withoutSuffix, key, isFuture) {
 	        var format = {
 	            'm': ['eine Minute', 'einer Minute'],
@@ -10054,7 +10054,7 @@
 	        };
 	        return withoutSuffix ? format[key][0] : format[key][1];
 	    }
-	
+
 	    var de_at = moment.defineLocale('de-at', {
 	        months : 'Jänner_Februar_März_April_Mai_Juni_Juli_August_September_Oktober_November_Dezember'.split('_'),
 	        monthsShort : 'Jän._Febr._Mrz._Apr._Mai_Jun._Jul._Aug._Sept._Okt._Nov._Dez.'.split('_'),
@@ -10101,9 +10101,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return de_at;
-	
+
 	}));
 
 /***/ },
@@ -10113,14 +10113,14 @@
 	//! moment.js locale configuration
 	//! locale : dhivehi (dv)
 	//! author : Jawish Hameed : https://github.com/jawish
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var months = [
 	        'ޖެނުއަރީ',
 	        'ފެބްރުއަރީ',
@@ -10143,7 +10143,7 @@
 	        'ހުކުރު',
 	        'ހޮނިހިރު'
 	    ];
-	
+
 	    var dv = moment.defineLocale('dv', {
 	        months : months,
 	        monthsShort : months,
@@ -10151,7 +10151,7 @@
 	        weekdaysShort : weekdays,
 	        weekdaysMin : 'އާދި_ހޯމަ_އަން_ބުދަ_ބުރާ_ހުކު_ހޮނި'.split('_'),
 	        longDateFormat : {
-	
+
 	            LT : 'HH:mm',
 	            LTS : 'HH:mm:ss',
 	            L : 'D/M/YYYY',
@@ -10204,9 +10204,9 @@
 	            doy : 12  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return dv;
-	
+
 	}));
 
 /***/ },
@@ -10216,18 +10216,18 @@
 	//! moment.js locale configuration
 	//! locale : modern greek (el)
 	//! author : Aggelos Karalias : https://github.com/mehiel
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
+
 	    function isFunction(input) {
 	        return input instanceof Function || Object.prototype.toString.call(input) === '[object Function]';
 	    }
-	
-	
+
+
 	    var el = moment.defineLocale('el', {
 	        monthsNominativeEl : 'Ιανουάριος_Φεβρουάριος_Μάρτιος_Απρίλιος_Μάιος_Ιούνιος_Ιούλιος_Αύγουστος_Σεπτέμβριος_Οκτώβριος_Νοέμβριος_Δεκέμβριος'.split('_'),
 	        monthsGenitiveEl : 'Ιανουαρίου_Φεβρουαρίου_Μαρτίου_Απριλίου_Μαΐου_Ιουνίου_Ιουλίου_Αυγούστου_Σεπτεμβρίου_Οκτωβρίου_Νοεμβρίου_Δεκεμβρίου'.split('_'),
@@ -10306,9 +10306,9 @@
 	            doy : 4  // The week that contains Jan 4st is the first week of the year.
 	        }
 	    });
-	
+
 	    return el;
-	
+
 	}));
 
 /***/ },
@@ -10317,14 +10317,14 @@
 
 	//! moment.js locale configuration
 	//! locale : australian english (en-au)
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var en_au = moment.defineLocale('en-au', {
 	        months : 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
 	        monthsShort : 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_'),
@@ -10376,9 +10376,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return en_au;
-	
+
 	}));
 
 /***/ },
@@ -10388,14 +10388,14 @@
 	//! moment.js locale configuration
 	//! locale : canadian english (en-ca)
 	//! author : Jonathan Abourbih : https://github.com/jonbca
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var en_ca = moment.defineLocale('en-ca', {
 	        months : 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
 	        monthsShort : 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_'),
@@ -10443,9 +10443,9 @@
 	            return number + output;
 	        }
 	    });
-	
+
 	    return en_ca;
-	
+
 	}));
 
 /***/ },
@@ -10455,14 +10455,14 @@
 	//! moment.js locale configuration
 	//! locale : great britain english (en-gb)
 	//! author : Chris Gedrim : https://github.com/chrisgedrim
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var en_gb = moment.defineLocale('en-gb', {
 	        months : 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
 	        monthsShort : 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_'),
@@ -10514,9 +10514,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return en_gb;
-	
+
 	}));
 
 /***/ },
@@ -10526,14 +10526,14 @@
 	//! moment.js locale configuration
 	//! locale : Irish english (en-ie)
 	//! author : Chris Cartlidge : https://github.com/chriscartlidge
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var en_ie = moment.defineLocale('en-ie', {
 	        months : 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
 	        monthsShort : 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_'),
@@ -10585,9 +10585,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return en_ie;
-	
+
 	}));
 
 /***/ },
@@ -10596,14 +10596,14 @@
 
 	//! moment.js locale configuration
 	//! locale : New Zealand english (en-nz)
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var en_nz = moment.defineLocale('en-nz', {
 	        months : 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
 	        monthsShort : 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_'),
@@ -10655,9 +10655,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return en_nz;
-	
+
 	}));
 
 /***/ },
@@ -10669,14 +10669,14 @@
 	//! author : Colin Dean : https://github.com/colindean
 	//! komento: Mi estas malcerta se mi korekte traktis akuzativojn en tiu traduko.
 	//!          Se ne, bonvolu korekti kaj avizi min por ke mi povas lerni!
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var eo = moment.defineLocale('eo', {
 	        months : 'januaro_februaro_marto_aprilo_majo_junio_julio_aŭgusto_septembro_oktobro_novembro_decembro'.split('_'),
 	        monthsShort : 'jan_feb_mar_apr_maj_jun_jul_aŭg_sep_okt_nov_dec'.split('_'),
@@ -10732,9 +10732,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return eo;
-	
+
 	}));
 
 /***/ },
@@ -10744,17 +10744,17 @@
 	//! moment.js locale configuration
 	//! locale : spanish (es)
 	//! author : Julio Napurí : https://github.com/julionc
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var monthsShortDot = 'ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.'.split('_'),
 	        monthsShort = 'ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic'.split('_');
-	
+
 	    var es = moment.defineLocale('es', {
 	        months : 'enero_febrero_marzo_abril_mayo_junio_julio_agosto_septiembre_octubre_noviembre_diciembre'.split('_'),
 	        monthsShort : function (m, format) {
@@ -10817,9 +10817,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return es;
-	
+
 	}));
 
 /***/ },
@@ -10830,14 +10830,14 @@
 	//! locale : estonian (et)
 	//! author : Henry Kehlmann : https://github.com/madhenry
 	//! improvements : Illimar Tambek : https://github.com/ragulka
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    function processRelativeTime(number, withoutSuffix, key, isFuture) {
 	        var format = {
 	            's' : ['mõne sekundi', 'mõni sekund', 'paar sekundit'],
@@ -10856,7 +10856,7 @@
 	        }
 	        return isFuture ? format[key][0] : format[key][1];
 	    }
-	
+
 	    var et = moment.defineLocale('et', {
 	        months        : 'jaanuar_veebruar_märts_aprill_mai_juuni_juuli_august_september_oktoober_november_detsember'.split('_'),
 	        monthsShort   : 'jaan_veebr_märts_apr_mai_juuni_juuli_aug_sept_okt_nov_dets'.split('_'),
@@ -10901,9 +10901,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return et;
-	
+
 	}));
 
 /***/ },
@@ -10913,14 +10913,14 @@
 	//! moment.js locale configuration
 	//! locale : euskara (eu)
 	//! author : Eneko Illarramendi : https://github.com/eillarra
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var eu = moment.defineLocale('eu', {
 	        months : 'urtarrila_otsaila_martxoa_apirila_maiatza_ekaina_uztaila_abuztua_iraila_urria_azaroa_abendua'.split('_'),
 	        monthsShort : 'urt._ots._mar._api._mai._eka._uzt._abu._ira._urr._aza._abe.'.split('_'),
@@ -10971,9 +10971,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return eu;
-	
+
 	}));
 
 /***/ },
@@ -10983,14 +10983,14 @@
 	//! moment.js locale configuration
 	//! locale : Persian (fa)
 	//! author : Ebrahim Byagowi : https://github.com/ebraminio
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var symbolMap = {
 	        '1': '۱',
 	        '2': '۲',
@@ -11014,7 +11014,7 @@
 	        '۹': '9',
 	        '۰': '0'
 	    };
-	
+
 	    var fa = moment.defineLocale('fa', {
 	        months : 'ژانویه_فوریه_مارس_آوریل_مه_ژوئن_ژوئیه_اوت_سپتامبر_اکتبر_نوامبر_دسامبر'.split('_'),
 	        monthsShort : 'ژانویه_فوریه_مارس_آوریل_مه_ژوئن_ژوئیه_اوت_سپتامبر_اکتبر_نوامبر_دسامبر'.split('_'),
@@ -11081,9 +11081,9 @@
 	            doy : 12 // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return fa;
-	
+
 	}));
 
 /***/ },
@@ -11093,14 +11093,14 @@
 	//! moment.js locale configuration
 	//! locale : finnish (fi)
 	//! author : Tarmo Aidantausta : https://github.com/bleadof
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var numbersPast = 'nolla yksi kaksi kolme neljä viisi kuusi seitsemän kahdeksan yhdeksän'.split(' '),
 	        numbersFuture = [
 	            'nolla', 'yhden', 'kahden', 'kolmen', 'neljän', 'viiden', 'kuuden',
@@ -11143,7 +11143,7 @@
 	    function verbalNumber(number, isFuture) {
 	        return number < 10 ? (isFuture ? numbersFuture[number] : numbersPast[number]) : number;
 	    }
-	
+
 	    var fi = moment.defineLocale('fi', {
 	        months : 'tammikuu_helmikuu_maaliskuu_huhtikuu_toukokuu_kesäkuu_heinäkuu_elokuu_syyskuu_lokakuu_marraskuu_joulukuu'.split('_'),
 	        monthsShort : 'tammi_helmi_maalis_huhti_touko_kesä_heinä_elo_syys_loka_marras_joulu'.split('_'),
@@ -11192,9 +11192,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return fi;
-	
+
 	}));
 
 /***/ },
@@ -11204,14 +11204,14 @@
 	//! moment.js locale configuration
 	//! locale : faroese (fo)
 	//! author : Ragnar Johannesen : https://github.com/ragnar123
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var fo = moment.defineLocale('fo', {
 	        months : 'januar_februar_mars_apríl_mai_juni_juli_august_september_oktober_november_desember'.split('_'),
 	        monthsShort : 'jan_feb_mar_apr_mai_jun_jul_aug_sep_okt_nov_des'.split('_'),
@@ -11256,9 +11256,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return fo;
-	
+
 	}));
 
 /***/ },
@@ -11268,14 +11268,14 @@
 	//! moment.js locale configuration
 	//! locale : french (fr)
 	//! author : John Fischer : https://github.com/jfroffice
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var fr = moment.defineLocale('fr', {
 	        months : 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split('_'),
 	        monthsShort : 'janv._févr._mars_avr._mai_juin_juil._août_sept._oct._nov._déc.'.split('_'),
@@ -11324,9 +11324,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return fr;
-	
+
 	}));
 
 /***/ },
@@ -11336,14 +11336,14 @@
 	//! moment.js locale configuration
 	//! locale : canadian french (fr-ca)
 	//! author : Jonathan Abourbih : https://github.com/jonbca
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var fr_ca = moment.defineLocale('fr-ca', {
 	        months : 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split('_'),
 	        monthsShort : 'janv._févr._mars_avr._mai_juin_juil._août_sept._oct._nov._déc.'.split('_'),
@@ -11388,9 +11388,9 @@
 	            return number + (number === 1 ? 'er' : 'e');
 	        }
 	    });
-	
+
 	    return fr_ca;
-	
+
 	}));
 
 /***/ },
@@ -11400,14 +11400,14 @@
 	//! moment.js locale configuration
 	//! locale : swiss french (fr)
 	//! author : Gaspard Bucher : https://github.com/gaspard
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var fr_ch = moment.defineLocale('fr-ch', {
 	        months : 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split('_'),
 	        monthsShort : 'janv._févr._mars_avr._mai_juin_juil._août_sept._oct._nov._déc.'.split('_'),
@@ -11456,9 +11456,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return fr_ch;
-	
+
 	}));
 
 /***/ },
@@ -11468,17 +11468,17 @@
 	//! moment.js locale configuration
 	//! locale : frisian (fy)
 	//! author : Robin van der Vliet : https://github.com/robin0van0der0v
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var monthsShortWithDots = 'jan._feb._mrt._apr._mai_jun._jul._aug._sep._okt._nov._des.'.split('_'),
 	        monthsShortWithoutDots = 'jan_feb_mrt_apr_mai_jun_jul_aug_sep_okt_nov_des'.split('_');
-	
+
 	    var fy = moment.defineLocale('fy', {
 	        months : 'jannewaris_febrewaris_maart_april_maaie_juny_july_augustus_septimber_oktober_novimber_desimber'.split('_'),
 	        monthsShort : function (m, format) {
@@ -11533,9 +11533,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return fy;
-	
+
 	}));
 
 /***/ },
@@ -11545,26 +11545,26 @@
 	//! moment.js locale configuration
 	//! locale : great britain scottish gealic (gd)
 	//! author : Jon Ashdown : https://github.com/jonashdown
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var months = [
 	        'Am Faoilleach', 'An Gearran', 'Am Màrt', 'An Giblean', 'An Cèitean', 'An t-Ògmhios', 'An t-Iuchar', 'An Lùnastal', 'An t-Sultain', 'An Dàmhair', 'An t-Samhain', 'An Dùbhlachd'
 	    ];
-	
+
 	    var monthsShort = ['Faoi', 'Gear', 'Màrt', 'Gibl', 'Cèit', 'Ògmh', 'Iuch', 'Lùn', 'Sult', 'Dàmh', 'Samh', 'Dùbh'];
-	
+
 	    var weekdays = ['Didòmhnaich', 'Diluain', 'Dimàirt', 'Diciadain', 'Diardaoin', 'Dihaoine', 'Disathairne'];
-	
+
 	    var weekdaysShort = ['Did', 'Dil', 'Dim', 'Dic', 'Dia', 'Dih', 'Dis'];
-	
+
 	    var weekdaysMin = ['Dò', 'Lu', 'Mà', 'Ci', 'Ar', 'Ha', 'Sa'];
-	
+
 	    var gd = moment.defineLocale('gd', {
 	        months : months,
 	        monthsShort : monthsShort,
@@ -11613,9 +11613,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return gd;
-	
+
 	}));
 
 /***/ },
@@ -11625,14 +11625,14 @@
 	//! moment.js locale configuration
 	//! locale : galician (gl)
 	//! author : Juan G. Hurtado : https://github.com/juanghurtado
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var gl = moment.defineLocale('gl', {
 	        months : 'Xaneiro_Febreiro_Marzo_Abril_Maio_Xuño_Xullo_Agosto_Setembro_Outubro_Novembro_Decembro'.split('_'),
 	        monthsShort : 'Xan._Feb._Mar._Abr._Mai._Xuñ._Xul._Ago._Set._Out._Nov._Dec.'.split('_'),
@@ -11694,9 +11694,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return gl;
-	
+
 	}));
 
 /***/ },
@@ -11708,14 +11708,14 @@
 	//! author : Tomer Cohen : https://github.com/tomer
 	//! author : Moshe Simantov : https://github.com/DevelopmentIL
 	//! author : Tal Ater : https://github.com/TalAter
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var he = moment.defineLocale('he', {
 	        months : 'ינואר_פברואר_מרץ_אפריל_מאי_יוני_יולי_אוגוסט_ספטמבר_אוקטובר_נובמבר_דצמבר'.split('_'),
 	        monthsShort : 'ינו׳_פבר׳_מרץ_אפר׳_מאי_יוני_יולי_אוג׳_ספט׳_אוק׳_נוב׳_דצמ׳'.split('_'),
@@ -11797,9 +11797,9 @@
 	            }
 	        }
 	    });
-	
+
 	    return he;
-	
+
 	}));
 
 /***/ },
@@ -11809,14 +11809,14 @@
 	//! moment.js locale configuration
 	//! locale : hindi (hi)
 	//! author : Mayank Singhal : https://github.com/mayanksinghal
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var symbolMap = {
 	        '1': '१',
 	        '2': '२',
@@ -11841,7 +11841,7 @@
 	        '९': '9',
 	        '०': '0'
 	    };
-	
+
 	    var hi = moment.defineLocale('hi', {
 	        months : 'जनवरी_फ़रवरी_मार्च_अप्रैल_मई_जून_जुलाई_अगस्त_सितम्बर_अक्टूबर_नवम्बर_दिसम्बर'.split('_'),
 	        monthsShort : 'जन._फ़र._मार्च_अप्रै._मई_जून_जुल._अग._सित._अक्टू._नव._दिस.'.split('_'),
@@ -11925,9 +11925,9 @@
 	            doy : 6  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return hi;
-	
+
 	}));
 
 /***/ },
@@ -11937,14 +11937,14 @@
 	//! moment.js locale configuration
 	//! locale : hrvatski (hr)
 	//! author : Bojan Marković : https://github.com/bmarkovic
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    function translate(number, withoutSuffix, key) {
 	        var result = number + ' ';
 	        switch (key) {
@@ -11997,7 +11997,7 @@
 	            return result;
 	        }
 	    }
-	
+
 	    var hr = moment.defineLocale('hr', {
 	        months : {
 	            format: 'siječnja_veljače_ožujka_travnja_svibnja_lipnja_srpnja_kolovoza_rujna_listopada_studenoga_prosinca'.split('_'),
@@ -12074,9 +12074,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return hr;
-	
+
 	}));
 
 /***/ },
@@ -12086,14 +12086,14 @@
 	//! moment.js locale configuration
 	//! locale : hungarian (hu)
 	//! author : Adam Brunner : https://github.com/adambrunner
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var weekEndings = 'vasárnap hétfőn kedden szerdán csütörtökön pénteken szombaton'.split(' ');
 	    function translate(number, withoutSuffix, key, isFuture) {
 	        var num = number,
@@ -12127,7 +12127,7 @@
 	    function week(isFuture) {
 	        return (isFuture ? '' : '[múlt] ') + '[' + weekEndings[this.day()] + '] LT[-kor]';
 	    }
-	
+
 	    var hu = moment.defineLocale('hu', {
 	        months : 'január_február_március_április_május_június_július_augusztus_szeptember_október_november_december'.split('_'),
 	        monthsShort : 'jan_feb_márc_ápr_máj_jún_júl_aug_szept_okt_nov_dec'.split('_'),
@@ -12187,9 +12187,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return hu;
-	
+
 	}));
 
 /***/ },
@@ -12199,14 +12199,14 @@
 	//! moment.js locale configuration
 	//! locale : Armenian (hy-am)
 	//! author : Armendarabyan : https://github.com/armendarabyan
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var hy_am = moment.defineLocale('hy-am', {
 	        months : {
 	            format: 'հունվարի_փետրվարի_մարտի_ապրիլի_մայիսի_հունիսի_հուլիսի_օգոստոսի_սեպտեմբերի_հոկտեմբերի_նոյեմբերի_դեկտեմբերի'.split('_'),
@@ -12286,9 +12286,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return hy_am;
-	
+
 	}));
 
 /***/ },
@@ -12299,14 +12299,14 @@
 	//! locale : Bahasa Indonesia (id)
 	//! author : Mohammad Satrio Utomo : https://github.com/tyok
 	//! reference: http://id.wikisource.org/wiki/Pedoman_Umum_Ejaan_Bahasa_Indonesia_yang_Disempurnakan
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var id = moment.defineLocale('id', {
 	        months : 'Januari_Februari_Maret_April_Mei_Juni_Juli_Agustus_September_Oktober_November_Desember'.split('_'),
 	        monthsShort : 'Jan_Feb_Mar_Apr_Mei_Jun_Jul_Ags_Sep_Okt_Nov_Des'.split('_'),
@@ -12373,9 +12373,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return id;
-	
+
 	}));
 
 /***/ },
@@ -12385,14 +12385,14 @@
 	//! moment.js locale configuration
 	//! locale : icelandic (is)
 	//! author : Hinrik Örn Sigurðsson : https://github.com/hinrik
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    function plural(n) {
 	        if (n % 100 === 11) {
 	            return true;
@@ -12459,7 +12459,7 @@
 	            return result + (withoutSuffix || isFuture ? 'ár' : 'ári');
 	        }
 	    }
-	
+
 	    var is = moment.defineLocale('is', {
 	        months : 'janúar_febrúar_mars_apríl_maí_júní_júlí_ágúst_september_október_nóvember_desember'.split('_'),
 	        monthsShort : 'jan_feb_mar_apr_maí_jún_júl_ágú_sep_okt_nóv_des'.split('_'),
@@ -12504,9 +12504,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return is;
-	
+
 	}));
 
 /***/ },
@@ -12517,14 +12517,14 @@
 	//! locale : italian (it)
 	//! author : Lorenzo : https://github.com/aliem
 	//! author: Mattia Larentis: https://github.com/nostalgiaz
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var it = moment.defineLocale('it', {
 	        months : 'gennaio_febbraio_marzo_aprile_maggio_giugno_luglio_agosto_settembre_ottobre_novembre_dicembre'.split('_'),
 	        monthsShort : 'gen_feb_mar_apr_mag_giu_lug_ago_set_ott_nov_dic'.split('_'),
@@ -12578,9 +12578,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return it;
-	
+
 	}));
 
 /***/ },
@@ -12590,14 +12590,14 @@
 	//! moment.js locale configuration
 	//! locale : japanese (ja)
 	//! author : LI Long : https://github.com/baryon
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var ja = moment.defineLocale('ja', {
 	        months : '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_'),
 	        monthsShort : '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_'),
@@ -12658,9 +12658,9 @@
 	            yy : '%d年'
 	        }
 	    });
-	
+
 	    return ja;
-	
+
 	}));
 
 /***/ },
@@ -12671,14 +12671,14 @@
 	//! locale : Boso Jowo (jv)
 	//! author : Rony Lantip : https://github.com/lantip
 	//! reference: http://jv.wikipedia.org/wiki/Basa_Jawa
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var jv = moment.defineLocale('jv', {
 	        months : 'Januari_Februari_Maret_April_Mei_Juni_Juli_Agustus_September_Oktober_Nopember_Desember'.split('_'),
 	        monthsShort : 'Jan_Feb_Mar_Apr_Mei_Jun_Jul_Ags_Sep_Okt_Nop_Des'.split('_'),
@@ -12745,9 +12745,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return jv;
-	
+
 	}));
 
 /***/ },
@@ -12757,14 +12757,14 @@
 	//! moment.js locale configuration
 	//! locale : Georgian (ka)
 	//! author : Irakli Janiashvili : https://github.com/irakli-janiashvili
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var ka = moment.defineLocale('ka', {
 	        months : {
 	            standalone: 'იანვარი_თებერვალი_მარტი_აპრილი_მაისი_ივნისი_ივლისი_აგვისტო_სექტემბერი_ოქტომბერი_ნოემბერი_დეკემბერი'.split('_'),
@@ -12838,9 +12838,9 @@
 	            doy : 7
 	        }
 	    });
-	
+
 	    return ka;
-	
+
 	}));
 
 /***/ },
@@ -12850,14 +12850,14 @@
 	//! moment.js locale configuration
 	//! locale : kazakh (kk)
 	//! authors : Nurlan Rakhimzhanov : https://github.com/nurlan
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var suffixes = {
 	        0: '-ші',
 	        1: '-ші',
@@ -12880,7 +12880,7 @@
 	        90: '-шы',
 	        100: '-ші'
 	    };
-	
+
 	    var kk = moment.defineLocale('kk', {
 	        months : 'қаңтар_ақпан_наурыз_сәуір_мамыр_маусым_шілде_тамыз_қыркүйек_қазан_қараша_желтоқсан'.split('_'),
 	        monthsShort : 'қаң_ақп_нау_сәу_мам_мау_шіл_там_қыр_қаз_қар_жел'.split('_'),
@@ -12929,9 +12929,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return kk;
-	
+
 	}));
 
 /***/ },
@@ -12941,14 +12941,14 @@
 	//! moment.js locale configuration
 	//! locale : khmer (km)
 	//! author : Kruy Vanna : https://github.com/kruyvanna
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var km = moment.defineLocale('km', {
 	        months: 'មករា_កុម្ភៈ_មីនា_មេសា_ឧសភា_មិថុនា_កក្កដា_សីហា_កញ្ញា_តុលា_វិច្ឆិកា_ធ្នូ'.split('_'),
 	        monthsShort: 'មករា_កុម្ភៈ_មីនា_មេសា_ឧសភា_មិថុនា_កក្កដា_សីហា_កញ្ញា_តុលា_វិច្ឆិកា_ធ្នូ'.split('_'),
@@ -12991,9 +12991,9 @@
 	            doy: 4 // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return km;
-	
+
 	}));
 
 /***/ },
@@ -13007,14 +13007,14 @@
 	//!
 	//! - Kyungwook, Park : https://github.com/kyungw00k
 	//! - Jeeeyul Lee <jeeeyul@gmail.com>
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var ko = moment.defineLocale('ko', {
 	        months : '1월_2월_3월_4월_5월_6월_7월_8월_9월_10월_11월_12월'.split('_'),
 	        monthsShort : '1월_2월_3월_4월_5월_6월_7월_8월_9월_10월_11월_12월'.split('_'),
@@ -13063,9 +13063,9 @@
 	            return hour < 12 ? '오전' : '오후';
 	        }
 	    });
-	
+
 	    return ko;
-	
+
 	}));
 
 /***/ },
@@ -13075,15 +13075,15 @@
 	//! moment.js locale configuration
 	//! locale : kyrgyz (ky)
 	//! author : Chyngyz Arystan uulu : https://github.com/chyngyz
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
-	
+
+
+
 	    var suffixes = {
 	        0: '-чү',
 	        1: '-чи',
@@ -13106,7 +13106,7 @@
 	        90: '-чу',
 	        100: '-чү'
 	    };
-	
+
 	    var ky = moment.defineLocale('ky', {
 	        months : 'январь_февраль_март_апрель_май_июнь_июль_август_сентябрь_октябрь_ноябрь_декабрь'.split('_'),
 	        monthsShort : 'янв_фев_март_апр_май_июнь_июль_авг_сен_окт_ноя_дек'.split('_'),
@@ -13155,9 +13155,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return ky;
-	
+
 	}));
 
 /***/ },
@@ -13167,14 +13167,14 @@
 	//! moment.js locale configuration
 	//! locale : Luxembourgish (lb)
 	//! author : mweimerskirch : https://github.com/mweimerskirch, David Raison : https://github.com/kwisatz
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    function processRelativeTime(number, withoutSuffix, key, isFuture) {
 	        var format = {
 	            'm': ['eng Minutt', 'enger Minutt'],
@@ -13239,7 +13239,7 @@
 	            return eifelerRegelAppliesToNumber(number);
 	        }
 	    }
-	
+
 	    var lb = moment.defineLocale('lb', {
 	        months: 'Januar_Februar_Mäerz_Abrëll_Mee_Juni_Juli_August_September_Oktober_November_Dezember'.split('_'),
 	        monthsShort: 'Jan._Febr._Mrz._Abr._Mee_Jun._Jul._Aug._Sept._Okt._Nov._Dez.'.split('_'),
@@ -13295,9 +13295,9 @@
 	            doy: 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return lb;
-	
+
 	}));
 
 /***/ },
@@ -13307,14 +13307,14 @@
 	//! moment.js locale configuration
 	//! locale : lao (lo)
 	//! author : Ryan Hart : https://github.com/ryanhart2
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var lo = moment.defineLocale('lo', {
 	        months : 'ມັງກອນ_ກຸມພາ_ມີນາ_ເມສາ_ພຶດສະພາ_ມິຖຸນາ_ກໍລະກົດ_ສິງຫາ_ກັນຍາ_ຕຸລາ_ພະຈິກ_ທັນວາ'.split('_'),
 	        monthsShort : 'ມັງກອນ_ກຸມພາ_ມີນາ_ເມສາ_ພຶດສະພາ_ມິຖຸນາ_ກໍລະກົດ_ສິງຫາ_ກັນຍາ_ຕຸລາ_ພະຈິກ_ທັນວາ'.split('_'),
@@ -13369,9 +13369,9 @@
 	            return 'ທີ່' + number;
 	        }
 	    });
-	
+
 	    return lo;
-	
+
 	}));
 
 /***/ },
@@ -13381,14 +13381,14 @@
 	//! moment.js locale configuration
 	//! locale : Lithuanian (lt)
 	//! author : Mindaugas Mozūras : https://github.com/mmozuras
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var units = {
 	        'm' : 'minutė_minutės_minutę',
 	        'mm': 'minutės_minučių_minutes',
@@ -13489,9 +13489,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return lt;
-	
+
 	}));
 
 /***/ },
@@ -13502,14 +13502,14 @@
 	//! locale : latvian (lv)
 	//! author : Kristaps Karlsons : https://github.com/skakri
 	//! author : Jānis Elmeris : https://github.com/JanisE
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var units = {
 	        'm': 'minūtes_minūtēm_minūte_minūtes'.split('_'),
 	        'mm': 'minūtes_minūtēm_minūte_minūtes'.split('_'),
@@ -13544,7 +13544,7 @@
 	    function relativeSeconds(number, withoutSuffix) {
 	        return withoutSuffix ? 'dažas sekundes' : 'dažām sekundēm';
 	    }
-	
+
 	    var lv = moment.defineLocale('lv', {
 	        months : 'janvāris_februāris_marts_aprīlis_maijs_jūnijs_jūlijs_augusts_septembris_oktobris_novembris_decembris'.split('_'),
 	        monthsShort : 'jan_feb_mar_apr_mai_jūn_jūl_aug_sep_okt_nov_dec'.split('_'),
@@ -13590,9 +13590,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return lv;
-	
+
 	}));
 
 /***/ },
@@ -13602,14 +13602,14 @@
 	//! moment.js locale configuration
 	//! locale : Montenegrin (me)
 	//! author : Miodrag Nikač <miodrag@restartit.me> : https://github.com/miodragnikac
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var translator = {
 	        words: { //Different grammatical cases
 	            m: ['jedan minut', 'jednog minuta'],
@@ -13632,7 +13632,7 @@
 	            }
 	        }
 	    };
-	
+
 	    var me = moment.defineLocale('me', {
 	        months: 'januar_februar_mart_april_maj_jun_jul_avgust_septembar_oktobar_novembar_decembar'.split('_'),
 	        monthsShort: 'jan._feb._mar._apr._maj_jun_jul_avg._sep._okt._nov._dec.'.split('_'),
@@ -13652,7 +13652,7 @@
 	        calendar: {
 	            sameDay: '[danas u] LT',
 	            nextDay: '[sjutra u] LT',
-	
+
 	            nextWeek: function () {
 	                switch (this.day()) {
 	                case 0:
@@ -13705,9 +13705,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return me;
-	
+
 	}));
 
 /***/ },
@@ -13717,14 +13717,14 @@
 	//! moment.js locale configuration
 	//! locale : macedonian (mk)
 	//! author : Borislav Mickov : https://github.com/B0k0
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var mk = moment.defineLocale('mk', {
 	        months : 'јануари_февруари_март_април_мај_јуни_јули_август_септември_октомври_ноември_декември'.split('_'),
 	        monthsShort : 'јан_фев_мар_апр_мај_јун_јул_авг_сеп_окт_ное_дек'.split('_'),
@@ -13799,9 +13799,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return mk;
-	
+
 	}));
 
 /***/ },
@@ -13811,14 +13811,14 @@
 	//! moment.js locale configuration
 	//! locale : malayalam (ml)
 	//! author : Floyd Pink : https://github.com/floydpink
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var ml = moment.defineLocale('ml', {
 	        months : 'ജനുവരി_ഫെബ്രുവരി_മാർച്ച്_ഏപ്രിൽ_മേയ്_ജൂൺ_ജൂലൈ_ഓഗസ്റ്റ്_സെപ്റ്റംബർ_ഒക്ടോബർ_നവംബർ_ഡിസംബർ'.split('_'),
 	        monthsShort : 'ജനു._ഫെബ്രു._മാർ._ഏപ്രി._മേയ്_ജൂൺ_ജൂലൈ._ഓഗ._സെപ്റ്റ._ഒക്ടോ._നവം._ഡിസം.'.split('_'),
@@ -13884,9 +13884,9 @@
 	            }
 	        }
 	    });
-	
+
 	    return ml;
-	
+
 	}));
 
 /***/ },
@@ -13897,14 +13897,14 @@
 	//! locale : Marathi (mr)
 	//! author : Harshad Kale : https://github.com/kalehv
 	//! author : Vivek Athalye : https://github.com/vnathalye
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var symbolMap = {
 	        '1': '१',
 	        '2': '२',
@@ -13929,7 +13929,7 @@
 	        '९': '9',
 	        '०': '0'
 	    };
-	
+
 	    function relativeTimeMr(number, withoutSuffix, string, isFuture)
 	    {
 	        var output = '';
@@ -13965,7 +13965,7 @@
 	        }
 	        return output.replace(/%d/i, number);
 	    }
-	
+
 	    var mr = moment.defineLocale('mr', {
 	        months : 'जानेवारी_फेब्रुवारी_मार्च_एप्रिल_मे_जून_जुलै_ऑगस्ट_सप्टेंबर_ऑक्टोबर_नोव्हेंबर_डिसेंबर'.split('_'),
 	        monthsShort: 'जाने._फेब्रु._मार्च._एप्रि._मे._जून._जुलै._ऑग._सप्टें._ऑक्टो._नोव्हें._डिसें.'.split('_'),
@@ -14047,9 +14047,9 @@
 	            doy : 6  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return mr;
-	
+
 	}));
 
 /***/ },
@@ -14059,14 +14059,14 @@
 	//! moment.js locale configuration
 	//! locale : Bahasa Malaysia (ms-MY)
 	//! author : Weldan Jamili : https://github.com/weldan
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var ms = moment.defineLocale('ms', {
 	        months : 'Januari_Februari_Mac_April_Mei_Jun_Julai_Ogos_September_Oktober_November_Disember'.split('_'),
 	        monthsShort : 'Jan_Feb_Mac_Apr_Mei_Jun_Jul_Ogs_Sep_Okt_Nov_Dis'.split('_'),
@@ -14133,9 +14133,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return ms;
-	
+
 	}));
 
 /***/ },
@@ -14145,14 +14145,14 @@
 	//! moment.js locale configuration
 	//! locale : Bahasa Malaysia (ms-MY)
 	//! author : Weldan Jamili : https://github.com/weldan
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var ms_my = moment.defineLocale('ms-my', {
 	        months : 'Januari_Februari_Mac_April_Mei_Jun_Julai_Ogos_September_Oktober_November_Disember'.split('_'),
 	        monthsShort : 'Jan_Feb_Mac_Apr_Mei_Jun_Jul_Ogs_Sep_Okt_Nov_Dis'.split('_'),
@@ -14219,9 +14219,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return ms_my;
-	
+
 	}));
 
 /***/ },
@@ -14231,14 +14231,14 @@
 	//! moment.js locale configuration
 	//! locale : Burmese (my)
 	//! author : Squar team, mysquar.com
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var symbolMap = {
 	        '1': '၁',
 	        '2': '၂',
@@ -14262,14 +14262,14 @@
 	        '၉': '9',
 	        '၀': '0'
 	    };
-	
+
 	    var my = moment.defineLocale('my', {
 	        months: 'ဇန်နဝါရီ_ဖေဖော်ဝါရီ_မတ်_ဧပြီ_မေ_ဇွန်_ဇူလိုင်_သြဂုတ်_စက်တင်ဘာ_အောက်တိုဘာ_နိုဝင်ဘာ_ဒီဇင်ဘာ'.split('_'),
 	        monthsShort: 'ဇန်_ဖေ_မတ်_ပြီ_မေ_ဇွန်_လိုင်_သြ_စက်_အောက်_နို_ဒီ'.split('_'),
 	        weekdays: 'တနင်္ဂနွေ_တနင်္လာ_အင်္ဂါ_ဗုဒ္ဓဟူး_ကြာသပတေး_သောကြာ_စနေ'.split('_'),
 	        weekdaysShort: 'နွေ_လာ_ဂါ_ဟူး_ကြာ_သော_နေ'.split('_'),
 	        weekdaysMin: 'နွေ_လာ_ဂါ_ဟူး_ကြာ_သော_နေ'.split('_'),
-	
+
 	        longDateFormat: {
 	            LT: 'HH:mm',
 	            LTS: 'HH:mm:ss',
@@ -14316,9 +14316,9 @@
 	            doy: 4 // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return my;
-	
+
 	}));
 
 /***/ },
@@ -14329,14 +14329,14 @@
 	//! locale : norwegian bokmål (nb)
 	//! authors : Espen Hovlandsdal : https://github.com/rexxars
 	//!           Sigurd Gartmann : https://github.com/sigurdga
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var nb = moment.defineLocale('nb', {
 	        months : 'januar_februar_mars_april_mai_juni_juli_august_september_oktober_november_desember'.split('_'),
 	        monthsShort : 'jan._feb._mars_april_mai_juni_juli_aug._sep._okt._nov._des.'.split('_'),
@@ -14383,9 +14383,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return nb;
-	
+
 	}));
 
 /***/ },
@@ -14395,14 +14395,14 @@
 	//! moment.js locale configuration
 	//! locale : nepali/nepalese
 	//! author : suvash : https://github.com/suvash
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var symbolMap = {
 	        '1': '१',
 	        '2': '२',
@@ -14427,7 +14427,7 @@
 	        '९': '9',
 	        '०': '0'
 	    };
-	
+
 	    var ne = moment.defineLocale('ne', {
 	        months : 'जनवरी_फेब्रुवरी_मार्च_अप्रिल_मई_जुन_जुलाई_अगष्ट_सेप्टेम्बर_अक्टोबर_नोभेम्बर_डिसेम्बर'.split('_'),
 	        monthsShort : 'जन._फेब्रु._मार्च_अप्रि._मई_जुन_जुलाई._अग._सेप्ट._अक्टो._नोभे._डिसे.'.split('_'),
@@ -14510,9 +14510,9 @@
 	            doy : 6  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return ne;
-	
+
 	}));
 
 /***/ },
@@ -14522,17 +14522,17 @@
 	//! moment.js locale configuration
 	//! locale : dutch (nl)
 	//! author : Joris Röling : https://github.com/jjupiter
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var monthsShortWithDots = 'jan._feb._mrt._apr._mei_jun._jul._aug._sep._okt._nov._dec.'.split('_'),
 	        monthsShortWithoutDots = 'jan_feb_mrt_apr_mei_jun_jul_aug_sep_okt_nov_dec'.split('_');
-	
+
 	    var nl = moment.defineLocale('nl', {
 	        months : 'januari_februari_maart_april_mei_juni_juli_augustus_september_oktober_november_december'.split('_'),
 	        monthsShort : function (m, format) {
@@ -14587,9 +14587,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return nl;
-	
+
 	}));
 
 /***/ },
@@ -14599,14 +14599,14 @@
 	//! moment.js locale configuration
 	//! locale : norwegian nynorsk (nn)
 	//! author : https://github.com/mechuwind
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var nn = moment.defineLocale('nn', {
 	        months : 'januar_februar_mars_april_mai_juni_juli_august_september_oktober_november_desember'.split('_'),
 	        monthsShort : 'jan_feb_mar_apr_mai_jun_jul_aug_sep_okt_nov_des'.split('_'),
@@ -14651,9 +14651,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return nn;
-	
+
 	}));
 
 /***/ },
@@ -14663,14 +14663,14 @@
 	//! moment.js locale configuration
 	//! locale : punjabi india (pa-in)
 	//! author : Harpreet Singh : https://github.com/harpreetkhalsagtbit
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var symbolMap = {
 	        '1': '੧',
 	        '2': '੨',
@@ -14695,7 +14695,7 @@
 	        '੯': '9',
 	        '੦': '0'
 	    };
-	
+
 	    var pa_in = moment.defineLocale('pa-in', {
 	        // There are months name as per Nanakshahi Calender but they are not used as rigidly in modern Punjabi.
 	        months : 'ਜਨਵਰੀ_ਫ਼ਰਵਰੀ_ਮਾਰਚ_ਅਪ੍ਰੈਲ_ਮਈ_ਜੂਨ_ਜੁਲਾਈ_ਅਗਸਤ_ਸਤੰਬਰ_ਅਕਤੂਬਰ_ਨਵੰਬਰ_ਦਸੰਬਰ'.split('_'),
@@ -14779,9 +14779,9 @@
 	            doy : 6  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return pa_in;
-	
+
 	}));
 
 /***/ },
@@ -14791,14 +14791,14 @@
 	//! moment.js locale configuration
 	//! locale : polish (pl)
 	//! author : Rafal Hirsz : https://github.com/evoL
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var monthsNominative = 'styczeń_luty_marzec_kwiecień_maj_czerwiec_lipiec_sierpień_wrzesień_październik_listopad_grudzień'.split('_'),
 	        monthsSubjective = 'stycznia_lutego_marca_kwietnia_maja_czerwca_lipca_sierpnia_września_października_listopada_grudnia'.split('_');
 	    function plural(n) {
@@ -14821,7 +14821,7 @@
 	            return result + (plural(number) ? 'lata' : 'lat');
 	        }
 	    }
-	
+
 	    var pl = moment.defineLocale('pl', {
 	        months : function (momentToFormat, format) {
 	            if (format === '') {
@@ -14888,9 +14888,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return pl;
-	
+
 	}));
 
 /***/ },
@@ -14900,14 +14900,14 @@
 	//! moment.js locale configuration
 	//! locale : portuguese (pt)
 	//! author : Jefferson : https://github.com/jalex79
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var pt = moment.defineLocale('pt', {
 	        months : 'Janeiro_Fevereiro_Março_Abril_Maio_Junho_Julho_Agosto_Setembro_Outubro_Novembro_Dezembro'.split('_'),
 	        monthsShort : 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_'),
@@ -14957,9 +14957,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return pt;
-	
+
 	}));
 
 /***/ },
@@ -14969,14 +14969,14 @@
 	//! moment.js locale configuration
 	//! locale : brazilian portuguese (pt-br)
 	//! author : Caio Ribeiro Pereira : https://github.com/caio-ribeiro-pereira
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var pt_br = moment.defineLocale('pt-br', {
 	        months : 'Janeiro_Fevereiro_Março_Abril_Maio_Junho_Julho_Agosto_Setembro_Outubro_Novembro_Dezembro'.split('_'),
 	        monthsShort : 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_'),
@@ -15022,9 +15022,9 @@
 	        ordinalParse: /\d{1,2}º/,
 	        ordinal : '%dº'
 	    });
-	
+
 	    return pt_br;
-	
+
 	}));
 
 /***/ },
@@ -15035,14 +15035,14 @@
 	//! locale : romanian (ro)
 	//! author : Vlad Gurdiga : https://github.com/gurdiga
 	//! author : Valentin Agachi : https://github.com/avaly
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    function relativeTimeWithPlural(number, withoutSuffix, key) {
 	        var format = {
 	                'mm': 'minute',
@@ -15057,7 +15057,7 @@
 	        }
 	        return number + separator + format[key];
 	    }
-	
+
 	    var ro = moment.defineLocale('ro', {
 	        months : 'ianuarie_februarie_martie_aprilie_mai_iunie_iulie_august_septembrie_octombrie_noiembrie_decembrie'.split('_'),
 	        monthsShort : 'ian._febr._mart._apr._mai_iun._iul._aug._sept._oct._nov._dec.'.split('_'),
@@ -15101,9 +15101,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return ro;
-	
+
 	}));
 
 /***/ },
@@ -15115,14 +15115,14 @@
 	//! author : Viktorminator : https://github.com/Viktorminator
 	//! Author : Menelion Elensúle : https://github.com/Oire
 	//! author : Коренберг Марк : https://github.com/socketpair
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    function plural(word, num) {
 	        var forms = word.split('_');
 	        return num % 10 === 1 && num % 100 !== 11 ? forms[0] : (num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2]);
@@ -15143,7 +15143,7 @@
 	        }
 	    }
 	    var monthsParse = [/^янв/i, /^фев/i, /^мар/i, /^апр/i, /^ма[йя]/i, /^июн/i, /^июл/i, /^авг/i, /^сен/i, /^окт/i, /^ноя/i, /^дек/i];
-	
+
 	    // http://new.gramota.ru/spravka/rules/139-prop : § 103
 	    // Сокращения месяцев: http://new.gramota.ru/spravka/buro/search-answer?s=242637
 	    // CLDR data:          http://www.unicode.org/cldr/charts/28/summary/ru.html#1753
@@ -15280,9 +15280,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return ru;
-	
+
 	}));
 
 /***/ },
@@ -15292,15 +15292,15 @@
 	//! moment.js locale configuration
 	//! locale : Northern Sami (se)
 	//! authors : Bård Rolstad Henriksen : https://github.com/karamell
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
-	
+
+
+
 	    var se = moment.defineLocale('se', {
 	        months : 'ođđajagemánnu_guovvamánnu_njukčamánnu_cuoŋománnu_miessemánnu_geassemánnu_suoidnemánnu_borgemánnu_čakčamánnu_golggotmánnu_skábmamánnu_juovlamánnu'.split('_'),
 	        monthsShort : 'ođđj_guov_njuk_cuo_mies_geas_suoi_borg_čakč_golg_skáb_juov'.split('_'),
@@ -15345,9 +15345,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return se;
-	
+
 	}));
 
 /***/ },
@@ -15357,14 +15357,14 @@
 	//! moment.js locale configuration
 	//! locale : Sinhalese (si)
 	//! author : Sampath Sitinamaluwa : https://github.com/sampathsris
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    /*jshint -W100*/
 	    var si = moment.defineLocale('si', {
 	        months : 'ජනවාරි_පෙබරවාරි_මාර්තු_අප්‍රේල්_මැයි_ජූනි_ජූලි_අගෝස්තු_සැප්තැම්බර්_ඔක්තෝබර්_නොවැම්බර්_දෙසැම්බර්'.split('_'),
@@ -15420,9 +15420,9 @@
 	            }
 	        }
 	    });
-	
+
 	    return si;
-	
+
 	}));
 
 /***/ },
@@ -15433,14 +15433,14 @@
 	//! locale : slovak (sk)
 	//! author : Martin Minka : https://github.com/k2s
 	//! based on work of petrbela : https://github.com/petrbela
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var months = 'január_február_marec_apríl_máj_jún_júl_august_september_október_november_december'.split('_'),
 	        monthsShort = 'jan_feb_mar_apr_máj_jún_júl_aug_sep_okt_nov_dec'.split('_');
 	    function plural(n) {
@@ -15498,7 +15498,7 @@
 	            break;
 	        }
 	    }
-	
+
 	    var sk = moment.defineLocale('sk', {
 	        months : months,
 	        monthsShort : monthsShort,
@@ -15574,9 +15574,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return sk;
-	
+
 	}));
 
 /***/ },
@@ -15586,14 +15586,14 @@
 	//! moment.js locale configuration
 	//! locale : slovenian (sl)
 	//! author : Robert Sedovšek : https://github.com/sedovsek
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    function processRelativeTime(number, withoutSuffix, key, isFuture) {
 	        var result = number + ' ';
 	        switch (key) {
@@ -15664,7 +15664,7 @@
 	            return result;
 	        }
 	    }
-	
+
 	    var sl = moment.defineLocale('sl', {
 	        months : 'januar_februar_marec_april_maj_junij_julij_avgust_september_oktober_november_december'.split('_'),
 	        monthsShort : 'jan._feb._mar._apr._maj._jun._jul._avg._sep._okt._nov._dec.'.split('_'),
@@ -15684,7 +15684,7 @@
 	        calendar : {
 	            sameDay  : '[danes ob] LT',
 	            nextDay  : '[jutri ob] LT',
-	
+
 	            nextWeek : function () {
 	                switch (this.day()) {
 	                case 0:
@@ -15740,9 +15740,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return sl;
-	
+
 	}));
 
 /***/ },
@@ -15754,14 +15754,14 @@
 	//! author : Flakërim Ismani : https://github.com/flakerimi
 	//! author: Menelion Elensúle: https://github.com/Oire (tests)
 	//! author : Oerd Cukalla : https://github.com/oerd (fixes)
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var sq = moment.defineLocale('sq', {
 	        months : 'Janar_Shkurt_Mars_Prill_Maj_Qershor_Korrik_Gusht_Shtator_Tetor_Nëntor_Dhjetor'.split('_'),
 	        monthsShort : 'Jan_Shk_Mar_Pri_Maj_Qer_Kor_Gus_Sht_Tet_Nën_Dhj'.split('_'),
@@ -15814,9 +15814,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return sq;
-	
+
 	}));
 
 /***/ },
@@ -15826,14 +15826,14 @@
 	//! moment.js locale configuration
 	//! locale : Serbian-latin (sr)
 	//! author : Milan Janačković<milanjanackovic@gmail.com> : https://github.com/milan-j
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var translator = {
 	        words: { //Different grammatical cases
 	            m: ['jedan minut', 'jedne minute'],
@@ -15856,7 +15856,7 @@
 	            }
 	        }
 	    };
-	
+
 	    var sr = moment.defineLocale('sr', {
 	        months: 'januar_februar_mart_april_maj_jun_jul_avgust_septembar_oktobar_novembar_decembar'.split('_'),
 	        monthsShort: 'jan._feb._mar._apr._maj_jun_jul_avg._sep._okt._nov._dec.'.split('_'),
@@ -15928,9 +15928,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return sr;
-	
+
 	}));
 
 /***/ },
@@ -15940,14 +15940,14 @@
 	//! moment.js locale configuration
 	//! locale : Serbian-cyrillic (sr-cyrl)
 	//! author : Milan Janačković<milanjanackovic@gmail.com> : https://github.com/milan-j
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var translator = {
 	        words: { //Different grammatical cases
 	            m: ['један минут', 'једне минуте'],
@@ -15970,7 +15970,7 @@
 	            }
 	        }
 	    };
-	
+
 	    var sr_cyrl = moment.defineLocale('sr-cyrl', {
 	        months: 'јануар_фебруар_март_април_мај_јун_јул_август_септембар_октобар_новембар_децембар'.split('_'),
 	        monthsShort: 'јан._феб._мар._апр._мај_јун_јул_авг._сеп._окт._нов._дец.'.split('_'),
@@ -16042,9 +16042,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return sr_cyrl;
-	
+
 	}));
 
 /***/ },
@@ -16054,15 +16054,15 @@
 	//! moment.js locale configuration
 	//! locale : siSwati (ss)
 	//! author : Nicolai Davies<mail@nicolai.io> : https://github.com/nicolaidavies
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
-	
+
+
+
 	    var ss = moment.defineLocale('ss', {
 	        months : "Bhimbidvwane_Indlovana_Indlov'lenkhulu_Mabasa_Inkhwekhweti_Inhlaba_Kholwane_Ingci_Inyoni_Imphala_Lweti_Ingongoni".split('_'),
 	        monthsShort : 'Bhi_Ina_Inu_Mab_Ink_Inh_Kho_Igc_Iny_Imp_Lwe_Igo'.split('_'),
@@ -16135,9 +16135,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return ss;
-	
+
 	}));
 
 /***/ },
@@ -16147,14 +16147,14 @@
 	//! moment.js locale configuration
 	//! locale : swedish (sv)
 	//! author : Jens Alm : https://github.com/ulmus
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var sv = moment.defineLocale('sv', {
 	        months : 'januari_februari_mars_april_maj_juni_juli_augusti_september_oktober_november_december'.split('_'),
 	        monthsShort : 'jan_feb_mar_apr_maj_jun_jul_aug_sep_okt_nov_dec'.split('_'),
@@ -16208,9 +16208,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return sv;
-	
+
 	}));
 
 /***/ },
@@ -16220,14 +16220,14 @@
 	//! moment.js locale configuration
 	//! locale : swahili (sw)
 	//! author : Fahad Kassim : https://github.com/fadsel
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var sw = moment.defineLocale('sw', {
 	        months : 'Januari_Februari_Machi_Aprili_Mei_Juni_Julai_Agosti_Septemba_Oktoba_Novemba_Desemba'.split('_'),
 	        monthsShort : 'Jan_Feb_Mac_Apr_Mei_Jun_Jul_Ago_Sep_Okt_Nov_Des'.split('_'),
@@ -16271,9 +16271,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return sw;
-	
+
 	}));
 
 /***/ },
@@ -16283,14 +16283,14 @@
 	//! moment.js locale configuration
 	//! locale : tamil (ta)
 	//! author : Arjunkumar Krishnamoorthy : https://github.com/tk120404
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var symbolMap = {
 	        '1': '௧',
 	        '2': '௨',
@@ -16314,7 +16314,7 @@
 	        '௯': '9',
 	        '௦': '0'
 	    };
-	
+
 	    var ta = moment.defineLocale('ta', {
 	        months : 'ஜனவரி_பிப்ரவரி_மார்ச்_ஏப்ரல்_மே_ஜூன்_ஜூலை_ஆகஸ்ட்_செப்டெம்பர்_அக்டோபர்_நவம்பர்_டிசம்பர்'.split('_'),
 	        monthsShort : 'ஜனவரி_பிப்ரவரி_மார்ச்_ஏப்ரல்_மே_ஜூன்_ஜூலை_ஆகஸ்ட்_செப்டெம்பர்_அக்டோபர்_நவம்பர்_டிசம்பர்'.split('_'),
@@ -16404,9 +16404,9 @@
 	            doy : 6  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return ta;
-	
+
 	}));
 
 /***/ },
@@ -16416,14 +16416,14 @@
 	//! moment.js locale configuration
 	//! locale : telugu (te)
 	//! author : Krishna Chaitanya Thota : https://github.com/kcthota
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var te = moment.defineLocale('te', {
 	        months : 'జనవరి_ఫిబ్రవరి_మార్చి_ఏప్రిల్_మే_జూన్_జూలై_ఆగస్టు_సెప్టెంబర్_అక్టోబర్_నవంబర్_డిసెంబర్'.split('_'),
 	        monthsShort : 'జన._ఫిబ్ర._మార్చి_ఏప్రి._మే_జూన్_జూలై_ఆగ._సెప్._అక్టో._నవ._డిసె.'.split('_'),
@@ -16497,9 +16497,9 @@
 	            doy : 6  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return te;
-	
+
 	}));
 
 /***/ },
@@ -16509,14 +16509,14 @@
 	//! moment.js locale configuration
 	//! locale : thai (th)
 	//! author : Kridsada Thanabulpong : https://github.com/sirn
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var th = moment.defineLocale('th', {
 	        months : 'มกราคม_กุมภาพันธ์_มีนาคม_เมษายน_พฤษภาคม_มิถุนายน_กรกฎาคม_สิงหาคม_กันยายน_ตุลาคม_พฤศจิกายน_ธันวาคม'.split('_'),
 	        monthsShort : 'มกรา_กุมภา_มีนา_เมษา_พฤษภา_มิถุนา_กรกฎา_สิงหา_กันยา_ตุลา_พฤศจิกา_ธันวา'.split('_'),
@@ -16568,9 +16568,9 @@
 	            yy : '%d ปี'
 	        }
 	    });
-	
+
 	    return th;
-	
+
 	}));
 
 /***/ },
@@ -16580,14 +16580,14 @@
 	//! moment.js locale configuration
 	//! locale : Tagalog/Filipino (tl-ph)
 	//! author : Dan Hagman
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var tl_ph = moment.defineLocale('tl-ph', {
 	        months : 'Enero_Pebrero_Marso_Abril_Mayo_Hunyo_Hulyo_Agosto_Setyembre_Oktubre_Nobyembre_Disyembre'.split('_'),
 	        monthsShort : 'Ene_Peb_Mar_Abr_May_Hun_Hul_Ago_Set_Okt_Nob_Dis'.split('_'),
@@ -16634,9 +16634,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return tl_ph;
-	
+
 	}));
 
 /***/ },
@@ -16646,16 +16646,16 @@
 	//! moment.js locale configuration
 	//! locale : Klingon (tlh)
 	//! author : Dominika Kruk : https://github.com/amaranthrose
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var numbersNouns = 'pagh_wa’_cha’_wej_loS_vagh_jav_Soch_chorgh_Hut'.split('_');
-	
+
 	    function translateFuture(output) {
 	        var time = output;
 	        time = (output.indexOf('jaj') !== -1) ?
@@ -16667,7 +16667,7 @@
 	    	time + ' pIq';
 	        return time;
 	    }
-	
+
 	    function translatePast(output) {
 	        var time = output;
 	        time = (output.indexOf('jaj') !== -1) ?
@@ -16679,7 +16679,7 @@
 	    	time + ' ret';
 	        return time;
 	    }
-	
+
 	    function translate(number, withoutSuffix, string, isFuture) {
 	        var numberNoun = numberAsNoun(number);
 	        switch (string) {
@@ -16695,7 +16695,7 @@
 	                return numberNoun + ' DIS';
 	        }
 	    }
-	
+
 	    function numberAsNoun(number) {
 	        var hundred = Math.floor((number % 1000) / 100),
 	    	ten = Math.floor((number % 100) / 10),
@@ -16712,7 +16712,7 @@
 	        }
 	        return (word === '') ? 'pagh' : word;
 	    }
-	
+
 	    var tlh = moment.defineLocale('tlh', {
 	        months : 'tera’ jar wa’_tera’ jar cha’_tera’ jar wej_tera’ jar loS_tera’ jar vagh_tera’ jar jav_tera’ jar Soch_tera’ jar chorgh_tera’ jar Hut_tera’ jar wa’maH_tera’ jar wa’maH wa’_tera’ jar wa’maH cha’'.split('_'),
 	        monthsShort : 'jar wa’_jar cha’_jar wej_jar loS_jar vagh_jar jav_jar Soch_jar chorgh_jar Hut_jar wa’maH_jar wa’maH wa’_jar wa’maH cha’'.split('_'),
@@ -16758,9 +16758,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return tlh;
-	
+
 	}));
 
 /***/ },
@@ -16771,14 +16771,14 @@
 	//! locale : turkish (tr)
 	//! authors : Erhan Gundogan : https://github.com/erhangundogan,
 	//!           Burak Yiğit Kaya: https://github.com/BYK
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var suffixes = {
 	        1: '\'inci',
 	        5: '\'inci',
@@ -16799,7 +16799,7 @@
 	        60: '\'ıncı',
 	        90: '\'ıncı'
 	    };
-	
+
 	    var tr = moment.defineLocale('tr', {
 	        months : 'Ocak_Şubat_Mart_Nisan_Mayıs_Haziran_Temmuz_Ağustos_Eylül_Ekim_Kasım_Aralık'.split('_'),
 	        monthsShort : 'Oca_Şub_Mar_Nis_May_Haz_Tem_Ağu_Eyl_Eki_Kas_Ara'.split('_'),
@@ -16852,9 +16852,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return tr;
-	
+
 	}));
 
 /***/ },
@@ -16864,15 +16864,15 @@
 	//! moment.js locale configuration
 	//! locale : talossan (tzl)
 	//! author : Robin van der Vliet : https://github.com/robin0van0der0v with the help of Iustì Canun
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
-	
+
+
+
 	    // After the year there should be a slash and the amount of years since December 26, 1979 in Roman numerals.
 	    // This is currently too difficult (maybe even impossible) to add.
 	    var tzl = moment.defineLocale('tzl', {
@@ -16930,7 +16930,7 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    function processRelativeTime(number, withoutSuffix, key, isFuture) {
 	        var format = {
 	            's': ['viensas secunds', '\'iensas secunds'],
@@ -16947,9 +16947,9 @@
 	        };
 	        return isFuture ? format[key][0] : (withoutSuffix ? format[key][0] : format[key][1]);
 	    }
-	
+
 	    return tzl;
-	
+
 	}));
 
 /***/ },
@@ -16959,14 +16959,14 @@
 	//! moment.js locale configuration
 	//! locale : Morocco Central Atlas Tamaziɣt (tzm)
 	//! author : Abdel Said : https://github.com/abdelsaid
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var tzm = moment.defineLocale('tzm', {
 	        months : 'ⵉⵏⵏⴰⵢⵔ_ⴱⵕⴰⵢⵕ_ⵎⴰⵕⵚ_ⵉⴱⵔⵉⵔ_ⵎⴰⵢⵢⵓ_ⵢⵓⵏⵢⵓ_ⵢⵓⵍⵢⵓⵣ_ⵖⵓⵛⵜ_ⵛⵓⵜⴰⵏⴱⵉⵔ_ⴽⵟⵓⴱⵕ_ⵏⵓⵡⴰⵏⴱⵉⵔ_ⴷⵓⵊⵏⴱⵉⵔ'.split('_'),
 	        monthsShort : 'ⵉⵏⵏⴰⵢⵔ_ⴱⵕⴰⵢⵕ_ⵎⴰⵕⵚ_ⵉⴱⵔⵉⵔ_ⵎⴰⵢⵢⵓ_ⵢⵓⵏⵢⵓ_ⵢⵓⵍⵢⵓⵣ_ⵖⵓⵛⵜ_ⵛⵓⵜⴰⵏⴱⵉⵔ_ⴽⵟⵓⴱⵕ_ⵏⵓⵡⴰⵏⴱⵉⵔ_ⴷⵓⵊⵏⴱⵉⵔ'.split('_'),
@@ -17009,9 +17009,9 @@
 	            doy : 12  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return tzm;
-	
+
 	}));
 
 /***/ },
@@ -17021,14 +17021,14 @@
 	//! moment.js locale configuration
 	//! locale : Morocco Central Atlas Tamaziɣt in Latin (tzm-latn)
 	//! author : Abdel Said : https://github.com/abdelsaid
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var tzm_latn = moment.defineLocale('tzm-latn', {
 	        months : 'innayr_brˤayrˤ_marˤsˤ_ibrir_mayyw_ywnyw_ywlywz_ɣwšt_šwtanbir_ktˤwbrˤ_nwwanbir_dwjnbir'.split('_'),
 	        monthsShort : 'innayr_brˤayrˤ_marˤsˤ_ibrir_mayyw_ywnyw_ywlywz_ɣwšt_šwtanbir_ktˤwbrˤ_nwwanbir_dwjnbir'.split('_'),
@@ -17071,9 +17071,9 @@
 	            doy : 12  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return tzm_latn;
-	
+
 	}));
 
 /***/ },
@@ -17084,14 +17084,14 @@
 	//! locale : ukrainian (uk)
 	//! author : zemlanin : https://github.com/zemlanin
 	//! Author : Menelion Elensúle : https://github.com/Oire
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    function plural(word, num) {
 	        var forms = word.split('_');
 	        return num % 10 === 1 && num % 100 !== 11 ? forms[0] : (num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2]);
@@ -17132,7 +17132,7 @@
 	            return str + 'о' + (this.hours() === 11 ? 'б' : '') + '] LT';
 	        };
 	    }
-	
+
 	    var uk = moment.defineLocale('uk', {
 	        months : {
 	            'format': 'січня_лютого_березня_квітня_травня_червня_липня_серпня_вересня_жовтня_листопада_грудня'.split('_'),
@@ -17221,9 +17221,9 @@
 	            doy : 7  // The week that contains Jan 1st is the first week of the year.
 	        }
 	    });
-	
+
 	    return uk;
-	
+
 	}));
 
 /***/ },
@@ -17233,14 +17233,14 @@
 	//! moment.js locale configuration
 	//! locale : uzbek (uz)
 	//! author : Sardor Muminov : https://github.com/muminoff
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var uz = moment.defineLocale('uz', {
 	        months : 'январ_феврал_март_апрел_май_июн_июл_август_сентябр_октябр_ноябр_декабр'.split('_'),
 	        monthsShort : 'янв_фев_мар_апр_май_июн_июл_авг_сен_окт_ноя_дек'.split('_'),
@@ -17283,9 +17283,9 @@
 	            doy : 7  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return uz;
-	
+
 	}));
 
 /***/ },
@@ -17295,14 +17295,14 @@
 	//! moment.js locale configuration
 	//! locale : vietnamese (vi)
 	//! author : Bang Nguyen : https://github.com/bangnk
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var vi = moment.defineLocale('vi', {
 	        months : 'tháng 1_tháng 2_tháng 3_tháng 4_tháng 5_tháng 6_tháng 7_tháng 8_tháng 9_tháng 10_tháng 11_tháng 12'.split('_'),
 	        monthsShort : 'Th01_Th02_Th03_Th04_Th05_Th06_Th07_Th08_Th09_Th10_Th11_Th12'.split('_'),
@@ -17366,9 +17366,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return vi;
-	
+
 	}));
 
 /***/ },
@@ -17378,14 +17378,14 @@
 	//! moment.js locale configuration
 	//! locale : pseudo (x-pseudo)
 	//! author : Andrew Hood : https://github.com/andrewhood125
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var x_pseudo = moment.defineLocale('x-pseudo', {
 	        months : 'J~áñúá~rý_F~ébrú~árý_~Márc~h_Áp~ríl_~Máý_~Júñé~_Júl~ý_Áú~gúst~_Sép~témb~ér_Ó~ctób~ér_Ñ~óvém~bér_~Décé~mbér'.split('_'),
 	        monthsShort : 'J~áñ_~Féb_~Már_~Ápr_~Máý_~Júñ_~Júl_~Áúg_~Sép_~Óct_~Ñóv_~Déc'.split('_'),
@@ -17438,9 +17438,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return x_pseudo;
-	
+
 	}));
 
 /***/ },
@@ -17451,14 +17451,14 @@
 	//! locale : chinese (zh-cn)
 	//! author : suupic : https://github.com/suupic
 	//! author : Zeno Zeng : https://github.com/zenozeng
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var zh_cn = moment.defineLocale('zh-cn', {
 	        months : '一月_二月_三月_四月_五月_六月_七月_八月_九月_十月_十一月_十二月'.split('_'),
 	        monthsShort : '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_'),
@@ -17569,9 +17569,9 @@
 	            doy : 4  // The week that contains Jan 4th is the first week of the year.
 	        }
 	    });
-	
+
 	    return zh_cn;
-	
+
 	}));
 
 /***/ },
@@ -17581,14 +17581,14 @@
 	//! moment.js locale configuration
 	//! locale : traditional chinese (zh-tw)
 	//! author : Ben : https://github.com/ben-lin
-	
+
 	;(function (global, factory) {
 	    true ? factory(__webpack_require__(8)) :
 	   typeof define === 'function' && define.amd ? define(['moment'], factory) :
 	   factory(global.moment)
 	}(this, function (moment) { 'use strict';
-	
-	
+
+
 	    var zh_tw = moment.defineLocale('zh-tw', {
 	        months : '一月_二月_三月_四月_五月_六月_七月_八月_九月_十月_十一月_十二月'.split('_'),
 	        monthsShort : '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_'),
@@ -17674,9 +17674,9 @@
 	            yy : '%d年'
 	        }
 	    });
-	
+
 	    return zh_tw;
-	
+
 	}));
 
 /***/ },
@@ -17690,13 +17690,13 @@
 	 * license : MIT
 	 * http://adamwdraper.github.com/Numeral-js/
 	 */
-	
+
 	(function () {
-	
+
 	    /************************************
 	        Constants
 	    ************************************/
-	
+
 	    var numeral,
 	        VERSION = '1.5.3',
 	        // internal storage for language config files
@@ -17706,18 +17706,18 @@
 	        defaultFormat = '0,0',
 	        // check for nodeJS
 	        hasModule = (typeof module !== 'undefined' && module.exports);
-	
-	
+
+
 	    /************************************
 	        Constructors
 	    ************************************/
-	
-	
+
+
 	    // Numeral prototype object
 	    function Numeral (number) {
 	        this._value = number;
 	    }
-	
+
 	    /**
 	     * Implementation of toFixed() that treats floats more like decimals
 	     *
@@ -17728,27 +17728,27 @@
 	        var power = Math.pow(10, precision),
 	            optionalsRegExp,
 	            output;
-	            
+
 	        //roundingFunction = (roundingFunction !== undefined ? roundingFunction : Math.round);
 	        // Multiply up by precision, round accurately, then divide and use native toFixed():
 	        output = (roundingFunction(value * power) / power).toFixed(precision);
-	
+
 	        if (optionals) {
 	            optionalsRegExp = new RegExp('0{1,' + optionals + '}$');
 	            output = output.replace(optionalsRegExp, '');
 	        }
-	
+
 	        return output;
 	    }
-	
+
 	    /************************************
 	        Formatting
 	    ************************************/
-	
+
 	    // determine what type of formatting we need to do
 	    function formatNumeral (n, format, roundingFunction) {
 	        var output;
-	
+
 	        // figure out what kind of format we are dealing with
 	        if (format.indexOf('$') > -1) { // currency!!!!!
 	            output = formatCurrency(n, format, roundingFunction);
@@ -17759,11 +17759,11 @@
 	        } else { // plain ol' numbers or bytes
 	            output = formatNumber(n._value, format, roundingFunction);
 	        }
-	
+
 	        // return string
 	        return output;
 	    }
-	
+
 	    // revert to number
 	    function unformatNumeral (n, string) {
 	        var stringOriginal = string,
@@ -17774,7 +17774,7 @@
 	            suffixes = ['KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
 	            bytesMultiplier = false,
 	            power;
-	
+
 	        if (string.indexOf(':') > -1) {
 	            n._value = unformatTime(string);
 	        } else {
@@ -17784,32 +17784,32 @@
 	                if (languages[currentLanguage].delimiters.decimal !== '.') {
 	                    string = string.replace(/\./g,'').replace(languages[currentLanguage].delimiters.decimal, '.');
 	                }
-	
+
 	                // see if abbreviations are there so that we can multiply to the correct number
 	                thousandRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.thousand + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
 	                millionRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.million + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
 	                billionRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.billion + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
 	                trillionRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.trillion + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
-	
+
 	                // see if bytes are there so that we can multiply to the correct number
 	                for (power = 0; power <= suffixes.length; power++) {
 	                    bytesMultiplier = (string.indexOf(suffixes[power]) > -1) ? Math.pow(1024, power + 1) : false;
-	
+
 	                    if (bytesMultiplier) {
 	                        break;
 	                    }
 	                }
-	
+
 	                // do some math to create our number
 	                n._value = ((bytesMultiplier) ? bytesMultiplier : 1) * ((stringOriginal.match(thousandRegExp)) ? Math.pow(10, 3) : 1) * ((stringOriginal.match(millionRegExp)) ? Math.pow(10, 6) : 1) * ((stringOriginal.match(billionRegExp)) ? Math.pow(10, 9) : 1) * ((stringOriginal.match(trillionRegExp)) ? Math.pow(10, 12) : 1) * ((string.indexOf('%') > -1) ? 0.01 : 1) * (((string.split('-').length + Math.min(string.split('(').length-1, string.split(')').length-1)) % 2)? 1: -1) * Number(string.replace(/[^0-9\.]+/g, ''));
-	
+
 	                // round if we are talking about bytes
 	                n._value = (bytesMultiplier) ? Math.ceil(n._value) : n._value;
 	            }
 	        }
 	        return n._value;
 	    }
-	
+
 	    function formatCurrency (n, format, roundingFunction) {
 	        var symbolIndex = format.indexOf('$'),
 	            openParenIndex = format.indexOf('('),
@@ -17817,7 +17817,7 @@
 	            space = '',
 	            spliceIndex,
 	            output;
-	
+
 	        // check for space before or after currency
 	        if (format.indexOf(' $') > -1) {
 	            space = ' ';
@@ -17828,10 +17828,10 @@
 	        } else {
 	            format = format.replace('$', '');
 	        }
-	
+
 	        // format the number
 	        output = formatNumber(n._value, format, roundingFunction);
-	
+
 	        // position the symbol
 	        if (symbolIndex <= 1) {
 	            if (output.indexOf('(') > -1 || output.indexOf('-') > -1) {
@@ -17855,15 +17855,15 @@
 	                output = output + space + languages[currentLanguage].currency.symbol;
 	            }
 	        }
-	
+
 	        return output;
 	    }
-	
+
 	    function formatPercentage (n, format, roundingFunction) {
 	        var space = '',
 	            output,
 	            value = n._value * 100;
-	
+
 	        // check for space before %
 	        if (format.indexOf(' %') > -1) {
 	            space = ' ';
@@ -17871,9 +17871,9 @@
 	        } else {
 	            format = format.replace('%', '');
 	        }
-	
+
 	        output = formatNumber(value, format, roundingFunction);
-	        
+
 	        if (output.indexOf(')') > -1 ) {
 	            output = output.split('');
 	            output.splice(-1, 0, space + '%');
@@ -17881,17 +17881,17 @@
 	        } else {
 	            output = output + space + '%';
 	        }
-	
+
 	        return output;
 	    }
-	
+
 	    function formatTime (n) {
 	        var hours = Math.floor(n._value/60/60),
 	            minutes = Math.floor((n._value - (hours * 60 * 60))/60),
 	            seconds = Math.round(n._value - (hours * 60 * 60) - (minutes * 60));
 	        return hours + ':' + ((minutes < 10) ? '0' + minutes : minutes) + ':' + ((seconds < 10) ? '0' + seconds : seconds);
 	    }
-	
+
 	    function unformatTime (string) {
 	        var timeArray = string.split(':'),
 	            seconds = 0;
@@ -17911,7 +17911,7 @@
 	        }
 	        return Number(seconds);
 	    }
-	
+
 	    function formatNumber (value, format, roundingFunction) {
 	        var negP = false,
 	            signed = false,
@@ -17934,7 +17934,7 @@
 	            thousands,
 	            d = '',
 	            neg = false;
-	
+
 	        // check if number is zero and a custom zero format has been set
 	        if (value === 0 && zeroFormat !== null) {
 	            return zeroFormat;
@@ -17948,7 +17948,7 @@
 	                signed = true;
 	                format = format.replace(/\+/g, '');
 	            }
-	
+
 	            // see if abbreviation is wanted
 	            if (format.indexOf('a') > -1) {
 	                // check if abbreviation is specified
@@ -17957,7 +17957,7 @@
 	                abbrB = format.indexOf('aB') >= 0;
 	                abbrT = format.indexOf('aT') >= 0;
 	                abbrForce = abbrK || abbrM || abbrB || abbrT;
-	
+
 	                // check for space before abbreviation
 	                if (format.indexOf(' a') > -1) {
 	                    abbr = ' ';
@@ -17965,7 +17965,7 @@
 	                } else {
 	                    format = format.replace('a', '');
 	                }
-	
+
 	                if (abs >= Math.pow(10, 12) && !abbrForce || abbrT) {
 	                    // trillion
 	                    abbr = abbr + languages[currentLanguage].abbreviations.trillion;
@@ -17984,7 +17984,7 @@
 	                    value = value / Math.pow(10, 3);
 	                }
 	            }
-	
+
 	            // see if we are formatting bytes
 	            if (format.indexOf('b') > -1) {
 	                // check for space before
@@ -17994,11 +17994,11 @@
 	                } else {
 	                    format = format.replace('b', '');
 	                }
-	
+
 	                for (power = 0; power <= suffixes.length; power++) {
 	                    min = Math.pow(1024, power);
 	                    max = Math.pow(1024, power+1);
-	
+
 	                    if (value >= min && value < max) {
 	                        bytes = bytes + suffixes[power];
 	                        if (min > 0) {
@@ -18008,7 +18008,7 @@
 	                    }
 	                }
 	            }
-	
+
 	            // see if ordinal is wanted
 	            if (format.indexOf('o') > -1) {
 	                // check for space before
@@ -18018,19 +18018,19 @@
 	                } else {
 	                    format = format.replace('o', '');
 	                }
-	
+
 	                ord = ord + languages[currentLanguage].ordinal(value);
 	            }
-	
+
 	            if (format.indexOf('[.]') > -1) {
 	                optDec = true;
 	                format = format.replace('[.]', '.');
 	            }
-	
+
 	            w = value.toString().split('.')[0];
 	            precision = format.split('.')[1];
 	            thousands = format.indexOf(',');
-	
+
 	            if (precision) {
 	                if (precision.indexOf('[') > -1) {
 	                    precision = precision.replace(']', '');
@@ -18039,44 +18039,44 @@
 	                } else {
 	                    d = toFixed(value, precision.length, roundingFunction);
 	                }
-	
+
 	                w = d.split('.')[0];
-	
+
 	                if (d.split('.')[1].length) {
 	                    d = languages[currentLanguage].delimiters.decimal + d.split('.')[1];
 	                } else {
 	                    d = '';
 	                }
-	
+
 	                if (optDec && Number(d.slice(1)) === 0) {
 	                    d = '';
 	                }
 	            } else {
 	                w = toFixed(value, null, roundingFunction);
 	            }
-	
+
 	            // format number
 	            if (w.indexOf('-') > -1) {
 	                w = w.slice(1);
 	                neg = true;
 	            }
-	
+
 	            if (thousands > -1) {
 	                w = w.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + languages[currentLanguage].delimiters.thousands);
 	            }
-	
+
 	            if (format.indexOf('.') === 0) {
 	                w = '';
 	            }
-	
+
 	            return ((negP && neg) ? '(' : '') + ((!negP && neg) ? '-' : '') + ((!neg && signed) ? '+' : '') + w + d + ((ord) ? ord : '') + ((abbr) ? abbr : '') + ((bytes) ? bytes : '') + ((negP && neg) ? ')' : '');
 	        }
 	    }
-	
+
 	    /************************************
 	        Top Level Functions
 	    ************************************/
-	
+
 	    numeral = function (input) {
 	        if (numeral.isNumeral(input)) {
 	            input = input.value();
@@ -18085,18 +18085,18 @@
 	        } else if (!Number(input)) {
 	            input = numeral.fn.unformat(input);
 	        }
-	
+
 	        return new Numeral(Number(input));
 	    };
-	
+
 	    // version number
 	    numeral.version = VERSION;
-	
+
 	    // compare numeral object
 	    numeral.isNumeral = function (obj) {
 	        return obj instanceof Numeral;
 	    };
-	
+
 	    // This function will load languages and then set the global language.  If
 	    // no arguments are passed in, it will simply return the current global
 	    // language key.
@@ -18104,21 +18104,21 @@
 	        if (!key) {
 	            return currentLanguage;
 	        }
-	
+
 	        if (key && !values) {
 	            if(!languages[key]) {
 	                throw new Error('Unknown language : ' + key);
 	            }
 	            currentLanguage = key;
 	        }
-	
+
 	        if (values || !languages[key]) {
 	            loadLanguage(key, values);
 	        }
-	
+
 	        return numeral;
 	    };
-	    
+
 	    // This function provides access to the loaded language data.  If
 	    // no arguments are passed in, it will simply return the current
 	    // global language object.
@@ -18126,14 +18126,14 @@
 	        if (!key) {
 	            return languages[currentLanguage];
 	        }
-	        
+
 	        if (!languages[key]) {
 	            throw new Error('Unknown language : ' + key);
 	        }
-	        
+
 	        return languages[key];
 	    };
-	
+
 	    numeral.language('en', {
 	        delimiters: {
 	            thousands: ',',
@@ -18156,30 +18156,30 @@
 	            symbol: '$'
 	        }
 	    });
-	
+
 	    numeral.zeroFormat = function (format) {
 	        zeroFormat = typeof(format) === 'string' ? format : null;
 	    };
-	
+
 	    numeral.defaultFormat = function (format) {
 	        defaultFormat = typeof(format) === 'string' ? format : '0.0';
 	    };
-	
+
 	    /************************************
 	        Helpers
 	    ************************************/
-	
+
 	    function loadLanguage(key, values) {
 	        languages[key] = values;
 	    }
-	
+
 	    /************************************
 	        Floating-point helpers
 	    ************************************/
-	
+
 	    // The floating-point helper functions and implementation
 	    // borrows heavily from sinful.js: http://guipn.github.io/sinful.js/
-	
+
 	    /**
 	     * Array.prototype.reduce for browsers that don't support it
 	     * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce#Compatibility
@@ -18187,28 +18187,28 @@
 	    if ('function' !== typeof Array.prototype.reduce) {
 	        Array.prototype.reduce = function (callback, opt_initialValue) {
 	            'use strict';
-	            
+
 	            if (null === this || 'undefined' === typeof this) {
 	                // At the moment all modern browsers, that support strict mode, have
 	                // native implementation of Array.prototype.reduce. For instance, IE8
 	                // does not support strict mode, so this check is actually useless.
 	                throw new TypeError('Array.prototype.reduce called on null or undefined');
 	            }
-	            
+
 	            if ('function' !== typeof callback) {
 	                throw new TypeError(callback + ' is not a function');
 	            }
-	
+
 	            var index,
 	                value,
 	                length = this.length >>> 0,
 	                isValueSet = false;
-	
+
 	            if (1 < arguments.length) {
 	                value = opt_initialValue;
 	                isValueSet = true;
 	            }
-	
+
 	            for (index = 0; length > index; ++index) {
 	                if (this.hasOwnProperty(index)) {
 	                    if (isValueSet) {
@@ -18219,16 +18219,16 @@
 	                    }
 	                }
 	            }
-	
+
 	            if (!isValueSet) {
 	                throw new TypeError('Reduce of empty array with no initial value');
 	            }
-	
+
 	            return value;
 	        };
 	    }
-	
-	    
+
+
 	    /**
 	     * Computes the multiplier necessary to make x >= 1,
 	     * effectively eliminating miscalculations caused by
@@ -18241,7 +18241,7 @@
 	        }
 	        return Math.pow(10, parts[1].length);
 	    }
-	
+
 	    /**
 	     * Given a variable number of arguments, returns the maximum
 	     * multiplier that must be used to normalize an operation involving
@@ -18254,47 +18254,47 @@
 	                mn = multiplier(next);
 	        return mp > mn ? mp : mn;
 	        }, -Infinity);
-	    }        
-	
-	
+	    }
+
+
 	    /************************************
 	        Numeral Prototype
 	    ************************************/
-	
-	
+
+
 	    numeral.fn = Numeral.prototype = {
-	
+
 	        clone : function () {
 	            return numeral(this);
 	        },
-	
+
 	        format : function (inputString, roundingFunction) {
-	            return formatNumeral(this, 
-	                  inputString ? inputString : defaultFormat, 
+	            return formatNumeral(this,
+	                  inputString ? inputString : defaultFormat,
 	                  (roundingFunction !== undefined) ? roundingFunction : Math.round
 	              );
 	        },
-	
+
 	        unformat : function (inputString) {
-	            if (Object.prototype.toString.call(inputString) === '[object Number]') { 
-	                return inputString; 
+	            if (Object.prototype.toString.call(inputString) === '[object Number]') {
+	                return inputString;
 	            }
 	            return unformatNumeral(this, inputString ? inputString : defaultFormat);
 	        },
-	
+
 	        value : function () {
 	            return this._value;
 	        },
-	
+
 	        valueOf : function () {
 	            return this._value;
 	        },
-	
+
 	        set : function (value) {
 	            this._value = Number(value);
 	            return this;
 	        },
-	
+
 	        add : function (value) {
 	            var corrFactor = correctionFactor.call(null, this._value, value);
 	            function cback(accum, curr, currI, O) {
@@ -18303,16 +18303,16 @@
 	            this._value = [this._value, value].reduce(cback, 0) / corrFactor;
 	            return this;
 	        },
-	
+
 	        subtract : function (value) {
 	            var corrFactor = correctionFactor.call(null, this._value, value);
 	            function cback(accum, curr, currI, O) {
 	                return accum - corrFactor * curr;
 	            }
-	            this._value = [value].reduce(cback, this._value * corrFactor) / corrFactor;            
+	            this._value = [value].reduce(cback, this._value * corrFactor) / corrFactor;
 	            return this;
 	        },
-	
+
 	        multiply : function (value) {
 	            function cback(accum, curr, currI, O) {
 	                var corrFactor = correctionFactor(accum, curr);
@@ -18322,31 +18322,31 @@
 	            this._value = [this._value, value].reduce(cback, 1);
 	            return this;
 	        },
-	
+
 	        divide : function (value) {
 	            function cback(accum, curr, currI, O) {
 	                var corrFactor = correctionFactor(accum, curr);
 	                return (accum * corrFactor) / (curr * corrFactor);
 	            }
-	            this._value = [this._value, value].reduce(cback);            
+	            this._value = [this._value, value].reduce(cback);
 	            return this;
 	        },
-	
+
 	        difference : function (value) {
 	            return Math.abs(numeral(this._value).subtract(value).value());
 	        }
-	
+
 	    };
-	
+
 	    /************************************
 	        Exposing Numeral
 	    ************************************/
-	
+
 	    // CommonJS module is defined
 	    if (hasModule) {
 	        module.exports = numeral;
 	    }
-	
+
 	    /*global ender:false */
 	    if (typeof ender === 'undefined') {
 	        // here, `this` means `window` in the browser, or `global` on the server
@@ -18354,7 +18354,7 @@
 	        // for Closure Compiler 'advanced' mode
 	        this['numeral'] = numeral;
 	    }
-	
+
 	    /*global define:false */
 	    if (true) {
 	        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
@@ -18368,7 +18368,7 @@
 /* 112 */
 /***/ function(module, exports) {
 
-	/*! 
+	/*!
 	 * numeral.js language configuration
 	 * language : english united kingdom (uk)
 	 * author : Dan Ristic : https://github.com/dristic
@@ -18396,7 +18396,7 @@
 	            symbol: '£'
 	        }
 	    };
-	
+
 	    // Node
 	    if (typeof module !== 'undefined' && module.exports) {
 	        module.exports = language;
@@ -18541,9 +18541,9 @@
 	 */
 	var Autolinker = function( cfg ) {
 		cfg = cfg || {};
-	
+
 		this.version = Autolinker.version;
-	
+
 		this.urls = this.normalizeUrlsCfg( cfg.urls );
 		this.email = typeof cfg.email === 'boolean' ? cfg.email : true;
 		this.twitter = typeof cfg.twitter === 'boolean' ? cfg.twitter : true;
@@ -18551,24 +18551,24 @@
 		this.hashtag = cfg.hashtag || false;
 		this.newWindow = typeof cfg.newWindow === 'boolean' ? cfg.newWindow : true;
 		this.stripPrefix = typeof cfg.stripPrefix === 'boolean' ? cfg.stripPrefix : true;
-	
+
 		// Validate the value of the `hashtag` cfg.
 		var hashtag = this.hashtag;
 		if( hashtag !== false && hashtag !== 'twitter' && hashtag !== 'facebook' && hashtag !== 'instagram' ) {
 			throw new Error( "invalid `hashtag` cfg - see docs" );
 		}
-	
+
 		this.truncate = this.normalizeTruncateCfg( cfg.truncate );
 		this.className = cfg.className || '';
 		this.replaceFn = cfg.replaceFn || null;
-	
+
 		this.htmlParser = null;
 		this.matchers = null;
 		this.tagBuilder = null;
 	};
-	
-	
-	
+
+
+
 	/**
 	 * Automatically links URLs, Email addresses, Phone Numbers, Twitter handles,
 	 * and Hashtags found in the given chunk of HTML. Does not link URLs found
@@ -18595,8 +18595,8 @@
 		var autolinker = new Autolinker( options );
 		return autolinker.link( textOrHtml );
 	};
-	
-	
+
+
 	/**
 	 * @static
 	 * @property {String} version (readonly)
@@ -18606,11 +18606,11 @@
 	 * Ex: 0.25.1
 	 */
 	Autolinker.version = '0.26.0';
-	
-	
+
+
 	Autolinker.prototype = {
 		constructor : Autolinker,  // fix constructor property
-	
+
 		/**
 		 * @cfg {Boolean/Object} [urls=true]
 		 *
@@ -18633,28 +18633,28 @@
 		 *   in the given text. Ex: `google.com`, `asdf.org/?page=1`, etc. `false`
 		 *   to prevent these types of matches.
 		 */
-	
+
 		/**
 		 * @cfg {Boolean} [email=true]
 		 *
 		 * `true` if email addresses should be automatically linked, `false` if they
 		 * should not be.
 		 */
-	
+
 		/**
 		 * @cfg {Boolean} [twitter=true]
 		 *
 		 * `true` if Twitter handles ("@example") should be automatically linked,
 		 * `false` if they should not be.
 		 */
-	
+
 		/**
 		 * @cfg {Boolean} [phone=true]
 		 *
 		 * `true` if Phone numbers ("(555)555-5555") should be automatically linked,
 		 * `false` if they should not be.
 		 */
-	
+
 		/**
 		 * @cfg {Boolean/String} [hashtag=false]
 		 *
@@ -18667,20 +18667,20 @@
 		 *
 		 * Pass `false` to skip auto-linking of hashtags.
 		 */
-	
+
 		/**
 		 * @cfg {Boolean} [newWindow=true]
 		 *
 		 * `true` if the links should open in a new window, `false` otherwise.
 		 */
-	
+
 		/**
 		 * @cfg {Boolean} [stripPrefix=true]
 		 *
 		 * `true` if 'http://' or 'https://' and/or the 'www.' should be stripped
 		 * from the beginning of URL links' text, `false` otherwise.
 		 */
-	
+
 		/**
 		 * @cfg {Number/Object} [truncate=0]
 		 *
@@ -18728,7 +18728,7 @@
 		 *   'yahoo.com/some..to/a/file'. For more details, see
 		 *   {@link Autolinker.truncate.TruncateSmart}.
 		 */
-	
+
 		/**
 		 * @cfg {String} className
 		 *
@@ -18744,7 +18744,7 @@
 		 * - Phone links will have the CSS classes: "myLink myLink-phone"
 		 * - Hashtag links will have the CSS classes: "myLink myLink-hashtag"
 		 */
-	
+
 		/**
 		 * @cfg {Function} replaceFn
 		 *
@@ -18762,8 +18762,8 @@
 		 *   is currently processing. See {@link Autolinker.match.Match} subclasses
 		 *   for details.
 		 */
-	
-	
+
+
 		/**
 		 * @property {String} version (readonly)
 		 *
@@ -18771,7 +18771,7 @@
 		 *
 		 * Ex: 0.25.1
 		 */
-	
+
 		/**
 		 * @private
 		 * @property {Autolinker.htmlParser.HtmlParser} htmlParser
@@ -18780,7 +18780,7 @@
 		 * nodes to process. This is lazily instantiated in the {@link #getHtmlParser}
 		 * method.
 		 */
-	
+
 		/**
 		 * @private
 		 * @property {Autolinker.matcher.Matcher[]} matchers
@@ -18790,7 +18790,7 @@
 		 *
 		 * This is lazily created in {@link #getMatchers}.
 		 */
-	
+
 		/**
 		 * @private
 		 * @property {Autolinker.AnchorTagBuilder} tagBuilder
@@ -18798,8 +18798,8 @@
 		 * The AnchorTagBuilder instance used to build match replacement anchor tags.
 		 * Note: this is lazily instantiated in the {@link #getTagBuilder} method.
 		 */
-	
-	
+
+
 		/**
 		 * Normalizes the {@link #urls} config into an Object with 3 properties:
 		 * `schemeMatches`, `wwwMatches`, and `tldMatches`, all Booleans.
@@ -18812,10 +18812,10 @@
 		 */
 		normalizeUrlsCfg : function( urls ) {
 			if( urls == null ) urls = true;  // default to `true`
-	
+
 			if( typeof urls === 'boolean' ) {
 				return { schemeMatches: urls, wwwMatches: urls, tldMatches: urls };
-	
+
 			} else {  // object form
 				return {
 					schemeMatches : typeof urls.schemeMatches === 'boolean' ? urls.schemeMatches : true,
@@ -18824,8 +18824,8 @@
 				};
 			}
 		},
-	
-	
+
+
 		/**
 		 * Normalizes the {@link #truncate} config into an Object with 2 properties:
 		 * `length` (Number), and `location` (String).
@@ -18839,7 +18839,7 @@
 		normalizeTruncateCfg : function( truncate ) {
 			if( typeof truncate === 'number' ) {
 				return { length: truncate, location: 'end' };
-	
+
 			} else {  // object, or undefined/null
 				return Autolinker.Util.defaults( truncate || {}, {
 					length   : Number.POSITIVE_INFINITY,
@@ -18847,8 +18847,8 @@
 				} );
 			}
 		},
-	
-	
+
+
 		/**
 		 * Parses the input `textOrHtml` looking for URLs, email addresses, phone
 		 * numbers, username handles, and hashtags (depending on the configuration
@@ -18870,43 +18870,43 @@
 			    htmlNodes = htmlParser.parse( textOrHtml ),
 			    anchorTagStackCount = 0,  // used to only process text around anchor tags, and any inner text/html they may have;
 			    matches = [];
-	
+
 			// Find all matches within the `textOrHtml` (but not matches that are
 			// already nested within <a> tags)
 			for( var i = 0, len = htmlNodes.length; i < len; i++ ) {
 				var node = htmlNodes[ i ],
 				    nodeType = node.getType();
-	
+
 				if( nodeType === 'element' && node.getTagName() === 'a' ) {  // Process HTML anchor element nodes in the input `textOrHtml` to find out when we're within an <a> tag
 					if( !node.isClosing() ) {  // it's the start <a> tag
 						anchorTagStackCount++;
 					} else {  // it's the end </a> tag
 						anchorTagStackCount = Math.max( anchorTagStackCount - 1, 0 );  // attempt to handle extraneous </a> tags by making sure the stack count never goes below 0
 					}
-	
+
 				} else if( nodeType === 'text' && anchorTagStackCount === 0 ) {  // Process text nodes that are not within an <a> tag
 					var textNodeMatches = this.parseText( node.getText(), node.getOffset() );
-	
+
 					matches.push.apply( matches, textNodeMatches );
 				}
 			}
-	
-	
+
+
 			// After we have found all matches, remove subsequent matches that
 			// overlap with a previous match. This can happen for instance with URLs,
 			// where the url 'google.com/#link' would match '#link' as a hashtag.
 			matches = this.compactMatches( matches );
-	
+
 			// And finally, remove matches for match types that have been turned
 			// off. We needed to have all match types turned on initially so that
 			// things like hashtags could be filtered out if they were really just
 			// part of a URL match (for instance, as a named anchor).
 			matches = this.removeUnwantedMatches( matches );
-	
+
 			return matches;
 		},
-	
-	
+
+
 		/**
 		 * After we have found all matches, we need to remove subsequent matches
 		 * that overlap with a previous match. This can happen for instance with
@@ -18919,21 +18919,21 @@
 		compactMatches : function( matches ) {
 			// First, the matches need to be sorted in order of offset
 			matches.sort( function( a, b ) { return a.getOffset() - b.getOffset(); } );
-	
+
 			for( var i = 0; i < matches.length - 1; i++ ) {
 				var match = matches[ i ],
 				    endIdx = match.getOffset() + match.getMatchedText().length;
-	
+
 				// Remove subsequent matches that overlap with the current match
 				while( i + 1 < matches.length && matches[ i + 1 ].getOffset() <= endIdx ) {
 					matches.splice( i + 1, 1 );
 				}
 			}
-	
+
 			return matches;
 		},
-	
-	
+
+
 		/**
 		 * Removes matches for matchers that were turned off in the options. For
 		 * example, if {@link #hashtag hashtags} were not to be matched, we'll
@@ -18947,7 +18947,7 @@
 		 */
 		removeUnwantedMatches : function( matches ) {
 			var remove = Autolinker.Util.remove;
-	
+
 			if( !this.hashtag ) remove( matches, function( match ) { return match.getType() === 'hashtag'; } );
 			if( !this.email )   remove( matches, function( match ) { return match.getType() === 'email'; } );
 			if( !this.phone )   remove( matches, function( match ) { return match.getType() === 'phone'; } );
@@ -18961,11 +18961,11 @@
 			if( !this.urls.tldMatches ) {
 				remove( matches, function( m ) { return m.getType() === 'url' && m.getUrlMatchType() === 'tld'; } );
 			}
-	
+
 			return matches;
 		},
-	
-	
+
+
 		/**
 		 * Parses the input `text` looking for URLs, email addresses, phone
 		 * numbers, username handles, and hashtags (depending on the configuration
@@ -18991,10 +18991,10 @@
 			offset = offset || 0;
 			var matchers = this.getMatchers(),
 			    matches = [];
-	
+
 			for( var i = 0, numMatchers = matchers.length; i < numMatchers; i++ ) {
 				var textMatches = matchers[ i ].parseMatches( text );
-	
+
 				// Correct the offset of each of the matches. They are originally
 				// the offset of the match within the provided text node, but we
 				// need to correct them to be relative to the original HTML input
@@ -19002,13 +19002,13 @@
 				for( var j = 0, numTextMatches = textMatches.length; j < numTextMatches; j++ ) {
 					textMatches[ j ].setOffset( offset + textMatches[ j ].getOffset() );
 				}
-	
+
 				matches.push.apply( matches, textMatches );
 			}
 			return matches;
 		},
-	
-	
+
+
 		/**
 		 * Automatically links URLs, Email addresses, Phone numbers, Twitter
 		 * handles, and Hashtags found in the given chunk of HTML. Does not link
@@ -19030,25 +19030,25 @@
 		 */
 		link : function( textOrHtml ) {
 			if( !textOrHtml ) { return ""; }  // handle `null` and `undefined`
-	
+
 			var matches = this.parse( textOrHtml ),
 				newHtml = [],
 				lastIndex = 0;
-	
+
 			for( var i = 0, len = matches.length; i < len; i++ ) {
 				var match = matches[ i ];
-	
+
 				newHtml.push( textOrHtml.substring( lastIndex, match.getOffset() ) );
 				newHtml.push( this.createMatchReturnVal( match ) );
-	
+
 				lastIndex = match.getOffset() + match.getMatchedText().length;
 			}
 			newHtml.push( textOrHtml.substring( lastIndex ) );  // handle the text after the last match
-	
+
 			return newHtml.join( '' );
 		},
-	
-	
+
+
 		/**
 		 * Creates the return string value for a given match in the input string.
 		 *
@@ -19067,25 +19067,25 @@
 			if( this.replaceFn ) {
 				replaceFnResult = this.replaceFn.call( this, this, match );  // Autolinker instance is the context, and the first arg
 			}
-	
+
 			if( typeof replaceFnResult === 'string' ) {
 				return replaceFnResult;  // `replaceFn` returned a string, use that
-	
+
 			} else if( replaceFnResult === false ) {
 				return match.getMatchedText();  // no replacement for the match
-	
+
 			} else if( replaceFnResult instanceof Autolinker.HtmlTag ) {
 				return replaceFnResult.toAnchorString();
-	
+
 			} else {  // replaceFnResult === true, or no/unknown return value from function
 				// Perform Autolinker's default anchor tag generation
 				var anchorTag = match.buildTag();  // returns an Autolinker.HtmlTag instance
-	
+
 				return anchorTag.toAnchorString();
 			}
 		},
-	
-	
+
+
 		/**
 		 * Lazily instantiates and returns the {@link #htmlParser} instance for this
 		 * Autolinker instance.
@@ -19095,15 +19095,15 @@
 		 */
 		getHtmlParser : function() {
 			var htmlParser = this.htmlParser;
-	
+
 			if( !htmlParser ) {
 				htmlParser = this.htmlParser = new Autolinker.htmlParser.HtmlParser();
 			}
-	
+
 			return htmlParser;
 		},
-	
-	
+
+
 		/**
 		 * Lazily instantiates and returns the {@link Autolinker.matcher.Matcher}
 		 * instances for this Autolinker instance.
@@ -19115,7 +19115,7 @@
 			if( !this.matchers ) {
 				var matchersNs = Autolinker.matcher,
 				    tagBuilder = this.getTagBuilder();
-	
+
 				var matchers = [
 					new matchersNs.Hashtag( { tagBuilder: tagBuilder, serviceName: this.hashtag } ),
 					new matchersNs.Email( { tagBuilder: tagBuilder } ),
@@ -19123,15 +19123,15 @@
 					new matchersNs.Twitter( { tagBuilder: tagBuilder } ),
 					new matchersNs.Url( { tagBuilder: tagBuilder, stripPrefix: this.stripPrefix } )
 				];
-	
+
 				return ( this.matchers = matchers );
-	
+
 			} else {
 				return this.matchers;
 			}
 		},
-	
-	
+
+
 		/**
 		 * Returns the {@link #tagBuilder} instance for this Autolinker instance, lazily instantiating it
 		 * if it does not yet exist.
@@ -19155,7 +19155,7 @@
 		 */
 		getTagBuilder : function() {
 			var tagBuilder = this.tagBuilder;
-	
+
 			if( !tagBuilder ) {
 				tagBuilder = this.tagBuilder = new Autolinker.AnchorTagBuilder( {
 					newWindow   : this.newWindow,
@@ -19163,20 +19163,20 @@
 					className   : this.className
 				} );
 			}
-	
+
 			return tagBuilder;
 		}
-	
+
 	};
-	
-	
+
+
 	// Autolinker Namespaces
-	
+
 	Autolinker.match = {};
 	Autolinker.matcher = {};
 	Autolinker.htmlParser = {};
 	Autolinker.truncate = {};
-	
+
 	/*global Autolinker */
 	/*jshint eqnull:true, boss:true */
 	/**
@@ -19186,15 +19186,15 @@
 	 * A few utility methods for Autolinker.
 	 */
 	Autolinker.Util = {
-	
+
 		/**
 		 * @property {Function} abstractMethod
 		 *
 		 * A function object which represents an abstract method.
 		 */
 		abstractMethod : function() { throw "abstract"; },
-	
-	
+
+
 		/**
 		 * @private
 		 * @property {RegExp} trimRegex
@@ -19203,8 +19203,8 @@
 		 * from a string.
 		 */
 		trimRegex : /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
-	
-	
+
+
 		/**
 		 * Assigns (shallow copies) the properties of `src` onto `dest`.
 		 *
@@ -19218,11 +19218,11 @@
 					dest[ prop ] = src[ prop ];
 				}
 			}
-	
+
 			return dest;
 		},
-	
-	
+
+
 		/**
 		 * Assigns (shallow copies) the properties of `src` onto `dest`, if the
 		 * corresponding property on `dest` === `undefined`.
@@ -19237,11 +19237,11 @@
 					dest[ prop ] = src[ prop ];
 				}
 			}
-	
+
 			return dest;
 		},
-	
-	
+
+
 		/**
 		 * Extends `superclass` to create a new subclass, adding the `protoProps` to the new subclass's prototype.
 		 *
@@ -19252,28 +19252,28 @@
 		 */
 		extend : function( superclass, protoProps ) {
 			var superclassProto = superclass.prototype;
-	
+
 			var F = function() {};
 			F.prototype = superclassProto;
-	
+
 			var subclass;
 			if( protoProps.hasOwnProperty( 'constructor' ) ) {
 				subclass = protoProps.constructor;
 			} else {
 				subclass = function() { superclassProto.constructor.apply( this, arguments ); };
 			}
-	
+
 			var subclassProto = subclass.prototype = new F();  // set up prototype chain
 			subclassProto.constructor = subclass;  // fix constructor property
 			subclassProto.superclass = superclassProto;
-	
+
 			delete protoProps.constructor;  // don't re-assign constructor property to the prototype, since a new function may have been created (`subclass`), which is now already there
 			Autolinker.Util.assign( subclassProto, protoProps );
-	
+
 			return subclass;
 		},
-	
-	
+
+
 		/**
 		 * Truncates the `str` at `len - ellipsisChars.length`, and adds the `ellipsisChars` to the
 		 * end of the string (by default, two periods: '..'). If the `str` length does not exceed
@@ -19291,8 +19291,8 @@
 			}
 			return str;
 		},
-	
-	
+
+
 		/**
 		 * Supports `Array.prototype.indexOf()` functionality for old IE (IE8 and below).
 		 *
@@ -19303,7 +19303,7 @@
 		indexOf : function( arr, element ) {
 			if( Array.prototype.indexOf ) {
 				return arr.indexOf( element );
-	
+
 			} else {
 				for( var i = 0, len = arr.length; i < len; i++ ) {
 					if( arr[ i ] === element ) return i;
@@ -19311,8 +19311,8 @@
 				return -1;
 			}
 		},
-	
-	
+
+
 		/**
 		 * Removes array elements based on a filtering function. Mutates the input
 		 * array.
@@ -19334,8 +19334,8 @@
 				}
 			}
 		},
-	
-	
+
+
 		/**
 		 * Performs the functionality of what modern browsers do when `String.prototype.split()` is called
 		 * with a regular expression that contains capturing parenthesis.
@@ -19361,23 +19361,23 @@
 		 */
 		splitAndCapture : function( str, splitRegex ) {
 			if( !splitRegex.global ) throw new Error( "`splitRegex` must have the 'g' flag set" );
-	
+
 			var result = [],
 			    lastIdx = 0,
 			    match;
-	
+
 			while( match = splitRegex.exec( str ) ) {
 				result.push( str.substring( lastIdx, match.index ) );
 				result.push( match[ 0 ] );  // push the splitting char(s)
-	
+
 				lastIdx = match.index + match[ 0 ].length;
 			}
 			result.push( str.substring( lastIdx ) );
-	
+
 			return result;
 		},
-	
-	
+
+
 		/**
 		 * Trims the leading and trailing whitespace from a string.
 		 *
@@ -19387,7 +19387,7 @@
 		trim : function( str ) {
 			return str.replace( this.trimRegex, '' );
 		}
-	
+
 	};
 	/*global Autolinker */
 	/*jshint boss:true */
@@ -19466,7 +19466,7 @@
 	 *     //   Test <button title="Load URL: http://google.com">Load URL: google.com</button>
 	 */
 	Autolinker.HtmlTag = Autolinker.Util.extend( Object, {
-	
+
 		/**
 		 * @cfg {String} tagName
 		 *
@@ -19475,14 +19475,14 @@
 		 * Not required at instantiation time, but should be set using {@link #setTagName} before {@link #toAnchorString}
 		 * is executed.
 		 */
-	
+
 		/**
 		 * @cfg {Object.<String, String>} attrs
 		 *
 		 * An key/value Object (map) of attributes to create the tag with. The keys are the attribute names, and the
 		 * values are the attribute values.
 		 */
-	
+
 		/**
 		 * @cfg {String} innerHtml
 		 *
@@ -19492,15 +19492,15 @@
 		 * naming inconsistency that the DOM developers created with `XMLHttpRequest`). You may alternatively use {@link #innerHTML}
 		 * if you prefer, but this one is recommended.
 		 */
-	
+
 		/**
 		 * @cfg {String} innerHTML
 		 *
 		 * Alias of {@link #innerHtml}, accepted for consistency with the browser DOM api, but prefer the camelCased version
 		 * for acronym names.
 		 */
-	
-	
+
+
 		/**
 		 * @protected
 		 * @property {RegExp} whitespaceRegex
@@ -19508,19 +19508,19 @@
 		 * Regular expression used to match whitespace in a string of CSS classes.
 		 */
 		whitespaceRegex : /\s+/,
-	
-	
+
+
 		/**
 		 * @constructor
 		 * @param {Object} [cfg] The configuration properties for this class, in an Object (map)
 		 */
 		constructor : function( cfg ) {
 			Autolinker.Util.assign( this, cfg );
-	
+
 			this.innerHtml = this.innerHtml || this.innerHTML;  // accept either the camelCased form or the fully capitalized acronym
 		},
-	
-	
+
+
 		/**
 		 * Sets the tag name that will be used to generate the tag with.
 		 *
@@ -19531,8 +19531,8 @@
 			this.tagName = tagName;
 			return this;
 		},
-	
-	
+
+
 		/**
 		 * Retrieves the tag name.
 		 *
@@ -19541,8 +19541,8 @@
 		getTagName : function() {
 			return this.tagName || "";
 		},
-	
-	
+
+
 		/**
 		 * Sets an attribute on the HtmlTag.
 		 *
@@ -19553,11 +19553,11 @@
 		setAttr : function( attrName, attrValue ) {
 			var tagAttrs = this.getAttrs();
 			tagAttrs[ attrName ] = attrValue;
-	
+
 			return this;
 		},
-	
-	
+
+
 		/**
 		 * Retrieves an attribute from the HtmlTag. If the attribute does not exist, returns `undefined`.
 		 *
@@ -19567,8 +19567,8 @@
 		getAttr : function( attrName ) {
 			return this.getAttrs()[ attrName ];
 		},
-	
-	
+
+
 		/**
 		 * Sets one or more attributes on the HtmlTag.
 		 *
@@ -19578,11 +19578,11 @@
 		setAttrs : function( attrs ) {
 			var tagAttrs = this.getAttrs();
 			Autolinker.Util.assign( tagAttrs, attrs );
-	
+
 			return this;
 		},
-	
-	
+
+
 		/**
 		 * Retrieves the attributes Object (map) for the HtmlTag.
 		 *
@@ -19591,8 +19591,8 @@
 		getAttrs : function() {
 			return this.attrs || ( this.attrs = {} );
 		},
-	
-	
+
+
 		/**
 		 * Sets the provided `cssClass`, overwriting any current CSS classes on the HtmlTag.
 		 *
@@ -19602,8 +19602,8 @@
 		setClass : function( cssClass ) {
 			return this.setAttr( 'class', cssClass );
 		},
-	
-	
+
+
 		/**
 		 * Convenience method to add one or more CSS classes to the HtmlTag. Will not add duplicate CSS classes.
 		 *
@@ -19617,18 +19617,18 @@
 			    classes = ( !classAttr ) ? [] : classAttr.split( whitespaceRegex ),
 			    newClasses = cssClass.split( whitespaceRegex ),
 			    newClass;
-	
+
 			while( newClass = newClasses.shift() ) {
 				if( indexOf( classes, newClass ) === -1 ) {
 					classes.push( newClass );
 				}
 			}
-	
+
 			this.getAttrs()[ 'class' ] = classes.join( " " );
 			return this;
 		},
-	
-	
+
+
 		/**
 		 * Convenience method to remove one or more CSS classes from the HtmlTag.
 		 *
@@ -19642,19 +19642,19 @@
 			    classes = ( !classAttr ) ? [] : classAttr.split( whitespaceRegex ),
 			    removeClasses = cssClass.split( whitespaceRegex ),
 			    removeClass;
-	
+
 			while( classes.length && ( removeClass = removeClasses.shift() ) ) {
 				var idx = indexOf( classes, removeClass );
 				if( idx !== -1 ) {
 					classes.splice( idx, 1 );
 				}
 			}
-	
+
 			this.getAttrs()[ 'class' ] = classes.join( " " );
 			return this;
 		},
-	
-	
+
+
 		/**
 		 * Convenience method to retrieve the CSS class(es) for the HtmlTag, which will each be separated by spaces when
 		 * there are multiple.
@@ -19664,8 +19664,8 @@
 		getClass : function() {
 			return this.getAttrs()[ 'class' ] || "";
 		},
-	
-	
+
+
 		/**
 		 * Convenience method to check if the tag has a CSS class or not.
 		 *
@@ -19675,8 +19675,8 @@
 		hasClass : function( cssClass ) {
 			return ( ' ' + this.getClass() + ' ' ).indexOf( ' ' + cssClass + ' ' ) !== -1;
 		},
-	
-	
+
+
 		/**
 		 * Sets the inner HTML for the tag.
 		 *
@@ -19685,11 +19685,11 @@
 		 */
 		setInnerHtml : function( html ) {
 			this.innerHtml = html;
-	
+
 			return this;
 		},
-	
-	
+
+
 		/**
 		 * Retrieves the inner HTML for the tag.
 		 *
@@ -19698,8 +19698,8 @@
 		getInnerHtml : function() {
 			return this.innerHtml || "";
 		},
-	
-	
+
+
 		/**
 		 * Override of superclass method used to generate the HTML string for the tag.
 		 *
@@ -19708,13 +19708,13 @@
 		toAnchorString : function() {
 			var tagName = this.getTagName(),
 			    attrsStr = this.buildAttrsStr();
-	
+
 			attrsStr = ( attrsStr ) ? ' ' + attrsStr : '';  // prepend a space if there are actually attributes
-	
+
 			return [ '<', tagName, attrsStr, '>', this.getInnerHtml(), '</', tagName, '>' ].join( "" );
 		},
-	
-	
+
+
 		/**
 		 * Support method for {@link #toAnchorString}, returns the string space-separated key="value" pairs, used to populate
 		 * the stringified HtmlTag.
@@ -19724,10 +19724,10 @@
 		 */
 		buildAttrsStr : function() {
 			if( !this.attrs ) return "";  // no `attrs` Object (map) has been set, return empty string
-	
+
 			var attrs = this.getAttrs(),
 			    attrsArr = [];
-	
+
 			for( var prop in attrs ) {
 				if( attrs.hasOwnProperty( prop ) ) {
 					attrsArr.push( prop + '="' + attrs[ prop ] + '"' );
@@ -19735,9 +19735,9 @@
 			}
 			return attrsArr.join( " " );
 		}
-	
+
 	} );
-	
+
 	/*global Autolinker */
 	/**
 	 * @class Autolinker.RegexLib
@@ -19750,7 +19750,7 @@
 	 * regular expressions that are shared between source files.
 	 */
 	Autolinker.RegexLib = (function() {
-	
+
 		/**
 		 * The string form of a regular expression that would match all of the
 		 * alphabetic ("letter") chars in the unicode character set when placed in a
@@ -19767,7 +19767,7 @@
 		 * @type {String}
 		 */
 		var alphaCharsStr = 'A-Za-z\\xAA\\xB5\\xBA\\xC0-\\xD6\\xD8-\\xF6\\xF8-\u02C1\u02C6-\u02D1\u02E0-\u02E4\u02EC\u02EE\u0370-\u0374\u0376\u0377\u037A-\u037D\u037F\u0386\u0388-\u038A\u038C\u038E-\u03A1\u03A3-\u03F5\u03F7-\u0481\u048A-\u052F\u0531-\u0556\u0559\u0561-\u0587\u05D0-\u05EA\u05F0-\u05F2\u0620-\u064A\u066E\u066F\u0671-\u06D3\u06D5\u06E5\u06E6\u06EE\u06EF\u06FA-\u06FC\u06FF\u0710\u0712-\u072F\u074D-\u07A5\u07B1\u07CA-\u07EA\u07F4\u07F5\u07FA\u0800-\u0815\u081A\u0824\u0828\u0840-\u0858\u08A0-\u08B4\u0904-\u0939\u093D\u0950\u0958-\u0961\u0971-\u0980\u0985-\u098C\u098F\u0990\u0993-\u09A8\u09AA-\u09B0\u09B2\u09B6-\u09B9\u09BD\u09CE\u09DC\u09DD\u09DF-\u09E1\u09F0\u09F1\u0A05-\u0A0A\u0A0F\u0A10\u0A13-\u0A28\u0A2A-\u0A30\u0A32\u0A33\u0A35\u0A36\u0A38\u0A39\u0A59-\u0A5C\u0A5E\u0A72-\u0A74\u0A85-\u0A8D\u0A8F-\u0A91\u0A93-\u0AA8\u0AAA-\u0AB0\u0AB2\u0AB3\u0AB5-\u0AB9\u0ABD\u0AD0\u0AE0\u0AE1\u0AF9\u0B05-\u0B0C\u0B0F\u0B10\u0B13-\u0B28\u0B2A-\u0B30\u0B32\u0B33\u0B35-\u0B39\u0B3D\u0B5C\u0B5D\u0B5F-\u0B61\u0B71\u0B83\u0B85-\u0B8A\u0B8E-\u0B90\u0B92-\u0B95\u0B99\u0B9A\u0B9C\u0B9E\u0B9F\u0BA3\u0BA4\u0BA8-\u0BAA\u0BAE-\u0BB9\u0BD0\u0C05-\u0C0C\u0C0E-\u0C10\u0C12-\u0C28\u0C2A-\u0C39\u0C3D\u0C58-\u0C5A\u0C60\u0C61\u0C85-\u0C8C\u0C8E-\u0C90\u0C92-\u0CA8\u0CAA-\u0CB3\u0CB5-\u0CB9\u0CBD\u0CDE\u0CE0\u0CE1\u0CF1\u0CF2\u0D05-\u0D0C\u0D0E-\u0D10\u0D12-\u0D3A\u0D3D\u0D4E\u0D5F-\u0D61\u0D7A-\u0D7F\u0D85-\u0D96\u0D9A-\u0DB1\u0DB3-\u0DBB\u0DBD\u0DC0-\u0DC6\u0E01-\u0E30\u0E32\u0E33\u0E40-\u0E46\u0E81\u0E82\u0E84\u0E87\u0E88\u0E8A\u0E8D\u0E94-\u0E97\u0E99-\u0E9F\u0EA1-\u0EA3\u0EA5\u0EA7\u0EAA\u0EAB\u0EAD-\u0EB0\u0EB2\u0EB3\u0EBD\u0EC0-\u0EC4\u0EC6\u0EDC-\u0EDF\u0F00\u0F40-\u0F47\u0F49-\u0F6C\u0F88-\u0F8C\u1000-\u102A\u103F\u1050-\u1055\u105A-\u105D\u1061\u1065\u1066\u106E-\u1070\u1075-\u1081\u108E\u10A0-\u10C5\u10C7\u10CD\u10D0-\u10FA\u10FC-\u1248\u124A-\u124D\u1250-\u1256\u1258\u125A-\u125D\u1260-\u1288\u128A-\u128D\u1290-\u12B0\u12B2-\u12B5\u12B8-\u12BE\u12C0\u12C2-\u12C5\u12C8-\u12D6\u12D8-\u1310\u1312-\u1315\u1318-\u135A\u1380-\u138F\u13A0-\u13F5\u13F8-\u13FD\u1401-\u166C\u166F-\u167F\u1681-\u169A\u16A0-\u16EA\u16F1-\u16F8\u1700-\u170C\u170E-\u1711\u1720-\u1731\u1740-\u1751\u1760-\u176C\u176E-\u1770\u1780-\u17B3\u17D7\u17DC\u1820-\u1877\u1880-\u18A8\u18AA\u18B0-\u18F5\u1900-\u191E\u1950-\u196D\u1970-\u1974\u1980-\u19AB\u19B0-\u19C9\u1A00-\u1A16\u1A20-\u1A54\u1AA7\u1B05-\u1B33\u1B45-\u1B4B\u1B83-\u1BA0\u1BAE\u1BAF\u1BBA-\u1BE5\u1C00-\u1C23\u1C4D-\u1C4F\u1C5A-\u1C7D\u1CE9-\u1CEC\u1CEE-\u1CF1\u1CF5\u1CF6\u1D00-\u1DBF\u1E00-\u1F15\u1F18-\u1F1D\u1F20-\u1F45\u1F48-\u1F4D\u1F50-\u1F57\u1F59\u1F5B\u1F5D\u1F5F-\u1F7D\u1F80-\u1FB4\u1FB6-\u1FBC\u1FBE\u1FC2-\u1FC4\u1FC6-\u1FCC\u1FD0-\u1FD3\u1FD6-\u1FDB\u1FE0-\u1FEC\u1FF2-\u1FF4\u1FF6-\u1FFC\u2071\u207F\u2090-\u209C\u2102\u2107\u210A-\u2113\u2115\u2119-\u211D\u2124\u2126\u2128\u212A-\u212D\u212F-\u2139\u213C-\u213F\u2145-\u2149\u214E\u2183\u2184\u2C00-\u2C2E\u2C30-\u2C5E\u2C60-\u2CE4\u2CEB-\u2CEE\u2CF2\u2CF3\u2D00-\u2D25\u2D27\u2D2D\u2D30-\u2D67\u2D6F\u2D80-\u2D96\u2DA0-\u2DA6\u2DA8-\u2DAE\u2DB0-\u2DB6\u2DB8-\u2DBE\u2DC0-\u2DC6\u2DC8-\u2DCE\u2DD0-\u2DD6\u2DD8-\u2DDE\u2E2F\u3005\u3006\u3031-\u3035\u303B\u303C\u3041-\u3096\u309D-\u309F\u30A1-\u30FA\u30FC-\u30FF\u3105-\u312D\u3131-\u318E\u31A0-\u31BA\u31F0-\u31FF\u3400-\u4DB5\u4E00-\u9FD5\uA000-\uA48C\uA4D0-\uA4FD\uA500-\uA60C\uA610-\uA61F\uA62A\uA62B\uA640-\uA66E\uA67F-\uA69D\uA6A0-\uA6E5\uA717-\uA71F\uA722-\uA788\uA78B-\uA7AD\uA7B0-\uA7B7\uA7F7-\uA801\uA803-\uA805\uA807-\uA80A\uA80C-\uA822\uA840-\uA873\uA882-\uA8B3\uA8F2-\uA8F7\uA8FB\uA8FD\uA90A-\uA925\uA930-\uA946\uA960-\uA97C\uA984-\uA9B2\uA9CF\uA9E0-\uA9E4\uA9E6-\uA9EF\uA9FA-\uA9FE\uAA00-\uAA28\uAA40-\uAA42\uAA44-\uAA4B\uAA60-\uAA76\uAA7A\uAA7E-\uAAAF\uAAB1\uAAB5\uAAB6\uAAB9-\uAABD\uAAC0\uAAC2\uAADB-\uAADD\uAAE0-\uAAEA\uAAF2-\uAAF4\uAB01-\uAB06\uAB09-\uAB0E\uAB11-\uAB16\uAB20-\uAB26\uAB28-\uAB2E\uAB30-\uAB5A\uAB5C-\uAB65\uAB70-\uABE2\uAC00-\uD7A3\uD7B0-\uD7C6\uD7CB-\uD7FB\uF900-\uFA6D\uFA70-\uFAD9\uFB00-\uFB06\uFB13-\uFB17\uFB1D\uFB1F-\uFB28\uFB2A-\uFB36\uFB38-\uFB3C\uFB3E\uFB40\uFB41\uFB43\uFB44\uFB46-\uFBB1\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFB\uFE70-\uFE74\uFE76-\uFEFC\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFBE\uFFC2-\uFFC7\uFFCA-\uFFCF\uFFD2-\uFFD7\uFFDA-\uFFDC';
-	
+
 		/**
 		 * The string form of a regular expression that would match all of the
 		 * decimal number chars in the unicode character set when placed in a RegExp
@@ -19783,22 +19783,22 @@
 		 * @type {String}
 		 */
 		var decimalNumbersStr = '0-9\u0660-\u0669\u06F0-\u06F9\u07C0-\u07C9\u0966-\u096F\u09E6-\u09EF\u0A66-\u0A6F\u0AE6-\u0AEF\u0B66-\u0B6F\u0BE6-\u0BEF\u0C66-\u0C6F\u0CE6-\u0CEF\u0D66-\u0D6F\u0DE6-\u0DEF\u0E50-\u0E59\u0ED0-\u0ED9\u0F20-\u0F29\u1040-\u1049\u1090-\u1099\u17E0-\u17E9\u1810-\u1819\u1946-\u194F\u19D0-\u19D9\u1A80-\u1A89\u1A90-\u1A99\u1B50-\u1B59\u1BB0-\u1BB9\u1C40-\u1C49\u1C50-\u1C59\uA620-\uA629\uA8D0-\uA8D9\uA900-\uA909\uA9D0-\uA9D9\uA9F0-\uA9F9\uAA50-\uAA59\uABF0-\uABF9\uFF10-\uFF19';
-	
-	
+
+
 		// See documentation below
 		var alphaNumericCharsStr = alphaCharsStr + decimalNumbersStr;
-	
-	
+
+
 		// See documentation below
 		var domainNameRegex = new RegExp( '[' + alphaNumericCharsStr + '.\\-]*[' + alphaNumericCharsStr + '\\-]' );
-	
-	
+
+
 		// See documentation below
 		var tldRegex = /(?:travelersinsurance|sandvikcoromant|kerryproperties|cancerresearch|weatherchannel|kerrylogistics|spreadbetting|international|wolterskluwer|lifeinsurance|construction|pamperedchef|scholarships|versicherung|bridgestone|creditunion|kerryhotels|investments|productions|blackfriday|enterprises|lamborghini|photography|motorcycles|williamhill|playstation|contractors|barclaycard|accountants|redumbrella|engineering|management|telefonica|protection|consulting|tatamotors|creditcard|vlaanderen|schaeffler|associates|properties|foundation|republican|bnpparibas|boehringer|eurovision|extraspace|industries|immobilien|university|technology|volkswagen|healthcare|restaurant|cuisinella|vistaprint|apartments|accountant|travelers|homedepot|institute|vacations|furniture|fresenius|insurance|christmas|bloomberg|solutions|barcelona|firestone|financial|kuokgroup|fairwinds|community|passagens|goldpoint|equipment|lifestyle|yodobashi|aquarelle|marketing|analytics|education|amsterdam|statefarm|melbourne|allfinanz|directory|microsoft|stockholm|montblanc|accenture|lancaster|landrover|everbank|istanbul|graphics|grainger|ipiranga|softbank|attorney|pharmacy|saarland|catering|airforce|yokohama|mortgage|frontier|mutuelle|stcgroup|memorial|pictures|football|symantec|cipriani|ventures|telecity|cityeats|verisign|flsmidth|boutique|cleaning|firmdale|clinique|clothing|redstone|infiniti|deloitte|feedback|services|broadway|plumbing|commbank|training|barclays|exchange|computer|brussels|software|delivery|barefoot|builders|business|bargains|engineer|holdings|download|security|helsinki|lighting|movistar|discount|hdfcbank|supplies|marriott|property|diamonds|capetown|partners|democrat|jpmorgan|bradesco|budapest|rexroth|zuerich|shriram|academy|science|support|youtube|singles|surgery|alibaba|statoil|dentist|schwarz|android|cruises|cricket|digital|markets|starhub|systems|courses|coupons|netbank|country|domains|corsica|network|neustar|realtor|lincoln|limited|schmidt|yamaxun|cooking|contact|auction|spiegel|liaison|leclerc|latrobe|lasalle|abogado|compare|lanxess|exposed|express|company|cologne|college|avianca|lacaixa|fashion|recipes|ferrero|komatsu|storage|wanggou|clubmed|sandvik|fishing|fitness|bauhaus|kitchen|flights|florist|flowers|watches|weather|temasek|samsung|bentley|forsale|channel|theater|frogans|theatre|okinawa|website|tickets|jewelry|gallery|tiffany|iselect|shiksha|brother|organic|wedding|genting|toshiba|origins|philips|hyundai|hotmail|hoteles|hosting|rentals|windows|cartier|bugatti|holiday|careers|whoswho|hitachi|panerai|caravan|reviews|guitars|capital|trading|hamburg|hangout|finance|stream|family|abbott|health|review|travel|report|hermes|hiphop|gratis|career|toyota|hockey|dating|repair|google|social|soccer|reisen|global|otsuka|giving|unicom|casino|photos|center|broker|rocher|orange|bostik|garden|insure|ryukyu|bharti|safety|physio|sakura|oracle|online|jaguar|gallup|piaget|tienda|futbol|pictet|joburg|webcam|berlin|office|juegos|kaufen|chanel|chrome|xihuan|church|tennis|circle|kinder|flickr|bayern|claims|clinic|viajes|nowruz|xperia|norton|yachts|studio|coffee|camera|sanofi|nissan|author|expert|events|comsec|lawyer|tattoo|viking|estate|villas|condos|realty|yandex|energy|emerck|virgin|vision|durban|living|school|coupon|london|taobao|natura|taipei|nagoya|luxury|walter|aramco|sydney|madrid|credit|maison|makeup|schule|market|anquan|direct|design|swatch|suzuki|alsace|vuelos|dental|alipay|voyage|shouji|voting|airtel|mutual|degree|supply|agency|museum|mobily|dealer|monash|select|mormon|active|moscow|racing|datsun|quebec|nissay|rodeo|email|gifts|works|photo|chloe|edeka|cheap|earth|vista|tushu|koeln|glass|shoes|globo|tunes|gmail|nokia|space|kyoto|black|ricoh|seven|lamer|sener|epson|cisco|praxi|trust|citic|crown|shell|lease|green|legal|lexus|ninja|tatar|gripe|nikon|group|video|wales|autos|gucci|party|nexus|guide|linde|adult|parts|amica|lixil|boats|azure|loans|locus|cymru|lotte|lotto|stada|click|poker|quest|dabur|lupin|nadex|paris|faith|dance|canon|place|gives|trade|skype|rocks|mango|cloud|boots|smile|final|swiss|homes|honda|media|horse|cards|deals|watch|bosch|house|pizza|miami|osaka|tours|total|xerox|coach|sucks|style|delta|toray|iinet|tools|money|codes|beats|tokyo|salon|archi|movie|baidu|study|actor|yahoo|store|apple|world|forex|today|bible|tmall|tirol|irish|tires|forum|reise|vegas|vodka|sharp|omega|weber|jetzt|audio|promo|build|bingo|chase|gallo|drive|dubai|rehab|press|solar|sale|beer|bbva|bank|band|auto|sapo|sarl|saxo|audi|asia|arte|arpa|army|yoga|ally|zara|scor|scot|sexy|seat|zero|seek|aero|adac|zone|aarp|maif|meet|meme|menu|surf|mini|mobi|mtpc|porn|desi|star|ltda|name|talk|navy|love|loan|live|link|news|limo|like|spot|life|nico|lidl|lgbt|land|taxi|team|tech|kred|kpmg|sony|song|kiwi|kddi|jprs|jobs|sohu|java|itau|tips|info|immo|icbc|hsbc|town|host|page|toys|here|help|pars|haus|guru|guge|tube|goog|golf|gold|sncf|gmbh|gift|ggee|gent|gbiz|game|vana|pics|fund|ford|ping|pink|fish|film|fast|farm|play|fans|fail|plus|skin|pohl|fage|moda|post|erni|dvag|prod|doha|prof|docs|viva|diet|luxe|site|dell|sina|dclk|show|qpon|date|vote|cyou|voto|read|coop|cool|wang|club|city|chat|cern|cash|reit|rent|casa|cars|care|camp|rest|call|cafe|weir|wien|rich|wiki|buzz|wine|book|bond|room|work|rsvp|shia|ruhr|blue|bing|shaw|bike|safe|xbox|best|pwc|mtn|lds|aig|boo|fyi|nra|nrw|ntt|car|gal|obi|zip|aeg|vin|how|one|ong|onl|dad|ooo|bet|esq|org|htc|bar|uol|ibm|ovh|gdn|ice|icu|uno|gea|ifm|bot|top|wtf|lol|day|pet|eus|wtc|ubs|tvs|aco|ing|ltd|ink|tab|abb|afl|cat|int|pid|pin|bid|cba|gle|com|cbn|ads|man|wed|ceb|gmo|sky|ist|gmx|tui|mba|fan|ski|iwc|app|pro|med|ceo|jcb|jcp|goo|dev|men|aaa|meo|pub|jlc|bom|jll|gop|jmp|mil|got|gov|win|jot|mma|joy|trv|red|cfa|cfd|bio|moe|moi|mom|ren|biz|aws|xin|bbc|dnp|buy|kfh|mov|thd|xyz|fit|kia|rio|rip|kim|dog|vet|nyc|bcg|mtr|bcn|bms|bmw|run|bzh|rwe|tel|stc|axa|kpn|fly|krd|cab|bnl|foo|crs|eat|tci|sap|srl|nec|sas|net|cal|sbs|sfr|sca|scb|csc|edu|new|xxx|hiv|fox|wme|ngo|nhk|vip|sex|frl|lat|yun|law|you|tax|soy|sew|om|ac|hu|se|sc|sg|sh|sb|sa|rw|ru|rs|ro|re|qa|py|si|pw|pt|ps|sj|sk|pr|pn|pm|pl|sl|sm|pk|sn|ph|so|pg|pf|pe|pa|zw|nz|nu|nr|np|no|nl|ni|ng|nf|sr|ne|st|nc|na|mz|my|mx|mw|mv|mu|mt|ms|mr|mq|mp|mo|su|mn|mm|ml|mk|mh|mg|me|sv|md|mc|sx|sy|ma|ly|lv|sz|lu|lt|ls|lr|lk|li|lc|lb|la|tc|kz|td|ky|kw|kr|kp|kn|km|ki|kh|tf|tg|th|kg|ke|jp|jo|jm|je|it|is|ir|tj|tk|tl|tm|iq|tn|to|io|in|im|il|ie|ad|sd|ht|hr|hn|hm|tr|hk|gy|gw|gu|gt|gs|gr|gq|tt|gp|gn|gm|gl|tv|gi|tw|tz|ua|gh|ug|uk|gg|gf|ge|gd|us|uy|uz|va|gb|ga|vc|ve|fr|fo|fm|fk|fj|vg|vi|fi|eu|et|es|er|eg|ee|ec|dz|do|dm|dk|vn|dj|de|cz|cy|cx|cw|vu|cv|cu|cr|co|cn|cm|cl|ck|ci|ch|cg|cf|cd|cc|ca|wf|bz|by|bw|bv|bt|bs|br|bo|bn|bm|bj|bi|ws|bh|bg|bf|be|bd|bb|ba|az|ax|aw|au|at|as|ye|ar|aq|ao|am|al|yt|ai|za|ag|af|ae|zm|id)\b/;
-	
-	
+
+
 		return {
-	
+
 			/**
 			 * The string form of a regular expression that would match all of the
 			 * letters and decimal number chars in the unicode character set when placed
@@ -19810,7 +19810,7 @@
 			 * @property {String} alphaNumericCharsStr
 			 */
 			alphaNumericCharsStr : alphaNumericCharsStr,
-	
+
 			/**
 			 * A regular expression to match domain names of a URL or email address.
 			 * Ex: 'google', 'yahoo', 'some-other-company', etc.
@@ -19818,7 +19818,7 @@
 			 * @property {RegExp} domainNameRegex
 			 */
 			domainNameRegex : domainNameRegex,
-	
+
 			/**
 			 * A regular expression to match top level domains (TLDs) for a URL or
 			 * email address. Ex: 'com', 'org', 'net', etc.
@@ -19826,10 +19826,10 @@
 			 * @property {RegExp} tldRegex
 			 */
 			tldRegex : tldRegex
-	
+
 		};
-	
-	
+
+
 	}() );
 	/*global Autolinker */
 	/*jshint sub:true */
@@ -19860,23 +19860,23 @@
 	 *     //   Test <a href="http://google.com" target="_blank" rel="nofollow">google.com</a>
 	 */
 	Autolinker.AnchorTagBuilder = Autolinker.Util.extend( Object, {
-	
+
 		/**
 		 * @cfg {Boolean} newWindow
 		 * @inheritdoc Autolinker#newWindow
 		 */
-	
+
 		/**
 		 * @cfg {Object} truncate
 		 * @inheritdoc Autolinker#truncate
 		 */
-	
+
 		/**
 		 * @cfg {String} className
 		 * @inheritdoc Autolinker#className
 		 */
-	
-	
+
+
 		/**
 		 * @constructor
 		 * @param {Object} [cfg] The configuration options for the AnchorTagBuilder instance, specified in an Object (map).
@@ -19884,8 +19884,8 @@
 		constructor : function( cfg ) {
 			Autolinker.Util.assign( this, cfg );
 		},
-	
-	
+
+
 		/**
 		 * Generates the actual anchor (&lt;a&gt;) tag to use in place of the
 		 * matched text, via its `match` object.
@@ -19901,8 +19901,8 @@
 				innerHtml : this.processAnchorText( match.getAnchorText() )
 			} );
 		},
-	
-	
+
+
 		/**
 		 * Creates the Object (map) of the HTML attributes for the anchor (&lt;a&gt;)
 		 *   tag being generated.
@@ -19917,7 +19917,7 @@
 			var attrs = {
 				'href' : anchorHref  // we'll always have the `href` attribute
 			};
-	
+
 			var cssClass = this.createCssClass( matchType );
 			if( cssClass ) {
 				attrs[ 'class' ] = cssClass;
@@ -19926,11 +19926,11 @@
 				attrs[ 'target' ] = "_blank";
 				attrs[ 'rel' ] = "noopener noreferrer";
 			}
-	
+
 			return attrs;
 		},
-	
-	
+
+
 		/**
 		 * Creates the CSS class that will be used for a given anchor tag, based on
 		 * the `matchType` and the {@link #className} config.
@@ -19944,14 +19944,14 @@
 		 */
 		createCssClass : function( matchType ) {
 			var className = this.className;
-	
+
 			if( !className )
 				return "";
 			else
 				return className + " " + className + "-" + matchType;  // ex: "myLink myLink-url", "myLink myLink-email", "myLink myLink-phone", "myLink myLink-twitter", or "myLink myLink-hashtag"
 		},
-	
-	
+
+
 		/**
 		 * Processes the `anchorText` by truncating the text according to the
 		 * {@link #truncate} config.
@@ -19963,11 +19963,11 @@
 		 */
 		processAnchorText : function( anchorText ) {
 			anchorText = this.doTruncate( anchorText );
-	
+
 			return anchorText;
 		},
-	
-	
+
+
 		/**
 		 * Performs the truncation of the `anchorText` based on the {@link #truncate}
 		 * option. If the `anchorText` is longer than the length specified by the
@@ -19982,23 +19982,23 @@
 		doTruncate : function( anchorText ) {
 			var truncate = this.truncate;
 			if( !truncate || !truncate.length ) return anchorText;
-	
+
 			var truncateLength = truncate.length,
 				truncateLocation = truncate.location;
-	
+
 			if( truncateLocation === 'smart' ) {
 				return Autolinker.truncate.TruncateSmart( anchorText, truncateLength, '..' );
-	
+
 			} else if( truncateLocation === 'middle' ) {
 				return Autolinker.truncate.TruncateMiddle( anchorText, truncateLength, '..' );
-	
+
 			} else {
 				return Autolinker.truncate.TruncateEnd( anchorText, truncateLength, '..' );
 			}
 		}
-	
+
 	} );
-	
+
 	/*global Autolinker */
 	/**
 	 * @class Autolinker.htmlParser.HtmlParser
@@ -20011,7 +20011,7 @@
 	 * around" HTML tags.
 	 */
 	Autolinker.htmlParser.HtmlParser = Autolinker.Util.extend( Object, {
-	
+
 		/**
 		 * @private
 		 * @property {RegExp} htmlRegex
@@ -20033,16 +20033,16 @@
 			    attrNameRegex = /[^\s\0"'>\/=\x01-\x1F\x7F]+/,   // the unicode range accounts for excluding control chars, and the delete char
 			    attrValueRegex = /(?:"[^"]*?"|'[^']*?'|[^'"=<>`\s]+)/, // double quoted, single quoted, or unquoted attribute values
 			    nameEqualsValueRegex = attrNameRegex.source + '(?:\\s*=\\s*' + attrValueRegex.source + ')?';  // optional '=[value]'
-	
+
 			return new RegExp( [
 				// for <!DOCTYPE> tag. Ex: <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">)
 				'(?:',
 					'<(!DOCTYPE)',  // *** Capturing Group 1 - If it's a doctype tag
-	
+
 						// Zero or more attributes following the tag name
 						'(?:',
 							'\\s+',  // one or more whitespace chars before an attribute
-	
+
 							// Either:
 							// A. attr="value", or
 							// B. "value" alone (To cover example doctype tag: <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">)
@@ -20050,39 +20050,39 @@
 						')*',
 					'>',
 				')',
-	
+
 				'|',
-	
+
 				// All other HTML tags (i.e. tags that are not <!DOCTYPE>)
 				'(?:',
 					'<(/)?',  // Beginning of a tag or comment. Either '<' for a start tag, or '</' for an end tag.
 					          // *** Capturing Group 2: The slash or an empty string. Slash ('/') for end tag, empty string for start or self-closing tag.
-	
+
 						'(?:',
 							commentTagRegex.source,  // *** Capturing Group 3 - A Comment Tag's Text
-	
+
 							'|',
-	
+
 							'(?:',
-	
+
 								// *** Capturing Group 4 - The tag name
 								'(' + tagNameRegex.source + ')',
-	
+
 								// Zero or more attributes following the tag name
 								'(?:',
 									'\\s*',                // any number of whitespace chars before an attribute
 									nameEqualsValueRegex,  // attr="value" (with optional ="value" part)
 								')*',
-	
+
 								'\\s*/?',  // any trailing spaces and optional '/' before the closing '>'
-	
+
 							')',
 						')',
 					'>',
 				')'
 			].join( "" ), 'gi' );
 		} )(),
-	
+
 		/**
 		 * @private
 		 * @property {RegExp} htmlCharacterEntitiesRegex
@@ -20092,8 +20092,8 @@
 		 * Ignoring &amp; as it could be part of a query string -- handling it separately.
 		 */
 		htmlCharacterEntitiesRegex: /(&nbsp;|&#160;|&lt;|&#60;|&gt;|&#62;|&quot;|&#34;|&#39;)/gi,
-	
-	
+
+
 		/**
 		 * Parses an HTML string and returns a simple array of {@link Autolinker.htmlParser.HtmlNode HtmlNodes}
 		 * to represent the HTML structure of the input string.
@@ -20107,7 +20107,7 @@
 			    lastIndex = 0,
 			    textAndEntityNodes,
 			    nodes = [];  // will be the result of the method
-	
+
 			while( ( currentResult = htmlRegex.exec( html ) ) !== null ) {
 				var tagText = currentResult[ 0 ],
 				    commentText = currentResult[ 3 ], // if we've matched a comment
@@ -20115,38 +20115,38 @@
 				    isClosingTag = !!currentResult[ 2 ],
 				    offset = currentResult.index,
 				    inBetweenTagsText = html.substring( lastIndex, offset );
-	
+
 				// Push TextNodes and EntityNodes for any text found between tags
 				if( inBetweenTagsText ) {
 					textAndEntityNodes = this.parseTextAndEntityNodes( lastIndex, inBetweenTagsText );
 					nodes.push.apply( nodes, textAndEntityNodes );
 				}
-	
+
 				// Push the CommentNode or ElementNode
 				if( commentText ) {
 					nodes.push( this.createCommentNode( offset, tagText, commentText ) );
 				} else {
 					nodes.push( this.createElementNode( offset, tagText, tagName, isClosingTag ) );
 				}
-	
+
 				lastIndex = offset + tagText.length;
 			}
-	
+
 			// Process any remaining text after the last HTML element. Will process all of the text if there were no HTML elements.
 			if( lastIndex < html.length ) {
 				var text = html.substring( lastIndex );
-	
+
 				// Push TextNodes and EntityNodes for any text found between tags
 				if( text ) {
 					textAndEntityNodes = this.parseTextAndEntityNodes( lastIndex, text );
 					nodes.push.apply( nodes, textAndEntityNodes );
 				}
 			}
-	
+
 			return nodes;
 		},
-	
-	
+
+
 		/**
 		 * Parses text and HTML entity nodes from a given string. The input string
 		 * should not have any HTML tags (elements) within it.
@@ -20163,14 +20163,14 @@
 		parseTextAndEntityNodes : function( offset, text ) {
 			var nodes = [],
 			    textAndEntityTokens = Autolinker.Util.splitAndCapture( text, this.htmlCharacterEntitiesRegex );  // split at HTML entities, but include the HTML entities in the results array
-	
+
 			// Every even numbered token is a TextNode, and every odd numbered token is an EntityNode
 			// For example: an input `text` of "Test &quot;this&quot; today" would turn into the
 			//   `textAndEntityTokens`: [ 'Test ', '&quot;', 'this', '&quot;', ' today' ]
 			for( var i = 0, len = textAndEntityTokens.length; i < len; i += 2 ) {
 				var textToken = textAndEntityTokens[ i ],
 				    entityToken = textAndEntityTokens[ i + 1 ];
-	
+
 				if( textToken ) {
 					nodes.push( this.createTextNode( offset, textToken ) );
 					offset += textToken.length;
@@ -20182,8 +20182,8 @@
 			}
 			return nodes;
 		},
-	
-	
+
+
 		/**
 		 * Factory method to create an {@link Autolinker.htmlParser.CommentNode CommentNode}.
 		 *
@@ -20201,8 +20201,8 @@
 				comment: Autolinker.Util.trim( commentText )
 			} );
 		},
-	
-	
+
+
 		/**
 		 * Factory method to create an {@link Autolinker.htmlParser.ElementNode ElementNode}.
 		 *
@@ -20225,8 +20225,8 @@
 				closing : isClosingTag
 			} );
 		},
-	
-	
+
+
 		/**
 		 * Factory method to create a {@link Autolinker.htmlParser.EntityNode EntityNode}.
 		 *
@@ -20240,8 +20240,8 @@
 		createEntityNode : function( offset, text ) {
 			return new Autolinker.htmlParser.EntityNode( { offset: offset, text: text } );
 		},
-	
-	
+
+
 		/**
 		 * Factory method to create a {@link Autolinker.htmlParser.TextNode TextNode}.
 		 *
@@ -20254,7 +20254,7 @@
 		createTextNode : function( offset, text ) {
 			return new Autolinker.htmlParser.TextNode( { offset: offset, text: text } );
 		}
-	
+
 	} );
 	/*global Autolinker */
 	/**
@@ -20275,14 +20275,14 @@
 	 *    common ones such as &amp;quot; and &amp;nbsp;
 	 */
 	Autolinker.htmlParser.HtmlNode = Autolinker.Util.extend( Object, {
-	
+
 		/**
 		 * @cfg {Number} offset (required)
 		 *
 		 * The offset of the HTML node in the original text that was parsed.
 		 */
 		offset : undefined,
-	
+
 		/**
 		 * @cfg {String} text (required)
 		 *
@@ -20298,8 +20298,8 @@
 		 *   this will be the text of the HTML entity.
 		 */
 		text : undefined,
-	
-	
+
+
 		/**
 		 * @constructor
 		 * @param {Object} cfg The configuration properties for the Match instance,
@@ -20307,12 +20307,12 @@
 		 */
 		constructor : function( cfg ) {
 			Autolinker.Util.assign( this, cfg );
-	
+
 			if( this.offset == null ) throw new Error( '`offset` cfg required' );
 			if( this.text == null ) throw new Error( '`text` cfg required' );
 		},
-	
-	
+
+
 		/**
 		 * Returns a string name for the type of node that this class represents.
 		 *
@@ -20320,8 +20320,8 @@
 		 * @return {String}
 		 */
 		getType : Autolinker.Util.abstractMethod,
-	
-	
+
+
 		/**
 		 * Retrieves the {@link #offset} of the HtmlNode. This is the offset of the
 		 * HTML node in the original string that was parsed.
@@ -20331,8 +20331,8 @@
 		getOffset : function() {
 			return this.offset;
 		},
-	
-	
+
+
 		/**
 		 * Retrieves the {@link #text} for the HtmlNode.
 		 *
@@ -20341,7 +20341,7 @@
 		getText : function() {
 			return this.text;
 		}
-	
+
 	} );
 	/*global Autolinker */
 	/**
@@ -20355,7 +20355,7 @@
 	 * details.
 	 */
 	Autolinker.htmlParser.CommentNode = Autolinker.Util.extend( Autolinker.htmlParser.HtmlNode, {
-	
+
 		/**
 		 * @cfg {String} comment (required)
 		 *
@@ -20363,8 +20363,8 @@
 		 * trailing whitespace.
 		 */
 		comment : '',
-	
-	
+
+
 		/**
 		 * Returns a string name for the type of node that this class represents.
 		 *
@@ -20373,8 +20373,8 @@
 		getType : function() {
 			return 'comment';
 		},
-	
-	
+
+
 		/**
 		 * Returns the comment inside the comment tag.
 		 *
@@ -20383,7 +20383,7 @@
 		getComment : function() {
 			return this.comment;
 		}
-	
+
 	} );
 	/*global Autolinker */
 	/**
@@ -20396,14 +20396,14 @@
 	 * details.
 	 */
 	Autolinker.htmlParser.ElementNode = Autolinker.Util.extend( Autolinker.htmlParser.HtmlNode, {
-	
+
 		/**
 		 * @cfg {String} tagName (required)
 		 *
 		 * The name of the tag that was matched.
 		 */
 		tagName : '',
-	
+
 		/**
 		 * @cfg {Boolean} closing (required)
 		 *
@@ -20411,8 +20411,8 @@
 		 * tag.
 		 */
 		closing : false,
-	
-	
+
+
 		/**
 		 * Returns a string name for the type of node that this class represents.
 		 *
@@ -20421,8 +20421,8 @@
 		getType : function() {
 			return 'element';
 		},
-	
-	
+
+
 		/**
 		 * Returns the HTML element's (tag's) name. Ex: for an &lt;img&gt; tag,
 		 * returns "img".
@@ -20432,8 +20432,8 @@
 		getTagName : function() {
 			return this.tagName;
 		},
-	
-	
+
+
 		/**
 		 * Determines if the HTML element (tag) is a closing tag. Ex: &lt;div&gt;
 		 * returns `false`, while &lt;/div&gt; returns `true`.
@@ -20443,7 +20443,7 @@
 		isClosing : function() {
 			return this.closing;
 		}
-	
+
 	} );
 	/*global Autolinker */
 	/**
@@ -20461,7 +20461,7 @@
 	 * details.
 	 */
 	Autolinker.htmlParser.EntityNode = Autolinker.Util.extend( Autolinker.htmlParser.HtmlNode, {
-	
+
 		/**
 		 * Returns a string name for the type of node that this class represents.
 		 *
@@ -20470,7 +20470,7 @@
 		getType : function() {
 			return 'entity';
 		}
-	
+
 	} );
 	/*global Autolinker */
 	/**
@@ -20483,7 +20483,7 @@
 	 * details.
 	 */
 	Autolinker.htmlParser.TextNode = Autolinker.Util.extend( Autolinker.htmlParser.HtmlNode, {
-	
+
 		/**
 		 * Returns a string name for the type of node that this class represents.
 		 *
@@ -20492,7 +20492,7 @@
 		getType : function() {
 			return 'text';
 		}
-	
+
 	} );
 	/*global Autolinker */
 	/**
@@ -20527,27 +20527,27 @@
 	 * See the {@link Autolinker} class for more details on using the {@link Autolinker#replaceFn replaceFn}.
 	 */
 	Autolinker.match.Match = Autolinker.Util.extend( Object, {
-	
+
 		/**
 		 * @cfg {Autolinker.AnchorTagBuilder} tagBuilder (required)
 		 *
 		 * Reference to the AnchorTagBuilder instance to use to generate an anchor
 		 * tag for the Match.
 		 */
-	
+
 		/**
 		 * @cfg {String} matchedText (required)
 		 *
 		 * The original text that was matched by the {@link Autolinker.matcher.Matcher}.
 		 */
-	
+
 		/**
 		 * @cfg {Number} offset (required)
 		 *
 		 * The offset of where the match was made in the input string.
 		 */
-	
-	
+
+
 		/**
 		 * @constructor
 		 * @param {Object} cfg The configuration properties for the Match
@@ -20557,13 +20557,13 @@
 			if( cfg.tagBuilder == null ) throw new Error( '`tagBuilder` cfg required' );
 			if( cfg.matchedText == null ) throw new Error( '`matchedText` cfg required' );
 			if( cfg.offset == null ) throw new Error( '`offset` cfg required' );
-	
+
 			this.tagBuilder = cfg.tagBuilder;
 			this.matchedText = cfg.matchedText;
 			this.offset = cfg.offset;
 		},
-	
-	
+
+
 		/**
 		 * Returns a string name for the type of match that this class represents.
 		 *
@@ -20571,8 +20571,8 @@
 		 * @return {String}
 		 */
 		getType : Autolinker.Util.abstractMethod,
-	
-	
+
+
 		/**
 		 * Returns the original text that was matched.
 		 *
@@ -20581,8 +20581,8 @@
 		getMatchedText : function() {
 			return this.matchedText;
 		},
-	
-	
+
+
 		/**
 		 * Sets the {@link #offset} of where the match was made in the input string.
 		 *
@@ -20598,8 +20598,8 @@
 		setOffset : function( offset ) {
 			this.offset = offset;
 		},
-	
-	
+
+
 		/**
 		 * Returns the offset of where the match was made in the input string. This
 		 * is the 0-based index of the match.
@@ -20609,8 +20609,8 @@
 		getOffset : function() {
 			return this.offset;
 		},
-	
-	
+
+
 		/**
 		 * Returns the anchor href that should be generated for the match.
 		 *
@@ -20618,8 +20618,8 @@
 		 * @return {String}
 		 */
 		getAnchorHref : Autolinker.Util.abstractMethod,
-	
-	
+
+
 		/**
 		 * Returns the anchor text that should be generated for the match.
 		 *
@@ -20627,8 +20627,8 @@
 		 * @return {String}
 		 */
 		getAnchorText : Autolinker.Util.abstractMethod,
-	
-	
+
+
 		/**
 		 * Builds and returns an {@link Autolinker.HtmlTag} instance based on the
 		 * Match.
@@ -20647,7 +20647,7 @@
 		buildTag : function() {
 			return this.tagBuilder.build( this );
 		}
-	
+
 	} );
 	/*global Autolinker */
 	/**
@@ -20659,14 +20659,14 @@
 	 * See this class's superclass ({@link Autolinker.match.Match}) for more details.
 	 */
 	Autolinker.match.Email = Autolinker.Util.extend( Autolinker.match.Match, {
-	
+
 		/**
 		 * @cfg {String} email (required)
 		 *
 		 * The email address that was matched.
 		 */
-	
-	
+
+
 		/**
 		 * @constructor
 		 * @param {Object} cfg The configuration properties for the Match
@@ -20674,13 +20674,13 @@
 		 */
 		constructor : function( cfg ) {
 			Autolinker.match.Match.prototype.constructor.call( this, cfg );
-	
+
 			if( !cfg.email ) throw new Error( '`email` cfg required' );
-	
+
 			this.email = cfg.email;
 		},
-	
-	
+
+
 		/**
 		 * Returns a string name for the type of match that this class represents.
 		 *
@@ -20689,8 +20689,8 @@
 		getType : function() {
 			return 'email';
 		},
-	
-	
+
+
 		/**
 		 * Returns the email address that was matched.
 		 *
@@ -20699,8 +20699,8 @@
 		getEmail : function() {
 			return this.email;
 		},
-	
-	
+
+
 		/**
 		 * Returns the anchor href that should be generated for the match.
 		 *
@@ -20709,8 +20709,8 @@
 		getAnchorHref : function() {
 			return 'mailto:' + this.email;
 		},
-	
-	
+
+
 		/**
 		 * Returns the anchor text that should be generated for the match.
 		 *
@@ -20719,7 +20719,7 @@
 		getAnchorText : function() {
 			return this.email;
 		}
-	
+
 	} );
 	/*global Autolinker */
 	/**
@@ -20733,21 +20733,21 @@
 	 * details.
 	 */
 	Autolinker.match.Hashtag = Autolinker.Util.extend( Autolinker.match.Match, {
-	
+
 		/**
 		 * @cfg {String} serviceName
 		 *
 		 * The service to point hashtag matches to. See {@link Autolinker#hashtag}
 		 * for available values.
 		 */
-	
+
 		/**
 		 * @cfg {String} hashtag (required)
 		 *
 		 * The Hashtag that was matched, without the '#'.
 		 */
-	
-	
+
+
 		/**
 		 * @constructor
 		 * @param {Object} cfg The configuration properties for the Match
@@ -20755,15 +20755,15 @@
 		 */
 		constructor : function( cfg ) {
 			Autolinker.match.Match.prototype.constructor.call( this, cfg );
-	
+
 			// TODO: if( !serviceName ) throw new Error( '`serviceName` cfg required' );
 			if( !cfg.hashtag ) throw new Error( '`hashtag` cfg required' );
-	
+
 			this.serviceName = cfg.serviceName;
 			this.hashtag = cfg.hashtag;
 		},
-	
-	
+
+
 		/**
 		 * Returns the type of match that this class represents.
 		 *
@@ -20772,8 +20772,8 @@
 		getType : function() {
 			return 'hashtag';
 		},
-	
-	
+
+
 		/**
 		 * Returns the configured {@link #serviceName} to point the Hashtag to.
 		 * Ex: 'facebook', 'twitter'.
@@ -20783,8 +20783,8 @@
 		getServiceName : function() {
 			return this.serviceName;
 		},
-	
-	
+
+
 		/**
 		 * Returns the matched hashtag, without the '#' character.
 		 *
@@ -20793,8 +20793,8 @@
 		getHashtag : function() {
 			return this.hashtag;
 		},
-	
-	
+
+
 		/**
 		 * Returns the anchor href that should be generated for the match.
 		 *
@@ -20803,7 +20803,7 @@
 		getAnchorHref : function() {
 			var serviceName = this.serviceName,
 			    hashtag = this.hashtag;
-	
+
 			switch( serviceName ) {
 				case 'twitter' :
 					return 'https://twitter.com/hashtag/' + hashtag;
@@ -20811,13 +20811,13 @@
 					return 'https://www.facebook.com/hashtag/' + hashtag;
 				case 'instagram' :
 					return 'https://instagram.com/explore/tags/' + hashtag;
-	
+
 				default :  // Shouldn't happen because Autolinker's constructor should block any invalid values, but just in case.
 					throw new Error( 'Unknown service name to point hashtag to: ', serviceName );
 			}
 		},
-	
-	
+
+
 		/**
 		 * Returns the anchor text that should be generated for the match.
 		 *
@@ -20826,9 +20826,9 @@
 		getAnchorText : function() {
 			return '#' + this.hashtag;
 		}
-	
+
 	} );
-	
+
 	/*global Autolinker */
 	/**
 	 * @class Autolinker.match.Phone
@@ -20841,7 +20841,7 @@
 	 * details.
 	 */
 	Autolinker.match.Phone = Autolinker.Util.extend( Autolinker.match.Match, {
-	
+
 		/**
 		 * @protected
 		 * @property {String} number (required)
@@ -20850,7 +20850,7 @@
 		 *
 		 * Note: This is a string to allow for prefixed 0's.
 		 */
-	
+
 		/**
 		 * @protected
 		 * @property  {Boolean} plusSign (required)
@@ -20860,8 +20860,8 @@
 		 *
 		 * Ex: '+1 (123) 456 7879'
 		 */
-	
-	
+
+
 		/**
 		 * @constructor
 		 * @param {Object} cfg The configuration properties for the Match
@@ -20869,15 +20869,15 @@
 		 */
 		constructor : function( cfg ) {
 			Autolinker.match.Match.prototype.constructor.call( this, cfg );
-	
+
 			if( !cfg.number ) throw new Error( '`number` cfg required' );
 			if( cfg.plusSign == null ) throw new Error( '`plusSign` cfg required' );
-	
+
 			this.number = cfg.number;
 			this.plusSign = cfg.plusSign;
 		},
-	
-	
+
+
 		/**
 		 * Returns a string name for the type of match that this class represents.
 		 *
@@ -20886,8 +20886,8 @@
 		getType : function() {
 			return 'phone';
 		},
-	
-	
+
+
 		/**
 		 * Returns the phone number that was matched as a string, without any
 		 * delimiter characters.
@@ -20899,8 +20899,8 @@
 		getNumber: function() {
 			return this.number;
 		},
-	
-	
+
+
 		/**
 		 * Returns the anchor href that should be generated for the match.
 		 *
@@ -20909,8 +20909,8 @@
 		getAnchorHref : function() {
 			return 'tel:' + ( this.plusSign ? '+' : '' ) + this.number;
 		},
-	
-	
+
+
 		/**
 		 * Returns the anchor text that should be generated for the match.
 		 *
@@ -20919,9 +20919,9 @@
 		getAnchorText : function() {
 			return this.matchedText;
 		}
-	
+
 	} );
-	
+
 	/*global Autolinker */
 	/**
 	 * @class Autolinker.match.Twitter
@@ -20932,14 +20932,14 @@
 	 * See this class's superclass ({@link Autolinker.match.Match}) for more details.
 	 */
 	Autolinker.match.Twitter = Autolinker.Util.extend( Autolinker.match.Match, {
-	
+
 		/**
 		 * @cfg {String} twitterHandle (required)
 		 *
 		 * The Twitter handle that was matched, without the '@' character.
 		 */
-	
-	
+
+
 		/**
 		 * @constructor
 		 * @param {Object} cfg The configuration properties for the Match
@@ -20947,13 +20947,13 @@
 		 */
 		constructor : function( cfg) {
 			Autolinker.match.Match.prototype.constructor.call( this, cfg );
-	
+
 			if( !cfg.twitterHandle ) throw new Error( '`twitterHandle` cfg required' );
-	
+
 			this.twitterHandle = cfg.twitterHandle;
 		},
-	
-	
+
+
 		/**
 		 * Returns the type of match that this class represents.
 		 *
@@ -20962,8 +20962,8 @@
 		getType : function() {
 			return 'twitter';
 		},
-	
-	
+
+
 		/**
 		 * Returns the twitter handle, without the '@' character.
 		 *
@@ -20972,8 +20972,8 @@
 		getTwitterHandle : function() {
 			return this.twitterHandle;
 		},
-	
-	
+
+
 		/**
 		 * Returns the anchor href that should be generated for the match.
 		 *
@@ -20982,8 +20982,8 @@
 		getAnchorHref : function() {
 			return 'https://twitter.com/' + this.twitterHandle;
 		},
-	
-	
+
+
 		/**
 		 * Returns the anchor text that should be generated for the match.
 		 *
@@ -20992,7 +20992,7 @@
 		getAnchorText : function() {
 			return '@' + this.twitterHandle;
 		}
-	
+
 	} );
 	/*global Autolinker */
 	/**
@@ -21004,13 +21004,13 @@
 	 * See this class's superclass ({@link Autolinker.match.Match}) for more details.
 	 */
 	Autolinker.match.Url = Autolinker.Util.extend( Autolinker.match.Match, {
-	
+
 		/**
 		 * @cfg {String} url (required)
 		 *
 		 * The url that was matched.
 		 */
-	
+
 		/**
 		 * @cfg {"scheme"/"www"/"tld"} urlMatchType (required)
 		 *
@@ -21019,14 +21019,14 @@
 		 * 'http://www.google.com'), a prefixed 'www' (ex: 'www.google.com'), or
 		 * was matched by a known top-level domain (ex: 'google.com').
 		 */
-	
+
 		/**
 		 * @cfg {Boolean} protocolUrlMatch (required)
 		 *
 		 * `true` if the URL is a match which already has a protocol (i.e.
 		 * 'http://'), `false` if the match was from a 'www' or known TLD match.
 		 */
-	
+
 		/**
 		 * @cfg {Boolean} protocolRelativeMatch (required)
 		 *
@@ -21034,13 +21034,13 @@
 		 * is a URL that starts with '//', and will be either http:// or https://
 		 * based on the protocol that the site is loaded under.
 		 */
-	
+
 		/**
 		 * @cfg {Boolean} stripPrefix (required)
 		 * @inheritdoc Autolinker#cfg-stripPrefix
 		 */
-	
-	
+
+
 		/**
 		 * @constructor
 		 * @param {Object} cfg The configuration properties for the Match
@@ -21048,21 +21048,21 @@
 		 */
 		constructor : function( cfg ) {
 			Autolinker.match.Match.prototype.constructor.call( this, cfg );
-	
+
 			if( cfg.urlMatchType !== 'scheme' && cfg.urlMatchType !== 'www' && cfg.urlMatchType !== 'tld' ) throw new Error( '`urlMatchType` cfg must be one of: "scheme", "www", or "tld"' );
 			if( !cfg.url ) throw new Error( '`url` cfg required' );
 			if( cfg.protocolUrlMatch == null ) throw new Error( '`protocolUrlMatch` cfg required' );
 			if( cfg.protocolRelativeMatch == null ) throw new Error( '`protocolRelativeMatch` cfg required' );
 			if( cfg.stripPrefix == null ) throw new Error( '`stripPrefix` cfg required' );
-	
+
 			this.urlMatchType = cfg.urlMatchType;
 			this.url = cfg.url;
 			this.protocolUrlMatch = cfg.protocolUrlMatch;
 			this.protocolRelativeMatch = cfg.protocolRelativeMatch;
 			this.stripPrefix = cfg.stripPrefix;
 		},
-	
-	
+
+
 		/**
 		 * @private
 		 * @property {RegExp} urlPrefixRegex
@@ -21070,7 +21070,7 @@
 		 * A regular expression used to remove the 'http://' or 'https://' and/or the 'www.' from URLs.
 		 */
 		urlPrefixRegex: /^(https?:\/\/)?(www\.)?/i,
-	
+
 		/**
 		 * @private
 		 * @property {RegExp} protocolRelativeRegex
@@ -21079,7 +21079,7 @@
 		 * of {@link #getAnchorText}. A protocol-relative URL is, for example, "//yahoo.com"
 		 */
 		protocolRelativeRegex : /^\/\//,
-	
+
 		/**
 		 * @private
 		 * @property {Boolean} protocolPrepended
@@ -21088,8 +21088,8 @@
 		 * {@link #url} did not have a protocol)
 		 */
 		protocolPrepended : false,
-	
-	
+
+
 		/**
 		 * Returns a string name for the type of match that this class represents.
 		 *
@@ -21098,8 +21098,8 @@
 		getType : function() {
 			return 'url';
 		},
-	
-	
+
+
 		/**
 		 * Returns a string name for the type of URL match that this class
 		 * represents.
@@ -21114,8 +21114,8 @@
 		getUrlMatchType : function() {
 			return this.urlMatchType;
 		},
-	
-	
+
+
 		/**
 		 * Returns the url that was matched, assuming the protocol to be 'http://' if the original
 		 * match was missing a protocol.
@@ -21124,18 +21124,18 @@
 		 */
 		getUrl : function() {
 			var url = this.url;
-	
+
 			// if the url string doesn't begin with a protocol, assume 'http://'
 			if( !this.protocolRelativeMatch && !this.protocolUrlMatch && !this.protocolPrepended ) {
 				url = this.url = 'http://' + url;
-	
+
 				this.protocolPrepended = true;
 			}
-	
+
 			return url;
 		},
-	
-	
+
+
 		/**
 		 * Returns the anchor href that should be generated for the match.
 		 *
@@ -21143,11 +21143,11 @@
 		 */
 		getAnchorHref : function() {
 			var url = this.getUrl();
-	
+
 			return url.replace( /&amp;/g, '&' );  // any &amp;'s in the URL should be converted back to '&' if they were displayed as &amp; in the source html
 		},
-	
-	
+
+
 		/**
 		 * Returns the anchor text that should be generated for the match.
 		 *
@@ -21155,7 +21155,7 @@
 		 */
 		getAnchorText : function() {
 			var anchorText = this.getMatchedText();
-	
+
 			if( this.protocolRelativeMatch ) {
 				// Strip off any protocol-relative '//' from the anchor text
 				anchorText = this.stripProtocolRelativePrefix( anchorText );
@@ -21164,15 +21164,15 @@
 				anchorText = this.stripUrlPrefix( anchorText );
 			}
 			anchorText = this.removeTrailingSlash( anchorText );  // remove trailing slash, if there is one
-	
+
 			return anchorText;
 		},
-	
-	
+
+
 		// ---------------------------------------
-	
+
 		// Utility Functionality
-	
+
 		/**
 		 * Strips the URL prefix (such as "http://" or "https://") from the given text.
 		 *
@@ -21184,8 +21184,8 @@
 		stripUrlPrefix : function( text ) {
 			return text.replace( this.urlPrefixRegex, '' );
 		},
-	
-	
+
+
 		/**
 		 * Strips any protocol-relative '//' from the anchor text.
 		 *
@@ -21197,8 +21197,8 @@
 		stripProtocolRelativePrefix : function( text ) {
 			return text.replace( this.protocolRelativeRegex, '' );
 		},
-	
-	
+
+
 		/**
 		 * Removes any trailing slash from the given `anchorText`, in preparation for the text to be displayed.
 		 *
@@ -21213,7 +21213,7 @@
 			}
 			return anchorText;
 		}
-	
+
 	} );
 	/*global Autolinker */
 	/**
@@ -21227,15 +21227,15 @@
 	 * nodes of any HTML string, which is handled by {@link Autolinker#parse}.
 	 */
 	Autolinker.matcher.Matcher = Autolinker.Util.extend( Object, {
-	
+
 		/**
 		 * @cfg {Autolinker.AnchorTagBuilder} tagBuilder (required)
 		 *
 		 * Reference to the AnchorTagBuilder instance to use to generate HTML tags
 		 * for {@link Autolinker.match.Match Matches}.
 		 */
-	
-	
+
+
 		/**
 		 * @constructor
 		 * @param {Object} cfg The configuration properties for the Matcher
@@ -21243,11 +21243,11 @@
 		 */
 		constructor : function( cfg ) {
 			if( !cfg.tagBuilder ) throw new Error( '`tagBuilder` cfg required' );
-	
+
 			this.tagBuilder = cfg.tagBuilder;
 		},
-	
-	
+
+
 		/**
 		 * Parses the input `text` and returns the array of {@link Autolinker.match.Match Matches}
 		 * for the matcher.
@@ -21257,7 +21257,7 @@
 		 * @return {Autolinker.match.Match[]}
 		 */
 		parseMatches : Autolinker.Util.abstractMethod
-	
+
 	} );
 	/*global Autolinker */
 	/**
@@ -21269,7 +21269,7 @@
 	 * See this class's superclass ({@link Autolinker.matcher.Matcher}) for more details.
 	 */
 	Autolinker.matcher.Email = Autolinker.Util.extend( Autolinker.matcher.Matcher, {
-	
+
 		/**
 		 * The regular expression to match email addresses. Example match:
 		 *
@@ -21283,15 +21283,15 @@
 			    emailRegex = new RegExp( '[' + alphaNumericChars + '\\-;:&=+$.,]+@' ),  // something@ for email addresses (a.k.a. local-part)
 				domainNameRegex = Autolinker.RegexLib.domainNameRegex,
 				tldRegex = Autolinker.RegexLib.tldRegex;  // match our known top level domains (TLDs)
-	
+
 			return new RegExp( [
 				emailRegex.source,
 				domainNameRegex.source,
 				'\\.', tldRegex.source   // '.com', '.net', etc
 			].join( "" ), 'gi' );
 		} )(),
-	
-	
+
+
 		/**
 		 * @inheritdoc
 		 */
@@ -21300,10 +21300,10 @@
 			    tagBuilder = this.tagBuilder,
 			    matches = [],
 			    match;
-	
+
 			while( ( match = matcherRegex.exec( text ) ) !== null ) {
 				var matchedText = match[ 0 ];
-	
+
 				matches.push( new Autolinker.match.Email( {
 					tagBuilder  : tagBuilder,
 					matchedText : matchedText,
@@ -21311,10 +21311,10 @@
 					email       : matchedText
 				} ) );
 			}
-	
+
 			return matches;
 		}
-	
+
 	} );
 	/*global Autolinker */
 	/**
@@ -21324,15 +21324,15 @@
 	 * Matcher to find Hashtag matches in an input string.
 	 */
 	Autolinker.matcher.Hashtag = Autolinker.Util.extend( Autolinker.matcher.Matcher, {
-	
+
 		/**
 		 * @cfg {String} serviceName
 		 *
 		 * The service to point hashtag matches to. See {@link Autolinker#hashtag}
 		 * for available values.
 		 */
-	
-	
+
+
 		/**
 		 * The regular expression to match Hashtags. Example match:
 		 *
@@ -21342,7 +21342,7 @@
 		 * @property {RegExp} matcherRegex
 		 */
 		matcherRegex : new RegExp( '#[_' + Autolinker.RegexLib.alphaNumericCharsStr + ']{1,139}', 'g' ),
-	
+
 		/**
 		 * The regular expression to use to check the character before a username match to
 		 * make sure we didn't accidentally match an email address.
@@ -21353,8 +21353,8 @@
 		 * @property {RegExp} nonWordCharRegex
 		 */
 		nonWordCharRegex : new RegExp( '[^' + Autolinker.RegexLib.alphaNumericCharsStr + ']' ),
-	
-	
+
+
 		/**
 		 * @constructor
 		 * @param {Object} cfg The configuration properties for the Match instance,
@@ -21362,11 +21362,11 @@
 		 */
 		constructor : function( cfg ) {
 			Autolinker.matcher.Matcher.prototype.constructor.call( this, cfg );
-	
+
 			this.serviceName = cfg.serviceName;
 		},
-	
-	
+
+
 		/**
 		 * @inheritdoc
 		 */
@@ -21377,18 +21377,18 @@
 			    tagBuilder = this.tagBuilder,
 			    matches = [],
 			    match;
-	
+
 			while( ( match = matcherRegex.exec( text ) ) !== null ) {
 				var offset = match.index,
 				    prevChar = text.charAt( offset - 1 );
-	
+
 				// If we found the match at the beginning of the string, or we found the match
 				// and there is a whitespace char in front of it (meaning it is not a '#' char
 				// in the middle of a word), then it is a hashtag match.
 				if( offset === 0 || nonWordCharRegex.test( prevChar ) ) {
 					var matchedText = match[ 0 ],
 					    hashtag = match[ 0 ].slice( 1 );  // strip off the '#' character at the beginning
-	
+
 					matches.push( new Autolinker.match.Hashtag( {
 						tagBuilder  : tagBuilder,
 						matchedText : matchedText,
@@ -21398,10 +21398,10 @@
 					} ) );
 				}
 			}
-	
+
 			return matches;
 		}
-	
+
 	} );
 	/*global Autolinker */
 	/**
@@ -21414,7 +21414,7 @@
 	 * details.
 	 */
 	Autolinker.matcher.Phone = Autolinker.Util.extend( Autolinker.matcher.Matcher, {
-	
+
 		/**
 		 * The regular expression to match Phone numbers. Example match:
 		 *
@@ -21428,7 +21428,7 @@
 		 * @property {RegExp} matcherRegex
 		 */
 		matcherRegex : /(?:(\+)?\d{1,3}[-\040.])?\(?\d{3}\)?[-\040.]?\d{3}[-\040.]\d{4}/g,  // ex: (123) 456-7890, 123 456 7890, 123-456-7890, etc.
-	
+
 		/**
 		 * @inheritdoc
 		 */
@@ -21437,13 +21437,13 @@
 			    tagBuilder = this.tagBuilder,
 			    matches = [],
 			    match;
-	
+
 			while( ( match = matcherRegex.exec( text ) ) !== null ) {
 				// Remove non-numeric values from phone number string
 				var matchedText = match[ 0 ],
 				    cleanNumber = matchedText.replace( /\D/g, '' ),  // strip out non-digit characters
 				    plusSign = !!match[ 1 ];  // match[ 1 ] is the prefixed plus sign, if there is one
-	
+
 				matches.push( new Autolinker.match.Phone( {
 					tagBuilder  : tagBuilder,
 					matchedText : matchedText,
@@ -21452,10 +21452,10 @@
 					plusSign    : plusSign
 				} ) );
 			}
-	
+
 			return matches;
 		}
-	
+
 	} );
 	/*global Autolinker */
 	/**
@@ -21465,7 +21465,7 @@
 	 * Matcher to find/replace username matches in an input string.
 	 */
 	Autolinker.matcher.Twitter = Autolinker.Util.extend( Autolinker.matcher.Matcher, {
-	
+
 		/**
 		 * The regular expression to match username handles. Example match:
 		 *
@@ -21475,7 +21475,7 @@
 		 * @property {RegExp} matcherRegex
 		 */
 		matcherRegex : new RegExp( '@[_' + Autolinker.RegexLib.alphaNumericCharsStr + ']{1,20}', 'g' ),
-	
+
 		/**
 		 * The regular expression to use to check the character before a username match to
 		 * make sure we didn't accidentally match an email address.
@@ -21486,8 +21486,8 @@
 		 * @property {RegExp} nonWordCharRegex
 		 */
 		nonWordCharRegex : new RegExp( '[^' + Autolinker.RegexLib.alphaNumericCharsStr + ']' ),
-	
-	
+
+
 		/**
 		 * @inheritdoc
 		 */
@@ -21497,18 +21497,18 @@
 			    tagBuilder = this.tagBuilder,
 			    matches = [],
 			    match;
-	
+
 			while( ( match = matcherRegex.exec( text ) ) !== null ) {
 				var offset = match.index,
 				    prevChar = text.charAt( offset - 1 );
-	
+
 				// If we found the match at the beginning of the string, or we found the match
 				// and there is a whitespace char in front of it (meaning it is not an email
 				// address), then it is a username match.
 				if( offset === 0 || nonWordCharRegex.test( prevChar ) ) {
 					var matchedText = match[ 0 ],
 					    twitterHandle = match[ 0 ].slice( 1 );  // strip off the '@' character at the beginning
-	
+
 					matches.push( new Autolinker.match.Twitter( {
 						tagBuilder    : tagBuilder,
 						matchedText   : matchedText,
@@ -21517,10 +21517,10 @@
 					} ) );
 				}
 			}
-	
+
 			return matches;
 		}
-	
+
 	} );
 	/*global Autolinker */
 	/**
@@ -21532,13 +21532,13 @@
 	 * See this class's superclass ({@link Autolinker.matcher.Matcher}) for more details.
 	 */
 	Autolinker.matcher.Url = Autolinker.Util.extend( Autolinker.matcher.Matcher, {
-	
+
 		/**
 		 * @cfg {Boolean} stripPrefix (required)
 		 * @inheritdoc Autolinker#stripPrefix
 		 */
-	
-	
+
+
 		/**
 		 * @private
 		 * @property {RegExp} matcherRegex
@@ -21579,40 +21579,40 @@
 			    domainNameRegex = Autolinker.RegexLib.domainNameRegex,
 			    tldRegex = Autolinker.RegexLib.tldRegex,  // match our known top level domains (TLDs)
 			    alphaNumericCharsStr = Autolinker.RegexLib.alphaNumericCharsStr,
-	
+
 			    // Allow optional path, query string, and hash anchor, not ending in the following characters: "?!:,.;"
 			    // http://blog.codinghorror.com/the-problem-with-urls/
 			    urlSuffixRegex = new RegExp( '[' + alphaNumericCharsStr + '\\-+&@#/%=~_()|\'$*\\[\\]?!:,.;]*[' + alphaNumericCharsStr + '\\-+&@#/%=~_()|\'$*\\[\\]]' );
-	
+
 			return new RegExp( [
 				'(?:', // parens to cover match for scheme (optional), and domain
 					'(',  // *** Capturing group $1, for a scheme-prefixed url (ex: http://google.com)
 						schemeRegex.source,
 						domainNameRegex.source,
 					')',
-	
+
 					'|',
-	
+
 					'(',  // *** Capturing group $2, for a 'www.' prefixed url (ex: www.google.com)
 						'(//)?',  // *** Capturing group $3 for an optional protocol-relative URL. Must be at the beginning of the string or start with a non-word character (handled later)
 						wwwRegex.source,
 						domainNameRegex.source,
 					')',
-	
+
 					'|',
-	
+
 					'(',  // *** Capturing group $4, for known a TLD url (ex: google.com)
 						'(//)?',  // *** Capturing group $5 for an optional protocol-relative URL. Must be at the beginning of the string or start with a non-word character (handled later)
 						domainNameRegex.source + '\\.',
 						tldRegex.source,
 					')',
 				')',
-	
+
 				'(?:' + urlSuffixRegex.source + ')?'  // match for path, query string, and/or hash anchor - optional
 			].join( "" ), 'gi' );
 		} )(),
-	
-	
+
+
 		/**
 		 * A regular expression to use to check the character before a protocol-relative
 		 * URL match. We don't want to match a protocol-relative URL if it is part
@@ -21627,8 +21627,8 @@
 		 * @type {RegExp} wordCharRegExp
 		 */
 		wordCharRegExp : /\w/,
-	
-	
+
+
 		/**
 		 * The regular expression to match opening parenthesis in a URL match.
 		 *
@@ -21644,7 +21644,7 @@
 		 * @property {RegExp}
 		 */
 		openParensRe : /\(/g,
-	
+
 		/**
 		 * The regular expression to match closing parenthesis in a URL match. See
 		 * {@link #openParensRe} for more information.
@@ -21653,8 +21653,8 @@
 		 * @property {RegExp}
 		 */
 		closeParensRe : /\)/g,
-	
-	
+
+
 		/**
 		 * @constructor
 		 * @param {Object} cfg The configuration properties for the Match instance,
@@ -21662,13 +21662,13 @@
 		 */
 		constructor : function( cfg ) {
 			Autolinker.matcher.Matcher.prototype.constructor.call( this, cfg );
-	
+
 			this.stripPrefix = cfg.stripPrefix;
-	
+
 			if( this.stripPrefix == null ) throw new Error( '`stripPrefix` cfg required' );
 		},
-	
-	
+
+
 		/**
 		 * @inheritdoc
 		 */
@@ -21678,7 +21678,7 @@
 			    tagBuilder = this.tagBuilder,
 			    matches = [],
 			    match;
-	
+
 			while( ( match = matcherRegex.exec( text ) ) !== null ) {
 				var matchStr = match[ 0 ],
 				    schemeUrlMatch = match[ 1 ],
@@ -21689,17 +21689,17 @@
 				    offset = match.index,
 				    protocolRelativeMatch = wwwProtocolRelativeMatch || tldProtocolRelativeMatch,
 					prevChar = text.charAt( offset - 1 );
-	
+
 				if( !Autolinker.matcher.UrlMatchValidator.isValid( matchStr, schemeUrlMatch ) ) {
 					continue;
 				}
-	
+
 				// If the match is preceded by an '@' character, then it is either
 				// an email address or a username. Skip these types of matches.
 				if( offset > 0 && prevChar === '@' ) {
 					continue;
 				}
-	
+
 				// If it's a protocol-relative '//' match, but the character before the '//'
 				// was a word character (i.e. a letter/number), then we found the '//' in the
 				// middle of another word (such as "asdf//asdf.com"). In this case, skip the
@@ -21707,7 +21707,7 @@
 				if( offset > 0 && protocolRelativeMatch && this.wordCharRegExp.test( prevChar ) ) {
 					continue;
 				}
-	
+
 				// Handle a closing parenthesis at the end of the match, and exclude
 				// it if there is not a matching open parenthesis in the match
 				// itself.
@@ -21720,10 +21720,10 @@
 						matchStr = matchStr.substr( 0, pos ); // remove the trailing invalid chars
 					}
 				}
-	
+
 				var urlMatchType = schemeUrlMatch ? 'scheme' : ( wwwUrlMatch ? 'www' : 'tld' ),
 				    protocolUrlMatch = !!schemeUrlMatch;
-	
+
 				matches.push( new Autolinker.match.Url( {
 					tagBuilder            : tagBuilder,
 					matchedText           : matchStr,
@@ -21735,11 +21735,11 @@
 					stripPrefix           : stripPrefix
 				} ) );
 			}
-	
+
 			return matches;
 		},
-	
-	
+
+
 		/**
 		 * Determines if a match found has an unmatched closing parenthesis. If so,
 		 * this parenthesis will be removed from the match itself, and appended
@@ -21761,22 +21761,22 @@
 		 */
 		matchHasUnbalancedClosingParen : function( matchStr ) {
 			var lastChar = matchStr.charAt( matchStr.length - 1 );
-	
+
 			if( lastChar === ')' ) {
 				var openParensMatch = matchStr.match( this.openParensRe ),
 				    closeParensMatch = matchStr.match( this.closeParensRe ),
 				    numOpenParens = ( openParensMatch && openParensMatch.length ) || 0,
 				    numCloseParens = ( closeParensMatch && closeParensMatch.length ) || 0;
-	
+
 				if( numOpenParens < numCloseParens ) {
 					return true;
 				}
 			}
-	
+
 			return false;
 		},
-	
-	
+
+
 		/**
 		 * Determine if there's an invalid character after the TLD in a URL. Valid
 		 * characters after TLD are ':/?#'. Exclude scheme matched URLs from this
@@ -21796,28 +21796,28 @@
 			if( !urlMatch ) {
 				return -1;
 			}
-	
+
 			var offset = 0;
 			if ( schemeUrlMatch ) {
 				offset = urlMatch.indexOf(':');
 				urlMatch = urlMatch.slice(offset);
 			}
-	
+
 			var re = /^((.?\/\/)?[A-Za-z0-9\u00C0-\u017F\.\-]*[A-Za-z0-9\u00C0-\u017F\-]\.[A-Za-z]+)/;
 			var res = re.exec( urlMatch );
 			if ( res === null ) {
 				return -1;
 			}
-	
+
 			offset += res[1].length;
 			urlMatch = urlMatch.slice(res[1].length);
 			if (/^[^.A-Za-z:\/?#]/.test(urlMatch)) {
 				return offset;
 			}
-	
+
 			return -1;
 		}
-	
+
 	} );
 	/*global Autolinker */
 	/*jshint scripturl:true */
@@ -21836,7 +21836,7 @@
 	 * {@link Autolinker.matcher.Url UrlMatcher}.
 	 */
 	Autolinker.matcher.UrlMatchValidator = {
-	
+
 		/**
 		 * Regex to test for a full protocol, with the two trailing slashes. Ex: 'http://'
 		 *
@@ -21844,7 +21844,7 @@
 		 * @property {RegExp} hasFullProtocolRegex
 		 */
 		hasFullProtocolRegex : /^[A-Za-z][-.+A-Za-z0-9]*:\/\//,
-	
+
 		/**
 		 * Regex to find the URI scheme, such as 'mailto:'.
 		 *
@@ -21854,7 +21854,7 @@
 		 * @property {RegExp} uriSchemeRegex
 		 */
 		uriSchemeRegex : /^[A-Za-z][-.+A-Za-z0-9]*:/,
-	
+
 		/**
 		 * Regex to determine if at least one word char exists after the protocol (i.e. after the ':')
 		 *
@@ -21862,8 +21862,8 @@
 		 * @property {RegExp} hasWordCharAfterProtocolRegex
 		 */
 		hasWordCharAfterProtocolRegex : /:[^\s]*?[A-Za-z\u00C0-\u017F]/,
-	
-	
+
+
 		/**
 		 * Determines if a given URL match found by the {@link Autolinker.matcher.Url UrlMatcher}
 		 * is valid. Will return `false` for:
@@ -21897,11 +21897,11 @@
 			) {
 				return false;
 			}
-	
+
 			return true;
 		},
-	
-	
+
+
 		/**
 		 * Determines if the URI scheme is a valid scheme to be autolinked. Returns
 		 * `false` if the scheme is 'javascript:' or 'vbscript:'
@@ -21913,11 +21913,11 @@
 		 */
 		isValidUriScheme : function( uriSchemeMatch ) {
 			var uriScheme = uriSchemeMatch.match( this.uriSchemeRegex )[ 0 ].toLowerCase();
-	
+
 			return ( uriScheme !== 'javascript:' && uriScheme !== 'vbscript:' );
 		},
-	
-	
+
+
 		/**
 		 * Determines if a URL match does not have either:
 		 *
@@ -21942,8 +21942,8 @@
 		urlMatchDoesNotHaveProtocolOrDot : function( urlMatch, protocolUrlMatch ) {
 			return ( !!urlMatch && ( !protocolUrlMatch || !this.hasFullProtocolRegex.test( protocolUrlMatch ) ) && urlMatch.indexOf( '.' ) === -1 );
 		},
-	
-	
+
+
 		/**
 		 * Determines if a URL match does not have at least one word character after
 		 * the protocol (i.e. in the domain name).
@@ -21968,7 +21968,7 @@
 				return false;
 			}
 		}
-	
+
 	};
 	/*global Autolinker */
 	/**
@@ -21982,7 +21982,7 @@
 	Autolinker.truncate.TruncateEnd = function(anchorText, truncateLen, ellipsisChars){
 		return Autolinker.Util.ellipsis( anchorText, truncateLen, ellipsisChars );
 	};
-	
+
 	/*global Autolinker */
 	/**
 	 * Date: 2015-10-05
@@ -22006,7 +22006,7 @@
 	  }
 	  return (url.substr(0, Math.ceil(availableLength/2)) + ellipsisChars + end).substr(0, truncateLen);
 	};
-	
+
 	/*global Autolinker */
 	/**
 	 * Date: 2015-10-05
@@ -22051,7 +22051,7 @@
 			}
 			return urlObj;
 		};
-	
+
 		var buildUrl = function(urlObj){
 			var url = "";
 			if (urlObj.scheme && urlObj.host) {
@@ -22071,7 +22071,7 @@
 			}
 			return url;
 		};
-	
+
 		var buildSegment = function(segment, remainingAvailableLength){
 			var remainingAvailableLengthHalf = remainingAvailableLength/ 2,
 					startOffset = Math.ceil(remainingAvailableLengthHalf),
@@ -22162,7 +22162,7 @@
 		}
 		return (str.substr(0, Math.ceil(availableLength/2)) + ellipsisChars + end).substr(0, truncateLen);
 	};
-	
+
 	return Autolinker;
 	}));
 
@@ -22172,13 +22172,13 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
-	
+
 	var CodeMirror = _interopRequire(__webpack_require__(115));
-	
+
 	__webpack_require__(116);
-	
+
 	riot.mixin("admin", {
 	  openAdminForm: function openAdminForm(formTag, options, resource) {
 	    // return riot.mount('r-modal', {
@@ -22193,7 +22193,7 @@
 	    //     attributes: []
 	    //   }
 	    // })
-	
+
 	    return riot.mount($("[name=content]")[0], formTag, {
 	      classes: "sm-col-11 p2 mt2 mb2",
 	      resource: this.opts.resource || resource,
@@ -22205,10 +22205,10 @@
 	  },
 	  renderAdminIndex: function renderAdminIndex(ns, resource, options) {
 	    options.ns = ns;
-	
+
 	    resource = "" + ns + "" + resource;
 	    options.resource = resource;
-	
+
 	    var tags = riot.mount(this.content, "r-admin-" + resource.replace(/_|\//g, "-").singular() + "-index", options);
 	    if (!tags[0]) {
 	      riot.mount(this.content, "r-admin-index", options);
@@ -22218,7 +22218,7 @@
 	    options.ns = ns;
 	    if (!resource.includes(ns)) resource = "" + ns + "" + resource;
 	    options.resource = resource;
-	
+
 	    var tags = this.openAdminForm("r-admin-" + resource.replace(/_|\//g, "-").singular() + "-form", options, resource);
 	    // if(!tags[0].content._tag) {
 	    if (!tags[0]) {
@@ -22233,18 +22233,18 @@
 	riot.mixin("adminIndex", {
 	  init: function init() {
 	    var _this = this;
-	
+
 	    this.headers = [];
 	    this.records = [];
 	    this.showDisclosures = false;
-	
+
 	    this.on("mount", function () {
 	      _this.opts.api[_this.opts.resource].on("index.fail", _this.errorHandler);
 	      _this.opts.api[_this.opts.resource].on("index.success", _this.updateRecords);
 	      _this.opts.api[_this.opts.resource].on("delete.success", _this.removeRecord);
 	      _this.opts.api[_this.opts.resource].index({ page: _this.opts.page, query: _this.opts.query, order: _this.opts.order });
 	    });
-	
+
 	    this.on("unmount", function () {
 	      _this.opts.api[_this.opts.resource].off("index.fail", _this.errorHandler);
 	      _this.opts.api[_this.opts.resource].off("index.success", _this.updateRecords);
@@ -22301,11 +22301,11 @@
 	      }
 	      riot.route(url);
 	    };
-	
+
 	    this.updateRecords = this.updateRecords || function (records) {
 	      _this.update({ headers: _.keys(records[0]), records: records });
 	    };
-	
+
 	    this.removeRecord = this.removeRecord || function (id) {
 	      var _id = _.findIndex(_this.records, function (r) {
 	        return r.id === id;
@@ -22339,7 +22339,7 @@
 	riot.mixin("adminForm", {
 	  init: function init() {
 	    var _this = this;
-	
+
 	    this.on("mount", function () {
 	      _this.opts.api[_this.opts.resource].on("new.fail", _this.errorHandler);
 	      _this.opts.api[_this.opts.resource].on("show.fail", _this.errorHandler);
@@ -22357,7 +22357,7 @@
 	      //   return true
 	      // }
 	    });
-	
+
 	    this.on("unmount", function () {
 	      _this.opts.api[_this.opts.resource].off("new.fail", _this.errorHandler);
 	      _this.opts.api[_this.opts.resource].off("show.fail", _this.errorHandler);
@@ -22365,23 +22365,23 @@
 	      _this.opts.api[_this.opts.resource].off("new.success", _this.updateRecord);
 	      _this.opts.api[_this.opts.resource].off("show.success", _this.updateRecord);
 	    });
-	
+
 	    this.updateRecord = this.updateRecord || function (record) {
 	      _this.update({ record: record, attributes: _.keys(record) });
 	    };
-	
+
 	    this.submit = this.submit || function (e) {
 	      if (e) e.preventDefault();
-	
+
 	      var data = _this.serializeForm(_this.form);
-	
+
 	      if (_.isEmpty(data)) {
 	        $(_this.form).animateCss("shake");
 	        return;
 	      }
-	
+
 	      _this.update({ busy: true, errors: null });
-	
+
 	      if (_this.opts.id) {
 	        _this.opts.api[_this.opts.resource].update(_this.opts.id, data).fail(_this.errorHandler).then(function (id) {
 	          _this.update({ busy: false });
@@ -22396,11 +22396,11 @@
 	    };
 	  }
 	});
-	
+
 	riot.mixin("codeMirror", {
 	  init: function init() {
 	    var _this = this;
-	
+
 	    this.on("mount", function () {
 	      var $textarea = $("textarea.code", _this.root);
 	      _this.codeFieldName = $textarea.attr("name");
@@ -22408,13 +22408,13 @@
 	        lineNumbers: true,
 	        mode: "htmlmixed"
 	      });
-	
+
 	      _this.codeMirror.on("change", function (cm) {
 	        _this.record[_this.codeFieldName] = cm.getDoc().getValue();
 	        $textarea.val(_this.record[_this.codeFieldName]);
 	      });
 	    });
-	
+
 	    this.on("update", function () {
 	      if (_this.record && _this.record[_this.codeFieldName]) {
 	        _this.codeMirror.setValue(_this.record[_this.codeFieldName]);
@@ -22439,13 +22439,13 @@
 
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
 	// Distributed under an MIT license: http://codemirror.net/LICENSE
-	
+
 	// This is CodeMirror (http://codemirror.net), a code editor
 	// implemented in JavaScript on top of the browser's DOM.
 	//
 	// You can find some technical background for some of the code below
 	// at http://marijnhaverbeke.nl/blog/#cm-internals .
-	
+
 	(function(mod) {
 	  if (true) // CommonJS
 	    module.exports = mod();
@@ -22455,14 +22455,14 @@
 	    (this || window).CodeMirror = mod();
 	})(function() {
 	  "use strict";
-	
+
 	  // BROWSER SNIFFING
-	
+
 	  // Kludges for bugs and behavior differences that can't be feature
 	  // detected are enabled based on userAgent etc sniffing.
 	  var userAgent = navigator.userAgent;
 	  var platform = navigator.platform;
-	
+
 	  var gecko = /gecko\/\d/i.test(userAgent);
 	  var ie_upto10 = /MSIE \d/.test(userAgent);
 	  var ie_11up = /Trident\/(?:[7-9]|\d{2,})\..*rv:(\d+)/.exec(userAgent);
@@ -22475,41 +22475,41 @@
 	  var safari = /Apple Computer/.test(navigator.vendor);
 	  var mac_geMountainLion = /Mac OS X 1\d\D([8-9]|\d\d)\D/.test(userAgent);
 	  var phantom = /PhantomJS/.test(userAgent);
-	
+
 	  var ios = /AppleWebKit/.test(userAgent) && /Mobile\/\w+/.test(userAgent);
 	  // This is woefully incomplete. Suggestions for alternative methods welcome.
 	  var mobile = ios || /Android|webOS|BlackBerry|Opera Mini|Opera Mobi|IEMobile/i.test(userAgent);
 	  var mac = ios || /Mac/.test(platform);
 	  var chromeOS = /\bCrOS\b/.test(userAgent);
 	  var windows = /win/i.test(platform);
-	
+
 	  var presto_version = presto && userAgent.match(/Version\/(\d*\.\d*)/);
 	  if (presto_version) presto_version = Number(presto_version[1]);
 	  if (presto_version && presto_version >= 15) { presto = false; webkit = true; }
 	  // Some browsers use the wrong event properties to signal cmd/ctrl on OS X
 	  var flipCtrlCmd = mac && (qtwebkit || presto && (presto_version == null || presto_version < 12.11));
 	  var captureRightClick = gecko || (ie && ie_version >= 9);
-	
+
 	  // Optimize some code when these features are not used.
 	  var sawReadOnlySpans = false, sawCollapsedSpans = false;
-	
+
 	  // EDITOR CONSTRUCTOR
-	
+
 	  // A CodeMirror instance represents an editor. This is the object
 	  // that user code is usually dealing with.
-	
+
 	  function CodeMirror(place, options) {
 	    if (!(this instanceof CodeMirror)) return new CodeMirror(place, options);
-	
+
 	    this.options = options = options ? copyObj(options) : {};
 	    // Determine effective options based on given values and defaults.
 	    copyObj(defaults, options, false);
 	    setGuttersForLineNumbers(options);
-	
+
 	    var doc = options.value;
 	    if (typeof doc == "string") doc = new Doc(doc, options.mode, null, options.lineSeparator);
 	    this.doc = doc;
-	
+
 	    var input = new CodeMirror.inputStyles[options.inputStyle](this);
 	    var display = this.display = new Display(place, doc, input);
 	    display.wrapper.CodeMirror = this;
@@ -22519,7 +22519,7 @@
 	      this.display.wrapper.className += " CodeMirror-wrap";
 	    if (options.autofocus && !mobile) display.input.focus();
 	    initScrollbars(this);
-	
+
 	    this.state = {
 	      keyMaps: [],  // stores maps added by addKeyMap
 	      overlays: [], // highlighting overlays, as added by addOverlay
@@ -22535,25 +22535,25 @@
 	      keySeq: null,  // Unfinished key sequence
 	      specialChars: null
 	    };
-	
+
 	    var cm = this;
-	
+
 	    // Override magic textarea content restore that IE sometimes does
 	    // on our hidden textarea on reload
 	    if (ie && ie_version < 11) setTimeout(function() { cm.display.input.reset(true); }, 20);
-	
+
 	    registerEventHandlers(this);
 	    ensureGlobalHandlers();
-	
+
 	    startOperation(this);
 	    this.curOp.forceUpdate = true;
 	    attachDoc(this, doc);
-	
+
 	    if ((options.autofocus && !mobile) || cm.hasFocus())
 	      setTimeout(bind(onFocus, this), 20);
 	    else
 	      onBlur(this);
-	
+
 	    for (var opt in optionHandlers) if (optionHandlers.hasOwnProperty(opt))
 	      optionHandlers[opt](this, options[opt], Init);
 	    maybeUpdateLineNumberWidth(this);
@@ -22566,17 +22566,17 @@
 	        getComputedStyle(display.lineDiv).textRendering == "optimizelegibility")
 	      display.lineDiv.style.textRendering = "auto";
 	  }
-	
+
 	  // DISPLAY CONSTRUCTOR
-	
+
 	  // The display handles the DOM integration, both for input reading
 	  // and content drawing. It holds references to DOM nodes and
 	  // display-related state.
-	
+
 	  function Display(place, doc, input) {
 	    var d = this;
 	    this.input = input;
-	
+
 	    // Covers bottom-right square when both scrollbars are present.
 	    d.scrollbarFiller = elt("div", null, "CodeMirror-scrollbar-filler");
 	    d.scrollbarFiller.setAttribute("cm-not-content", "true");
@@ -22613,16 +22613,16 @@
 	    d.scroller.setAttribute("tabIndex", "-1");
 	    // The element in which the editor lives.
 	    d.wrapper = elt("div", [d.scrollbarFiller, d.gutterFiller, d.scroller], "CodeMirror");
-	
+
 	    // Work around IE7 z-index bug (not perfect, hence IE7 not really being supported)
 	    if (ie && ie_version < 8) { d.gutters.style.zIndex = -1; d.scroller.style.paddingRight = 0; }
 	    if (!webkit && !(gecko && mobile)) d.scroller.draggable = true;
-	
+
 	    if (place) {
 	      if (place.appendChild) place.appendChild(d.wrapper);
 	      else place(d.wrapper);
 	    }
-	
+
 	    // Current rendered range (may be bigger than the view window).
 	    d.viewFrom = d.viewTo = doc.first;
 	    d.reportedViewFrom = d.reportedViewTo = doc.first;
@@ -22636,10 +22636,10 @@
 	    d.viewOffset = 0;
 	    d.lastWrapHeight = d.lastWrapWidth = 0;
 	    d.updateLineNumbers = null;
-	
+
 	    d.nativeBarWidth = d.barHeight = d.barWidth = 0;
 	    d.scrollbarsClipped = false;
-	
+
 	    // Used to only resize the line number gutter when necessary (when
 	    // the amount of lines crosses a boundary that makes its width change)
 	    d.lineNumWidth = d.lineNumInnerWidth = d.lineNumChars = null;
@@ -22647,39 +22647,39 @@
 	    // added. As an optimization, line widget aligning is skipped when
 	    // this is false.
 	    d.alignWidgets = false;
-	
+
 	    d.cachedCharWidth = d.cachedTextHeight = d.cachedPaddingH = null;
-	
+
 	    // Tracks the maximum line length so that the horizontal scrollbar
 	    // can be kept static when scrolling.
 	    d.maxLine = null;
 	    d.maxLineLength = 0;
 	    d.maxLineChanged = false;
-	
+
 	    // Used for measuring wheel scrolling granularity
 	    d.wheelDX = d.wheelDY = d.wheelStartX = d.wheelStartY = null;
-	
+
 	    // True when shift is held down.
 	    d.shift = false;
-	
+
 	    // Used to track whether anything happened since the context menu
 	    // was opened.
 	    d.selForContextMenu = null;
-	
+
 	    d.activeTouch = null;
-	
+
 	    input.init(d);
 	  }
-	
+
 	  // STATE UPDATES
-	
+
 	  // Used to get the editor into a consistent state again when options change.
-	
+
 	  function loadMode(cm) {
 	    cm.doc.mode = CodeMirror.getMode(cm.options, cm.doc.modeOption);
 	    resetModeState(cm);
 	  }
-	
+
 	  function resetModeState(cm) {
 	    cm.doc.iter(function(line) {
 	      if (line.stateAfter) line.stateAfter = null;
@@ -22690,7 +22690,7 @@
 	    cm.state.modeGen++;
 	    if (cm.curOp) regChange(cm);
 	  }
-	
+
 	  function wrappingChanged(cm) {
 	    if (cm.options.lineWrapping) {
 	      addClass(cm.display.wrapper, "CodeMirror-wrap");
@@ -22705,7 +22705,7 @@
 	    clearCaches(cm);
 	    setTimeout(function(){updateScrollbars(cm);}, 100);
 	  }
-	
+
 	  // Returns a function that estimates the height of a line, to use as
 	  // first approximation until the line becomes visible (and is thus
 	  // properly measurable).
@@ -22714,19 +22714,19 @@
 	    var perLine = wrapping && Math.max(5, cm.display.scroller.clientWidth / charWidth(cm.display) - 3);
 	    return function(line) {
 	      if (lineIsHidden(cm.doc, line)) return 0;
-	
+
 	      var widgetsHeight = 0;
 	      if (line.widgets) for (var i = 0; i < line.widgets.length; i++) {
 	        if (line.widgets[i].height) widgetsHeight += line.widgets[i].height;
 	      }
-	
+
 	      if (wrapping)
 	        return widgetsHeight + (Math.ceil(line.text.length / perLine) || 1) * th;
 	      else
 	        return widgetsHeight + th;
 	    };
 	  }
-	
+
 	  function estimateLineHeights(cm) {
 	    var doc = cm.doc, est = estimateHeight(cm);
 	    doc.iter(function(line) {
@@ -22734,19 +22734,19 @@
 	      if (estHeight != line.height) updateLineHeight(line, estHeight);
 	    });
 	  }
-	
+
 	  function themeChanged(cm) {
 	    cm.display.wrapper.className = cm.display.wrapper.className.replace(/\s*cm-s-\S+/g, "") +
 	      cm.options.theme.replace(/(^|\s)\s*/g, " cm-s-");
 	    clearCaches(cm);
 	  }
-	
+
 	  function guttersChanged(cm) {
 	    updateGutters(cm);
 	    regChange(cm);
 	    setTimeout(function(){alignHorizontally(cm);}, 20);
 	  }
-	
+
 	  // Rebuild the gutter elements, ensure the margin to the left of the
 	  // code matches their width.
 	  function updateGutters(cm) {
@@ -22763,12 +22763,12 @@
 	    gutters.style.display = i ? "" : "none";
 	    updateGutterSpace(cm);
 	  }
-	
+
 	  function updateGutterSpace(cm) {
 	    var width = cm.display.gutters.offsetWidth;
 	    cm.display.sizer.style.marginLeft = width + "px";
 	  }
-	
+
 	  // Compute the character length of a line, taking into account
 	  // collapsed ranges (see markText) that might hide parts, and join
 	  // other lines onto it.
@@ -22789,7 +22789,7 @@
 	    }
 	    return len;
 	  }
-	
+
 	  // Find the longest line in the document.
 	  function findMaxLine(cm) {
 	    var d = cm.display, doc = cm.doc;
@@ -22804,7 +22804,7 @@
 	      }
 	    });
 	  }
-	
+
 	  // Make sure the gutters options contains the element
 	  // "CodeMirror-linenumbers" when the lineNumbers option is true.
 	  function setGuttersForLineNumbers(options) {
@@ -22816,9 +22816,9 @@
 	      options.gutters.splice(found, 1);
 	    }
 	  }
-	
+
 	  // SCROLLBARS
-	
+
 	  // Prepare DOM reads needed to update the scrollbars. Done in one
 	  // shot to minimize update/measure roundtrips.
 	  function measureForScrollbars(cm) {
@@ -22836,31 +22836,31 @@
 	      gutterWidth: gutterW
 	    };
 	  }
-	
+
 	  function NativeScrollbars(place, scroll, cm) {
 	    this.cm = cm;
 	    var vert = this.vert = elt("div", [elt("div", null, null, "min-width: 1px")], "CodeMirror-vscrollbar");
 	    var horiz = this.horiz = elt("div", [elt("div", null, null, "height: 100%; min-height: 1px")], "CodeMirror-hscrollbar");
 	    place(vert); place(horiz);
-	
+
 	    on(vert, "scroll", function() {
 	      if (vert.clientHeight) scroll(vert.scrollTop, "vertical");
 	    });
 	    on(horiz, "scroll", function() {
 	      if (horiz.clientWidth) scroll(horiz.scrollLeft, "horizontal");
 	    });
-	
+
 	    this.checkedZeroWidth = false;
 	    // Need to set a minimum width to see the scrollbar on IE7 (but must not set it on IE8).
 	    if (ie && ie_version < 8) this.horiz.style.minHeight = this.vert.style.minWidth = "18px";
 	  }
-	
+
 	  NativeScrollbars.prototype = copyObj({
 	    update: function(measure) {
 	      var needsH = measure.scrollWidth > measure.clientWidth + 1;
 	      var needsV = measure.scrollHeight > measure.clientHeight + 1;
 	      var sWidth = measure.nativeBarWidth;
-	
+
 	      if (needsV) {
 	        this.vert.style.display = "block";
 	        this.vert.style.bottom = needsH ? sWidth + "px" : "0";
@@ -22872,7 +22872,7 @@
 	        this.vert.style.display = "";
 	        this.vert.firstChild.style.height = "0";
 	      }
-	
+
 	      if (needsH) {
 	        this.horiz.style.display = "block";
 	        this.horiz.style.right = needsV ? sWidth + "px" : "0";
@@ -22884,12 +22884,12 @@
 	        this.horiz.style.display = "";
 	        this.horiz.firstChild.style.width = "0";
 	      }
-	
+
 	      if (!this.checkedZeroWidth && measure.clientHeight > 0) {
 	        if (sWidth == 0) this.zeroWidthHack();
 	        this.checkedZeroWidth = true;
 	      }
-	
+
 	      return {right: needsV ? sWidth : 0, bottom: needsH ? sWidth : 0};
 	    },
 	    setScrollLeft: function(pos) {
@@ -22929,25 +22929,25 @@
 	      parent.removeChild(this.vert);
 	    }
 	  }, NativeScrollbars.prototype);
-	
+
 	  function NullScrollbars() {}
-	
+
 	  NullScrollbars.prototype = copyObj({
 	    update: function() { return {bottom: 0, right: 0}; },
 	    setScrollLeft: function() {},
 	    setScrollTop: function() {},
 	    clear: function() {}
 	  }, NullScrollbars.prototype);
-	
+
 	  CodeMirror.scrollbarModel = {"native": NativeScrollbars, "null": NullScrollbars};
-	
+
 	  function initScrollbars(cm) {
 	    if (cm.display.scrollbars) {
 	      cm.display.scrollbars.clear();
 	      if (cm.display.scrollbars.addClass)
 	        rmClass(cm.display.wrapper, cm.display.scrollbars.addClass);
 	    }
-	
+
 	    cm.display.scrollbars = new CodeMirror.scrollbarModel[cm.options.scrollbarStyle](function(node) {
 	      cm.display.wrapper.insertBefore(node, cm.display.scrollbarFiller);
 	      // Prevent clicks in the scrollbars from killing focus
@@ -22962,7 +22962,7 @@
 	    if (cm.display.scrollbars.addClass)
 	      addClass(cm.display.wrapper, cm.display.scrollbars.addClass);
 	  }
-	
+
 	  function updateScrollbars(cm, measure) {
 	    if (!measure) measure = measureForScrollbars(cm);
 	    var startWidth = cm.display.barWidth, startHeight = cm.display.barHeight;
@@ -22974,17 +22974,17 @@
 	      startWidth = cm.display.barWidth; startHeight = cm.display.barHeight;
 	    }
 	  }
-	
+
 	  // Re-synchronize the fake scrollbars with the actual size of the
 	  // content.
 	  function updateScrollbarsInner(cm, measure) {
 	    var d = cm.display;
 	    var sizes = d.scrollbars.update(measure);
-	
+
 	    d.sizer.style.paddingRight = (d.barWidth = sizes.right) + "px";
 	    d.sizer.style.paddingBottom = (d.barHeight = sizes.bottom) + "px";
 	    d.heightForcer.style.borderBottom = sizes.bottom + "px solid transparent"
-	
+
 	    if (sizes.right && sizes.bottom) {
 	      d.scrollbarFiller.style.display = "block";
 	      d.scrollbarFiller.style.height = sizes.bottom + "px";
@@ -22996,7 +22996,7 @@
 	      d.gutterFiller.style.width = measure.gutterWidth + "px";
 	    } else d.gutterFiller.style.display = "";
 	  }
-	
+
 	  // Compute the lines that are visible in a given viewport (defaults
 	  // the the current scroll position). viewport may contain top,
 	  // height, and ensure (see op.scrollToPos) properties.
@@ -23004,7 +23004,7 @@
 	    var top = viewport && viewport.top != null ? Math.max(0, viewport.top) : display.scroller.scrollTop;
 	    top = Math.floor(top - paddingTop(display));
 	    var bottom = viewport && viewport.bottom != null ? viewport.bottom : top + display.wrapper.clientHeight;
-	
+
 	    var from = lineAtHeight(doc, top), to = lineAtHeight(doc, bottom);
 	    // Ensure is a {from: {line, ch}, to: {line, ch}} object, and
 	    // forces those lines into the viewport (if possible).
@@ -23020,9 +23020,9 @@
 	    }
 	    return {from: from, to: Math.max(to, from + 1)};
 	  }
-	
+
 	  // LINE NUMBERS
-	
+
 	  // Re-align line numbers and gutter marks to compensate for
 	  // horizontal scrolling.
 	  function alignHorizontally(cm) {
@@ -23040,7 +23040,7 @@
 	    if (cm.options.fixedGutter)
 	      display.gutters.style.left = (comp + gutterW) + "px";
 	  }
-	
+
 	  // Used to ensure that the line number gutter is still the right
 	  // size for the current document size. Returns true when an update
 	  // is needed.
@@ -23061,23 +23061,23 @@
 	    }
 	    return false;
 	  }
-	
+
 	  function lineNumberFor(options, i) {
 	    return String(options.lineNumberFormatter(i + options.firstLineNumber));
 	  }
-	
+
 	  // Computes display.scroller.scrollLeft + display.gutters.offsetWidth,
 	  // but using getBoundingClientRect to get a sub-pixel-accurate
 	  // result.
 	  function compensateForHScroll(display) {
 	    return display.scroller.getBoundingClientRect().left - display.sizer.getBoundingClientRect().left;
 	  }
-	
+
 	  // DISPLAY DRAWING
-	
+
 	  function DisplayUpdate(cm, viewport, force) {
 	    var display = cm.display;
-	
+
 	    this.viewport = viewport;
 	    // Store some values that we'll need later (but don't want to force a relayout for)
 	    this.visible = visibleLines(display, cm.doc, viewport);
@@ -23089,7 +23089,7 @@
 	    this.dims = getDimensions(cm);
 	    this.events = [];
 	  }
-	
+
 	  DisplayUpdate.prototype.signal = function(emitter, type) {
 	    if (hasHandler(emitter, type))
 	      this.events.push(arguments);
@@ -23098,7 +23098,7 @@
 	    for (var i = 0; i < this.events.length; i++)
 	      signal.apply(null, this.events[i]);
 	  };
-	
+
 	  function maybeClipScrollbars(cm) {
 	    var display = cm.display;
 	    if (!display.scrollbarsClipped && display.scroller.offsetWidth) {
@@ -23109,30 +23109,30 @@
 	      display.scrollbarsClipped = true;
 	    }
 	  }
-	
+
 	  // Does the actual updating of the line display. Bails out
 	  // (returning false) when there is nothing to be done and forced is
 	  // false.
 	  function updateDisplayIfNeeded(cm, update) {
 	    var display = cm.display, doc = cm.doc;
-	
+
 	    if (update.editorIsHidden) {
 	      resetView(cm);
 	      return false;
 	    }
-	
+
 	    // Bail out if the visible area is already rendered and nothing changed.
 	    if (!update.force &&
 	        update.visible.from >= display.viewFrom && update.visible.to <= display.viewTo &&
 	        (display.updateLineNumbers == null || display.updateLineNumbers >= display.viewTo) &&
 	        display.renderedView == display.view && countDirtyView(cm) == 0)
 	      return false;
-	
+
 	    if (maybeUpdateLineNumberWidth(cm)) {
 	      resetView(cm);
 	      update.dims = getDimensions(cm);
 	    }
-	
+
 	    // Compute a suitable new viewport (from & to)
 	    var end = doc.first + doc.size;
 	    var from = Math.max(update.visible.from - cm.options.viewportMargin, doc.first);
@@ -23143,20 +23143,20 @@
 	      from = visualLineNo(cm.doc, from);
 	      to = visualLineEndNo(cm.doc, to);
 	    }
-	
+
 	    var different = from != display.viewFrom || to != display.viewTo ||
 	      display.lastWrapHeight != update.wrapperHeight || display.lastWrapWidth != update.wrapperWidth;
 	    adjustView(cm, from, to);
-	
+
 	    display.viewOffset = heightAtLine(getLine(cm.doc, display.viewFrom));
 	    // Position the mover div to align with the current scroll position
 	    cm.display.mover.style.top = display.viewOffset + "px";
-	
+
 	    var toUpdate = countDirtyView(cm);
 	    if (!different && toUpdate == 0 && !update.force && display.renderedView == display.view &&
 	        (display.updateLineNumbers == null || display.updateLineNumbers >= display.viewTo))
 	      return false;
-	
+
 	    // For big changes, we hide the enclosing element during the
 	    // update, since that speeds up the operations on most browsers.
 	    var focused = activeElt();
@@ -23167,27 +23167,27 @@
 	    // There might have been a widget with a focused element that got
 	    // hidden or updated, if so re-focus it.
 	    if (focused && activeElt() != focused && focused.offsetHeight) focused.focus();
-	
+
 	    // Prevent selection and cursors from interfering with the scroll
 	    // width and height.
 	    removeChildren(display.cursorDiv);
 	    removeChildren(display.selectionDiv);
 	    display.gutters.style.height = display.sizer.style.minHeight = 0;
-	
+
 	    if (different) {
 	      display.lastWrapHeight = update.wrapperHeight;
 	      display.lastWrapWidth = update.wrapperWidth;
 	      startWorker(cm, 400);
 	    }
-	
+
 	    display.updateLineNumbers = null;
-	
+
 	    return true;
 	  }
-	
+
 	  function postUpdateDisplay(cm, update) {
 	    var viewport = update.viewport;
-	
+
 	    for (var first = true;; first = false) {
 	      if (!first || !cm.options.lineWrapping || update.oldDisplayWidth == displayWidth(cm)) {
 	        // Clip forced viewport to actual scrollable area.
@@ -23206,14 +23206,14 @@
 	      updateScrollbars(cm, barMeasure);
 	      setDocumentHeight(cm, barMeasure);
 	    }
-	
+
 	    update.signal(cm, "update", cm);
 	    if (cm.display.viewFrom != cm.display.reportedViewFrom || cm.display.viewTo != cm.display.reportedViewTo) {
 	      update.signal(cm, "viewportChange", cm, cm.display.viewFrom, cm.display.viewTo);
 	      cm.display.reportedViewFrom = cm.display.viewFrom; cm.display.reportedViewTo = cm.display.viewTo;
 	    }
 	  }
-	
+
 	  function updateDisplaySimple(cm, viewport) {
 	    var update = new DisplayUpdate(cm, viewport);
 	    if (updateDisplayIfNeeded(cm, update)) {
@@ -23226,13 +23226,13 @@
 	      update.finish();
 	    }
 	  }
-	
+
 	  function setDocumentHeight(cm, measure) {
 	    cm.display.sizer.style.minHeight = measure.docHeight + "px";
 	    cm.display.heightForcer.style.top = measure.docHeight + "px";
 	    cm.display.gutters.style.height = (measure.docHeight + cm.display.barHeight + scrollGap(cm)) + "px";
 	  }
-	
+
 	  // Read the actual heights of the rendered lines, and update their
 	  // stored heights to match.
 	  function updateHeightsInViewport(cm) {
@@ -23259,14 +23259,14 @@
 	      }
 	    }
 	  }
-	
+
 	  // Read and store the height of line widgets associated with the
 	  // given line.
 	  function updateWidgetHeight(line) {
 	    if (line.widgets) for (var i = 0; i < line.widgets.length; ++i)
 	      line.widgets[i].height = line.widgets[i].node.parentNode.offsetHeight;
 	  }
-	
+
 	  // Do a bulk-read of the DOM positions and sizes needed to draw the
 	  // view, so that we don't interleave reading and writing to the DOM.
 	  function getDimensions(cm) {
@@ -23282,7 +23282,7 @@
 	            gutterWidth: width,
 	            wrapperWidth: d.wrapper.clientWidth};
 	  }
-	
+
 	  // Sync the actual display DOM structure with display.view, removing
 	  // nodes for lines that are no longer in view, and creating the ones
 	  // that are not there yet, and updating the ones that are out of
@@ -23290,7 +23290,7 @@
 	  function patchDisplay(cm, updateNumbersFrom, dims) {
 	    var display = cm.display, lineNumbers = cm.options.lineNumbers;
 	    var container = display.lineDiv, cur = container.firstChild;
-	
+
 	    function rm(node) {
 	      var next = node.nextSibling;
 	      // Works around a throw-scroll bug in OS X Webkit
@@ -23300,7 +23300,7 @@
 	        node.parentNode.removeChild(node);
 	      return next;
 	    }
-	
+
 	    var view = display.view, lineN = display.viewFrom;
 	    // Loop over the elements in the view, syncing cur (the DOM nodes
 	    // in display.lineDiv) with the view as we go.
@@ -23328,7 +23328,7 @@
 	    }
 	    while (cur) cur = rm(cur);
 	  }
-	
+
 	  // When an aspect of a line changes, a string is added to
 	  // lineView.changes. This updates the relevant part of the line's
 	  // DOM structure.
@@ -23342,7 +23342,7 @@
 	    }
 	    lineView.changes = null;
 	  }
-	
+
 	  // Lines with gutter elements, widgets or a background class need to
 	  // be wrapped, and have the extra elements added to the wrapper div
 	  function ensureLineWrapped(lineView) {
@@ -23355,7 +23355,7 @@
 	    }
 	    return lineView.node;
 	  }
-	
+
 	  function updateLineBackground(lineView) {
 	    var cls = lineView.bgClass ? lineView.bgClass + " " + (lineView.line.bgClass || "") : lineView.line.bgClass;
 	    if (cls) cls += " CodeMirror-linebackground";
@@ -23367,7 +23367,7 @@
 	      lineView.background = wrap.insertBefore(elt("div", null, cls), wrap.firstChild);
 	    }
 	  }
-	
+
 	  // Wrapper around buildLineContent which will reuse the structure
 	  // in display.externalMeasured when possible.
 	  function getLineContent(cm, lineView) {
@@ -23379,7 +23379,7 @@
 	    }
 	    return buildLineContent(cm, lineView);
 	  }
-	
+
 	  // Redraw the line's text. Interacts with the background and text
 	  // classes because the mode may output tokens that influence these
 	  // classes.
@@ -23397,7 +23397,7 @@
 	      lineView.text.className = cls;
 	    }
 	  }
-	
+
 	  function updateLineClasses(lineView) {
 	    updateLineBackground(lineView);
 	    if (lineView.line.wrapClass)
@@ -23407,7 +23407,7 @@
 	    var textClass = lineView.textClass ? lineView.textClass + " " + (lineView.line.textClass || "") : lineView.line.textClass;
 	    lineView.text.className = textClass || "";
 	  }
-	
+
 	  function updateLineGutter(cm, lineView, lineN, dims) {
 	    if (lineView.gutter) {
 	      lineView.node.removeChild(lineView.gutter);
@@ -23447,7 +23447,7 @@
 	      }
 	    }
 	  }
-	
+
 	  function updateLineWidgets(cm, lineView, dims) {
 	    if (lineView.alignable) lineView.alignable = null;
 	    for (var node = lineView.node.firstChild, next; node; node = next) {
@@ -23457,20 +23457,20 @@
 	    }
 	    insertLineWidgets(cm, lineView, dims);
 	  }
-	
+
 	  // Build a line's DOM representation from scratch
 	  function buildLineElement(cm, lineView, lineN, dims) {
 	    var built = getLineContent(cm, lineView);
 	    lineView.text = lineView.node = built.pre;
 	    if (built.bgClass) lineView.bgClass = built.bgClass;
 	    if (built.textClass) lineView.textClass = built.textClass;
-	
+
 	    updateLineClasses(lineView);
 	    updateLineGutter(cm, lineView, lineN, dims);
 	    insertLineWidgets(cm, lineView, dims);
 	    return lineView.node;
 	  }
-	
+
 	  // A lineView may contain multiple logical lines (when merged by
 	  // collapsed spans). The widgets for all of them need to be drawn.
 	  function insertLineWidgets(cm, lineView, dims) {
@@ -23478,7 +23478,7 @@
 	    if (lineView.rest) for (var i = 0; i < lineView.rest.length; i++)
 	      insertLineWidgetsFor(cm, lineView.rest[i], lineView, dims, false);
 	  }
-	
+
 	  function insertLineWidgetsFor(cm, line, lineView, dims, allowAbove) {
 	    if (!line.widgets) return;
 	    var wrap = ensureLineWrapped(lineView);
@@ -23494,7 +23494,7 @@
 	      signalLater(widget, "redraw");
 	    }
 	  }
-	
+
 	  function positionLineWidget(widget, node, lineView, dims) {
 	    if (widget.noHScroll) {
 	      (lineView.alignable || (lineView.alignable = [])).push(node);
@@ -23512,39 +23512,39 @@
 	      if (!widget.noHScroll) node.style.marginLeft = -dims.gutterTotalWidth + "px";
 	    }
 	  }
-	
+
 	  // POSITION OBJECT
-	
+
 	  // A Pos instance represents a position within the text.
 	  var Pos = CodeMirror.Pos = function(line, ch) {
 	    if (!(this instanceof Pos)) return new Pos(line, ch);
 	    this.line = line; this.ch = ch;
 	  };
-	
+
 	  // Compare two positions, return 0 if they are the same, a negative
 	  // number when a is less, and a positive number otherwise.
 	  var cmp = CodeMirror.cmpPos = function(a, b) { return a.line - b.line || a.ch - b.ch; };
-	
+
 	  function copyPos(x) {return Pos(x.line, x.ch);}
 	  function maxPos(a, b) { return cmp(a, b) < 0 ? b : a; }
 	  function minPos(a, b) { return cmp(a, b) < 0 ? a : b; }
-	
+
 	  // INPUT HANDLING
-	
+
 	  function ensureFocus(cm) {
 	    if (!cm.state.focused) { cm.display.input.focus(); onFocus(cm); }
 	  }
-	
+
 	  // This will be set to an array of strings when copying, so that,
 	  // when pasting, we know what kind of selections the copied text
 	  // was made out of.
 	  var lastCopied = null;
-	
+
 	  function applyTextInput(cm, inserted, deleted, sel, origin) {
 	    var doc = cm.doc;
 	    cm.display.shift = false;
 	    if (!sel) sel = doc.sel;
-	
+
 	    var paste = cm.state.pasteIncoming || origin == "paste";
 	    var textLines = doc.splitLines(inserted), multiPaste = null;
 	    // When pasing N lines into N selections, insert one line per selection
@@ -23559,7 +23559,7 @@
 	        multiPaste = map(textLines, function(l) { return [l]; });
 	      }
 	    }
-	
+
 	    // Normal behavior is to insert the new text into every selection
 	    for (var i = sel.ranges.length - 1; i >= 0; i--) {
 	      var range = sel.ranges[i];
@@ -23578,13 +23578,13 @@
 	    }
 	    if (inserted && !paste)
 	      triggerElectric(cm, inserted);
-	
+
 	    ensureCursorVisible(cm);
 	    cm.curOp.updateInput = updateInput;
 	    cm.curOp.typing = true;
 	    cm.state.pasteIncoming = cm.state.cutIncoming = false;
 	  }
-	
+
 	  function handlePaste(e, cm) {
 	    var pasted = e.clipboardData && e.clipboardData.getData("text/plain");
 	    if (pasted) {
@@ -23594,12 +23594,12 @@
 	      return true;
 	    }
 	  }
-	
+
 	  function triggerElectric(cm, inserted) {
 	    // When an 'electric' character is inserted, immediately trigger a reindent
 	    if (!cm.options.electricChars || !cm.options.smartIndent) return;
 	    var sel = cm.doc.sel;
-	
+
 	    for (var i = sel.ranges.length - 1; i >= 0; i--) {
 	      var range = sel.ranges[i];
 	      if (range.head.ch > 100 || (i && sel.ranges[i - 1].head.line == range.head.line)) continue;
@@ -23618,7 +23618,7 @@
 	      if (indented) signalLater(cm, "electricInput", cm, range.head.line);
 	    }
 	  }
-	
+
 	  function copyableRanges(cm) {
 	    var text = [], ranges = [];
 	    for (var i = 0; i < cm.doc.sel.ranges.length; i++) {
@@ -23629,20 +23629,20 @@
 	    }
 	    return {text: text, ranges: ranges};
 	  }
-	
+
 	  function disableBrowserMagic(field) {
 	    field.setAttribute("autocorrect", "off");
 	    field.setAttribute("autocapitalize", "off");
 	    field.setAttribute("spellcheck", "false");
 	  }
-	
+
 	  // TEXTAREA INPUT STYLE
-	
+
 	  function TextareaInput(cm) {
 	    this.cm = cm;
 	    // See input.poll and input.reset
 	    this.prevInput = "";
-	
+
 	    // Flag that indicates whether we expect input to appear real soon
 	    // now (after some event like 'keypress' or 'input') and are
 	    // polling intensively.
@@ -23656,7 +23656,7 @@
 	    this.hasSelection = false;
 	    this.composing = null;
 	  };
-	
+
 	  function hiddenTextarea() {
 	    var te = elt("textarea", null, null, "position: absolute; padding: 0; width: 1px; height: 1em; outline: none");
 	    var div = elt("div", [te], null, "overflow: hidden; position: relative; width: 3px; height: 0px;");
@@ -23671,33 +23671,33 @@
 	    disableBrowserMagic(te);
 	    return div;
 	  }
-	
+
 	  TextareaInput.prototype = copyObj({
 	    init: function(display) {
 	      var input = this, cm = this.cm;
-	
+
 	      // Wraps and hides input textarea
 	      var div = this.wrapper = hiddenTextarea();
 	      // The semihidden textarea that is focused when the editor is
 	      // focused, and receives input.
 	      var te = this.textarea = div.firstChild;
 	      display.wrapper.insertBefore(div, display.wrapper.firstChild);
-	
+
 	      // Needed to hide big blue blinking cursor on Mobile Safari (doesn't seem to work in iOS 8 anymore)
 	      if (ios) te.style.width = "0px";
-	
+
 	      on(te, "input", function() {
 	        if (ie && ie_version >= 9 && input.hasSelection) input.hasSelection = null;
 	        input.poll();
 	      });
-	
+
 	      on(te, "paste", function(e) {
 	        if (signalDOMEvent(cm, e) || handlePaste(e, cm)) return
-	
+
 	        cm.state.pasteIncoming = true;
 	        input.fastPoll();
 	      });
-	
+
 	      function prepareCopyCut(e) {
 	        if (signalDOMEvent(cm, e)) return
 	        if (cm.somethingSelected()) {
@@ -23725,18 +23725,18 @@
 	      }
 	      on(te, "cut", prepareCopyCut);
 	      on(te, "copy", prepareCopyCut);
-	
+
 	      on(display.scroller, "paste", function(e) {
 	        if (eventInWidget(display, e) || signalDOMEvent(cm, e)) return;
 	        cm.state.pasteIncoming = true;
 	        input.focus();
 	      });
-	
+
 	      // Prevent normal selection in the editor (we handle our own)
 	      on(display.lineSpace, "selectstart", function(e) {
 	        if (!eventInWidget(display, e)) e_preventDefault(e);
 	      });
-	
+
 	      on(te, "compositionstart", function() {
 	        var start = cm.getCursor("from");
 	        if (input.composing) input.composing.range.clear()
@@ -23753,12 +23753,12 @@
 	        }
 	      });
 	    },
-	
+
 	    prepareSelection: function() {
 	      // Redraw the selection and/or cursor
 	      var cm = this.cm, display = cm.display, doc = cm.doc;
 	      var result = prepareSelection(cm);
-	
+
 	      // Move the hidden textarea near the cursor to prevent scrolling artifacts
 	      if (cm.options.moveInputWithCursor) {
 	        var headPos = cursorCoords(cm, doc.sel.primary().head, "div");
@@ -23768,10 +23768,10 @@
 	        result.teLeft = Math.max(0, Math.min(display.wrapper.clientWidth - 10,
 	                                             headPos.left + lineOff.left - wrapOff.left));
 	      }
-	
+
 	      return result;
 	    },
-	
+
 	    showSelection: function(drawn) {
 	      var cm = this.cm, display = cm.display;
 	      removeChildrenAndAdd(display.cursorDiv, drawn.cursors);
@@ -23781,7 +23781,7 @@
 	        this.wrapper.style.left = drawn.teLeft + "px";
 	      }
 	    },
-	
+
 	    // Reset the input to correspond to the selection (or to be empty,
 	    // when not typing and nothing is selected)
 	    reset: function(typing) {
@@ -23802,26 +23802,26 @@
 	      }
 	      this.inaccurateSelection = minimal;
 	    },
-	
+
 	    getField: function() { return this.textarea; },
-	
+
 	    supportsTouch: function() { return false; },
-	
+
 	    focus: function() {
 	      if (this.cm.options.readOnly != "nocursor" && (!mobile || activeElt() != this.textarea)) {
 	        try { this.textarea.focus(); }
 	        catch (e) {} // IE8 will throw if the textarea is display: none or not in DOM
 	      }
 	    },
-	
+
 	    blur: function() { this.textarea.blur(); },
-	
+
 	    resetPosition: function() {
 	      this.wrapper.style.top = this.wrapper.style.left = 0;
 	    },
-	
+
 	    receivedFocus: function() { this.slowPoll(); },
-	
+
 	    // Poll for input changes, using the normal rate of polling. This
 	    // runs as long as the editor is focused.
 	    slowPoll: function() {
@@ -23832,7 +23832,7 @@
 	        if (input.cm.state.focused) input.slowPoll();
 	      });
 	    },
-	
+
 	    // When an event has just come in that is likely to add or change
 	    // something in the input textarea, we poll faster, to ensure that
 	    // the change appears on the screen quickly.
@@ -23846,7 +23846,7 @@
 	      }
 	      input.polling.set(20, p);
 	    },
-	
+
 	    // Read input from the textarea, and update the document to match.
 	    // When something is selected, it is present in the textarea, and
 	    // selected (unless it is huge, in which case a placeholder is
@@ -23863,7 +23863,7 @@
 	          (hasSelection(input) && !prevInput && !this.composing) ||
 	          cm.isReadOnly() || cm.options.disableInput || cm.state.keySeq)
 	        return false;
-	
+
 	      var text = input.value;
 	      // If nothing changed, bail.
 	      if (text == prevInput && !cm.somethingSelected()) return false;
@@ -23875,7 +23875,7 @@
 	        cm.display.input.reset();
 	        return false;
 	      }
-	
+
 	      if (cm.doc.sel == cm.display.selForContextMenu) {
 	        var first = text.charCodeAt(0);
 	        if (first == 0x200b && !prevInput) prevInput = "\u200b";
@@ -23884,16 +23884,16 @@
 	      // Find the part of the input that is actually new
 	      var same = 0, l = Math.min(prevInput.length, text.length);
 	      while (same < l && prevInput.charCodeAt(same) == text.charCodeAt(same)) ++same;
-	
+
 	      var self = this;
 	      runInOp(cm, function() {
 	        applyTextInput(cm, text.slice(same), prevInput.length - same,
 	                       null, self.composing ? "*compose" : null);
-	
+
 	        // Don't leave long text in the textarea, since it makes further polling slow
 	        if (text.length > 1000 || text.indexOf("\n") > -1) input.value = self.prevInput = "";
 	        else self.prevInput = text;
-	
+
 	        if (self.composing) {
 	          self.composing.range.clear();
 	          self.composing.range = cm.markText(self.composing.start, cm.getCursor("to"),
@@ -23902,27 +23902,27 @@
 	      });
 	      return true;
 	    },
-	
+
 	    ensurePolled: function() {
 	      if (this.pollingFast && this.poll()) this.pollingFast = false;
 	    },
-	
+
 	    onKeyPress: function() {
 	      if (ie && ie_version >= 9) this.hasSelection = null;
 	      this.fastPoll();
 	    },
-	
+
 	    onContextMenu: function(e) {
 	      var input = this, cm = input.cm, display = cm.display, te = input.textarea;
 	      var pos = posFromMouse(cm, e), scrollPos = display.scroller.scrollTop;
 	      if (!pos || presto) return; // Opera is difficult.
-	
+
 	      // Reset the current text selection only if the click is done outside of the selection
 	      // and 'resetSelectionOnContextMenu' option is true.
 	      var reset = cm.options.resetSelectionOnContextMenu;
 	      if (reset && cm.doc.sel.contains(pos) == -1)
 	        operation(cm, setSelection)(cm.doc, simpleSelection(pos), sel_dontScroll);
-	
+
 	      var oldCSS = te.style.cssText, oldWrapperCSS = input.wrapper.style.cssText;
 	      input.wrapper.style.cssText = "position: absolute"
 	      var wrapperBox = input.wrapper.getBoundingClientRect()
@@ -23939,7 +23939,7 @@
 	      input.contextMenuPending = true;
 	      display.selForContextMenu = cm.doc.sel;
 	      clearTimeout(display.detectingSelectAll);
-	
+
 	      // Select-all will be greyed out if there's nothing to select, so
 	      // this adds a zero-width space so that we can later check whether
 	      // it got selected.
@@ -23961,7 +23961,7 @@
 	        input.wrapper.style.cssText = oldWrapperCSS
 	        te.style.cssText = oldCSS;
 	        if (ie && ie_version < 9) display.scrollbars.setScrollTop(display.scroller.scrollTop = scrollPos);
-	
+
 	        // Try to detect the user choosing select-all
 	        if (te.selectionStart != null) {
 	          if (!ie || (ie && ie_version < 9)) prepareSelectAllHack();
@@ -23975,7 +23975,7 @@
 	          display.detectingSelectAll = setTimeout(poll, 200);
 	        }
 	      }
-	
+
 	      if (ie && ie_version >= 9) prepareSelectAllHack();
 	      if (captureRightClick) {
 	        e_stop(e);
@@ -23988,35 +23988,35 @@
 	        setTimeout(rehide, 50);
 	      }
 	    },
-	
+
 	    readOnlyChanged: function(val) {
 	      if (!val) this.reset();
 	    },
-	
+
 	    setUneditable: nothing,
-	
+
 	    needsContentAttribute: false
 	  }, TextareaInput.prototype);
-	
+
 	  // CONTENTEDITABLE INPUT STYLE
-	
+
 	  function ContentEditableInput(cm) {
 	    this.cm = cm;
 	    this.lastAnchorNode = this.lastAnchorOffset = this.lastFocusNode = this.lastFocusOffset = null;
 	    this.polling = new Delayed();
 	    this.gracePeriod = false;
 	  }
-	
+
 	  ContentEditableInput.prototype = copyObj({
 	    init: function(display) {
 	      var input = this, cm = input.cm;
 	      var div = input.div = display.lineDiv;
 	      disableBrowserMagic(div);
-	
+
 	      on(div, "paste", function(e) {
 	        if (!signalDOMEvent(cm, e)) handlePaste(e, cm);
 	      })
-	
+
 	      on(div, "compositionstart", function(e) {
 	        var data = e.data;
 	        input.composing = {sel: cm.doc.sel, data: data, startData: data};
@@ -24046,17 +24046,17 @@
 	            input.composing = null;
 	        }, 50);
 	      });
-	
+
 	      on(div, "touchstart", function() {
 	        input.forceCompositionEnd();
 	      });
-	
+
 	      on(div, "input", function() {
 	        if (input.composing) return;
 	        if (cm.isReadOnly() || !input.pollContent())
 	          runInOp(input.cm, function() {regChange(cm);});
 	      });
-	
+
 	      function onCopyCut(e) {
 	        if (signalDOMEvent(cm, e)) return
 	        if (cm.somethingSelected()) {
@@ -24095,19 +24095,19 @@
 	      on(div, "copy", onCopyCut);
 	      on(div, "cut", onCopyCut);
 	    },
-	
+
 	    prepareSelection: function() {
 	      var result = prepareSelection(this.cm, false);
 	      result.focus = this.cm.state.focused;
 	      return result;
 	    },
-	
+
 	    showSelection: function(info) {
 	      if (!info || !this.cm.display.view.length) return;
 	      if (info.focus) this.showPrimarySelection();
 	      this.showMultipleSelections(info);
 	    },
-	
+
 	    showPrimarySelection: function() {
 	      var sel = window.getSelection(), prim = this.cm.doc.sel.primary();
 	      var curAnchor = domToPos(this.cm, sel.anchorNode, sel.anchorOffset);
@@ -24116,11 +24116,11 @@
 	          cmp(minPos(curAnchor, curFocus), prim.from()) == 0 &&
 	          cmp(maxPos(curAnchor, curFocus), prim.to()) == 0)
 	        return;
-	
+
 	      var start = posToDOM(this.cm, prim.from());
 	      var end = posToDOM(this.cm, prim.to());
 	      if (!start && !end) return;
-	
+
 	      var view = this.cm.display.view;
 	      var old = sel.rangeCount && sel.getRangeAt(0);
 	      if (!start) {
@@ -24130,7 +24130,7 @@
 	        var map = measure.maps ? measure.maps[measure.maps.length - 1] : measure.map;
 	        end = {node: map[map.length - 1], offset: map[map.length - 2] - map[map.length - 3]};
 	      }
-	
+
 	      try { var rng = range(start.node, start.offset, end.offset, end.node); }
 	      catch(e) {} // Our model of the DOM might be outdated, in which case the range we try to set can be impossible
 	      if (rng) {
@@ -24146,7 +24146,7 @@
 	      }
 	      this.rememberSelection();
 	    },
-	
+
 	    startGracePeriod: function() {
 	      var input = this;
 	      clearTimeout(this.gracePeriod);
@@ -24156,40 +24156,40 @@
 	          input.cm.operation(function() { input.cm.curOp.selectionChanged = true; });
 	      }, 20);
 	    },
-	
+
 	    showMultipleSelections: function(info) {
 	      removeChildrenAndAdd(this.cm.display.cursorDiv, info.cursors);
 	      removeChildrenAndAdd(this.cm.display.selectionDiv, info.selection);
 	    },
-	
+
 	    rememberSelection: function() {
 	      var sel = window.getSelection();
 	      this.lastAnchorNode = sel.anchorNode; this.lastAnchorOffset = sel.anchorOffset;
 	      this.lastFocusNode = sel.focusNode; this.lastFocusOffset = sel.focusOffset;
 	    },
-	
+
 	    selectionInEditor: function() {
 	      var sel = window.getSelection();
 	      if (!sel.rangeCount) return false;
 	      var node = sel.getRangeAt(0).commonAncestorContainer;
 	      return contains(this.div, node);
 	    },
-	
+
 	    focus: function() {
 	      if (this.cm.options.readOnly != "nocursor") this.div.focus();
 	    },
 	    blur: function() { this.div.blur(); },
 	    getField: function() { return this.div; },
-	
+
 	    supportsTouch: function() { return true; },
-	
+
 	    receivedFocus: function() {
 	      var input = this;
 	      if (this.selectionInEditor())
 	        this.pollSelection();
 	      else
 	        runInOp(this.cm, function() { input.cm.curOp.selectionChanged = true; });
-	
+
 	      function poll() {
 	        if (input.cm.state.focused) {
 	          input.pollSelection();
@@ -24198,13 +24198,13 @@
 	      }
 	      this.polling.set(this.cm.options.pollInterval, poll);
 	    },
-	
+
 	    selectionChanged: function() {
 	      var sel = window.getSelection();
 	      return sel.anchorNode != this.lastAnchorNode || sel.anchorOffset != this.lastAnchorOffset ||
 	        sel.focusNode != this.lastFocusNode || sel.focusOffset != this.lastFocusOffset;
 	    },
-	
+
 	    pollSelection: function() {
 	      if (!this.composing && !this.gracePeriod && this.selectionChanged()) {
 	        var sel = window.getSelection(), cm = this.cm;
@@ -24217,12 +24217,12 @@
 	        });
 	      }
 	    },
-	
+
 	    pollContent: function() {
 	      var cm = this.cm, display = cm.display, sel = cm.doc.sel.primary();
 	      var from = sel.from(), to = sel.to();
 	      if (from.line < display.viewFrom || to.line > display.viewTo - 1) return false;
-	
+
 	      var fromIndex;
 	      if (from.line == display.viewFrom || (fromIndex = findViewIndex(cm, from.line)) == 0) {
 	        var fromLine = lineNo(display.view[0].line);
@@ -24239,7 +24239,7 @@
 	        var toLine = lineNo(display.view[toIndex + 1].line) - 1;
 	        var toNode = display.view[toIndex + 1].node.previousSibling;
 	      }
-	
+
 	      var newText = cm.doc.splitLines(domTextBetween(cm, fromNode, toNode, fromLine, toLine));
 	      var oldText = getBetween(cm.doc, Pos(fromLine, 0), Pos(toLine, getLine(cm.doc, toLine).text.length));
 	      while (newText.length > 1 && oldText.length > 1) {
@@ -24247,7 +24247,7 @@
 	        else if (newText[0] == oldText[0]) { newText.shift(); oldText.shift(); fromLine++; }
 	        else break;
 	      }
-	
+
 	      var cutFront = 0, cutEnd = 0;
 	      var newTop = newText[0], oldTop = oldText[0], maxCutFront = Math.min(newTop.length, oldTop.length);
 	      while (cutFront < maxCutFront && newTop.charCodeAt(cutFront) == oldTop.charCodeAt(cutFront))
@@ -24258,10 +24258,10 @@
 	      while (cutEnd < maxCutEnd &&
 	             newBot.charCodeAt(newBot.length - cutEnd - 1) == oldBot.charCodeAt(oldBot.length - cutEnd - 1))
 	        ++cutEnd;
-	
+
 	      newText[newText.length - 1] = newBot.slice(0, newBot.length - cutEnd);
 	      newText[0] = newText[0].slice(cutFront);
-	
+
 	      var chFrom = Pos(fromLine, cutFront);
 	      var chTo = Pos(toLine, oldText.length ? lst(oldText).length - cutEnd : 0);
 	      if (newText.length > 1 || newText[0] || cmp(chFrom, chTo)) {
@@ -24269,7 +24269,7 @@
 	        return true;
 	      }
 	    },
-	
+
 	    ensurePolled: function() {
 	      this.forceCompositionEnd();
 	    },
@@ -24289,33 +24289,33 @@
 	      else if (composing.data && composing.data != composing.startData)
 	        operation(this.cm, applyTextInput)(this.cm, composing.data, 0, composing.sel);
 	    },
-	
+
 	    setUneditable: function(node) {
 	      node.contentEditable = "false"
 	    },
-	
+
 	    onKeyPress: function(e) {
 	      e.preventDefault();
 	      if (!this.cm.isReadOnly())
 	        operation(this.cm, applyTextInput)(this.cm, String.fromCharCode(e.charCode == null ? e.keyCode : e.charCode), 0);
 	    },
-	
+
 	    readOnlyChanged: function(val) {
 	      this.div.contentEditable = String(val != "nocursor")
 	    },
-	
+
 	    onContextMenu: nothing,
 	    resetPosition: nothing,
-	
+
 	    needsContentAttribute: true
 	  }, ContentEditableInput.prototype);
-	
+
 	  function posToDOM(cm, pos) {
 	    var view = findViewForLine(cm, pos.line);
 	    if (!view || view.hidden) return null;
 	    var line = getLine(cm.doc, pos.line);
 	    var info = mapFromLineView(view, line, pos.line);
-	
+
 	    var order = getOrder(line), side = "left";
 	    if (order) {
 	      var partPos = getBidiPartAt(order, pos.ch);
@@ -24325,9 +24325,9 @@
 	    result.offset = result.collapse == "right" ? result.end : result.start;
 	    return result;
 	  }
-	
+
 	  function badPos(pos, bad) { if (bad) pos.bad = true; return pos; }
-	
+
 	  function domToPos(cm, node, offset) {
 	    var lineNode;
 	    if (node == cm.display.lineDiv) {
@@ -24346,7 +24346,7 @@
 	        return locateNodeInLineView(lineView, node, offset);
 	    }
 	  }
-	
+
 	  function locateNodeInLineView(lineView, node, offset) {
 	    var wrapper = lineView.text.firstChild, bad = false;
 	    if (!node || !contains(wrapper, node)) return badPos(Pos(lineNo(lineView.line), 0), true);
@@ -24359,7 +24359,7 @@
 	        return badPos(Pos(lineNo(line), line.text.length), bad);
 	      }
 	    }
-	
+
 	    var textNode = node.nodeType == 3 ? node : null, topNode = node;
 	    if (!textNode && node.childNodes.length == 1 && node.firstChild.nodeType == 3) {
 	      textNode = node.firstChild;
@@ -24367,7 +24367,7 @@
 	    }
 	    while (topNode.parentNode != wrapper) topNode = topNode.parentNode;
 	    var measure = lineView.measure, maps = measure.maps;
-	
+
 	    function find(textNode, topNode, offset) {
 	      for (var i = -1; i < (maps ? maps.length : 0); i++) {
 	        var map = i < 0 ? measure.map : maps[i];
@@ -24384,7 +24384,7 @@
 	    }
 	    var found = find(textNode, topNode, offset);
 	    if (found) return badPos(found, bad);
-	
+
 	    // FIXME this is all really shaky. might handle the few cases it needs to handle, but likely to cause problems
 	    for (var after = topNode.nextSibling, dist = textNode ? textNode.nodeValue.length - offset : 0; after; after = after.nextSibling) {
 	      found = find(after, after.firstChild, 0);
@@ -24401,7 +24401,7 @@
 	        dist += after.textContent.length;
 	    }
 	  }
-	
+
 	  function domTextBetween(cm, from, to, fromLine, toLine) {
 	    var text = "", closing = false, lineSep = cm.doc.lineSeparator();
 	    function recognizeMarker(id) { return function(marker) { return marker.id == id; }; }
@@ -24442,11 +24442,11 @@
 	    }
 	    return text;
 	  }
-	
+
 	  CodeMirror.inputStyles = {"textarea": TextareaInput, "contenteditable": ContentEditableInput};
-	
+
 	  // SELECTION / CURSOR
-	
+
 	  // Selection objects are immutable. A new one is created every time
 	  // the selection changes. A selection is one or more non-overlapping
 	  // (and non-touching) ranges, sorted, and an integer that indicates
@@ -24456,7 +24456,7 @@
 	    this.ranges = ranges;
 	    this.primIndex = primIndex;
 	  }
-	
+
 	  Selection.prototype = {
 	    primary: function() { return this.ranges[this.primIndex]; },
 	    equals: function(other) {
@@ -24488,11 +24488,11 @@
 	      return -1;
 	    }
 	  };
-	
+
 	  function Range(anchor, head) {
 	    this.anchor = anchor; this.head = head;
 	  }
-	
+
 	  Range.prototype = {
 	    from: function() { return minPos(this.anchor, this.head); },
 	    to: function() { return maxPos(this.anchor, this.head); },
@@ -24500,7 +24500,7 @@
 	      return this.head.line == this.anchor.line && this.head.ch == this.anchor.ch;
 	    }
 	  };
-	
+
 	  // Take an unsorted, potentially overlapping set of ranges, and
 	  // build a selection out of it. 'Consumes' ranges array (modifying
 	  // it).
@@ -24519,11 +24519,11 @@
 	    }
 	    return new Selection(ranges, primIndex);
 	  }
-	
+
 	  function simpleSelection(anchor, head) {
 	    return new Selection([new Range(anchor, head || anchor)], 0);
 	  }
-	
+
 	  // Most of the external API clips given positions to make sure they
 	  // actually exist within the document.
 	  function clipLine(doc, n) {return Math.max(doc.first, Math.min(n, doc.first + doc.size - 1));}
@@ -24544,13 +24544,13 @@
 	    for (var out = [], i = 0; i < array.length; i++) out[i] = clipPos(doc, array[i]);
 	    return out;
 	  }
-	
+
 	  // SELECTION UPDATES
-	
+
 	  // The 'scroll' parameter given to many of these indicated whether
 	  // the new cursor position should be scrolled into view after
 	  // modifying the selection.
-	
+
 	  // If shift is held or the extend flag is set, extends a range to
 	  // include a given position (and optionally a second position).
 	  // Otherwise, simply returns the range between the given positions.
@@ -24572,12 +24572,12 @@
 	      return new Range(other || head, head);
 	    }
 	  }
-	
+
 	  // Extend the primary selection range, discard the rest.
 	  function extendSelection(doc, head, other, options) {
 	    setSelection(doc, new Selection([extendRange(doc, doc.sel.primary(), head, other)], 0), options);
 	  }
-	
+
 	  // Extend all selections (pos is an array of selections with length
 	  // equal the number of selections)
 	  function extendSelections(doc, heads, options) {
@@ -24586,19 +24586,19 @@
 	    var newSel = normalizeSelection(out, doc.sel.primIndex);
 	    setSelection(doc, newSel, options);
 	  }
-	
+
 	  // Updates a single range in the selection.
 	  function replaceOneSelection(doc, i, range, options) {
 	    var ranges = doc.sel.ranges.slice(0);
 	    ranges[i] = range;
 	    setSelection(doc, normalizeSelection(ranges, doc.sel.primIndex), options);
 	  }
-	
+
 	  // Reset the selection to a single range.
 	  function setSimpleSelection(doc, anchor, head, options) {
 	    setSelection(doc, simpleSelection(anchor, head), options);
 	  }
-	
+
 	  // Give beforeSelectionChange handlers a change to influence a
 	  // selection update.
 	  function filterSelectionChange(doc, sel, options) {
@@ -24617,7 +24617,7 @@
 	    if (obj.ranges != sel.ranges) return normalizeSelection(obj.ranges, obj.ranges.length - 1);
 	    else return sel;
 	  }
-	
+
 	  function setSelectionReplaceHistory(doc, sel, options) {
 	    var done = doc.history.done, last = lst(done);
 	    if (last && last.ranges) {
@@ -24627,43 +24627,43 @@
 	      setSelection(doc, sel, options);
 	    }
 	  }
-	
+
 	  // Set a new selection.
 	  function setSelection(doc, sel, options) {
 	    setSelectionNoUndo(doc, sel, options);
 	    addSelectionToHistory(doc, doc.sel, doc.cm ? doc.cm.curOp.id : NaN, options);
 	  }
-	
+
 	  function setSelectionNoUndo(doc, sel, options) {
 	    if (hasHandler(doc, "beforeSelectionChange") || doc.cm && hasHandler(doc.cm, "beforeSelectionChange"))
 	      sel = filterSelectionChange(doc, sel, options);
-	
+
 	    var bias = options && options.bias ||
 	      (cmp(sel.primary().head, doc.sel.primary().head) < 0 ? -1 : 1);
 	    setSelectionInner(doc, skipAtomicInSelection(doc, sel, bias, true));
-	
+
 	    if (!(options && options.scroll === false) && doc.cm)
 	      ensureCursorVisible(doc.cm);
 	  }
-	
+
 	  function setSelectionInner(doc, sel) {
 	    if (sel.equals(doc.sel)) return;
-	
+
 	    doc.sel = sel;
-	
+
 	    if (doc.cm) {
 	      doc.cm.curOp.updateInput = doc.cm.curOp.selectionChanged = true;
 	      signalCursorActivity(doc.cm);
 	    }
 	    signalLater(doc, "cursorActivity", doc);
 	  }
-	
+
 	  // Verify that the selection does not partially select any atomic
 	  // marked ranges.
 	  function reCheckSelection(doc) {
 	    setSelectionInner(doc, skipAtomicInSelection(doc, doc.sel, null, false), sel_dontScroll);
 	  }
-	
+
 	  // Return a selection that does not partially select any atomic
 	  // ranges.
 	  function skipAtomicInSelection(doc, sel, bias, mayClear) {
@@ -24680,7 +24680,7 @@
 	    }
 	    return out ? normalizeSelection(out, sel.primIndex) : sel;
 	  }
-	
+
 	  function skipAtomicInner(doc, pos, oldPos, dir, mayClear) {
 	    var line = getLine(doc, pos.line);
 	    if (line.markedSpans) for (var i = 0; i < line.markedSpans.length; ++i) {
@@ -24695,7 +24695,7 @@
 	          }
 	        }
 	        if (!m.atomic) continue;
-	
+
 	        if (oldPos) {
 	          var near = m.find(dir < 0 ? 1 : -1), diff;
 	          if (dir < 0 ? m.inclusiveRight : m.inclusiveLeft)
@@ -24703,7 +24703,7 @@
 	          if (near && near.line == pos.line && (diff = cmp(near, oldPos)) && (dir < 0 ? diff < 0 : diff > 0))
 	            return skipAtomicInner(doc, near, pos, dir, mayClear);
 	        }
-	
+
 	        var far = m.find(dir < 0 ? -1 : 1);
 	        if (dir < 0 ? m.inclusiveLeft : m.inclusiveRight)
 	          far = movePos(doc, far, dir, far.line == pos.line ? line : null);
@@ -24712,7 +24712,7 @@
 	    }
 	    return pos;
 	  }
-	
+
 	  // Ensure a given position is not inside an atomic range.
 	  function skipAtomic(doc, pos, oldPos, bias, mayClear) {
 	    var dir = bias || 1;
@@ -24726,7 +24726,7 @@
 	    }
 	    return found;
 	  }
-	
+
 	  function movePos(doc, pos, dir, line) {
 	    if (dir < 0 && pos.ch == 0) {
 	      if (pos.line > doc.first) return clipPos(doc, Pos(pos.line - 1));
@@ -24738,18 +24738,18 @@
 	      return new Pos(pos.line, pos.ch + dir);
 	    }
 	  }
-	
+
 	  // SELECTION DRAWING
-	
+
 	  function updateSelection(cm) {
 	    cm.display.input.showSelection(cm.display.input.prepareSelection());
 	  }
-	
+
 	  function prepareSelection(cm, primary) {
 	    var doc = cm.doc, result = {};
 	    var curFragment = result.cursors = document.createDocumentFragment();
 	    var selFragment = result.selection = document.createDocumentFragment();
-	
+
 	    for (var i = 0; i < doc.sel.ranges.length; i++) {
 	      if (primary === false && i == doc.sel.primIndex) continue;
 	      var range = doc.sel.ranges[i];
@@ -24762,16 +24762,16 @@
 	    }
 	    return result;
 	  }
-	
+
 	  // Draws a cursor for the given range
 	  function drawSelectionCursor(cm, head, output) {
 	    var pos = cursorCoords(cm, head, "div", null, null, !cm.options.singleCursorHeightPerLine);
-	
+
 	    var cursor = output.appendChild(elt("div", "\u00a0", "CodeMirror-cursor"));
 	    cursor.style.left = pos.left + "px";
 	    cursor.style.top = pos.top + "px";
 	    cursor.style.height = Math.max(0, pos.bottom - pos.top) * cm.options.cursorHeight + "px";
-	
+
 	    if (pos.other) {
 	      // Secondary cursor, shown when on a 'jump' in bi-directional text
 	      var otherCursor = output.appendChild(elt("div", "\u00a0", "CodeMirror-cursor CodeMirror-secondarycursor"));
@@ -24781,14 +24781,14 @@
 	      otherCursor.style.height = (pos.other.bottom - pos.other.top) * .85 + "px";
 	    }
 	  }
-	
+
 	  // Draws the given range as a highlighted selection
 	  function drawSelectionRange(cm, range, output) {
 	    var display = cm.display, doc = cm.doc;
 	    var fragment = document.createDocumentFragment();
 	    var padding = paddingH(cm.display), leftSide = padding.left;
 	    var rightSide = Math.max(display.sizerWidth, displayWidth(cm) - display.sizer.offsetLeft) - padding.right;
-	
+
 	    function add(left, top, width, bottom) {
 	      if (top < 0) top = 0;
 	      top = Math.round(top);
@@ -24797,7 +24797,7 @@
 	                               "px; top: " + top + "px; width: " + (width == null ? rightSide - left : width) +
 	                               "px; height: " + (bottom - top) + "px"));
 	    }
-	
+
 	    function drawForLine(line, fromArg, toArg) {
 	      var lineObj = getLine(doc, line);
 	      var lineLen = lineObj.text.length;
@@ -24805,7 +24805,7 @@
 	      function coords(ch, bias) {
 	        return charCoords(cm, Pos(line, ch), "div", lineObj, bias);
 	      }
-	
+
 	      iterateBidiSections(getOrder(lineObj), fromArg || 0, toArg == null ? lineLen : toArg, function(from, to, dir) {
 	        var leftPos = coords(from, "left"), rightPos, left, right;
 	        if (from == to) {
@@ -24833,7 +24833,7 @@
 	      });
 	      return {start: start, end: end};
 	    }
-	
+
 	    var sFrom = range.from(), sTo = range.to();
 	    if (sFrom.line == sTo.line) {
 	      drawForLine(sFrom.line, sFrom.ch, sTo.ch);
@@ -24853,10 +24853,10 @@
 	      if (leftEnd.bottom < rightStart.top)
 	        add(leftSide, leftEnd.bottom, null, rightStart.top);
 	    }
-	
+
 	    output.appendChild(fragment);
 	  }
-	
+
 	  // Cursor-blinking
 	  function restartBlink(cm) {
 	    if (!cm.state.focused) return;
@@ -24871,14 +24871,14 @@
 	    else if (cm.options.cursorBlinkRate < 0)
 	      display.cursorDiv.style.visibility = "hidden";
 	  }
-	
+
 	  // HIGHLIGHT WORKER
-	
+
 	  function startWorker(cm, time) {
 	    if (cm.doc.mode.startState && cm.doc.frontier < cm.display.viewTo)
 	      cm.state.highlight.set(time, bind(highlightWorker, cm));
 	  }
-	
+
 	  function highlightWorker(cm) {
 	    var doc = cm.doc;
 	    if (doc.frontier < doc.first) doc.frontier = doc.first;
@@ -24886,7 +24886,7 @@
 	    var end = +new Date + cm.options.workTime;
 	    var state = copyState(doc.mode, getStateBefore(cm, doc.frontier));
 	    var changedLines = [];
-	
+
 	    doc.iter(doc.frontier, Math.min(doc.first + doc.size, cm.display.viewTo + 500), function(line) {
 	      if (doc.frontier >= cm.display.viewFrom) { // Visible
 	        var oldStyles = line.styles, tooLong = line.text.length > cm.options.maxHighlightLength;
@@ -24916,7 +24916,7 @@
 	        regLineChange(cm, changedLines[i], "text");
 	    });
 	  }
-	
+
 	  // Finds the line to start with when starting a parse. Tries to
 	  // find a line with a stateAfter, so that it can start with a
 	  // valid state. If that fails, it returns the line with the
@@ -24937,7 +24937,7 @@
 	    }
 	    return minline;
 	  }
-	
+
 	  function getStateBefore(cm, n, precise) {
 	    var doc = cm.doc, display = cm.display;
 	    if (!doc.mode.startState) return true;
@@ -24953,9 +24953,9 @@
 	    if (precise) doc.frontier = pos;
 	    return state;
 	  }
-	
+
 	  // POSITION MEASUREMENT
-	
+
 	  function paddingTop(display) {return display.lineSpace.offsetTop;}
 	  function paddingVert(display) {return display.mover.offsetHeight - display.lineSpace.offsetHeight;}
 	  function paddingH(display) {
@@ -24966,7 +24966,7 @@
 	    if (!isNaN(data.left) && !isNaN(data.right)) display.cachedPaddingH = data;
 	    return data;
 	  }
-	
+
 	  function scrollGap(cm) { return scrollerGap - cm.display.nativeBarWidth; }
 	  function displayWidth(cm) {
 	    return cm.display.scroller.clientWidth - scrollGap(cm) - cm.display.barWidth;
@@ -24974,7 +24974,7 @@
 	  function displayHeight(cm) {
 	    return cm.display.scroller.clientHeight - scrollGap(cm) - cm.display.barHeight;
 	  }
-	
+
 	  // Ensure the lineView.wrapping.heights array is populated. This is
 	  // an array of bottom offsets for the lines that make up a drawn
 	  // line. When lineWrapping is on, there might be more than one
@@ -24996,7 +24996,7 @@
 	      heights.push(rect.bottom - rect.top);
 	    }
 	  }
-	
+
 	  // Find a line map (mapping character offsets to text nodes) and a
 	  // measurement cache for the given line number. (A line view might
 	  // contain multiple lines when collapsed ranges are present.)
@@ -25010,7 +25010,7 @@
 	      if (lineNo(lineView.rest[i]) > lineN)
 	        return {map: lineView.measure.maps[i], cache: lineView.measure.caches[i], before: true};
 	  }
-	
+
 	  // Render a line into the hidden node display.externalMeasured. Used
 	  // when measurement is needed for a line that's not in the viewport.
 	  function updateExternalMeasurement(cm, line) {
@@ -25023,13 +25023,13 @@
 	    removeChildrenAndAdd(cm.display.lineMeasure, built.pre);
 	    return view;
 	  }
-	
+
 	  // Get a {top, bottom, left, right} box (in line-local coordinates)
 	  // for a given character.
 	  function measureChar(cm, line, ch, bias) {
 	    return measureCharPrepared(cm, prepareMeasureForLine(cm, line), ch, bias);
 	  }
-	
+
 	  // Find a line view that corresponds to the given line number.
 	  function findViewForLine(cm, lineN) {
 	    if (lineN >= cm.display.viewFrom && lineN < cm.display.viewTo)
@@ -25038,7 +25038,7 @@
 	    if (ext && lineN >= ext.lineN && lineN < ext.lineN + ext.size)
 	      return ext;
 	  }
-	
+
 	  // Measurement can be split in two steps, the set-up work that
 	  // applies to the whole line, and the measurement of the actual
 	  // character. Functions like coordsChar, that need to do a lot of
@@ -25055,7 +25055,7 @@
 	    }
 	    if (!view)
 	      view = updateExternalMeasurement(cm, line);
-	
+
 	    var info = mapFromLineView(view, line, lineN);
 	    return {
 	      line: line, view: view, rect: null,
@@ -25063,7 +25063,7 @@
 	      hasHeights: false
 	    };
 	  }
-	
+
 	  // Given a prepared measurement object, measures the position of an
 	  // actual character (or fetches it from the cache).
 	  function measureCharPrepared(cm, prepared, ch, bias, varHeight) {
@@ -25085,9 +25085,9 @@
 	            top: varHeight ? found.rtop : found.top,
 	            bottom: varHeight ? found.rbottom : found.bottom};
 	  }
-	
+
 	  var nullRect = {left: 0, right: 0, top: 0, bottom: 0};
-	
+
 	  function nodeAndOffsetInLineMap(map, ch, bias) {
 	    var node, start, end, collapse;
 	    // First, search the line map for the text node corresponding to,
@@ -25124,11 +25124,11 @@
 	    }
 	    return {node: node, start: start, end: end, collapse: collapse, coverStart: mStart, coverEnd: mEnd};
 	  }
-	
+
 	  function measureCharInner(cm, prepared, ch, bias) {
 	    var place = nodeAndOffsetInLineMap(prepared.map, ch, bias);
 	    var node = place.node, start = place.start, end = place.end, collapse = place.collapse;
-	
+
 	    var rect;
 	    if (node.nodeType == 3) { // If it is a text node, use a range to retrieve the coordinates.
 	      for (var i = 0; i < 4; i++) { // Retry a maximum of 4 times when nonsense rectangles are returned
@@ -25166,7 +25166,7 @@
 	      else
 	        rect = nullRect;
 	    }
-	
+
 	    var rtop = rect.top - prepared.rect.top, rbot = rect.bottom - prepared.rect.top;
 	    var mid = (rtop + rbot) / 2;
 	    var heights = prepared.view.measure.heights;
@@ -25178,10 +25178,10 @@
 	                  top: top, bottom: bot};
 	    if (!rect.left && !rect.right) result.bogus = true;
 	    if (!cm.options.singleCursorHeightPerLine) { result.rtop = rtop; result.rbottom = rbot; }
-	
+
 	    return result;
 	  }
-	
+
 	  // Work around problem with bounding client rects on ranges being
 	  // returned incorrectly when zoomed on IE10 and below.
 	  function maybeUpdateRectForZooming(measure, rect) {
@@ -25193,7 +25193,7 @@
 	    return {left: rect.left * scaleX, right: rect.right * scaleX,
 	            top: rect.top * scaleY, bottom: rect.bottom * scaleY};
 	  }
-	
+
 	  function clearLineMeasurementCacheFor(lineView) {
 	    if (lineView.measure) {
 	      lineView.measure.cache = {};
@@ -25202,24 +25202,24 @@
 	        lineView.measure.caches[i] = {};
 	    }
 	  }
-	
+
 	  function clearLineMeasurementCache(cm) {
 	    cm.display.externalMeasure = null;
 	    removeChildren(cm.display.lineMeasure);
 	    for (var i = 0; i < cm.display.view.length; i++)
 	      clearLineMeasurementCacheFor(cm.display.view[i]);
 	  }
-	
+
 	  function clearCaches(cm) {
 	    clearLineMeasurementCache(cm);
 	    cm.display.cachedCharWidth = cm.display.cachedTextHeight = cm.display.cachedPaddingH = null;
 	    if (!cm.options.lineWrapping) cm.display.maxLineChanged = true;
 	    cm.display.lineNumChars = null;
 	  }
-	
+
 	  function pageScrollX() { return window.pageXOffset || (document.documentElement || document.body).scrollLeft; }
 	  function pageScrollY() { return window.pageYOffset || (document.documentElement || document.body).scrollTop; }
-	
+
 	  // Converts a {top, bottom, left, right} box from line-local
 	  // coordinates into another coordinate system. Context may be one of
 	  // "line", "div" (display.lineDiv), "local"/null (editor), "window",
@@ -25243,7 +25243,7 @@
 	    rect.top += yOff; rect.bottom += yOff;
 	    return rect;
 	  }
-	
+
 	  // Coverts a box from "div" coords to another coordinate system.
 	  // Context may be "window", "page", "div", or "local"/null.
 	  function fromCoordSystem(cm, coords, context) {
@@ -25258,16 +25258,16 @@
 	      left += localBox.left;
 	      top += localBox.top;
 	    }
-	
+
 	    var lineSpaceBox = cm.display.lineSpace.getBoundingClientRect();
 	    return {left: left - lineSpaceBox.left, top: top - lineSpaceBox.top};
 	  }
-	
+
 	  function charCoords(cm, pos, context, lineObj, bias) {
 	    if (!lineObj) lineObj = getLine(cm.doc, pos.line);
 	    return intoCoordSystem(cm, lineObj, measureChar(cm, lineObj, pos.ch, bias), context);
 	  }
-	
+
 	  // Returns a box for a given cursor position, which may have an
 	  // 'other' property containing the position of the secondary cursor
 	  // on a bidi boundary.
@@ -25300,7 +25300,7 @@
 	    if (bidiOther != null) val.other = getBidi(ch, bidiOther);
 	    return val;
 	  }
-	
+
 	  // Used to cheaply estimate the coordinates for a position. Used for
 	  // intermediate scroll updates.
 	  function estimateCoords(cm, pos) {
@@ -25310,7 +25310,7 @@
 	    var top = heightAtLine(lineObj) + paddingTop(cm.display);
 	    return {left: left, right: left, top: top, bottom: top + lineObj.height};
 	  }
-	
+
 	  // Positions returned by coordsChar contain some extra information.
 	  // xRel is the relative x position of the input coordinates compared
 	  // to the found position (so xRel > 0 means the coordinates are to
@@ -25323,7 +25323,7 @@
 	    if (outside) pos.outside = true;
 	    return pos;
 	  }
-	
+
 	  // Compute the character position closest to the given coordinates.
 	  // Input must be lineSpace-local ("div" coordinate system).
 	  function coordsChar(cm, x, y) {
@@ -25334,7 +25334,7 @@
 	    if (lineN > last)
 	      return PosWithInfo(doc.first + doc.size - 1, getLine(doc, last).text.length, true, 1);
 	    if (x < 0) x = 0;
-	
+
 	    var lineObj = getLine(doc, lineN);
 	    for (;;) {
 	      var found = coordsCharInner(cm, lineObj, lineN, x, y);
@@ -25346,12 +25346,12 @@
 	        return found;
 	    }
 	  }
-	
+
 	  function coordsCharInner(cm, lineObj, lineNo, x, y) {
 	    var innerOff = y - heightAtLine(lineObj);
 	    var wrongLine = false, adjust = 2 * cm.display.wrapper.clientWidth;
 	    var preparedMeasure = prepareMeasureForLine(cm, lineObj);
-	
+
 	    function getX(ch) {
 	      var sp = cursorCoords(cm, Pos(lineNo, ch), "line", lineObj, preparedMeasure);
 	      wrongLine = true;
@@ -25360,11 +25360,11 @@
 	      else wrongLine = false;
 	      return sp.left;
 	    }
-	
+
 	    var bidi = getOrder(lineObj), dist = lineObj.text.length;
 	    var from = lineLeft(lineObj), to = lineRight(lineObj);
 	    var fromX = getX(from), fromOutside = wrongLine, toX = getX(to), toOutside = wrongLine;
-	
+
 	    if (x > toX) return PosWithInfo(lineNo, to, toOutside, 1);
 	    // Do a binary search between these bounds.
 	    for (;;) {
@@ -25386,7 +25386,7 @@
 	      else {from = middle; fromX = middleX; fromOutside = wrongLine; dist -= step;}
 	    }
 	  }
-	
+
 	  var measureText;
 	  // Compute the default text height.
 	  function textHeight(display) {
@@ -25407,7 +25407,7 @@
 	    removeChildren(display.measure);
 	    return height || 1;
 	  }
-	
+
 	  // Compute the default character width.
 	  function charWidth(display) {
 	    if (display.cachedCharWidth != null) return display.cachedCharWidth;
@@ -25418,17 +25418,17 @@
 	    if (width > 2) display.cachedCharWidth = width;
 	    return width || 10;
 	  }
-	
+
 	  // OPERATIONS
-	
+
 	  // Operations are used to wrap a series of changes to the editor
 	  // state in such a way that each change won't have to update the
 	  // cursor and display (which would be awkward, slow, and
 	  // error-prone). Instead, display updates are batched and then all
 	  // combined and executed at once.
-	
+
 	  var operationGroup = null;
-	
+
 	  var nextOpId = 0;
 	  // Start a new operation.
 	  function startOperation(cm) {
@@ -25458,7 +25458,7 @@
 	      };
 	    }
 	  }
-	
+
 	  function fireCallbacksForOps(group) {
 	    // Calls delayed callbacks and cursorActivity handlers until no
 	    // new ones appear
@@ -25474,12 +25474,12 @@
 	      }
 	    } while (i < callbacks.length);
 	  }
-	
+
 	  // Finish an operation, updating the display and signalling delayed events
 	  function endOperation(cm) {
 	    var op = cm.curOp, group = op.ownsGroup;
 	    if (!group) return;
-	
+
 	    try { fireCallbacksForOps(group); }
 	    finally {
 	      operationGroup = null;
@@ -25488,7 +25488,7 @@
 	      endOperations(group);
 	    }
 	  }
-	
+
 	  // The DOM updates done when an operation finishes are batched so
 	  // that the minimum number of relayouts are required.
 	  function endOperations(group) {
@@ -25504,12 +25504,12 @@
 	    for (var i = 0; i < ops.length; i++) // Read DOM
 	      endOperation_finish(ops[i]);
 	  }
-	
+
 	  function endOperation_R1(op) {
 	    var cm = op.cm, display = cm.display;
 	    maybeClipScrollbars(cm);
 	    if (op.updateMaxLine) findMaxLine(cm);
-	
+
 	    op.mustUpdate = op.viewChanged || op.forceUpdate || op.scrollTop != null ||
 	      op.scrollToPos && (op.scrollToPos.from.line < display.viewFrom ||
 	                         op.scrollToPos.to.line >= display.viewTo) ||
@@ -25517,17 +25517,17 @@
 	    op.update = op.mustUpdate &&
 	      new DisplayUpdate(cm, op.mustUpdate && {top: op.scrollTop, ensure: op.scrollToPos}, op.forceUpdate);
 	  }
-	
+
 	  function endOperation_W1(op) {
 	    op.updatedDisplay = op.mustUpdate && updateDisplayIfNeeded(op.cm, op.update);
 	  }
-	
+
 	  function endOperation_R2(op) {
 	    var cm = op.cm, display = cm.display;
 	    if (op.updatedDisplay) updateHeightsInViewport(cm);
-	
+
 	    op.barMeasure = measureForScrollbars(cm);
-	
+
 	    // If the max line changed since it was last measured, measure it,
 	    // and ensure the document's width matches it.
 	    // updateDisplay_W2 will use these properties to do the actual resizing
@@ -25538,45 +25538,45 @@
 	        Math.max(display.scroller.clientWidth, display.sizer.offsetLeft + op.adjustWidthTo + scrollGap(cm) + cm.display.barWidth);
 	      op.maxScrollLeft = Math.max(0, display.sizer.offsetLeft + op.adjustWidthTo - displayWidth(cm));
 	    }
-	
+
 	    if (op.updatedDisplay || op.selectionChanged)
 	      op.preparedSelection = display.input.prepareSelection();
 	  }
-	
+
 	  function endOperation_W2(op) {
 	    var cm = op.cm;
-	
+
 	    if (op.adjustWidthTo != null) {
 	      cm.display.sizer.style.minWidth = op.adjustWidthTo + "px";
 	      if (op.maxScrollLeft < cm.doc.scrollLeft)
 	        setScrollLeft(cm, Math.min(cm.display.scroller.scrollLeft, op.maxScrollLeft), true);
 	      cm.display.maxLineChanged = false;
 	    }
-	
+
 	    if (op.preparedSelection)
 	      cm.display.input.showSelection(op.preparedSelection);
 	    if (op.updatedDisplay || op.startHeight != cm.doc.height)
 	      updateScrollbars(cm, op.barMeasure);
 	    if (op.updatedDisplay)
 	      setDocumentHeight(cm, op.barMeasure);
-	
+
 	    if (op.selectionChanged) restartBlink(cm);
-	
+
 	    if (cm.state.focused && op.updateInput)
 	      cm.display.input.reset(op.typing);
 	    if (op.focus && op.focus == activeElt() && (!document.hasFocus || document.hasFocus()))
 	      ensureFocus(op.cm);
 	  }
-	
+
 	  function endOperation_finish(op) {
 	    var cm = op.cm, display = cm.display, doc = cm.doc;
-	
+
 	    if (op.updatedDisplay) postUpdateDisplay(cm, op.update);
-	
+
 	    // Abort mouse wheel delta measurement, when scrolling explicitly
 	    if (display.wheelStartX != null && (op.scrollTop != null || op.scrollLeft != null || op.scrollToPos))
 	      display.wheelStartX = display.wheelStartY = null;
-	
+
 	    // Propagate the scroll position to the actual DOM scroller
 	    if (op.scrollTop != null && (display.scroller.scrollTop != op.scrollTop || op.forceScroll)) {
 	      doc.scrollTop = Math.max(0, Math.min(display.scroller.scrollHeight - display.scroller.clientHeight, op.scrollTop));
@@ -25595,7 +25595,7 @@
 	                                     clipPos(doc, op.scrollToPos.to), op.scrollToPos.margin);
 	      if (op.scrollToPos.isCursor && cm.state.focused) maybeScrollWindow(cm, coords);
 	    }
-	
+
 	    // Fire events for markers that are hidden/unidden by editing or
 	    // undoing
 	    var hidden = op.maybeHiddenMarkers, unhidden = op.maybeUnhiddenMarkers;
@@ -25603,17 +25603,17 @@
 	      if (!hidden[i].lines.length) signal(hidden[i], "hide");
 	    if (unhidden) for (var i = 0; i < unhidden.length; ++i)
 	      if (unhidden[i].lines.length) signal(unhidden[i], "unhide");
-	
+
 	    if (display.wrapper.offsetHeight)
 	      doc.scrollTop = cm.display.scroller.scrollTop;
-	
+
 	    // Fire change events, and delayed event handlers
 	    if (op.changeObjs)
 	      signal(cm, "changes", cm, op.changeObjs);
 	    if (op.update)
 	      op.update.finish();
 	  }
-	
+
 	  // Run the given function in an operation
 	  function runInOp(cm, f) {
 	    if (cm.curOp) return f();
@@ -25649,9 +25649,9 @@
 	      finally { endOperation(cm); }
 	    };
 	  }
-	
+
 	  // VIEW TRACKING
-	
+
 	  // These objects are used to represent the visible (currently drawn)
 	  // part of the document. A LineView may correspond to multiple
 	  // logical lines, if those are connected by collapsed ranges.
@@ -25665,7 +25665,7 @@
 	    this.node = this.text = null;
 	    this.hidden = lineIsHidden(doc, line);
 	  }
-	
+
 	  // Create a range of LineView objects for the given lines.
 	  function buildViewArray(cm, from, to) {
 	    var array = [], nextPos;
@@ -25676,7 +25676,7 @@
 	    }
 	    return array;
 	  }
-	
+
 	  // Updates the display.view data structure for a given change to the
 	  // document. From and to are in pre-change coordinates. Lendiff is
 	  // the amount of lines added or subtracted by the change. This is
@@ -25687,14 +25687,14 @@
 	    if (from == null) from = cm.doc.first;
 	    if (to == null) to = cm.doc.first + cm.doc.size;
 	    if (!lendiff) lendiff = 0;
-	
+
 	    var display = cm.display;
 	    if (lendiff && to < display.viewTo &&
 	        (display.updateLineNumbers == null || display.updateLineNumbers > from))
 	      display.updateLineNumbers = from;
-	
+
 	    cm.curOp.viewChanged = true;
-	
+
 	    if (from >= display.viewTo) { // Change after
 	      if (sawCollapsedSpans && visualLineNo(cm.doc, from) < display.viewTo)
 	        resetView(cm);
@@ -25736,7 +25736,7 @@
 	        resetView(cm);
 	      }
 	    }
-	
+
 	    var ext = display.externalMeasured;
 	    if (ext) {
 	      if (to < ext.lineN)
@@ -25745,7 +25745,7 @@
 	        display.externalMeasured = null;
 	    }
 	  }
-	
+
 	  // Register a change to a single line. Type must be one of "text",
 	  // "gutter", "class", "widget"
 	  function regLineChange(cm, line, type) {
@@ -25753,21 +25753,21 @@
 	    var display = cm.display, ext = cm.display.externalMeasured;
 	    if (ext && line >= ext.lineN && line < ext.lineN + ext.size)
 	      display.externalMeasured = null;
-	
+
 	    if (line < display.viewFrom || line >= display.viewTo) return;
 	    var lineView = display.view[findViewIndex(cm, line)];
 	    if (lineView.node == null) return;
 	    var arr = lineView.changes || (lineView.changes = []);
 	    if (indexOf(arr, type) == -1) arr.push(type);
 	  }
-	
+
 	  // Clear the view.
 	  function resetView(cm) {
 	    cm.display.viewFrom = cm.display.viewTo = cm.doc.first;
 	    cm.display.view = [];
 	    cm.display.viewOffset = 0;
 	  }
-	
+
 	  // Find the view element corresponding to a given line. Return null
 	  // when the line isn't visible.
 	  function findViewIndex(cm, n) {
@@ -25780,7 +25780,7 @@
 	      if (n < 0) return i;
 	    }
 	  }
-	
+
 	  function viewCuttingPoint(cm, oldN, newN, dir) {
 	    var index = findViewIndex(cm, oldN), diff, view = cm.display.view;
 	    if (!sawCollapsedSpans || newN == cm.doc.first + cm.doc.size)
@@ -25804,7 +25804,7 @@
 	    }
 	    return {index: index, lineN: newN};
 	  }
-	
+
 	  // Force the view to cover a given range, adding empty view element
 	  // or clipping off existing ones as needed.
 	  function adjustView(cm, from, to) {
@@ -25825,7 +25825,7 @@
 	    }
 	    display.viewTo = to;
 	  }
-	
+
 	  // Count the number of lines in the view whose DOM representation is
 	  // out of date (or nonexistent).
 	  function countDirtyView(cm) {
@@ -25836,9 +25836,9 @@
 	    }
 	    return dirty;
 	  }
-	
+
 	  // EVENT HANDLERS
-	
+
 	  // Attach the necessary event handlers when initializing the editor
 	  function registerEventHandlers(cm) {
 	    var d = cm.display;
@@ -25859,7 +25859,7 @@
 	    // which point we can't mess with it anymore. Context menu is
 	    // handled in onMouseDown for these browsers.
 	    if (!captureRightClick) on(d.scroller, "contextmenu", function(e) {onContextMenu(cm, e);});
-	
+
 	    // Used to suppress mouse event handling when a touch happens
 	    var touchFinished, prevTouch = {end: 0};
 	    function finishTouch() {
@@ -25912,7 +25912,7 @@
 	      finishTouch();
 	    });
 	    on(d.scroller, "touchcancel", finishTouch);
-	
+
 	    // Sync scrolling between fake scrollbars and real scrollable
 	    // area, ensure viewport is updated when scrolling.
 	    on(d.scroller, "scroll", function() {
@@ -25922,14 +25922,14 @@
 	        signal(cm, "scroll", cm);
 	      }
 	    });
-	
+
 	    // Listen to wheel events in order to try and update the viewport on time.
 	    on(d.scroller, "mousewheel", function(e){onScrollWheel(cm, e);});
 	    on(d.scroller, "DOMMouseScroll", function(e){onScrollWheel(cm, e);});
-	
+
 	    // Prevent wrapper from ever scrolling
 	    on(d.wrapper, "scroll", function() { d.wrapper.scrollTop = d.wrapper.scrollLeft = 0; });
-	
+
 	    d.dragFunctions = {
 	      enter: function(e) {if (!signalDOMEvent(cm, e)) e_stop(e);},
 	      over: function(e) {if (!signalDOMEvent(cm, e)) { onDragOver(cm, e); e_stop(e); }},
@@ -25937,7 +25937,7 @@
 	      drop: operation(cm, onDrop),
 	      leave: function(e) {if (!signalDOMEvent(cm, e)) { clearDragCursor(cm); }}
 	    };
-	
+
 	    var inp = d.input.getField();
 	    on(inp, "keyup", function(e) { onKeyUp.call(cm, e); });
 	    on(inp, "keydown", operation(cm, onKeyDown));
@@ -25945,7 +25945,7 @@
 	    on(inp, "focus", bind(onFocus, cm));
 	    on(inp, "blur", bind(onBlur, cm));
 	  }
-	
+
 	  function dragDropChanged(cm, value, old) {
 	    var wasOn = old && old != CodeMirror.Init;
 	    if (!value != !wasOn) {
@@ -25958,7 +25958,7 @@
 	      toggle(cm.display.scroller, "drop", funcs.drop);
 	    }
 	  }
-	
+
 	  // Called when the window resizes
 	  function onResize(cm) {
 	    var d = cm.display;
@@ -25969,9 +25969,9 @@
 	    d.scrollbarsClipped = false;
 	    cm.setSize();
 	  }
-	
+
 	  // MOUSE EVENTS
-	
+
 	  // Return true when the given mouse event happened in a widget
 	  function eventInWidget(display, e) {
 	    for (var n = e_target(e); n != display.wrapper; n = n.parentNode) {
@@ -25980,7 +25980,7 @@
 	        return true;
 	    }
 	  }
-	
+
 	  // Given a mouse event, find the corresponding position. If liberal
 	  // is false, it checks whether a gutter or scrollbar was clicked,
 	  // and returns null if it was. forRect is used by rectangular
@@ -25989,7 +25989,7 @@
 	  function posFromMouse(cm, e, liberal, forRect) {
 	    var display = cm.display;
 	    if (!liberal && e_target(e).getAttribute("cm-not-content") == "true") return null;
-	
+
 	    var x, y, space = display.lineSpace.getBoundingClientRect();
 	    // Fails unpredictably on IE[67] when mouse is dragged around quickly.
 	    try { x = e.clientX - space.left; y = e.clientY - space.top; }
@@ -26001,7 +26001,7 @@
 	    }
 	    return coords;
 	  }
-	
+
 	  // A mouse down can be a single click, double click, triple click,
 	  // start of selection drag, start of text drag, new cursor
 	  // (ctrl-click), rectangle drag (alt-drag), or xwin
@@ -26011,7 +26011,7 @@
 	    var cm = this, display = cm.display;
 	    if (signalDOMEvent(cm, e) || display.activeTouch && display.input.supportsTouch()) return;
 	    display.shift = e.shiftKey;
-	
+
 	    if (eventInWidget(display, e)) {
 	      if (!webkit) {
 	        // Briefly turn off draggability, to allow widgets to do
@@ -26024,7 +26024,7 @@
 	    if (clickInGutter(cm, e)) return;
 	    var start = posFromMouse(cm, e);
 	    window.focus();
-	
+
 	    switch (e_button(e)) {
 	    case 1:
 	      // #3261: make sure, that we're not starting a second selection
@@ -26047,12 +26047,12 @@
 	      break;
 	    }
 	  }
-	
+
 	  var lastClick, lastDoubleClick;
 	  function leftButtonDown(cm, e, start) {
 	    if (ie) setTimeout(bind(ensureFocus, cm), 0);
 	    else cm.curOp.focus = activeElt();
-	
+
 	    var now = +new Date, type;
 	    if (lastDoubleClick && lastDoubleClick.time > now - 400 && cmp(lastDoubleClick.pos, start) == 0) {
 	      type = "triple";
@@ -26063,7 +26063,7 @@
 	      type = "single";
 	      lastClick = {time: now, pos: start};
 	    }
-	
+
 	    var sel = cm.doc.sel, modifier = mac ? e.metaKey : e.ctrlKey, contained;
 	    if (cm.options.dragDrop && dragAndDrop && !cm.isReadOnly() &&
 	        type == "single" && (contained = sel.contains(start)) > -1 &&
@@ -26073,7 +26073,7 @@
 	    else
 	      leftButtonSelect(cm, e, start, type, modifier);
 	  }
-	
+
 	  // Start a text drag. When it ends, see if any dragging actually
 	  // happen, and treat as a click if it didn't.
 	  function leftButtonStartDrag(cm, e, start, modifier) {
@@ -26102,12 +26102,12 @@
 	    on(document, "mouseup", dragEnd);
 	    on(display.scroller, "drop", dragEnd);
 	  }
-	
+
 	  // Normal selection, as opposed to text dragging.
 	  function leftButtonSelect(cm, e, start, type, addNew) {
 	    var display = cm.display, doc = cm.doc;
 	    e_preventDefault(e);
-	
+
 	    var ourRange, ourIndex, startSel = doc.sel, ranges = startSel.ranges;
 	    if (addNew && !e.shiftKey) {
 	      ourIndex = doc.sel.contains(start);
@@ -26119,7 +26119,7 @@
 	      ourRange = doc.sel.primary();
 	      ourIndex = doc.sel.primIndex;
 	    }
-	
+
 	    if (chromeOS ? e.shiftKey && e.metaKey : e.altKey) {
 	      type = "rect";
 	      if (!addNew) ourRange = new Range(start, start);
@@ -26140,7 +26140,7 @@
 	    } else {
 	      ourRange = extendRange(doc, ourRange, start);
 	    }
-	
+
 	    if (!addNew) {
 	      ourIndex = 0;
 	      setSelection(doc, new Selection([ourRange], 0), sel_mouse);
@@ -26156,12 +26156,12 @@
 	    } else {
 	      replaceOneSelection(doc, ourIndex, ourRange, sel_mouse);
 	    }
-	
+
 	    var lastPos = start;
 	    function extendTo(pos) {
 	      if (cmp(lastPos, pos) == 0) return;
 	      lastPos = pos;
-	
+
 	      if (type == "rect") {
 	        var ranges = [], tabSize = cm.options.tabSize;
 	        var startCol = countColumn(getLine(doc, start.line).text, start.ch, tabSize);
@@ -26200,14 +26200,14 @@
 	        setSelection(doc, normalizeSelection(ranges, ourIndex), sel_mouse);
 	      }
 	    }
-	
+
 	    var editorSize = display.wrapper.getBoundingClientRect();
 	    // Used to ensure timeout re-tries don't fire when another extend
 	    // happened in the meantime (clearTimeout isn't reliable -- at
 	    // least on Chrome, the timeouts still happen even when cleared,
 	    // if the clear happens after their scheduled firing time).
 	    var counter = 0;
-	
+
 	    function extend(e) {
 	      var curCount = ++counter;
 	      var cur = posFromMouse(cm, e, true, type == "rect");
@@ -26227,7 +26227,7 @@
 	        }), 50);
 	      }
 	    }
-	
+
 	    function done(e) {
 	      cm.state.selectingText = false;
 	      counter = Infinity;
@@ -26237,7 +26237,7 @@
 	      off(document, "mouseup", up);
 	      doc.history.lastSelOrigin = null;
 	    }
-	
+
 	    var move = operation(cm, function(e) {
 	      if (!e_button(e)) done(e);
 	      else extend(e);
@@ -26247,7 +26247,7 @@
 	    on(document, "mousemove", move);
 	    on(document, "mouseup", up);
 	  }
-	
+
 	  // Determines whether an event happened in the gutter, and fires the
 	  // handlers for the corresponding event.
 	  function gutterEvent(cm, e, type, prevent) {
@@ -26255,13 +26255,13 @@
 	    catch(e) { return false; }
 	    if (mX >= Math.floor(cm.display.gutters.getBoundingClientRect().right)) return false;
 	    if (prevent) e_preventDefault(e);
-	
+
 	    var display = cm.display;
 	    var lineBox = display.lineDiv.getBoundingClientRect();
-	
+
 	    if (mY > lineBox.bottom || !hasHandler(cm, type)) return e_defaultPrevented(e);
 	    mY -= lineBox.top - display.viewOffset;
-	
+
 	    for (var i = 0; i < cm.options.gutters.length; ++i) {
 	      var g = display.gutters.childNodes[i];
 	      if (g && g.getBoundingClientRect().right >= mX) {
@@ -26272,15 +26272,15 @@
 	      }
 	    }
 	  }
-	
+
 	  function clickInGutter(cm, e) {
 	    return gutterEvent(cm, e, "gutterClick", true);
 	  }
-	
+
 	  // Kludge to work around strange IE behavior where it'll sometimes
 	  // re-fire a series of drag-related events right after the drop (#1551)
 	  var lastDrop = 0;
-	
+
 	  function onDrop(e) {
 	    var cm = this;
 	    clearDragCursor(cm);
@@ -26298,7 +26298,7 @@
 	        if (cm.options.allowDropFileTypes &&
 	            indexOf(cm.options.allowDropFileTypes, file.type) == -1)
 	          return;
-	
+
 	        var reader = new FileReader;
 	        reader.onload = operation(cm, function() {
 	          var content = reader.result;
@@ -26339,14 +26339,14 @@
 	      catch(e){}
 	    }
 	  }
-	
+
 	  function onDragStart(cm, e) {
 	    if (ie && (!cm.state.draggingText || +new Date - lastDrop < 100)) { e_stop(e); return; }
 	    if (signalDOMEvent(cm, e) || eventInWidget(cm.display, e)) return;
-	
+
 	    e.dataTransfer.setData("Text", cm.getSelection());
 	    e.dataTransfer.effectAllowed = "copyMove"
-	
+
 	    // Use dummy image instead of default browsers image.
 	    // Recent Safari (~6.0.2) have a tendency to segfault when this happens, so we don't do it there.
 	    if (e.dataTransfer.setDragImage && !safari) {
@@ -26362,7 +26362,7 @@
 	      if (presto) img.parentNode.removeChild(img);
 	    }
 	  }
-	
+
 	  function onDragOver(cm, e) {
 	    var pos = posFromMouse(cm, e);
 	    if (!pos) return;
@@ -26374,16 +26374,16 @@
 	    }
 	    removeChildrenAndAdd(cm.display.dragCursor, frag);
 	  }
-	
+
 	  function clearDragCursor(cm) {
 	    if (cm.display.dragCursor) {
 	      cm.display.lineSpace.removeChild(cm.display.dragCursor);
 	      cm.display.dragCursor = null;
 	    }
 	  }
-	
+
 	  // SCROLL EVENTS
-	
+
 	  // Sync the scrollable area and scrollbars, ensure the viewport
 	  // covers the visible area.
 	  function setScrollTop(cm, val) {
@@ -26405,7 +26405,7 @@
 	    if (cm.display.scroller.scrollLeft != val) cm.display.scroller.scrollLeft = val;
 	    cm.display.scrollbars.setScrollLeft(val);
 	  }
-	
+
 	  // Since the delta values reported on mouse wheel events are
 	  // unstandardized between browsers and even browser versions, and
 	  // generally horribly unpredictable, this code starts by measuring
@@ -26416,7 +26416,7 @@
 	  // The reason we want to know the amount a wheel event will scroll
 	  // is that it gives us a chance to update the display before the
 	  // actual scrolling happens, reducing flickering.
-	
+
 	  var wheelSamples = 0, wheelPixelsPerUnit = null;
 	  // Fill in a browser-detected starting value on browsers where we
 	  // know one. These don't have to be accurate -- the result of them
@@ -26426,7 +26426,7 @@
 	  else if (gecko) wheelPixelsPerUnit = 15;
 	  else if (chrome) wheelPixelsPerUnit = -.7;
 	  else if (safari) wheelPixelsPerUnit = -1/3;
-	
+
 	  var wheelEventDelta = function(e) {
 	    var dx = e.wheelDeltaX, dy = e.wheelDeltaY;
 	    if (dx == null && e.detail && e.axis == e.HORIZONTAL_AXIS) dx = e.detail;
@@ -26440,16 +26440,16 @@
 	    delta.y *= wheelPixelsPerUnit;
 	    return delta;
 	  };
-	
+
 	  function onScrollWheel(cm, e) {
 	    var delta = wheelEventDelta(e), dx = delta.x, dy = delta.y;
-	
+
 	    var display = cm.display, scroll = display.scroller;
 	    // Quit if there's nothing to scroll here
 	    var canScrollX = scroll.scrollWidth > scroll.clientWidth;
 	    var canScrollY = scroll.scrollHeight > scroll.clientHeight;
 	    if (!(dx && canScrollX || dy && canScrollY)) return;
-	
+
 	    // Webkit browsers on OS X abort momentum scrolls when the target
 	    // of the scroll event is removed from the scrollable element.
 	    // This hack (see related code in patchDisplay) makes sure the
@@ -26464,7 +26464,7 @@
 	        }
 	      }
 	    }
-	
+
 	    // On some browsers, horizontal scrolling will cause redraws to
 	    // happen before the gutter has been realigned, causing it to
 	    // wriggle around in a most unseemly way. When we have an
@@ -26484,7 +26484,7 @@
 	      display.wheelStartX = null; // Abort measurement, if in progress
 	      return;
 	    }
-	
+
 	    // 'Project' the visible viewport to cover the area that is being
 	    // scrolled into view (if we know enough to estimate it).
 	    if (dy && wheelPixelsPerUnit != null) {
@@ -26494,7 +26494,7 @@
 	      else bot = Math.min(cm.doc.height, bot + pixels + 50);
 	      updateDisplaySimple(cm, {top: top, bottom: bot});
 	    }
-	
+
 	    if (wheelSamples < 20) {
 	      if (display.wheelStartX == null) {
 	        display.wheelStartX = scroll.scrollLeft; display.wheelStartY = scroll.scrollTop;
@@ -26515,9 +26515,9 @@
 	      }
 	    }
 	  }
-	
+
 	  // KEY EVENTS
-	
+
 	  // Run a handler that was bound to a key.
 	  function doHandleBinding(cm, bound, dropShift) {
 	    if (typeof bound == "string") {
@@ -26538,7 +26538,7 @@
 	    }
 	    return done;
 	  }
-	
+
 	  function lookupKeyForEditor(cm, name, handle) {
 	    for (var i = 0; i < cm.state.keyMaps.length; i++) {
 	      var result = lookupKey(name, cm.state.keyMaps[i], handle, cm);
@@ -26547,7 +26547,7 @@
 	    return (cm.options.extraKeys && lookupKey(name, cm.options.extraKeys, handle, cm))
 	      || lookupKey(name, cm.options.keyMap, handle, cm);
 	  }
-	
+
 	  var stopSeq = new Delayed;
 	  function dispatchKey(cm, name, e, handle) {
 	    var seq = cm.state.keySeq;
@@ -26562,29 +26562,29 @@
 	      name = seq + " " + name;
 	    }
 	    var result = lookupKeyForEditor(cm, name, handle);
-	
+
 	    if (result == "multi")
 	      cm.state.keySeq = name;
 	    if (result == "handled")
 	      signalLater(cm, "keyHandled", cm, name, e);
-	
+
 	    if (result == "handled" || result == "multi") {
 	      e_preventDefault(e);
 	      restartBlink(cm);
 	    }
-	
+
 	    if (seq && !result && /\'$/.test(name)) {
 	      e_preventDefault(e);
 	      return true;
 	    }
 	    return !!result;
 	  }
-	
+
 	  // Handle a key from the keydown event.
 	  function handleKeyBinding(cm, e) {
 	    var name = keyName(e, true);
 	    if (!name) return false;
-	
+
 	    if (e.shiftKey && !cm.state.keySeq) {
 	      // First try to resolve full name (including 'Shift-'). Failing
 	      // that, see if there is a cursor-motion command (starting with
@@ -26598,13 +26598,13 @@
 	      return dispatchKey(cm, name, e, function(b) { return doHandleBinding(cm, b); });
 	    }
 	  }
-	
+
 	  // Handle a key from the keypress event
 	  function handleCharBinding(cm, e, ch) {
 	    return dispatchKey(cm, "'" + ch + "'", e,
 	                       function(b) { return doHandleBinding(cm, b, true); });
 	  }
-	
+
 	  var lastStoppedKey = null;
 	  function onKeyDown(e) {
 	    var cm = this;
@@ -26621,16 +26621,16 @@
 	      if (!handled && code == 88 && !hasCopyEvent && (mac ? e.metaKey : e.ctrlKey))
 	        cm.replaceSelection("", null, "cut");
 	    }
-	
+
 	    // Turn mouse into crosshair when Alt is held on Mac.
 	    if (code == 18 && !/\bCodeMirror-crosshair\b/.test(cm.display.lineDiv.className))
 	      showCrossHair(cm);
 	  }
-	
+
 	  function showCrossHair(cm) {
 	    var lineDiv = cm.display.lineDiv;
 	    addClass(lineDiv, "CodeMirror-crosshair");
-	
+
 	    function up(e) {
 	      if (e.keyCode == 18 || !e.altKey) {
 	        rmClass(lineDiv, "CodeMirror-crosshair");
@@ -26641,12 +26641,12 @@
 	    on(document, "keyup", up);
 	    on(document, "mouseover", up);
 	  }
-	
+
 	  function onKeyUp(e) {
 	    if (e.keyCode == 16) this.doc.sel.shift = false;
 	    signalDOMEvent(this, e);
 	  }
-	
+
 	  function onKeyPress(e) {
 	    var cm = this;
 	    if (eventInWidget(cm.display, e) || signalDOMEvent(cm, e) || e.ctrlKey && !e.altKey || mac && e.metaKey) return;
@@ -26657,9 +26657,9 @@
 	    if (handleCharBinding(cm, e, ch)) return;
 	    cm.display.input.onKeyPress(e);
 	  }
-	
+
 	  // FOCUS/BLUR EVENTS
-	
+
 	  function delayBlurEvent(cm) {
 	    cm.state.delayingBlurEvent = true;
 	    setTimeout(function() {
@@ -26669,10 +26669,10 @@
 	      }
 	    }, 100);
 	  }
-	
+
 	  function onFocus(cm) {
 	    if (cm.state.delayingBlurEvent) cm.state.delayingBlurEvent = false;
-	
+
 	    if (cm.options.readOnly == "nocursor") return;
 	    if (!cm.state.focused) {
 	      signal(cm, "focus", cm);
@@ -26691,7 +26691,7 @@
 	  }
 	  function onBlur(cm) {
 	    if (cm.state.delayingBlurEvent) return;
-	
+
 	    if (cm.state.focused) {
 	      signal(cm, "blur", cm);
 	      cm.state.focused = false;
@@ -26700,9 +26700,9 @@
 	    clearInterval(cm.display.blinker);
 	    setTimeout(function() {if (!cm.state.focused) cm.display.shift = false;}, 150);
 	  }
-	
+
 	  // CONTEXT MENU HANDLING
-	
+
 	  // To make the context menu work, we need to briefly unhide the
 	  // textarea (making it as unobtrusive as possible) to let the
 	  // right-click take effect on it.
@@ -26711,14 +26711,14 @@
 	    if (signalDOMEvent(cm, e, "contextmenu")) return;
 	    cm.display.input.onContextMenu(e);
 	  }
-	
+
 	  function contextMenuInGutter(cm, e) {
 	    if (!hasHandler(cm, "gutterContextMenu")) return false;
 	    return gutterEvent(cm, e, "gutterContextMenu", false);
 	  }
-	
+
 	  // UPDATING
-	
+
 	  // Compute the position of the end of a change (its 'to' property
 	  // refers to the pre-change end).
 	  var changeEnd = CodeMirror.changeEnd = function(change) {
@@ -26726,18 +26726,18 @@
 	    return Pos(change.from.line + change.text.length - 1,
 	               lst(change.text).length + (change.text.length == 1 ? change.from.ch : 0));
 	  };
-	
+
 	  // Adjust a position to refer to the post-change position of the
 	  // same text, or the end of the change if the change covers it.
 	  function adjustForChange(pos, change) {
 	    if (cmp(pos, change.from) < 0) return pos;
 	    if (cmp(pos, change.to) <= 0) return changeEnd(change);
-	
+
 	    var line = pos.line + change.text.length - (change.to.line - change.from.line) - 1, ch = pos.ch;
 	    if (pos.line == change.to.line) ch += changeEnd(change).ch - change.to.ch;
 	    return Pos(line, ch);
 	  }
-	
+
 	  function computeSelAfterChange(doc, change) {
 	    var out = [];
 	    for (var i = 0; i < doc.sel.ranges.length; i++) {
@@ -26747,14 +26747,14 @@
 	    }
 	    return normalizeSelection(out, doc.sel.primIndex);
 	  }
-	
+
 	  function offsetPos(pos, old, nw) {
 	    if (pos.line == old.line)
 	      return Pos(nw.line, pos.ch - old.ch + nw.ch);
 	    else
 	      return Pos(nw.line + (pos.line - old.line), pos.ch);
 	  }
-	
+
 	  // Used by replaceSelections to allow moving the selection to the
 	  // start or around the replaced test. Hint may be "start" or "around".
 	  function computeReplacedSel(doc, changes, hint) {
@@ -26775,7 +26775,7 @@
 	    }
 	    return new Selection(out, doc.sel.primIndex);
 	  }
-	
+
 	  // Allow "beforeChange" event handlers to influence a change
 	  function filterChange(doc, change, update) {
 	    var obj = {
@@ -26794,11 +26794,11 @@
 	    };
 	    signal(doc, "beforeChange", doc, obj);
 	    if (doc.cm) signal(doc.cm, "beforeChange", doc.cm, obj);
-	
+
 	    if (obj.canceled) return null;
 	    return {from: obj.from, to: obj.to, text: obj.text, origin: obj.origin};
 	  }
-	
+
 	  // Apply a change to a document, and add it to the document's
 	  // history, and propagating it to all linked documents.
 	  function makeChange(doc, change, ignoreReadOnly) {
@@ -26806,12 +26806,12 @@
 	      if (!doc.cm.curOp) return operation(doc.cm, makeChange)(doc, change, ignoreReadOnly);
 	      if (doc.cm.state.suppressEdits) return;
 	    }
-	
+
 	    if (hasHandler(doc, "beforeChange") || doc.cm && hasHandler(doc.cm, "beforeChange")) {
 	      change = filterChange(doc, change, true);
 	      if (!change) return;
 	    }
-	
+
 	    // Possibly split or suppress the update based on the presence
 	    // of read-only spans in its range.
 	    var split = sawReadOnlySpans && !ignoreReadOnly && removeReadOnlyRanges(doc, change.from, change.to);
@@ -26822,15 +26822,15 @@
 	      makeChangeInner(doc, change);
 	    }
 	  }
-	
+
 	  function makeChangeInner(doc, change) {
 	    if (change.text.length == 1 && change.text[0] == "" && cmp(change.from, change.to) == 0) return;
 	    var selAfter = computeSelAfterChange(doc, change);
 	    addChangeToHistory(doc, change, selAfter, doc.cm ? doc.cm.curOp.id : NaN);
-	
+
 	    makeChangeSingleDoc(doc, change, selAfter, stretchSpansOverChange(doc, change));
 	    var rebased = [];
-	
+
 	    linkedDocs(doc, function(doc, sharedHist) {
 	      if (!sharedHist && indexOf(rebased, doc.history) == -1) {
 	        rebaseHist(doc.history, change);
@@ -26839,14 +26839,14 @@
 	      makeChangeSingleDoc(doc, change, null, stretchSpansOverChange(doc, change));
 	    });
 	  }
-	
+
 	  // Revert a change stored in a document's history.
 	  function makeChangeFromHistory(doc, type, allowSelectionOnly) {
 	    if (doc.cm && doc.cm.state.suppressEdits) return;
-	
+
 	    var hist = doc.history, event, selAfter = doc.sel;
 	    var source = type == "undo" ? hist.done : hist.undone, dest = type == "undo" ? hist.undone : hist.done;
-	
+
 	    // Verify that there is a useable event (so that ctrl-z won't
 	    // needlessly clear selection events)
 	    for (var i = 0; i < source.length; i++) {
@@ -26856,7 +26856,7 @@
 	    }
 	    if (i == source.length) return;
 	    hist.lastOrigin = hist.lastSelOrigin = null;
-	
+
 	    for (;;) {
 	      event = source.pop();
 	      if (event.ranges) {
@@ -26869,16 +26869,16 @@
 	      }
 	      else break;
 	    }
-	
+
 	    // Build up a reverse change object to add to the opposite history
 	    // stack (redo when undoing, and vice versa).
 	    var antiChanges = [];
 	    pushSelectionToHistory(selAfter, dest);
 	    dest.push({changes: antiChanges, generation: hist.generation});
 	    hist.generation = event.generation || ++hist.maxGeneration;
-	
+
 	    var filter = hasHandler(doc, "beforeChange") || doc.cm && hasHandler(doc.cm, "beforeChange");
-	
+
 	    for (var i = event.changes.length - 1; i >= 0; --i) {
 	      var change = event.changes[i];
 	      change.origin = type;
@@ -26886,14 +26886,14 @@
 	        source.length = 0;
 	        return;
 	      }
-	
+
 	      antiChanges.push(historyChangeFromChange(doc, change));
-	
+
 	      var after = i ? computeSelAfterChange(doc, change) : lst(source);
 	      makeChangeSingleDoc(doc, change, after, mergeOldSpans(doc, change));
 	      if (!i && doc.cm) doc.cm.scrollIntoView({from: change.from, to: changeEnd(change)});
 	      var rebased = [];
-	
+
 	      // Propagate to the linked documents
 	      linkedDocs(doc, function(doc, sharedHist) {
 	        if (!sharedHist && indexOf(rebased, doc.history) == -1) {
@@ -26904,7 +26904,7 @@
 	      });
 	    }
 	  }
-	
+
 	  // Sub-views need their line numbers shifted when text is added
 	  // above or below them in the parent document.
 	  function shiftDoc(doc, distance) {
@@ -26920,19 +26920,19 @@
 	        regLineChange(doc.cm, l, "gutter");
 	    }
 	  }
-	
+
 	  // More lower-level change function, handling only a single document
 	  // (not linked ones).
 	  function makeChangeSingleDoc(doc, change, selAfter, spans) {
 	    if (doc.cm && !doc.cm.curOp)
 	      return operation(doc.cm, makeChangeSingleDoc)(doc, change, selAfter, spans);
-	
+
 	    if (change.to.line < doc.first) {
 	      shiftDoc(doc, change.text.length - 1 - (change.to.line - change.from.line));
 	      return;
 	    }
 	    if (change.from.line > doc.lastLine()) return;
-	
+
 	    // Clip the change to the size of this doc
 	    if (change.from.line < doc.first) {
 	      var shift = change.text.length - 1 - (doc.first - change.from.line);
@@ -26945,20 +26945,20 @@
 	      change = {from: change.from, to: Pos(last, getLine(doc, last).text.length),
 	                text: [change.text[0]], origin: change.origin};
 	    }
-	
+
 	    change.removed = getBetween(doc, change.from, change.to);
-	
+
 	    if (!selAfter) selAfter = computeSelAfterChange(doc, change);
 	    if (doc.cm) makeChangeSingleDocInEditor(doc.cm, change, spans);
 	    else updateDoc(doc, change, spans);
 	    setSelectionNoUndo(doc, selAfter, sel_dontScroll);
 	  }
-	
+
 	  // Handle the interaction of a change to a document with the editor
 	  // that this document is part of.
 	  function makeChangeSingleDocInEditor(cm, change, spans) {
 	    var doc = cm.doc, display = cm.display, from = change.from, to = change.to;
-	
+
 	    var recomputeMaxLength = false, checkWidthStart = from.line;
 	    if (!cm.options.lineWrapping) {
 	      checkWidthStart = lineNo(visualLine(getLine(doc, from.line)));
@@ -26969,12 +26969,12 @@
 	        }
 	      });
 	    }
-	
+
 	    if (doc.sel.contains(change.from, change.to) > -1)
 	      signalCursorActivity(cm);
-	
+
 	    updateDoc(doc, change, spans, estimateHeight(cm));
-	
+
 	    if (!cm.options.lineWrapping) {
 	      doc.iter(checkWidthStart, from.line + change.text.length, function(line) {
 	        var len = lineLength(line);
@@ -26987,11 +26987,11 @@
 	      });
 	      if (recomputeMaxLength) cm.curOp.updateMaxLine = true;
 	    }
-	
+
 	    // Adjust frontier, schedule worker
 	    doc.frontier = Math.min(doc.frontier, from.line);
 	    startWorker(cm, 400);
-	
+
 	    var lendiff = change.text.length - (to.line - from.line) - 1;
 	    // Remember that these lines changed, for updating the display
 	    if (change.full)
@@ -27000,7 +27000,7 @@
 	      regLineChange(cm, from.line, "text");
 	    else
 	      regChange(cm, from.line, to.line + 1, lendiff);
-	
+
 	    var changesHandler = hasHandler(cm, "changes"), changeHandler = hasHandler(cm, "change");
 	    if (changeHandler || changesHandler) {
 	      var obj = {
@@ -27014,21 +27014,21 @@
 	    }
 	    cm.display.selForContextMenu = null;
 	  }
-	
+
 	  function replaceRange(doc, code, from, to, origin) {
 	    if (!to) to = from;
 	    if (cmp(to, from) < 0) { var tmp = to; to = from; from = tmp; }
 	    if (typeof code == "string") code = doc.splitLines(code);
 	    makeChange(doc, {from: from, to: to, text: code, origin: origin});
 	  }
-	
+
 	  // SCROLLING THINGS INTO VIEW
-	
+
 	  // If an editor sits on the top or bottom of the window, partially
 	  // scrolled out of view, this ensures that the cursor is visible.
 	  function maybeScrollWindow(cm, coords) {
 	    if (signalDOMEvent(cm, "scrollCursorIntoView")) return;
-	
+
 	    var display = cm.display, box = display.sizer.getBoundingClientRect(), doScroll = null;
 	    if (coords.top + box.top < 0) doScroll = true;
 	    else if (coords.bottom + box.top > (window.innerHeight || document.documentElement.clientHeight)) doScroll = false;
@@ -27042,7 +27042,7 @@
 	      cm.display.lineSpace.removeChild(scrollNode);
 	    }
 	  }
-	
+
 	  // Scroll a given position into view (immediately), verifying that
 	  // it actually became visible (as line heights are accurately
 	  // measured, the position of something may 'drift' during drawing).
@@ -27068,14 +27068,14 @@
 	    }
 	    return coords;
 	  }
-	
+
 	  // Scroll a given set of coordinates into view (immediately).
 	  function scrollIntoView(cm, x1, y1, x2, y2) {
 	    var scrollPos = calculateScrollPos(cm, x1, y1, x2, y2);
 	    if (scrollPos.scrollTop != null) setScrollTop(cm, scrollPos.scrollTop);
 	    if (scrollPos.scrollLeft != null) setScrollLeft(cm, scrollPos.scrollLeft);
 	  }
-	
+
 	  // Calculate a new scroll position needed to scroll the given
 	  // rectangle into view. Returns an object with scrollTop and
 	  // scrollLeft properties. When these are undefined, the
@@ -27094,7 +27094,7 @@
 	      var newTop = Math.min(y1, (atBottom ? docBottom : y2) - screen);
 	      if (newTop != screentop) result.scrollTop = newTop;
 	    }
-	
+
 	    var screenleft = cm.curOp && cm.curOp.scrollLeft != null ? cm.curOp.scrollLeft : display.scroller.scrollLeft;
 	    var screenw = displayWidth(cm) - (cm.options.fixedGutter ? display.gutters.offsetWidth : 0);
 	    var tooWide = x2 - x1 > screenw;
@@ -27107,7 +27107,7 @@
 	      result.scrollLeft = x2 + (tooWide ? 0 : 10) - screenw;
 	    return result;
 	  }
-	
+
 	  // Store a relative adjustment to the scroll position in the current
 	  // operation (to be applied when the operation finishes).
 	  function addToScrollPos(cm, left, top) {
@@ -27117,7 +27117,7 @@
 	    if (top != null)
 	      cm.curOp.scrollTop = (cm.curOp.scrollTop == null ? cm.doc.scrollTop : cm.curOp.scrollTop) + top;
 	  }
-	
+
 	  // Make sure that at the end of the operation the current cursor is
 	  // shown.
 	  function ensureCursorVisible(cm) {
@@ -27129,7 +27129,7 @@
 	    }
 	    cm.curOp.scrollToPos = {from: from, to: to, margin: cm.options.cursorScrollMargin, isCursor: true};
 	  }
-	
+
 	  // When an operation has its scrollToPos property set, and another
 	  // scroll action is applied before the end of the operation, this
 	  // 'simulates' scrolling that position into view in a cheap way, so
@@ -27146,9 +27146,9 @@
 	      cm.scrollTo(sPos.scrollLeft, sPos.scrollTop);
 	    }
 	  }
-	
+
 	  // API UTILITIES
-	
+
 	  // Indent the given line. The how parameter can be "smart",
 	  // "add"/null, "subtract", or "prev". When aggressive is false
 	  // (typically set to true for forced single-line indents), empty
@@ -27163,7 +27163,7 @@
 	      if (!doc.mode.indent) how = "prev";
 	      else state = getStateBefore(cm, n);
 	    }
-	
+
 	    var tabSize = cm.options.tabSize;
 	    var line = getLine(doc, n), curSpace = countColumn(line.text, null, tabSize);
 	    if (line.stateAfter) line.stateAfter = null;
@@ -27189,12 +27189,12 @@
 	      indentation = curSpace + how;
 	    }
 	    indentation = Math.max(0, indentation);
-	
+
 	    var indentString = "", pos = 0;
 	    if (cm.options.indentWithTabs)
 	      for (var i = Math.floor(indentation / tabSize); i; --i) {pos += tabSize; indentString += "\t";}
 	    if (pos < indentation) indentString += spaceStr(indentation - pos);
-	
+
 	    if (indentString != curSpaceString) {
 	      replaceRange(doc, indentString, Pos(n, 0), Pos(n, curSpaceString.length), "+input");
 	      line.stateAfter = null;
@@ -27212,7 +27212,7 @@
 	      }
 	    }
 	  }
-	
+
 	  // Utility for applying a change to a line by handle or number,
 	  // returning the number and optionally registering the line as
 	  // changed.
@@ -27224,7 +27224,7 @@
 	    if (op(line, no) && doc.cm) regLineChange(doc.cm, no, changeType);
 	    return line;
 	  }
-	
+
 	  // Helper for deleting text near the selection(s), used to implement
 	  // backspace, delete, and similar functionality.
 	  function deleteNearSelection(cm, compute) {
@@ -27249,7 +27249,7 @@
 	      ensureCursorVisible(cm);
 	    });
 	  }
-	
+
 	  // Used for horizontal relative motion. Dir is -1 or 1 (left or
 	  // right), unit can be "char", "column" (like char, but doesn't
 	  // cross line boundaries), "word" (across next word), or "group" (to
@@ -27278,7 +27278,7 @@
 	      } else ch = next;
 	      return true;
 	    }
-	
+
 	    if (unit == "char") {
 	      moveOnce()
 	    } else if (unit == "column") {
@@ -27298,7 +27298,7 @@
 	          if (dir < 0) {dir = 1; moveOnce();}
 	          break;
 	        }
-	
+
 	        if (type) sawType = type;
 	        if (dir > 0 && !moveOnce(!first)) break;
 	      }
@@ -27307,7 +27307,7 @@
 	    if (!cmp(pos, result)) result.hitSide = true;
 	    return result;
 	  }
-	
+
 	  // For relative vertical movement. Dir may be -1 or 1. Unit can be
 	  // "page" or "line". The resulting position will have a hitSide=true
 	  // property if it reached the end of the document.
@@ -27327,21 +27327,21 @@
 	    }
 	    return target;
 	  }
-	
+
 	  // EDITOR METHODS
-	
+
 	  // The publicly visible API. Note that methodOp(f) means
 	  // 'wrap f in an operation, performed on its `this` parameter'.
-	
+
 	  // This is not the complete set of editor methods. Most of the
 	  // methods defined on the Doc type are also injected into
 	  // CodeMirror.prototype, for backwards compatibility and
 	  // convenience.
-	
+
 	  CodeMirror.prototype = {
 	    constructor: CodeMirror,
 	    focus: function(){window.focus(); this.display.input.focus();},
-	
+
 	    setOption: function(option, value) {
 	      var options = this.options, old = options[option];
 	      if (options[option] == value && option != "mode") return;
@@ -27349,10 +27349,10 @@
 	      if (optionHandlers.hasOwnProperty(option))
 	        operation(this, optionHandlers[option])(this, value, old);
 	    },
-	
+
 	    getOption: function(option) {return this.options[option];},
 	    getDoc: function() {return this.doc;},
-	
+
 	    addKeyMap: function(map, bottom) {
 	      this.state.keyMaps[bottom ? "push" : "unshift"](getKeyMap(map));
 	    },
@@ -27364,7 +27364,7 @@
 	          return true;
 	        }
 	    },
-	
+
 	    addOverlay: methodOp(function(spec, options) {
 	      var mode = spec.token ? spec : CodeMirror.getMode(this.options, spec);
 	      if (mode.startState) throw new Error("Overlays may not be stateful.");
@@ -27384,7 +27384,7 @@
 	        }
 	      }
 	    }),
-	
+
 	    indentLine: methodOp(function(n, dir, aggressive) {
 	      if (typeof dir != "string" && typeof dir != "number") {
 	        if (dir == null) dir = this.options.smartIndent ? "smart" : "prev";
@@ -27412,17 +27412,17 @@
 	        }
 	      }
 	    }),
-	
+
 	    // Fetch the parser token for a given character. Useful for hacks
 	    // that want to inspect the mode state (say, for completion).
 	    getTokenAt: function(pos, precise) {
 	      return takeToken(this, pos, precise);
 	    },
-	
+
 	    getLineTokens: function(line, precise) {
 	      return takeToken(this, Pos(line), precise, true);
 	    },
-	
+
 	    getTokenTypeAt: function(pos) {
 	      pos = clipPos(this.doc, pos);
 	      var styles = getLineStyles(this, getLine(this.doc, pos.line));
@@ -27438,17 +27438,17 @@
 	      var cut = type ? type.indexOf("cm-overlay ") : -1;
 	      return cut < 0 ? type : cut == 0 ? null : type.slice(0, cut - 1);
 	    },
-	
+
 	    getModeAt: function(pos) {
 	      var mode = this.doc.mode;
 	      if (!mode.innerMode) return mode;
 	      return CodeMirror.innerMode(mode, this.getTokenAt(pos).state).mode;
 	    },
-	
+
 	    getHelper: function(pos, type) {
 	      return this.getHelpers(pos, type)[0];
 	    },
-	
+
 	    getHelpers: function(pos, type) {
 	      var found = [];
 	      if (!helpers.hasOwnProperty(type)) return found;
@@ -27472,13 +27472,13 @@
 	      }
 	      return found;
 	    },
-	
+
 	    getStateAfter: function(line, precise) {
 	      var doc = this.doc;
 	      line = clipLine(doc, line == null ? doc.first + doc.size - 1: line);
 	      return getStateBefore(this, line + 1, precise);
 	    },
-	
+
 	    cursorCoords: function(start, mode) {
 	      var pos, range = this.doc.sel.primary();
 	      if (start == null) pos = range.head;
@@ -27486,16 +27486,16 @@
 	      else pos = start ? range.from() : range.to();
 	      return cursorCoords(this, pos, mode || "page");
 	    },
-	
+
 	    charCoords: function(pos, mode) {
 	      return charCoords(this, clipPos(this.doc, pos), mode || "page");
 	    },
-	
+
 	    coordsChar: function(coords, mode) {
 	      coords = fromCoordSystem(this, coords, mode || "page");
 	      return coordsChar(this, coords.left, coords.top);
 	    },
-	
+
 	    lineAtHeight: function(height, mode) {
 	      height = fromCoordSystem(this, {top: height, left: 0}, mode || "page").top;
 	      return lineAtHeight(this.doc, height + this.display.viewOffset);
@@ -27513,10 +27513,10 @@
 	      return intoCoordSystem(this, lineObj, {top: 0, left: 0}, mode || "page").top +
 	        (end ? this.doc.height - heightAtLine(lineObj) : 0);
 	    },
-	
+
 	    defaultTextHeight: function() { return textHeight(this.display); },
 	    defaultCharWidth: function() { return charWidth(this.display); },
-	
+
 	    setGutterMarker: methodOp(function(line, gutterID, value) {
 	      return changeLine(this.doc, line, "gutter", function(line) {
 	        var markers = line.gutterMarkers || (line.gutterMarkers = {});
@@ -27525,7 +27525,7 @@
 	        return true;
 	      });
 	    }),
-	
+
 	    clearGutter: methodOp(function(gutterID) {
 	      var cm = this, doc = cm.doc, i = doc.first;
 	      doc.iter(function(line) {
@@ -27537,7 +27537,7 @@
 	        ++i;
 	      });
 	    }),
-	
+
 	    lineInfo: function(line) {
 	      if (typeof line == "number") {
 	        if (!isLine(this.doc, line)) return null;
@@ -27552,9 +27552,9 @@
 	              textClass: line.textClass, bgClass: line.bgClass, wrapClass: line.wrapClass,
 	              widgets: line.widgets};
 	    },
-	
+
 	    getViewport: function() { return {from: this.display.viewFrom, to: this.display.viewTo};},
-	
+
 	    addWidget: function(pos, node, scroll, vert, horiz) {
 	      var display = this.display;
 	      pos = cursorCoords(this, clipPos(this.doc, pos));
@@ -27589,18 +27589,18 @@
 	      if (scroll)
 	        scrollIntoView(this, left, top, left + node.offsetWidth, top + node.offsetHeight);
 	    },
-	
+
 	    triggerOnKeyDown: methodOp(onKeyDown),
 	    triggerOnKeyPress: methodOp(onKeyPress),
 	    triggerOnKeyUp: onKeyUp,
-	
+
 	    execCommand: function(cmd) {
 	      if (commands.hasOwnProperty(cmd))
 	        return commands[cmd].call(null, this);
 	    },
-	
+
 	    triggerElectric: methodOp(function(text) { triggerElectric(this, text); }),
-	
+
 	    findPosH: function(from, amount, unit, visually) {
 	      var dir = 1;
 	      if (amount < 0) { dir = -1; amount = -amount; }
@@ -27610,7 +27610,7 @@
 	      }
 	      return cur;
 	    },
-	
+
 	    moveH: methodOp(function(dir, unit) {
 	      var cm = this;
 	      cm.extendSelectionsBy(function(range) {
@@ -27620,7 +27620,7 @@
 	          return dir < 0 ? range.from() : range.to();
 	      }, sel_move);
 	    }),
-	
+
 	    deleteH: methodOp(function(dir, unit) {
 	      var sel = this.doc.sel, doc = this.doc;
 	      if (sel.somethingSelected())
@@ -27631,7 +27631,7 @@
 	          return dir < 0 ? {from: other, to: range.head} : {from: range.head, to: other};
 	        });
 	    }),
-	
+
 	    findPosV: function(from, amount, unit, goalColumn) {
 	      var dir = 1, x = goalColumn;
 	      if (amount < 0) { dir = -1; amount = -amount; }
@@ -27644,7 +27644,7 @@
 	      }
 	      return cur;
 	    },
-	
+
 	    moveV: methodOp(function(dir, unit) {
 	      var cm = this, doc = this.doc, goals = [];
 	      var collapse = !cm.display.shift && !doc.extend && doc.sel.somethingSelected();
@@ -27662,7 +27662,7 @@
 	      if (goals.length) for (var i = 0; i < doc.sel.ranges.length; i++)
 	        doc.sel.ranges[i].goalColumn = goals[i];
 	    }),
-	
+
 	    // Find the word at the given position (as returned by coordsChar).
 	    findWordAt: function(pos) {
 	      var doc = this.doc, line = getLine(doc, pos.line).text;
@@ -27680,19 +27680,19 @@
 	      }
 	      return new Range(Pos(pos.line, start), Pos(pos.line, end));
 	    },
-	
+
 	    toggleOverwrite: function(value) {
 	      if (value != null && value == this.state.overwrite) return;
 	      if (this.state.overwrite = !this.state.overwrite)
 	        addClass(this.display.cursorDiv, "CodeMirror-overwrite");
 	      else
 	        rmClass(this.display.cursorDiv, "CodeMirror-overwrite");
-	
+
 	      signal(this, "overwriteToggle", this, this.state.overwrite);
 	    },
 	    hasFocus: function() { return this.display.input.getField() == activeElt(); },
 	    isReadOnly: function() { return !!(this.options.readOnly || this.doc.cantEdit); },
-	
+
 	    scrollTo: methodOp(function(x, y) {
 	      if (x != null || y != null) resolveScrollToPos(this);
 	      if (x != null) this.curOp.scrollLeft = x;
@@ -27705,7 +27705,7 @@
 	              width: scroller.scrollWidth - scrollGap(this) - this.display.barWidth,
 	              clientHeight: displayHeight(this), clientWidth: displayWidth(this)};
 	    },
-	
+
 	    scrollIntoView: methodOp(function(range, margin) {
 	      if (range == null) {
 	        range = {from: this.doc.sel.primary().head, to: null};
@@ -27717,7 +27717,7 @@
 	      }
 	      if (!range.to) range.to = range.from;
 	      range.margin = margin || 0;
-	
+
 	      if (range.from.line != null) {
 	        resolveScrollToPos(this);
 	        this.curOp.scrollToPos = range;
@@ -27729,7 +27729,7 @@
 	        this.scrollTo(sPos.scrollLeft, sPos.scrollTop);
 	      }
 	    }),
-	
+
 	    setSize: methodOp(function(width, height) {
 	      var cm = this;
 	      function interpret(val) {
@@ -27747,9 +27747,9 @@
 	      cm.curOp.forceUpdate = true;
 	      signal(cm, "refresh", this);
 	    }),
-	
+
 	    operation: function(f){return runInOp(this, f);},
-	
+
 	    refresh: methodOp(function() {
 	      var oldHeight = this.display.cachedTextHeight;
 	      regChange(this);
@@ -27761,7 +27761,7 @@
 	        estimateLineHeights(this);
 	      signal(this, "refresh", this);
 	    }),
-	
+
 	    swapDoc: methodOp(function(doc) {
 	      var old = this.doc;
 	      old.cm = null;
@@ -27773,30 +27773,30 @@
 	      signalLater(this, "swapDoc", this, old);
 	      return old;
 	    }),
-	
+
 	    getInputField: function(){return this.display.input.getField();},
 	    getWrapperElement: function(){return this.display.wrapper;},
 	    getScrollerElement: function(){return this.display.scroller;},
 	    getGutterElement: function(){return this.display.gutters;}
 	  };
 	  eventMixin(CodeMirror);
-	
+
 	  // OPTION DEFAULTS
-	
+
 	  // The default configuration options.
 	  var defaults = CodeMirror.defaults = {};
 	  // Functions to run when options are changed.
 	  var optionHandlers = CodeMirror.optionHandlers = {};
-	
+
 	  function option(name, deflt, handle, notOnInit) {
 	    CodeMirror.defaults[name] = deflt;
 	    if (handle) optionHandlers[name] =
 	      notOnInit ? function(cm, val, old) {if (old != Init) handle(cm, val, old);} : handle;
 	  }
-	
+
 	  // Passed to option handlers when there is no old value.
 	  var Init = CodeMirror.Init = {toString: function(){return "CodeMirror.Init";}};
-	
+
 	  // These two are, on init, called from the constructor because they
 	  // have to be initialized before the editor can start at all.
 	  option("value", "", function(cm, val) {
@@ -27806,7 +27806,7 @@
 	    cm.doc.modeOption = val;
 	    loadMode(cm);
 	  }, true);
-	
+
 	  option("indentUnit", 2, loadMode, true);
 	  option("indentWithTabs", false);
 	  option("smartIndent", true);
@@ -27842,7 +27842,7 @@
 	  }, true);
 	  option("rtlMoveVisually", !windows);
 	  option("wholeLineUpdateBefore", true);
-	
+
 	  option("theme", "default", function(cm) {
 	    themeChanged(cm);
 	    guttersChanged(cm);
@@ -27854,7 +27854,7 @@
 	    if (next.attach) next.attach(cm, prev || null);
 	  });
 	  option("extraKeys", null);
-	
+
 	  option("lineWrapping", false, wrappingChanged, true);
 	  option("gutters", [], function(cm) {
 	    setGuttersForLineNumbers(cm.options);
@@ -27878,10 +27878,10 @@
 	  option("firstLineNumber", 1, guttersChanged, true);
 	  option("lineNumberFormatter", function(integer) {return integer;}, guttersChanged, true);
 	  option("showCursorWhenSelecting", false, updateSelection, true);
-	
+
 	  option("resetSelectionOnContextMenu", true);
 	  option("lineWiseCopyCut", true);
-	
+
 	  option("readOnly", false, function(cm, val) {
 	    if (val == "nocursor") {
 	      onBlur(cm);
@@ -27895,7 +27895,7 @@
 	  option("disableInput", false, function(cm, val) {if (!val) cm.display.input.reset();}, true);
 	  option("dragDrop", true, dragDropChanged);
 	  option("allowDropFileTypes", null);
-	
+
 	  option("cursorBlinkRate", 530);
 	  option("cursorScrollMargin", 0);
 	  option("cursorHeight", 1, updateSelection, true);
@@ -27912,17 +27912,17 @@
 	  option("moveInputWithCursor", true, function(cm, val) {
 	    if (!val) cm.display.input.resetPosition();
 	  });
-	
+
 	  option("tabindex", null, function(cm, val) {
 	    cm.display.input.getField().tabIndex = val || "";
 	  });
 	  option("autofocus", null);
-	
+
 	  // MODE DEFINITION AND QUERYING
-	
+
 	  // Known modes, by name and by MIME
 	  var modes = CodeMirror.modes = {}, mimeModes = CodeMirror.mimeModes = {};
-	
+
 	  // Extra arguments are stored as the mode's dependencies, which is
 	  // used by (legacy) mechanisms like loadmode.js to automatically
 	  // load a mode. (Preferred mechanism is the require/define calls.)
@@ -27932,11 +27932,11 @@
 	      mode.dependencies = Array.prototype.slice.call(arguments, 2);
 	    modes[name] = mode;
 	  };
-	
+
 	  CodeMirror.defineMIME = function(mime, spec) {
 	    mimeModes[mime] = spec;
 	  };
-	
+
 	  // Given a MIME type, a {name, ...options} config object, or a name
 	  // string, return a mode config object.
 	  CodeMirror.resolveMode = function(spec) {
@@ -27953,7 +27953,7 @@
 	    if (typeof spec == "string") return {name: spec};
 	    else return spec || {name: "null"};
 	  };
-	
+
 	  // Given a mode spec (anything that resolveMode accepts), find and
 	  // initialize an actual mode object.
 	  CodeMirror.getMode = function(options, spec) {
@@ -27973,16 +27973,16 @@
 	    if (spec.helperType) modeObj.helperType = spec.helperType;
 	    if (spec.modeProps) for (var prop in spec.modeProps)
 	      modeObj[prop] = spec.modeProps[prop];
-	
+
 	    return modeObj;
 	  };
-	
+
 	  // Minimal default mode.
 	  CodeMirror.defineMode("null", function() {
 	    return {token: function(stream) {stream.skipToEnd();}};
 	  });
 	  CodeMirror.defineMIME("text/plain", "null");
-	
+
 	  // This can be used to attach properties to mode objects from
 	  // outside the actual mode definition.
 	  var modeExtensions = CodeMirror.modeExtensions = {};
@@ -27990,9 +27990,9 @@
 	    var exts = modeExtensions.hasOwnProperty(mode) ? modeExtensions[mode] : (modeExtensions[mode] = {});
 	    copyObj(properties, exts);
 	  };
-	
+
 	  // EXTENSIONS
-	
+
 	  CodeMirror.defineExtension = function(name, func) {
 	    CodeMirror.prototype[name] = func;
 	  };
@@ -28000,10 +28000,10 @@
 	    Doc.prototype[name] = func;
 	  };
 	  CodeMirror.defineOption = option;
-	
+
 	  var initHooks = [];
 	  CodeMirror.defineInitHook = function(f) {initHooks.push(f);};
-	
+
 	  var helpers = CodeMirror.helpers = {};
 	  CodeMirror.registerHelper = function(type, name, value) {
 	    if (!helpers.hasOwnProperty(type)) helpers[type] = CodeMirror[type] = {_global: []};
@@ -28013,12 +28013,12 @@
 	    CodeMirror.registerHelper(type, name, value);
 	    helpers[type]._global.push({pred: predicate, val: value});
 	  };
-	
+
 	  // MODE STATE HANDLING
-	
+
 	  // Utility functions for working with state. Exported because nested
 	  // modes need to do this for their inner modes.
-	
+
 	  var copyState = CodeMirror.copyState = function(mode, state) {
 	    if (state === true) return state;
 	    if (mode.copyState) return mode.copyState(state);
@@ -28030,11 +28030,11 @@
 	    }
 	    return nstate;
 	  };
-	
+
 	  var startState = CodeMirror.startState = function(mode, a1, a2) {
 	    return mode.startState ? mode.startState(a1, a2) : true;
 	  };
-	
+
 	  // Given a mode and a state (for that mode), find the inner mode and
 	  // state at the position that the state refers to.
 	  CodeMirror.innerMode = function(mode, state) {
@@ -28046,9 +28046,9 @@
 	    }
 	    return info || {mode: mode, state: state};
 	  };
-	
+
 	  // STANDARD COMMANDS
-	
+
 	  // Commands are parameter-less actions that can be performed on an
 	  // editor, mostly used for keybindings.
 	  var commands = CodeMirror.commands = {
@@ -28205,12 +28205,12 @@
 	    },
 	    toggleOverwrite: function(cm) {cm.toggleOverwrite();}
 	  };
-	
-	
+
+
 	  // STANDARD KEYMAPS
-	
+
 	  var keyMap = CodeMirror.keyMap = {};
-	
+
 	  keyMap.basic = {
 	    "Left": "goCharLeft", "Right": "goCharRight", "Up": "goLineUp", "Down": "goLineDown",
 	    "End": "goLineEnd", "Home": "goLineStartSmart", "PageUp": "goPageUp", "PageDown": "goPageDown",
@@ -28250,9 +28250,9 @@
 	    fallthrough: ["basic", "emacsy"]
 	  };
 	  keyMap["default"] = mac ? keyMap.macDefault : keyMap.pcDefault;
-	
+
 	  // KEYMAP DISPATCH
-	
+
 	  function normalizeKeyName(name) {
 	    var parts = name.split(/-(?!$)/), name = parts[parts.length - 1];
 	    var alt, ctrl, shift, cmd;
@@ -28270,7 +28270,7 @@
 	    if (shift) name = "Shift-" + name;
 	    return name;
 	  }
-	
+
 	  // This is a kludge to keep keymaps mostly working as raw objects
 	  // (backwards compatibility) while at the same time support features
 	  // like normalization and multi-stroke key bindings. It compiles a
@@ -28282,7 +28282,7 @@
 	      var value = keymap[keyname];
 	      if (/^(name|fallthrough|(de|at)tach)$/.test(keyname)) continue;
 	      if (value == "...") { delete keymap[keyname]; continue; }
-	
+
 	      var keys = map(keyname.split(" "), normalizeKeyName);
 	      for (var i = 0; i < keys.length; i++) {
 	        var val, name;
@@ -28302,14 +28302,14 @@
 	    for (var prop in copy) keymap[prop] = copy[prop];
 	    return keymap;
 	  };
-	
+
 	  var lookupKey = CodeMirror.lookupKey = function(key, map, handle, context) {
 	    map = getKeyMap(map);
 	    var found = map.call ? map.call(key, context) : map[key];
 	    if (found === false) return "nothing";
 	    if (found === "...") return "multi";
 	    if (found != null && handle(found)) return "handled";
-	
+
 	    if (map.fallthrough) {
 	      if (Object.prototype.toString.call(map.fallthrough) != "[object Array]")
 	        return lookupKey(key, map.fallthrough, handle, context);
@@ -28319,14 +28319,14 @@
 	      }
 	    }
 	  };
-	
+
 	  // Modifier key presses don't count as 'real' key presses for the
 	  // purpose of keymap fallthrough.
 	  var isModifierKey = CodeMirror.isModifierKey = function(value) {
 	    var name = typeof value == "string" ? value : keyNames[value.keyCode];
 	    return name == "Ctrl" || name == "Alt" || name == "Shift" || name == "Mod";
 	  };
-	
+
 	  // Look up the name of a key as indicated by an event object.
 	  var keyName = CodeMirror.keyName = function(event, noShift) {
 	    if (presto && event.keyCode == 34 && event["char"]) return false;
@@ -28338,13 +28338,13 @@
 	    if (!noShift && event.shiftKey && base != "Shift") name = "Shift-" + name;
 	    return name;
 	  };
-	
+
 	  function getKeyMap(val) {
 	    return typeof val == "string" ? keyMap[val] : val;
 	  }
-	
+
 	  // FROMTEXTAREA
-	
+
 	  CodeMirror.fromTextArea = function(textarea, options) {
 	    options = options ? copyObj(options) : {};
 	    options.value = textarea.value;
@@ -28359,7 +28359,7 @@
 	      options.autofocus = hasFocus == textarea ||
 	        textarea.getAttribute("autofocus") != null && hasFocus == document.body;
 	    }
-	
+
 	    function save() {textarea.value = cm.getValue();}
 	    if (textarea.form) {
 	      on(textarea.form, "submit", save);
@@ -28376,7 +28376,7 @@
 	        } catch(e) {}
 	      }
 	    }
-	
+
 	    options.finishInit = function(cm) {
 	      cm.save = save;
 	      cm.getTextArea = function() { return textarea; };
@@ -28392,19 +28392,19 @@
 	        }
 	      };
 	    };
-	
+
 	    textarea.style.display = "none";
 	    var cm = CodeMirror(function(node) {
 	      textarea.parentNode.insertBefore(node, textarea.nextSibling);
 	    }, options);
 	    return cm;
 	  };
-	
+
 	  // STRING STREAM
-	
+
 	  // Fed to the mode parsers, provides helper functions to make
 	  // parsers more succinct.
-	
+
 	  var StringStream = CodeMirror.StringStream = function(string, tabSize) {
 	    this.pos = this.start = 0;
 	    this.string = string;
@@ -28412,7 +28412,7 @@
 	    this.lastColumnPos = this.lastColumnValue = 0;
 	    this.lineStart = 0;
 	  };
-	
+
 	  StringStream.prototype = {
 	    eol: function() {return this.pos >= this.string.length;},
 	    sol: function() {return this.pos == this.lineStart;},
@@ -28476,9 +28476,9 @@
 	      finally { this.lineStart -= n; }
 	    }
 	  };
-	
+
 	  // TEXTMARKERS
-	
+
 	  // Created with markText and setBookmark methods. A TextMarker is a
 	  // handle that can be used to clear or find a marked position in the
 	  // document. Line objects hold arrays (markedSpans) containing
@@ -28488,9 +28488,9 @@
 	  // The spans will have null for their from/to properties when the
 	  // marker continues beyond the start/end of the line. Markers have
 	  // links back to the lines they currently touch.
-	
+
 	  var nextMarkerId = 0;
-	
+
 	  var TextMarker = CodeMirror.TextMarker = function(doc, type) {
 	    this.lines = [];
 	    this.type = type;
@@ -28498,7 +28498,7 @@
 	    this.id = ++nextMarkerId;
 	  };
 	  eventMixin(TextMarker);
-	
+
 	  // Clear the marker.
 	  TextMarker.prototype.clear = function() {
 	    if (this.explicitlyCleared) return;
@@ -28529,7 +28529,7 @@
 	        cm.display.maxLineChanged = true;
 	      }
 	    }
-	
+
 	    if (min != null && cm && this.collapsed) regChange(cm, min, max + 1);
 	    this.lines.length = 0;
 	    this.explicitlyCleared = true;
@@ -28541,7 +28541,7 @@
 	    if (withOp) endOperation(cm);
 	    if (this.parent) this.parent.clear();
 	  };
-	
+
 	  // Find the position of the marker in the document. Returns a {from,
 	  // to} object by default. Side can be passed to get a specific side
 	  // -- 0 (both), -1 (left), or 1 (right). When lineObj is true, the
@@ -28564,7 +28564,7 @@
 	    }
 	    return from && {from: from, to: to};
 	  };
-	
+
 	  // Signals that the marker's widget changed, and surrounding layout
 	  // should be recomputed.
 	  TextMarker.prototype.changed = function() {
@@ -28587,7 +28587,7 @@
 	      }
 	    });
 	  };
-	
+
 	  TextMarker.prototype.attachLine = function(line) {
 	    if (!this.lines.length && this.doc.cm) {
 	      var op = this.doc.cm.curOp;
@@ -28603,12 +28603,12 @@
 	      (op.maybeHiddenMarkers || (op.maybeHiddenMarkers = [])).push(this);
 	    }
 	  };
-	
+
 	  // Collapsed markers have unique ids, in order to be able to order
 	  // them, which is needed for uniquely determining an outer marker
 	  // when they overlap (they may nest, but not partially overlap).
 	  var nextMarkerId = 0;
-	
+
 	  // Create a marker, wire it up to the right lines, and
 	  function markText(doc, from, to, options, type) {
 	    // Shared markers (across linked documents) are handled separately
@@ -28617,7 +28617,7 @@
 	    if (options && options.shared) return markTextShared(doc, from, to, options, type);
 	    // Ensure we are in an operation.
 	    if (doc.cm && !doc.cm.curOp) return operation(doc.cm, markText)(doc, from, to, options, type);
-	
+
 	    var marker = new TextMarker(doc, type), diff = cmp(from, to);
 	    if (options) copyObj(options, marker, false);
 	    // Don't connect empty markers unless clearWhenEmpty is false
@@ -28636,10 +28636,10 @@
 	        throw new Error("Inserting collapsed marker partially overlapping an existing one");
 	      sawCollapsedSpans = true;
 	    }
-	
+
 	    if (marker.addToHistory)
 	      addChangeToHistory(doc, {from: from, to: to, origin: "markText"}, doc.sel, NaN);
-	
+
 	    var curLine = from.line, cm = doc.cm, updateMaxLine;
 	    doc.iter(curLine, to.line + 1, function(line) {
 	      if (cm && marker.collapsed && !cm.options.lineWrapping && visualLine(line) == cm.display.maxLine)
@@ -28654,9 +28654,9 @@
 	    if (marker.collapsed) doc.iter(from.line, to.line + 1, function(line) {
 	      if (lineIsHidden(doc, line)) updateLineHeight(line, 0);
 	    });
-	
+
 	    if (marker.clearOnEnter) on(marker, "beforeCursorEnter", function() { marker.clear(); });
-	
+
 	    if (marker.readOnly) {
 	      sawReadOnlySpans = true;
 	      if (doc.history.done.length || doc.history.undone.length)
@@ -28678,9 +28678,9 @@
 	    }
 	    return marker;
 	  }
-	
+
 	  // SHARED TEXTMARKERS
-	
+
 	  // A shared marker spans multiple linked documents. It is
 	  // implemented as a meta-marker-object controlling multiple normal
 	  // markers.
@@ -28691,7 +28691,7 @@
 	      markers[i].parent = this;
 	  };
 	  eventMixin(SharedTextMarker);
-	
+
 	  SharedTextMarker.prototype.clear = function() {
 	    if (this.explicitlyCleared) return;
 	    this.explicitlyCleared = true;
@@ -28702,7 +28702,7 @@
 	  SharedTextMarker.prototype.find = function(side, lineObj) {
 	    return this.primary.find(side, lineObj);
 	  };
-	
+
 	  function markTextShared(doc, from, to, options, type) {
 	    options = copyObj(options);
 	    options.shared = false;
@@ -28717,12 +28717,12 @@
 	    });
 	    return new SharedTextMarker(markers, primary);
 	  }
-	
+
 	  function findSharedMarkers(doc) {
 	    return doc.findMarks(Pos(doc.first, 0), doc.clipPos(Pos(doc.lastLine())),
 	                         function(m) { return m.parent; });
 	  }
-	
+
 	  function copySharedMarkers(doc, markers) {
 	    for (var i = 0; i < markers.length; i++) {
 	      var marker = markers[i], pos = marker.find();
@@ -28734,7 +28734,7 @@
 	      }
 	    }
 	  }
-	
+
 	  function detachSharedMarkers(markers) {
 	    for (var i = 0; i < markers.length; i++) {
 	      var marker = markers[i], linked = [marker.primary.doc];;
@@ -28748,14 +28748,14 @@
 	      }
 	    }
 	  }
-	
+
 	  // TEXTMARKER SPANS
-	
+
 	  function MarkedSpan(marker, from, to) {
 	    this.marker = marker;
 	    this.from = from; this.to = to;
 	  }
-	
+
 	  // Search an array of spans for a span matching the given marker.
 	  function getMarkedSpanFor(spans, marker) {
 	    if (spans) for (var i = 0; i < spans.length; ++i) {
@@ -28775,7 +28775,7 @@
 	    line.markedSpans = line.markedSpans ? line.markedSpans.concat([span]) : [span];
 	    span.marker.attachLine(line);
 	  }
-	
+
 	  // Used for the algorithm that adjusts markers for a change in the
 	  // document. These functions cut an array of spans at a given
 	  // character position, returning an array of remaining chunks (or
@@ -28803,7 +28803,7 @@
 	    }
 	    return nw;
 	  }
-	
+
 	  // Given a change object, compute the new set of marker spans that
 	  // cover the line in which the change took place. Removes spans
 	  // entirely within the change, reconnects spans belonging to the
@@ -28815,12 +28815,12 @@
 	    var oldFirst = isLine(doc, change.from.line) && getLine(doc, change.from.line).markedSpans;
 	    var oldLast = isLine(doc, change.to.line) && getLine(doc, change.to.line).markedSpans;
 	    if (!oldFirst && !oldLast) return null;
-	
+
 	    var startCh = change.from.ch, endCh = change.to.ch, isInsert = cmp(change.from, change.to) == 0;
 	    // Get the spans that 'stick out' on both sides
 	    var first = markedSpansBefore(oldFirst, startCh, isInsert);
 	    var last = markedSpansAfter(oldLast, endCh, isInsert);
-	
+
 	    // Next, merge those two ends
 	    var sameLine = change.text.length == 1, offset = lst(change.text).length + (sameLine ? startCh : 0);
 	    if (first) {
@@ -28854,7 +28854,7 @@
 	    // Make sure we didn't create any zero-length spans
 	    if (first) first = clearEmptySpans(first);
 	    if (last && last != first) last = clearEmptySpans(last);
-	
+
 	    var newMarkers = [first];
 	    if (!sameLine) {
 	      // Fill gap with whole-line-spans
@@ -28869,7 +28869,7 @@
 	    }
 	    return newMarkers;
 	  }
-	
+
 	  // Remove spans that are empty and don't have a clearWhenEmpty
 	  // option of false.
 	  function clearEmptySpans(spans) {
@@ -28881,7 +28881,7 @@
 	    if (!spans.length) return null;
 	    return spans;
 	  }
-	
+
 	  // Used for un/re-doing changes from the history. Combines the
 	  // result of computing the existing spans with the set of spans that
 	  // existed in the history (so that deleting around a span and then
@@ -28891,7 +28891,7 @@
 	    var stretched = stretchSpansOverChange(doc, change);
 	    if (!old) return stretched;
 	    if (!stretched) return old;
-	
+
 	    for (var i = 0; i < old.length; ++i) {
 	      var oldCur = old[i], stretchCur = stretched[i];
 	      if (oldCur && stretchCur) {
@@ -28907,7 +28907,7 @@
 	    }
 	    return old;
 	  }
-	
+
 	  // Used to 'clip' out readOnly ranges when making a change.
 	  function removeReadOnlyRanges(doc, from, to) {
 	    var markers = null;
@@ -28936,7 +28936,7 @@
 	    }
 	    return parts;
 	  }
-	
+
 	  // Connect or disconnect spans from a line.
 	  function detachMarkedSpans(line) {
 	    var spans = line.markedSpans;
@@ -28951,12 +28951,12 @@
 	      spans[i].marker.attachLine(line);
 	    line.markedSpans = spans;
 	  }
-	
+
 	  // Helpers used when computing which overlapping collapsed span
 	  // counts as the larger one.
 	  function extraLeft(marker) { return marker.inclusiveLeft ? -1 : 0; }
 	  function extraRight(marker) { return marker.inclusiveRight ? 1 : 0; }
-	
+
 	  // Returns a number indicating which of two overlapping collapsed
 	  // spans is larger (and thus includes the other). Falls back to
 	  // comparing ids when the spans cover exactly the same range.
@@ -28970,7 +28970,7 @@
 	    if (toCmp) return toCmp;
 	    return b.id - a.id;
 	  }
-	
+
 	  // Find out whether a line ends or starts in a collapsed span. If
 	  // so, return the marker for that span.
 	  function collapsedSpanAtSide(line, start) {
@@ -28985,7 +28985,7 @@
 	  }
 	  function collapsedSpanAtStart(line) { return collapsedSpanAtSide(line, true); }
 	  function collapsedSpanAtEnd(line) { return collapsedSpanAtSide(line, false); }
-	
+
 	  // Test whether there exists a collapsed span that partially
 	  // overlaps (covers the start or end, but not both) of a new span.
 	  // Such overlap is not allowed.
@@ -29004,7 +29004,7 @@
 	        return true;
 	    }
 	  }
-	
+
 	  // A visual line is a line as drawn on the screen. Folding, for
 	  // example, can cause multiple logical lines to appear on the same
 	  // visual line. This finds the start of the visual line that the
@@ -29015,7 +29015,7 @@
 	      line = merged.find(-1, true).line;
 	    return line;
 	  }
-	
+
 	  // Returns an array of logical lines that continue the visual line
 	  // started by the argument, or undefined if there are no such lines.
 	  function visualLineContinued(line) {
@@ -29026,7 +29026,7 @@
 	    }
 	    return lines;
 	  }
-	
+
 	  // Get the line number of the start of the visual line that the
 	  // given line number is part of.
 	  function visualLineNo(doc, lineN) {
@@ -29044,7 +29044,7 @@
 	      line = merged.find(1, true).line;
 	    return lineNo(line) + 1;
 	  }
-	
+
 	  // Compute whether a line is hidden. Lines count as hidden when they
 	  // are part of a visual line that starts with another line, or when
 	  // they are entirely covered by collapsed, non-widget span.
@@ -29074,11 +29074,11 @@
 	          lineIsHiddenInner(doc, line, sp)) return true;
 	    }
 	  }
-	
+
 	  // LINE WIDGETS
-	
+
 	  // Line widgets are block elements displayed above or below a line.
-	
+
 	  var LineWidget = CodeMirror.LineWidget = function(doc, node, options) {
 	    if (options) for (var opt in options) if (options.hasOwnProperty(opt))
 	      this[opt] = options[opt];
@@ -29086,12 +29086,12 @@
 	    this.node = node;
 	  };
 	  eventMixin(LineWidget);
-	
+
 	  function adjustScrollWhenAboveVisible(cm, line, diff) {
 	    if (heightAtLine(line) < ((cm.curOp && cm.curOp.scrollTop) || cm.doc.scrollTop))
 	      addToScrollPos(cm, null, diff);
 	  }
-	
+
 	  LineWidget.prototype.clear = function() {
 	    var cm = this.doc.cm, ws = this.line.widgets, line = this.line, no = lineNo(line);
 	    if (no == null || !ws) return;
@@ -29115,7 +29115,7 @@
 	      adjustScrollWhenAboveVisible(cm, line, diff);
 	    });
 	  };
-	
+
 	  function widgetHeight(widget) {
 	    if (widget.height != null) return widget.height;
 	    var cm = widget.doc.cm;
@@ -29130,7 +29130,7 @@
 	    }
 	    return widget.height = widget.node.parentNode.offsetHeight;
 	  }
-	
+
 	  function addLineWidget(doc, handle, node, options) {
 	    var widget = new LineWidget(doc, node, options);
 	    var cm = doc.cm;
@@ -29150,9 +29150,9 @@
 	    });
 	    return widget;
 	  }
-	
+
 	  // LINE DATA STRUCTURE
-	
+
 	  // Line objects. These hold state related to a line, including
 	  // highlighting info (the styles array).
 	  var Line = CodeMirror.Line = function(text, markedSpans, estimateHeight) {
@@ -29162,7 +29162,7 @@
 	  };
 	  eventMixin(Line);
 	  Line.prototype.lineNo = function() { return lineNo(this); };
-	
+
 	  // Change the content (text, markers) of a line. Automatically
 	  // invalidates cached information and tries to re-estimate the
 	  // line's height.
@@ -29176,13 +29176,13 @@
 	    var estHeight = estimateHeight ? estimateHeight(line) : 1;
 	    if (estHeight != line.height) updateLineHeight(line, estHeight);
 	  }
-	
+
 	  // Detach a line from the document tree and its markers.
 	  function cleanUpLine(line) {
 	    line.parent = null;
 	    detachMarkedSpans(line);
 	  }
-	
+
 	  function extractLineClasses(type, output) {
 	    if (type) for (;;) {
 	      var lineClass = type.match(/(?:^|\s+)line-(background-)?(\S+)/);
@@ -29196,14 +29196,14 @@
 	    }
 	    return type;
 	  }
-	
+
 	  function callBlankLine(mode, state) {
 	    if (mode.blankLine) return mode.blankLine(state);
 	    if (!mode.innerMode) return;
 	    var inner = CodeMirror.innerMode(mode, state);
 	    if (inner.mode.blankLine) return inner.mode.blankLine(inner.state);
 	  }
-	
+
 	  function readToken(mode, stream, state, inner) {
 	    for (var i = 0; i < 10; i++) {
 	      if (inner) inner[0] = CodeMirror.innerMode(mode, state).mode;
@@ -29212,7 +29212,7 @@
 	    }
 	    throw new Error("Mode " + mode.name + " failed to advance stream.");
 	  }
-	
+
 	  // Utility for getTokenAt and getLineTokens
 	  function takeToken(cm, pos, precise, asArray) {
 	    function getObj(copy) {
@@ -29221,7 +29221,7 @@
 	              type: style || null,
 	              state: copy ? copyState(doc.mode, state) : state};
 	    }
-	
+
 	    var doc = cm.doc, mode = doc.mode, style;
 	    pos = clipPos(doc, pos);
 	    var line = getLine(doc, pos.line), state = getStateBefore(cm, pos.line, precise);
@@ -29234,7 +29234,7 @@
 	    }
 	    return asArray ? tokens : getObj();
 	  }
-	
+
 	  // Run the given mode's parser over a line, calling f for each token.
 	  function runMode(cm, text, mode, state, f, lineClasses, forceToEnd) {
 	    var flattenSpans = mode.flattenSpans;
@@ -29272,7 +29272,7 @@
 	      curStart = pos;
 	    }
 	  }
-	
+
 	  // Compute a style array (an array starting with a mode generation
 	  // -- for invalidation -- followed by pairs of end positions and
 	  // style strings), which is used to highlight the tokens on the
@@ -29285,7 +29285,7 @@
 	    runMode(cm, line.text, cm.doc.mode, state, function(end, style) {
 	      st.push(end, style);
 	    }, lineClasses, forceToEnd);
-	
+
 	    // Run overlays, adjust style array.
 	    for (var o = 0; o < cm.state.overlays.length; ++o) {
 	      var overlay = cm.state.overlays[o], i = 1, at = 0;
@@ -29311,10 +29311,10 @@
 	        }
 	      }, lineClasses);
 	    }
-	
+
 	    return {styles: st, classes: lineClasses.bgClass || lineClasses.textClass ? lineClasses : null};
 	  }
-	
+
 	  function getLineStyles(cm, line, updateFrontier) {
 	    if (!line.styles || line.styles[0] != cm.state.modeGen) {
 	      var state = getStateBefore(cm, lineNo(line));
@@ -29327,7 +29327,7 @@
 	    }
 	    return line.styles;
 	  }
-	
+
 	  // Lightweight form of highlight -- proceed over this line and
 	  // update state, but don't save a style array. Used for lines that
 	  // aren't currently visible.
@@ -29341,7 +29341,7 @@
 	      stream.start = stream.pos;
 	    }
 	  }
-	
+
 	  // Convert a style as returned by a mode (either null, or a string
 	  // containing one or more styles) to a CSS style. This is cached,
 	  // and also looks for line-wide styles.
@@ -29352,7 +29352,7 @@
 	    return cache[style] ||
 	      (cache[style] = style.replace(/\S+/g, "cm-$&"));
 	  }
-	
+
 	  // Render the DOM representation of the text of a line. Also builds
 	  // up a 'line map', which points at the DOM nodes that represent
 	  // specific stretches of text, and is used by the measuring code.
@@ -29367,7 +29367,7 @@
 	                   col: 0, pos: 0, cm: cm,
 	                   splitSpaces: (ie || webkit) && cm.getOption("lineWrapping")};
 	    lineView.measure = {};
-	
+
 	    // Iterate over the logical lines that make up this visual line.
 	    for (var i = 0; i <= (lineView.rest ? lineView.rest.length : 0); i++) {
 	      var line = i ? lineView.rest[i - 1] : lineView.line, order;
@@ -29386,11 +29386,11 @@
 	        if (line.styleClasses.textClass)
 	          builder.textClass = joinClasses(line.styleClasses.textClass, builder.textClass || "");
 	      }
-	
+
 	      // Ensure at least a single node is present, for measuring.
 	      if (builder.map.length == 0)
 	        builder.map.push(0, 0, builder.content.appendChild(zeroWidthElement(cm.display.measure)));
-	
+
 	      // Store the map and a cache object for the current logical line
 	      if (i == 0) {
 	        lineView.measure.map = builder.map;
@@ -29400,25 +29400,25 @@
 	        (lineView.measure.caches || (lineView.measure.caches = [])).push({});
 	      }
 	    }
-	
+
 	    // See issue #2901
 	    if (webkit && /\bcm-tab\b/.test(builder.content.lastChild.className))
 	      builder.content.className = "cm-tab-wrap-hack";
-	
+
 	    signal(cm, "renderLine", cm, lineView.line, builder.pre);
 	    if (builder.pre.className)
 	      builder.textClass = joinClasses(builder.pre.className, builder.textClass || "");
-	
+
 	    return builder;
 	  }
-	
+
 	  function defaultSpecialCharPlaceholder(ch) {
 	    var token = elt("span", "\u2022", "cm-invalidchar");
 	    token.title = "\\u" + ch.charCodeAt(0).toString(16);
 	    token.setAttribute("aria-label", token.title);
 	    return token;
 	  }
-	
+
 	  // Build up the DOM representation for a single token, and add it to
 	  // the line map. Takes care to render special characters separately.
 	  function buildToken(builder, text, style, startStyle, endStyle, title, css) {
@@ -29478,14 +29478,14 @@
 	    }
 	    builder.content.appendChild(content);
 	  }
-	
+
 	  function splitSpaces(old) {
 	    var out = " ";
 	    for (var i = 0; i < old.length - 2; ++i) out += i % 2 ? " " : "\u00a0";
 	    out += " ";
 	    return out;
 	  }
-	
+
 	  // Work around nonsense dimensions being reported for stretches of
 	  // right-to-left text.
 	  function buildTokenBadBidi(inner, order) {
@@ -29506,7 +29506,7 @@
 	      }
 	    };
 	  }
-	
+
 	  function buildCollapsedSpan(builder, size, marker, ignoreWidget) {
 	    var widget = !ignoreWidget && marker.widgetNode;
 	    if (widget) builder.map.push(builder.pos, builder.pos + size, widget);
@@ -29521,7 +29521,7 @@
 	    }
 	    builder.pos += size;
 	  }
-	
+
 	  // Outputs a number of spans to make up a line, taking highlighting
 	  // and marked text into account.
 	  function insertLineContent(line, builder, styles) {
@@ -29531,7 +29531,7 @@
 	        builder.addToken(builder, allText.slice(at, at = styles[i]), interpretTokenStyle(styles[i+1], builder.cm.options));
 	      return;
 	    }
-	
+
 	    var len = allText.length, pos = 0, i = 1, text = "", style, css;
 	    var nextChange = 0, spanStyle, spanEndStyle, spanStartStyle, title, collapsed;
 	    for (;;) {
@@ -29561,7 +29561,7 @@
 	        }
 	        if (endStyles) for (var j = 0; j < endStyles.length; j += 2)
 	          if (endStyles[j + 1] == nextChange) spanEndStyle += " " + endStyles[j]
-	
+
 	        if (!collapsed || collapsed.from == pos) for (var j = 0; j < foundBookmarks.length; ++j)
 	          buildCollapsedSpan(builder, 0, foundBookmarks[j]);
 	        if (collapsed && (collapsed.from || 0) == pos) {
@@ -29572,7 +29572,7 @@
 	        }
 	      }
 	      if (pos >= len) break;
-	
+
 	      var upto = Math.min(len, nextChange);
 	      while (true) {
 	        if (text) {
@@ -29591,9 +29591,9 @@
 	      }
 	    }
 	  }
-	
+
 	  // DOCUMENT DATA STRUCTURE
-	
+
 	  // By default, updates that start and end at the beginning of a line
 	  // are treated specially, in order to make the association of line
 	  // widgets and marker elements with the text behave more intuitive.
@@ -29601,7 +29601,7 @@
 	    return change.from.ch == 0 && change.to.ch == 0 && lst(change.text) == "" &&
 	      (!doc.cm || doc.cm.options.wholeLineUpdateBefore);
 	  }
-	
+
 	  // Perform a change on the document data structure.
 	  function updateDoc(doc, change, markedSpans, estimateHeight) {
 	    function spansFor(n) {return markedSpans ? markedSpans[n] : null;}
@@ -29614,11 +29614,11 @@
 	        result.push(new Line(text[i], spansFor(i), estimateHeight));
 	      return result;
 	    }
-	
+
 	    var from = change.from, to = change.to, text = change.text;
 	    var firstLine = getLine(doc, from.line), lastLine = getLine(doc, to.line);
 	    var lastText = lst(text), lastSpans = spansFor(text.length - 1), nlines = to.line - from.line;
-	
+
 	    // Adjust the line structure
 	    if (change.full) {
 	      doc.insert(0, linesFor(0, text.length));
@@ -29649,10 +29649,10 @@
 	      if (nlines > 1) doc.remove(from.line + 1, nlines - 1);
 	      doc.insert(from.line + 1, added);
 	    }
-	
+
 	    signalLater(doc, "change", doc, change);
 	  }
-	
+
 	  // The document is represented as a BTree consisting of leaves, with
 	  // chunk of lines in them, and branches, with up to ten leaves or
 	  // other branch nodes below them. The top node is always a branch
@@ -29665,7 +29665,7 @@
 	  // and line object, and to find the total height of the document.
 	  //
 	  // See also http://marijnhaverbeke.nl/blog/codemirror-line-tree.html
-	
+
 	  function LeafChunk(lines) {
 	    this.lines = lines;
 	    this.parent = null;
@@ -29675,7 +29675,7 @@
 	    }
 	    this.height = height;
 	  }
-	
+
 	  LeafChunk.prototype = {
 	    chunkSize: function() { return this.lines.length; },
 	    // Remove the n lines at offset 'at'.
@@ -29705,7 +29705,7 @@
 	        if (op(this.lines[at])) return true;
 	    }
 	  };
-	
+
 	  function BranchChunk(children) {
 	    this.children = children;
 	    var size = 0, height = 0;
@@ -29718,7 +29718,7 @@
 	    this.height = height;
 	    this.parent = null;
 	  }
-	
+
 	  BranchChunk.prototype = {
 	    chunkSize: function() { return this.size; },
 	    removeInner: function(at, n) {
@@ -29803,12 +29803,12 @@
 	      }
 	    }
 	  };
-	
+
 	  var nextDocId = 0;
 	  var Doc = CodeMirror.Doc = function(text, mode, firstLine, lineSep) {
 	    if (!(this instanceof Doc)) return new Doc(text, mode, firstLine, lineSep);
 	    if (firstLine == null) firstLine = 0;
-	
+
 	    BranchChunk.call(this, [new LeafChunk([new Line("", null)])]);
 	    this.first = firstLine;
 	    this.scrollTop = this.scrollLeft = 0;
@@ -29822,12 +29822,12 @@
 	    this.modeOption = mode;
 	    this.lineSep = lineSep;
 	    this.extend = false;
-	
+
 	    if (typeof text == "string") text = this.splitLines(text);
 	    updateDoc(this, {from: start, to: start, text: text});
 	    setSelection(this, simpleSelection(start), sel_dontScroll);
 	  };
-	
+
 	  Doc.prototype = createObj(BranchChunk.prototype, {
 	    constructor: Doc,
 	    // Iterate over the document. Supports two forms -- with only one
@@ -29838,7 +29838,7 @@
 	      if (op) this.iterN(from - this.first, to - from, op);
 	      else this.iterN(this.first, this.first + this.size, from);
 	    },
-	
+
 	    // Non-public interface for adding and removing lines.
 	    insert: function(at, lines) {
 	      var height = 0;
@@ -29846,10 +29846,10 @@
 	      this.insertInner(at - this.first, lines, height);
 	    },
 	    remove: function(at, n) { this.removeInner(at - this.first, n); },
-	
+
 	    // From here, the methods are part of the public interface. Most
 	    // are also available from CodeMirror (editor) instances.
-	
+
 	    getValue: function(lineSep) {
 	      var lines = getLines(this, this.first, this.first + this.size);
 	      if (lineSep === false) return lines;
@@ -29871,23 +29871,23 @@
 	      if (lineSep === false) return lines;
 	      return lines.join(lineSep || this.lineSeparator());
 	    },
-	
+
 	    getLine: function(line) {var l = this.getLineHandle(line); return l && l.text;},
-	
+
 	    getLineHandle: function(line) {if (isLine(this, line)) return getLine(this, line);},
 	    getLineNumber: function(line) {return lineNo(line);},
-	
+
 	    getLineHandleVisualStart: function(line) {
 	      if (typeof line == "number") line = getLine(this, line);
 	      return visualLine(line);
 	    },
-	
+
 	    lineCount: function() {return this.size;},
 	    firstLine: function() {return this.first;},
 	    lastLine: function() {return this.first + this.size - 1;},
-	
+
 	    clipPos: function(pos) {return clipPos(this, pos);},
-	
+
 	    getCursor: function(start) {
 	      var range = this.sel.primary(), pos;
 	      if (start == null || start == "head") pos = range.head;
@@ -29898,7 +29898,7 @@
 	    },
 	    listSelections: function() { return this.sel.ranges; },
 	    somethingSelected: function() {return this.sel.somethingSelected();},
-	
+
 	    setCursor: docMethodOp(function(line, ch, options) {
 	      setSimpleSelection(this, clipPos(this, typeof line == "number" ? Pos(line, ch || 0) : line), null, options);
 	    }),
@@ -29928,7 +29928,7 @@
 	      ranges.push(new Range(clipPos(this, anchor), clipPos(this, head || anchor)));
 	      setSelection(this, normalizeSelection(ranges, ranges.length - 1), options);
 	    }),
-	
+
 	    getSelection: function(lineSep) {
 	      var ranges = this.sel.ranges, lines;
 	      for (var i = 0; i < ranges.length; i++) {
@@ -29969,10 +29969,10 @@
 	    redo: docMethodOp(function() {makeChangeFromHistory(this, "redo");}),
 	    undoSelection: docMethodOp(function() {makeChangeFromHistory(this, "undo", true);}),
 	    redoSelection: docMethodOp(function() {makeChangeFromHistory(this, "redo", true);}),
-	
+
 	    setExtending: function(val) {this.extend = val;},
 	    getExtending: function() {return this.extend;},
-	
+
 	    historySize: function() {
 	      var hist = this.history, done = 0, undone = 0;
 	      for (var i = 0; i < hist.done.length; i++) if (!hist.done[i].ranges) ++done;
@@ -29980,7 +29980,7 @@
 	      return {undo: done, redo: undone};
 	    },
 	    clearHistory: function() {this.history = new History(this.history.maxGeneration);},
-	
+
 	    markClean: function() {
 	      this.cleanGeneration = this.changeGeneration(true);
 	    },
@@ -29992,7 +29992,7 @@
 	    isClean: function (gen) {
 	      return this.history.generation == (gen || this.cleanGeneration);
 	    },
-	
+
 	    getHistory: function() {
 	      return {done: copyHistoryArray(this.history.done),
 	              undone: copyHistoryArray(this.history.undone)};
@@ -30002,7 +30002,7 @@
 	      hist.done = copyHistoryArray(histData.done.slice(0), null, true);
 	      hist.undone = copyHistoryArray(histData.undone.slice(0), null, true);
 	    },
-	
+
 	    addLineClass: docMethodOp(function(handle, where, cls) {
 	      return changeLine(this, handle, where == "gutter" ? "gutter" : "class", function(line) {
 	        var prop = where == "text" ? "textClass"
@@ -30031,12 +30031,12 @@
 	        return true;
 	      });
 	    }),
-	
+
 	    addLineWidget: docMethodOp(function(handle, node, options) {
 	      return addLineWidget(this, handle, node, options);
 	    }),
 	    removeLineWidget: function(widget) { widget.clear(); },
-	
+
 	    markText: function(from, to, options) {
 	      return markText(this, clipPos(this, from), clipPos(this, to), options, options && options.type || "range");
 	    },
@@ -30085,7 +30085,7 @@
 	      });
 	      return markers;
 	    },
-	
+
 	    posFromIndex: function(off) {
 	      var ch, lineNo = this.first, sepSize = this.lineSeparator().length;
 	      this.iter(function(line) {
@@ -30106,7 +30106,7 @@
 	      });
 	      return index;
 	    },
-	
+
 	    copy: function(copyHistory) {
 	      var doc = new Doc(getLines(this, this.first, this.first + this.size),
 	                        this.modeOption, this.first, this.lineSep);
@@ -30119,7 +30119,7 @@
 	      }
 	      return doc;
 	    },
-	
+
 	    linkedDoc: function(options) {
 	      if (!options) options = {};
 	      var from = this.first, to = this.first + this.size;
@@ -30152,29 +30152,29 @@
 	      }
 	    },
 	    iterLinkedDocs: function(f) {linkedDocs(this, f);},
-	
+
 	    getMode: function() {return this.mode;},
 	    getEditor: function() {return this.cm;},
-	
+
 	    splitLines: function(str) {
 	      if (this.lineSep) return str.split(this.lineSep);
 	      return splitLinesAuto(str);
 	    },
 	    lineSeparator: function() { return this.lineSep || "\n"; }
 	  });
-	
+
 	  // Public alias.
 	  Doc.prototype.eachLine = Doc.prototype.iter;
-	
+
 	  // Set up methods on CodeMirror's prototype to redirect to the editor's document.
 	  var dontDelegate = "iter insert remove copy getEditor constructor".split(" ");
 	  for (var prop in Doc.prototype) if (Doc.prototype.hasOwnProperty(prop) && indexOf(dontDelegate, prop) < 0)
 	    CodeMirror.prototype[prop] = (function(method) {
 	      return function() {return method.apply(this.doc, arguments);};
 	    })(Doc.prototype[prop]);
-	
+
 	  eventMixin(Doc);
-	
+
 	  // Call f for all linked documents.
 	  function linkedDocs(doc, f, sharedHistOnly) {
 	    function propagate(doc, skip, sharedHist) {
@@ -30189,7 +30189,7 @@
 	    }
 	    propagate(doc, null, true);
 	  }
-	
+
 	  // Attach a document to an editor.
 	  function attachDoc(cm, doc) {
 	    if (doc.cm) throw new Error("This document is already in use.");
@@ -30201,9 +30201,9 @@
 	    cm.options.mode = doc.modeOption;
 	    regChange(cm);
 	  }
-	
+
 	  // LINE UTILITIES
-	
+
 	  // Find the line object corresponding to the given line number.
 	  function getLine(doc, n) {
 	    n -= doc.first;
@@ -30217,7 +30217,7 @@
 	    }
 	    return chunk.lines[n];
 	  }
-	
+
 	  // Get the part of a document between two positions, as an array of
 	  // strings.
 	  function getBetween(doc, start, end) {
@@ -30237,14 +30237,14 @@
 	    doc.iter(from, to, function(line) { out.push(line.text); });
 	    return out;
 	  }
-	
+
 	  // Update the height of a line, propagating the height change
 	  // upwards to parent nodes.
 	  function updateLineHeight(line, height) {
 	    var diff = height - line.height;
 	    if (diff) for (var n = line; n; n = n.parent) n.height += diff;
 	  }
-	
+
 	  // Given a line object, find its line number by walking up through
 	  // its parent links.
 	  function lineNo(line) {
@@ -30258,7 +30258,7 @@
 	    }
 	    return no + cur.first;
 	  }
-	
+
 	  // Find the line at the given vertical position, using the height
 	  // information in the document tree.
 	  function lineAtHeight(chunk, h) {
@@ -30279,12 +30279,12 @@
 	    }
 	    return n + i;
 	  }
-	
-	
+
+
 	  // Find the height above the given line.
 	  function heightAtLine(lineObj) {
 	    lineObj = visualLine(lineObj);
-	
+
 	    var h = 0, chunk = lineObj.parent;
 	    for (var i = 0; i < chunk.lines.length; ++i) {
 	      var line = chunk.lines[i];
@@ -30300,7 +30300,7 @@
 	    }
 	    return h;
 	  }
-	
+
 	  // Get the bidi ordering for the given line (and cache it). Returns
 	  // false for lines that are fully left-to-right, and an array of
 	  // BidiSpan objects otherwise.
@@ -30309,9 +30309,9 @@
 	    if (order == null) order = line.order = bidiOrdering(line.text);
 	    return order;
 	  }
-	
+
 	  // HISTORY
-	
+
 	  function History(startGen) {
 	    // Arrays of change events and selections. Doing something adds an
 	    // event to done and clears undo. Undoing moves events from done
@@ -30326,7 +30326,7 @@
 	    // Used by the isClean() method
 	    this.generation = this.maxGeneration = startGen || 1;
 	  }
-	
+
 	  // Create a history change event from an updateDoc-style change
 	  // object.
 	  function historyChangeFromChange(doc, change) {
@@ -30335,7 +30335,7 @@
 	    linkedDocs(doc, function(doc) {attachLocalSpans(doc, histChange, change.from.line, change.to.line + 1);}, true);
 	    return histChange;
 	  }
-	
+
 	  // Pop all selection events off the end of a history array. Stop at
 	  // a change event.
 	  function clearSelectionEvents(array) {
@@ -30345,7 +30345,7 @@
 	      else break;
 	    }
 	  }
-	
+
 	  // Find the top change event in the history. Pop off selection
 	  // events that are in the way.
 	  function lastChangeEvent(hist, force) {
@@ -30359,7 +30359,7 @@
 	      return lst(hist.done);
 	    }
 	  }
-	
+
 	  // Register a change in the history. Merges changes that are within
 	  // a single operation, ore are close together with an origin that
 	  // allows merging (starting with "+") into a single event.
@@ -30367,7 +30367,7 @@
 	    var hist = doc.history;
 	    hist.undone.length = 0;
 	    var time = +new Date, cur;
-	
+
 	    if ((hist.lastOp == opId ||
 	         hist.lastOrigin == change.origin && change.origin &&
 	         ((change.origin.charAt(0) == "+" && doc.cm && hist.lastModTime > time - doc.cm.options.historyEventDelay) ||
@@ -30401,10 +30401,10 @@
 	    hist.lastModTime = hist.lastSelTime = time;
 	    hist.lastOp = hist.lastSelOp = opId;
 	    hist.lastOrigin = hist.lastSelOrigin = change.origin;
-	
+
 	    if (!last) signal(doc, "historyAdded");
 	  }
-	
+
 	  function selectionEventCanBeMerged(doc, origin, prev, sel) {
 	    var ch = origin.charAt(0);
 	    return ch == "*" ||
@@ -30413,14 +30413,14 @@
 	      prev.somethingSelected() == sel.somethingSelected() &&
 	      new Date - doc.history.lastSelTime <= (doc.cm ? doc.cm.options.historyEventDelay : 500);
 	  }
-	
+
 	  // Called whenever the selection changes, sets the new selection as
 	  // the pending selection in the history, and pushes the old pending
 	  // selection into the 'done' array when it was significantly
 	  // different (in number of selected ranges, emptiness, or time).
 	  function addSelectionToHistory(doc, sel, opId, options) {
 	    var hist = doc.history, origin = options && options.origin;
-	
+
 	    // A new event is started when the previous origin does not match
 	    // the current, or the origins don't allow matching. Origins
 	    // starting with * are always merged, those starting with + are
@@ -30432,20 +30432,20 @@
 	      hist.done[hist.done.length - 1] = sel;
 	    else
 	      pushSelectionToHistory(sel, hist.done);
-	
+
 	    hist.lastSelTime = +new Date;
 	    hist.lastSelOrigin = origin;
 	    hist.lastSelOp = opId;
 	    if (options && options.clearRedo !== false)
 	      clearSelectionEvents(hist.undone);
 	  }
-	
+
 	  function pushSelectionToHistory(sel, dest) {
 	    var top = lst(dest);
 	    if (!(top && top.ranges && top.equals(sel)))
 	      dest.push(sel);
 	  }
-	
+
 	  // Used to store marked span information in the history.
 	  function attachLocalSpans(doc, change, from, to) {
 	    var existing = change["spans_" + doc.id], n = 0;
@@ -30455,7 +30455,7 @@
 	      ++n;
 	    });
 	  }
-	
+
 	  // When un/re-doing restores text containing marked spans, those
 	  // that have been explicitly cleared should not be restored.
 	  function removeClearedSpans(spans) {
@@ -30466,7 +30466,7 @@
 	    }
 	    return !out ? spans : out.length ? out : null;
 	  }
-	
+
 	  // Retrieve and filter the old marked spans stored in a change event.
 	  function getOldSpans(doc, change) {
 	    var found = change["spans_" + doc.id];
@@ -30475,7 +30475,7 @@
 	      nw.push(removeClearedSpans(found[i]));
 	    return nw;
 	  }
-	
+
 	  // Used both to provide a JSON-safe object in .getHistory, and, when
 	  // detaching a document, to split the history in two
 	  function copyHistoryArray(events, newGroup, instantiateSel) {
@@ -30500,9 +30500,9 @@
 	    }
 	    return copy;
 	  }
-	
+
 	  // Rebasing/resetting history to deal with externally-sourced changes
-	
+
 	  function rebaseHistSelSingle(pos, from, to, diff) {
 	    if (to < pos.line) {
 	      pos.line += diff;
@@ -30511,7 +30511,7 @@
 	      pos.ch = 0;
 	    }
 	  }
-	
+
 	  // Tries to rebase an array of history events given a change in the
 	  // document. If the change touches the same lines as the event, the
 	  // event, and everything 'behind' it, is discarded. If the change is
@@ -30546,18 +30546,18 @@
 	      }
 	    }
 	  }
-	
+
 	  function rebaseHist(hist, change) {
 	    var from = change.from.line, to = change.to.line, diff = change.text.length - (to - from) - 1;
 	    rebaseHistArray(hist.done, from, to, diff);
 	    rebaseHistArray(hist.undone, from, to, diff);
 	  }
-	
+
 	  // EVENT UTILITIES
-	
+
 	  // Due to the fact that we still support jurassic IE versions, some
 	  // compatibility wrappers are needed.
-	
+
 	  var e_preventDefault = CodeMirror.e_preventDefault = function(e) {
 	    if (e.preventDefault) e.preventDefault();
 	    else e.returnValue = false;
@@ -30570,7 +30570,7 @@
 	    return e.defaultPrevented != null ? e.defaultPrevented : e.returnValue == false;
 	  }
 	  var e_stop = CodeMirror.e_stop = function(e) {e_preventDefault(e); e_stopPropagation(e);};
-	
+
 	  function e_target(e) {return e.target || e.srcElement;}
 	  function e_button(e) {
 	    var b = e.which;
@@ -30582,12 +30582,12 @@
 	    if (mac && e.ctrlKey && b == 1) b = 3;
 	    return b;
 	  }
-	
+
 	  // EVENT HANDLING
-	
+
 	  // Lightweight event framework. on/off also work on DOM nodes,
 	  // registering native DOM handlers.
-	
+
 	  var on = CodeMirror.on = function(emitter, type, f) {
 	    if (emitter.addEventListener)
 	      emitter.addEventListener(type, f, false);
@@ -30599,14 +30599,14 @@
 	      arr.push(f);
 	    }
 	  };
-	
+
 	  var noHandlers = []
 	  function getHandlers(emitter, type, copy) {
 	    var arr = emitter._handlers && emitter._handlers[type]
 	    if (copy) return arr && arr.length > 0 ? arr.slice() : noHandlers
 	    else return arr || noHandlers
 	  }
-	
+
 	  var off = CodeMirror.off = function(emitter, type, f) {
 	    if (emitter.removeEventListener)
 	      emitter.removeEventListener(type, f, false);
@@ -30618,16 +30618,16 @@
 	        if (handlers[i] == f) { handlers.splice(i, 1); break; }
 	    }
 	  };
-	
+
 	  var signal = CodeMirror.signal = function(emitter, type /*, values...*/) {
 	    var handlers = getHandlers(emitter, type, true)
 	    if (!handlers.length) return;
 	    var args = Array.prototype.slice.call(arguments, 2);
 	    for (var i = 0; i < handlers.length; ++i) handlers[i].apply(null, args);
 	  };
-	
+
 	  var orphanDelayedCallbacks = null;
-	
+
 	  // Often, we want to signal events at a point where we are in the
 	  // middle of some work, but don't want the handler to start calling
 	  // other methods on the editor, which might be in an inconsistent
@@ -30651,13 +30651,13 @@
 	    for (var i = 0; i < arr.length; ++i)
 	      list.push(bnd(arr[i]));
 	  }
-	
+
 	  function fireOrphanDelayed() {
 	    var delayed = orphanDelayedCallbacks;
 	    orphanDelayedCallbacks = null;
 	    for (var i = 0; i < delayed.length; ++i) delayed[i]();
 	  }
-	
+
 	  // The DOM events that CodeMirror handles can be overridden by
 	  // registering a (non-DOM) handler on the editor for the event name,
 	  // and preventDefault-ing the event in that handler.
@@ -30667,7 +30667,7 @@
 	    signal(cm, override || e.type, cm, e);
 	    return e_defaultPrevented(e) || e.codemirrorIgnore;
 	  }
-	
+
 	  function signalCursorActivity(cm) {
 	    var arr = cm._handlers && cm._handlers.cursorActivity;
 	    if (!arr) return;
@@ -30675,36 +30675,36 @@
 	    for (var i = 0; i < arr.length; ++i) if (indexOf(set, arr[i]) == -1)
 	      set.push(arr[i]);
 	  }
-	
+
 	  function hasHandler(emitter, type) {
 	    return getHandlers(emitter, type).length > 0
 	  }
-	
+
 	  // Add on and off methods to a constructor's prototype, to make
 	  // registering events on such objects more convenient.
 	  function eventMixin(ctor) {
 	    ctor.prototype.on = function(type, f) {on(this, type, f);};
 	    ctor.prototype.off = function(type, f) {off(this, type, f);};
 	  }
-	
+
 	  // MISC UTILITIES
-	
+
 	  // Number of pixels added to scroller and sizer to hide scrollbar
 	  var scrollerGap = 30;
-	
+
 	  // Returned or thrown by various protocols to signal 'I'm not
 	  // handling this'.
 	  var Pass = CodeMirror.Pass = {toString: function(){return "CodeMirror.Pass";}};
-	
+
 	  // Reused option objects for setSelection & friends
 	  var sel_dontScroll = {scroll: false}, sel_mouse = {origin: "*mouse"}, sel_move = {origin: "+move"};
-	
+
 	  function Delayed() {this.id = null;}
 	  Delayed.prototype.set = function(ms, f) {
 	    clearTimeout(this.id);
 	    this.id = setTimeout(f, ms);
 	  };
-	
+
 	  // Counts the column offset in a string, taking tabs into account.
 	  // Used mostly to find indentation.
 	  var countColumn = CodeMirror.countColumn = function(string, end, tabSize, startIndex, startValue) {
@@ -30721,7 +30721,7 @@
 	      i = nextTab + 1;
 	    }
 	  };
-	
+
 	  // The inverse of countColumn -- find the offset that corresponds to
 	  // a particular column.
 	  var findColumn = CodeMirror.findColumn = function(string, goal, tabSize) {
@@ -30737,22 +30737,22 @@
 	      if (col >= goal) return pos;
 	    }
 	  }
-	
+
 	  var spaceStrs = [""];
 	  function spaceStr(n) {
 	    while (spaceStrs.length <= n)
 	      spaceStrs.push(lst(spaceStrs) + " ");
 	    return spaceStrs[n];
 	  }
-	
+
 	  function lst(arr) { return arr[arr.length-1]; }
-	
+
 	  var selectInput = function(node) { node.select(); };
 	  if (ios) // Mobile Safari apparently has a bug where select() is broken.
 	    selectInput = function(node) { node.selectionStart = 0; node.selectionEnd = node.value.length; };
 	  else if (ie) // Suppress mysterious IE10 errors
 	    selectInput = function(node) { try { node.select(); } catch(_e) {} };
-	
+
 	  function indexOf(array, elt) {
 	    for (var i = 0; i < array.length; ++i)
 	      if (array[i] == elt) return i;
@@ -30763,9 +30763,9 @@
 	    for (var i = 0; i < array.length; i++) out[i] = f(array[i], i);
 	    return out;
 	  }
-	
+
 	  function nothing() {}
-	
+
 	  function createObj(base, props) {
 	    var inst;
 	    if (Object.create) {
@@ -30777,7 +30777,7 @@
 	    if (props) copyObj(props, inst);
 	    return inst;
 	  };
-	
+
 	  function copyObj(obj, target, overwrite) {
 	    if (!target) target = {};
 	    for (var prop in obj)
@@ -30785,12 +30785,12 @@
 	        target[prop] = obj[prop];
 	    return target;
 	  }
-	
+
 	  function bind(f) {
 	    var args = Array.prototype.slice.call(arguments, 1);
 	    return function(){return f.apply(null, args);};
 	  }
-	
+
 	  var nonASCIISingleCaseWordChar = /[\u00df\u0587\u0590-\u05f4\u0600-\u06ff\u3040-\u309f\u30a0-\u30ff\u3400-\u4db5\u4e00-\u9fcc\uac00-\ud7af]/;
 	  var isWordCharBasic = CodeMirror.isWordChar = function(ch) {
 	    return /\w/.test(ch) || ch > "\x80" &&
@@ -30801,12 +30801,12 @@
 	    if (helper.source.indexOf("\\w") > -1 && isWordCharBasic(ch)) return true;
 	    return helper.test(ch);
 	  }
-	
+
 	  function isEmpty(obj) {
 	    for (var n in obj) if (obj.hasOwnProperty(n) && obj[n]) return false;
 	    return true;
 	  }
-	
+
 	  // Extending unicode characters. A series of a non-extending char +
 	  // any number of extending chars is treated as a single unit as far
 	  // as editing and measuring is concerned. This is not fully correct,
@@ -30814,9 +30814,9 @@
 	  // of code points as a group.
 	  var extendingChars = /[\u0300-\u036f\u0483-\u0489\u0591-\u05bd\u05bf\u05c1\u05c2\u05c4\u05c5\u05c7\u0610-\u061a\u064b-\u065e\u0670\u06d6-\u06dc\u06de-\u06e4\u06e7\u06e8\u06ea-\u06ed\u0711\u0730-\u074a\u07a6-\u07b0\u07eb-\u07f3\u0816-\u0819\u081b-\u0823\u0825-\u0827\u0829-\u082d\u0900-\u0902\u093c\u0941-\u0948\u094d\u0951-\u0955\u0962\u0963\u0981\u09bc\u09be\u09c1-\u09c4\u09cd\u09d7\u09e2\u09e3\u0a01\u0a02\u0a3c\u0a41\u0a42\u0a47\u0a48\u0a4b-\u0a4d\u0a51\u0a70\u0a71\u0a75\u0a81\u0a82\u0abc\u0ac1-\u0ac5\u0ac7\u0ac8\u0acd\u0ae2\u0ae3\u0b01\u0b3c\u0b3e\u0b3f\u0b41-\u0b44\u0b4d\u0b56\u0b57\u0b62\u0b63\u0b82\u0bbe\u0bc0\u0bcd\u0bd7\u0c3e-\u0c40\u0c46-\u0c48\u0c4a-\u0c4d\u0c55\u0c56\u0c62\u0c63\u0cbc\u0cbf\u0cc2\u0cc6\u0ccc\u0ccd\u0cd5\u0cd6\u0ce2\u0ce3\u0d3e\u0d41-\u0d44\u0d4d\u0d57\u0d62\u0d63\u0dca\u0dcf\u0dd2-\u0dd4\u0dd6\u0ddf\u0e31\u0e34-\u0e3a\u0e47-\u0e4e\u0eb1\u0eb4-\u0eb9\u0ebb\u0ebc\u0ec8-\u0ecd\u0f18\u0f19\u0f35\u0f37\u0f39\u0f71-\u0f7e\u0f80-\u0f84\u0f86\u0f87\u0f90-\u0f97\u0f99-\u0fbc\u0fc6\u102d-\u1030\u1032-\u1037\u1039\u103a\u103d\u103e\u1058\u1059\u105e-\u1060\u1071-\u1074\u1082\u1085\u1086\u108d\u109d\u135f\u1712-\u1714\u1732-\u1734\u1752\u1753\u1772\u1773\u17b7-\u17bd\u17c6\u17c9-\u17d3\u17dd\u180b-\u180d\u18a9\u1920-\u1922\u1927\u1928\u1932\u1939-\u193b\u1a17\u1a18\u1a56\u1a58-\u1a5e\u1a60\u1a62\u1a65-\u1a6c\u1a73-\u1a7c\u1a7f\u1b00-\u1b03\u1b34\u1b36-\u1b3a\u1b3c\u1b42\u1b6b-\u1b73\u1b80\u1b81\u1ba2-\u1ba5\u1ba8\u1ba9\u1c2c-\u1c33\u1c36\u1c37\u1cd0-\u1cd2\u1cd4-\u1ce0\u1ce2-\u1ce8\u1ced\u1dc0-\u1de6\u1dfd-\u1dff\u200c\u200d\u20d0-\u20f0\u2cef-\u2cf1\u2de0-\u2dff\u302a-\u302f\u3099\u309a\ua66f-\ua672\ua67c\ua67d\ua6f0\ua6f1\ua802\ua806\ua80b\ua825\ua826\ua8c4\ua8e0-\ua8f1\ua926-\ua92d\ua947-\ua951\ua980-\ua982\ua9b3\ua9b6-\ua9b9\ua9bc\uaa29-\uaa2e\uaa31\uaa32\uaa35\uaa36\uaa43\uaa4c\uaab0\uaab2-\uaab4\uaab7\uaab8\uaabe\uaabf\uaac1\uabe5\uabe8\uabed\udc00-\udfff\ufb1e\ufe00-\ufe0f\ufe20-\ufe26\uff9e\uff9f]/;
 	  function isExtendingChar(ch) { return ch.charCodeAt(0) >= 768 && extendingChars.test(ch); }
-	
+
 	  // DOM UTILITIES
-	
+
 	  function elt(tag, content, className, style) {
 	    var e = document.createElement(tag);
 	    if (className) e.className = className;
@@ -30825,7 +30825,7 @@
 	    else if (content) for (var i = 0; i < content.length; ++i) e.appendChild(content[i]);
 	    return e;
 	  }
-	
+
 	  var range;
 	  if (document.createRange) range = function(node, start, end, endNode) {
 	    var r = document.createRange();
@@ -30842,17 +30842,17 @@
 	    r.moveStart("character", start);
 	    return r;
 	  };
-	
+
 	  function removeChildren(e) {
 	    for (var count = e.childNodes.length; count > 0; --count)
 	      e.removeChild(e.firstChild);
 	    return e;
 	  }
-	
+
 	  function removeChildrenAndAdd(parent, e) {
 	    return removeChildren(parent).appendChild(e);
 	  }
-	
+
 	  var contains = CodeMirror.contains = function(parent, child) {
 	    if (child.nodeType == 3) // Android browser always returns false when child is a textnode
 	      child = child.parentNode;
@@ -30863,7 +30863,7 @@
 	      if (child == parent) return true;
 	    } while (child = child.parentNode);
 	  };
-	
+
 	  function activeElt() {
 	    var activeElement = document.activeElement;
 	    while (activeElement && activeElement.root && activeElement.root.activeElement)
@@ -30876,7 +30876,7 @@
 	    try { return document.activeElement; }
 	    catch(e) { return document.body; }
 	  };
-	
+
 	  function classTest(cls) { return new RegExp("(^|\\s)" + cls + "(?:$|\\s)\\s*"); }
 	  var rmClass = CodeMirror.rmClass = function(node, cls) {
 	    var current = node.className;
@@ -30896,13 +30896,13 @@
 	      if (as[i] && !classTest(as[i]).test(b)) b += " " + as[i];
 	    return b;
 	  }
-	
+
 	  // WINDOW-WIDE EVENTS
-	
+
 	  // These must be handled carefully, because naively registering a
 	  // handler for each editor will cause the editors to never be
 	  // garbage collected.
-	
+
 	  function forEachCodeMirror(f) {
 	    if (!document.body.getElementsByClassName) return;
 	    var byClass = document.body.getElementsByClassName("CodeMirror");
@@ -30911,7 +30911,7 @@
 	      if (cm) f(cm);
 	    }
 	  }
-	
+
 	  var globalsRegistered = false;
 	  function ensureGlobalHandlers() {
 	    if (globalsRegistered) return;
@@ -30932,9 +30932,9 @@
 	      forEachCodeMirror(onBlur);
 	    });
 	  }
-	
+
 	  // FEATURE DETECTION
-	
+
 	  // Detect drag-and-drop
 	  var dragAndDrop = function() {
 	    // There is *some* kind of drag-and-drop support in IE6-8, but I
@@ -30943,7 +30943,7 @@
 	    var div = elt('div');
 	    return "draggable" in div || "dragDrop" in div;
 	  }();
-	
+
 	  var zwspSupported;
 	  function zeroWidthElement(measure) {
 	    if (zwspSupported == null) {
@@ -30957,7 +30957,7 @@
 	    node.setAttribute("cm-text", "");
 	    return node;
 	  }
-	
+
 	  // Feature-detect IE's crummy client rect reporting for bidi text
 	  var badBidiRects;
 	  function hasBadBidiRects(measure) {
@@ -30968,7 +30968,7 @@
 	    var r1 = range(txt, 1, 2).getBoundingClientRect();
 	    return badBidiRects = (r1.right - r0.right < 3);
 	  }
-	
+
 	  // See if "".split is the broken IE version, if so, provide an
 	  // alternative way to split lines.
 	  var splitLinesAuto = CodeMirror.splitLines = "\n\nb".split(/\n/).length != 3 ? function(string) {
@@ -30988,7 +30988,7 @@
 	    }
 	    return result;
 	  } : function(string){return string.split(/\r\n?|\n/);};
-	
+
 	  var hasSelection = window.getSelection ? function(te) {
 	    try { return te.selectionStart != te.selectionEnd; }
 	    catch(e) { return false; }
@@ -30998,14 +30998,14 @@
 	    if (!range || range.parentElement() != te) return false;
 	    return range.compareEndPoints("StartToEnd", range) != 0;
 	  };
-	
+
 	  var hasCopyEvent = (function() {
 	    var e = elt("div");
 	    if ("oncopy" in e) return true;
 	    e.setAttribute("oncopy", "return;");
 	    return typeof e.oncopy == "function";
 	  })();
-	
+
 	  var badZoomedRects = null;
 	  function hasBadZoomedRects(measure) {
 	    if (badZoomedRects != null) return badZoomedRects;
@@ -31014,9 +31014,9 @@
 	    var fromRange = range(node, 0, 1).getBoundingClientRect();
 	    return badZoomedRects = Math.abs(normal.left - fromRange.left) > 1;
 	  }
-	
+
 	  // KEY NAMES
-	
+
 	  var keyNames = CodeMirror.keyNames = {
 	    3: "Enter", 8: "Backspace", 9: "Tab", 13: "Enter", 16: "Shift", 17: "Ctrl", 18: "Alt",
 	    19: "Pause", 20: "CapsLock", 27: "Esc", 32: "Space", 33: "PageUp", 34: "PageDown", 35: "End",
@@ -31035,9 +31035,9 @@
 	    // Function keys
 	    for (var i = 1; i <= 12; i++) keyNames[i + 111] = keyNames[i + 63235] = "F" + i;
 	  })();
-	
+
 	  // BIDI HELPERS
-	
+
 	  function iterateBidiSections(order, from, to, f) {
 	    if (!order) return f(from, to, "ltr");
 	    var found = false;
@@ -31050,17 +31050,17 @@
 	    }
 	    if (!found) f(from, to, "ltr");
 	  }
-	
+
 	  function bidiLeft(part) { return part.level % 2 ? part.to : part.from; }
 	  function bidiRight(part) { return part.level % 2 ? part.from : part.to; }
-	
+
 	  function lineLeft(line) { var order = getOrder(line); return order ? bidiLeft(order[0]) : 0; }
 	  function lineRight(line) {
 	    var order = getOrder(line);
 	    if (!order) return line.text.length;
 	    return bidiRight(lst(order));
 	  }
-	
+
 	  function lineStart(cm, lineN) {
 	    var line = getLine(cm.doc, lineN);
 	    var visual = visualLine(line);
@@ -31090,7 +31090,7 @@
 	    }
 	    return start;
 	  }
-	
+
 	  function compareBidiLevel(order, a, b) {
 	    var linedir = order[0].level;
 	    if (a == linedir) return true;
@@ -31117,14 +31117,14 @@
 	    }
 	    return found;
 	  }
-	
+
 	  function moveInLine(line, pos, dir, byUnit) {
 	    if (!byUnit) return pos + dir;
 	    do pos += dir;
 	    while (pos > 0 && isExtendingChar(line.text.charAt(pos)));
 	    return pos;
 	  }
-	
+
 	  // This is needed in order to move 'visually' through bi-directional
 	  // text -- i.e., pressing left should make the cursor go left, even
 	  // when in RTL text. The tricky part is the 'jumps', where RTL and
@@ -31135,7 +31135,7 @@
 	    if (!bidi) return moveLogically(line, start, dir, byUnit);
 	    var pos = getBidiPartAt(bidi, start), part = bidi[pos];
 	    var target = moveInLine(line, start, part.level % 2 ? -dir : dir, byUnit);
-	
+
 	    for (;;) {
 	      if (target > part.from && target < part.to) return target;
 	      if (target == part.from || target == part.to) {
@@ -31152,17 +31152,17 @@
 	      }
 	    }
 	  }
-	
+
 	  function moveLogically(line, start, dir, byUnit) {
 	    var target = start + dir;
 	    if (byUnit) while (target > 0 && isExtendingChar(line.text.charAt(target))) target += dir;
 	    return target < 0 || target > line.text.length ? null : target;
 	  }
-	
+
 	  // Bidirectional ordering algorithm
 	  // See http://unicode.org/reports/tr9/tr9-13.html for the algorithm
 	  // that this (partially) implements.
-	
+
 	  // One-char codes used for character types:
 	  // L (L):   Left-to-Right
 	  // R (R):   Right-to-Left
@@ -31178,7 +31178,7 @@
 	  // t (S):   Segment Separator
 	  // w (WS):  Whitespace
 	  // N (ON):  Other Neutrals
-	
+
 	  // Returns null if characters are ordered as they appear
 	  // (left-to-right), or an array of sections ({from, to, level}
 	  // objects) in the order in which they occur visually.
@@ -31196,23 +31196,23 @@
 	      else if (code == 0x200c) return "b";
 	      else return "L";
 	    }
-	
+
 	    var bidiRE = /[\u0590-\u05f4\u0600-\u06ff\u0700-\u08ac]/;
 	    var isNeutral = /[stwN]/, isStrong = /[LRr]/, countsAsLeft = /[Lb1n]/, countsAsNum = /[1n]/;
 	    // Browsers seem to always treat the boundaries of block elements as being L.
 	    var outerType = "L";
-	
+
 	    function BidiSpan(level, from, to) {
 	      this.level = level;
 	      this.from = from; this.to = to;
 	    }
-	
+
 	    return function(str) {
 	      if (!bidiRE.test(str)) return false;
 	      var len = str.length, types = [];
 	      for (var i = 0, type; i < len; ++i)
 	        types.push(type = charType(str.charCodeAt(i)));
-	
+
 	      // W1. Examine each non-spacing mark (NSM) in the level run, and
 	      // change the type of the NSM to the type of the previous
 	      // character. If the NSM is at the start of the level run, it will
@@ -31222,7 +31222,7 @@
 	        if (type == "m") types[i] = prev;
 	        else prev = type;
 	      }
-	
+
 	      // W2. Search backwards from each instance of a European number
 	      // until the first strong type (R, L, AL, or sor) is found. If an
 	      // AL is found, change the type of the European number to Arabic
@@ -31233,7 +31233,7 @@
 	        if (type == "1" && cur == "r") types[i] = "n";
 	        else if (isStrong.test(type)) { cur = type; if (type == "r") types[i] = "R"; }
 	      }
-	
+
 	      // W4. A single European separator between two European numbers
 	      // changes to a European number. A single common separator between
 	      // two numbers of the same type changes to that type.
@@ -31244,7 +31244,7 @@
 	                 (prev == "1" || prev == "n")) types[i] = prev;
 	        prev = type;
 	      }
-	
+
 	      // W5. A sequence of European terminators adjacent to European
 	      // numbers changes to all European numbers.
 	      // W6. Otherwise, separators and terminators change to Other
@@ -31259,7 +31259,7 @@
 	          i = end - 1;
 	        }
 	      }
-	
+
 	      // W7. Search backwards from each instance of a European number
 	      // until the first strong type (R, L, or sor) is found. If an L is
 	      // found, then change the type of the European number to L.
@@ -31268,7 +31268,7 @@
 	        if (cur == "L" && type == "1") types[i] = "L";
 	        else if (isStrong.test(type)) cur = type;
 	      }
-	
+
 	      // N1. A sequence of neutrals takes the direction of the
 	      // surrounding strong text if the text on both sides has the same
 	      // direction. European and Arabic numbers act as if they were R in
@@ -31285,7 +31285,7 @@
 	          i = end - 1;
 	        }
 	      }
-	
+
 	      // Here we depart from the documented algorithm, in order to avoid
 	      // building up an actual levels array. Since there are only three
 	      // levels (0, 1, 2) in an implementation that doesn't take
@@ -31324,15 +31324,15 @@
 	        order.unshift(new BidiSpan(1, order[0].to, order[0].to));
 	      if (order[0].level != lst(order).level)
 	        order.push(new BidiSpan(order[0].level, len, len));
-	
+
 	      return order;
 	    };
 	  })();
-	
+
 	  // THE END
-	
+
 	  CodeMirror.version = "5.14.2";
-	
+
 	  return CodeMirror;
 	});
 
@@ -31343,7 +31343,7 @@
 
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
 	// Distributed under an MIT license: http://codemirror.net/LICENSE
-	
+
 	(function(mod) {
 	  if (true) // CommonJS
 	    mod(__webpack_require__(115), __webpack_require__(117), __webpack_require__(118), __webpack_require__(119));
@@ -31353,7 +31353,7 @@
 	    mod(CodeMirror);
 	})(function(CodeMirror) {
 	  "use strict";
-	
+
 	  var defaultTags = {
 	    script: [
 	      ["lang", /(javascript|babel)/i, "javascript"],
@@ -31368,7 +31368,7 @@
 	      [null, null, "css"]
 	    ]
 	  };
-	
+
 	  function maybeBackup(stream, pat, style) {
 	    var cur = stream.current(), close = cur.search(pat);
 	    if (close > -1) {
@@ -31379,23 +31379,23 @@
 	    }
 	    return style;
 	  }
-	
+
 	  var attrRegexpCache = {};
 	  function getAttrRegexp(attr) {
 	    var regexp = attrRegexpCache[attr];
 	    if (regexp) return regexp;
 	    return attrRegexpCache[attr] = new RegExp("\\s+" + attr + "\\s*=\\s*('|\")?([^'\"]+)('|\")?\\s*");
 	  }
-	
+
 	  function getAttrValue(text, attr) {
 	    var match = text.match(getAttrRegexp(attr))
 	    return match ? match[2] : ""
 	  }
-	
+
 	  function getTagRegexp(tagName, anchored) {
 	    return new RegExp((anchored ? "^" : "") + "<\/\s*" + tagName + "\s*>", "i");
 	  }
-	
+
 	  function addTags(from, to) {
 	    for (var tag in from) {
 	      var dest = to[tag] || (to[tag] = []);
@@ -31404,14 +31404,14 @@
 	        dest.unshift(source[i])
 	    }
 	  }
-	
+
 	  function findMatchingMode(tagInfo, tagText) {
 	    for (var i = 0; i < tagInfo.length; i++) {
 	      var spec = tagInfo[i];
 	      if (!spec[0] || spec[1].test(getAttrValue(tagText, spec[0]))) return spec[2];
 	    }
 	  }
-	
+
 	  CodeMirror.defineMode("htmlmixed", function (config, parserConfig) {
 	    var htmlMode = CodeMirror.getMode(config, {
 	      name: "xml",
@@ -31419,14 +31419,14 @@
 	      multilineTagIndentFactor: parserConfig.multilineTagIndentFactor,
 	      multilineTagIndentPastTag: parserConfig.multilineTagIndentPastTag
 	    });
-	
+
 	    var tags = {};
 	    var configTags = parserConfig && parserConfig.tags, configScript = parserConfig && parserConfig.scriptTypes;
 	    addTags(defaultTags, tags);
 	    if (configTags) addTags(configTags, tags);
 	    if (configScript) for (var i = configScript.length - 1; i >= 0; i--)
 	      tags.script.unshift(["type", configScript[i].matches, configScript[i].mode])
-	
+
 	    function html(stream, state) {
 	      var style = htmlMode.token(stream, state.htmlState), tag = /\btag\b/.test(style), tagName
 	      if (tag && !/[<>\s\/]/.test(stream.current()) &&
@@ -31455,13 +31455,13 @@
 	      }
 	      return style;
 	    };
-	
+
 	    return {
 	      startState: function () {
 	        var state = htmlMode.startState();
 	        return {token: html, inTag: null, localMode: null, localState: null, htmlState: state};
 	      },
-	
+
 	      copyState: function (state) {
 	        var local;
 	        if (state.localState) {
@@ -31471,11 +31471,11 @@
 	                localMode: state.localMode, localState: local,
 	                htmlState: CodeMirror.copyState(htmlMode, state.htmlState)};
 	      },
-	
+
 	      token: function (stream, state) {
 	        return state.token(stream, state);
 	      },
-	
+
 	      indent: function (state, textAfter) {
 	        if (!state.localMode || /^\s*<\//.test(textAfter))
 	          return htmlMode.indent(state.htmlState, textAfter);
@@ -31484,13 +31484,13 @@
 	        else
 	          return CodeMirror.Pass;
 	      },
-	
+
 	      innerMode: function (state) {
 	        return {state: state.localState || state.htmlState, mode: state.localMode || htmlMode};
 	      }
 	    };
 	  }, "xml", "javascript", "css");
-	
+
 	  CodeMirror.defineMIME("text/html", "htmlmixed");
 	});
 
@@ -31501,7 +31501,7 @@
 
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
 	// Distributed under an MIT license: http://codemirror.net/LICENSE
-	
+
 	(function(mod) {
 	  if (true) // CommonJS
 	    mod(__webpack_require__(115));
@@ -31511,7 +31511,7 @@
 	    mod(CodeMirror);
 	})(function(CodeMirror) {
 	"use strict";
-	
+
 	var htmlConfig = {
 	  autoSelfClosers: {'area': true, 'base': true, 'br': true, 'col': true, 'command': true,
 	                    'embed': true, 'frame': true, 'hr': true, 'img': true, 'input': true,
@@ -31545,7 +31545,7 @@
 	  allowMissing: true,
 	  caseFold: true
 	}
-	
+
 	var xmlConfig = {
 	  autoSelfClosers: {},
 	  implicitlyClosed: {},
@@ -31555,23 +31555,23 @@
 	  allowMissing: false,
 	  caseFold: false
 	}
-	
+
 	CodeMirror.defineMode("xml", function(editorConf, config_) {
 	  var indentUnit = editorConf.indentUnit
 	  var config = {}
 	  var defaults = config_.htmlMode ? htmlConfig : xmlConfig
 	  for (var prop in defaults) config[prop] = defaults[prop]
 	  for (var prop in config_) config[prop] = config_[prop]
-	
+
 	  // Return variables for tokenizers
 	  var type, setStyle;
-	
+
 	  function inText(stream, state) {
 	    function chain(parser) {
 	      state.tokenize = parser;
 	      return parser(stream, state);
 	    }
-	
+
 	    var ch = stream.next();
 	    if (ch == "<") {
 	      if (stream.eat("!")) {
@@ -31613,7 +31613,7 @@
 	    }
 	  }
 	  inText.isInText = true;
-	
+
 	  function inTag(stream, state) {
 	    var ch = stream.next();
 	    if (ch == ">" || (ch == "/" && stream.eat(">"))) {
@@ -31638,7 +31638,7 @@
 	      return "word";
 	    }
 	  }
-	
+
 	  function inAttribute(quote) {
 	    var closure = function(stream, state) {
 	      while (!stream.eol()) {
@@ -31652,7 +31652,7 @@
 	    closure.isInAttribute = true;
 	    return closure;
 	  }
-	
+
 	  function inBlock(style, terminator) {
 	    return function(stream, state) {
 	      while (!stream.eol()) {
@@ -31685,7 +31685,7 @@
 	      return "meta";
 	    };
 	  }
-	
+
 	  function Context(state, tagName, startOfLine) {
 	    this.prev = state.context;
 	    this.tagName = tagName;
@@ -31711,7 +31711,7 @@
 	      popContext(state);
 	    }
 	  }
-	
+
 	  function baseState(type, stream, state) {
 	    if (type == "openTag") {
 	      state.tagStart = stream.column();
@@ -31750,7 +31750,7 @@
 	      return closeStateErr;
 	    }
 	  }
-	
+
 	  function closeState(type, _stream, state) {
 	    if (type != "endTag") {
 	      setStyle = "error";
@@ -31763,7 +31763,7 @@
 	    setStyle = "error";
 	    return closeState(type, stream, state);
 	  }
-	
+
 	  function attrState(type, _stream, state) {
 	    if (type == "word") {
 	      setStyle = "attribute";
@@ -31798,7 +31798,7 @@
 	    if (type == "string") return attrContinuedState;
 	    return attrState(type, stream, state);
 	  }
-	
+
 	  return {
 	    startState: function(baseIndent) {
 	      var state = {tokenize: inText,
@@ -31809,11 +31809,11 @@
 	      if (baseIndent != null) state.baseIndent = baseIndent
 	      return state
 	    },
-	
+
 	    token: function(stream, state) {
 	      if (!state.tagName && stream.sol())
 	        state.indented = stream.indentation();
-	
+
 	      if (stream.eatSpace()) return null;
 	      type = null;
 	      var style = state.tokenize(stream, state);
@@ -31825,7 +31825,7 @@
 	      }
 	      return style;
 	    },
-	
+
 	    indent: function(state, textAfter, fullLine) {
 	      var context = state.context;
 	      // Indent multi-line strings (e.g. css).
@@ -31872,26 +31872,26 @@
 	      if (context) return context.indent + indentUnit;
 	      else return state.baseIndent || 0;
 	    },
-	
+
 	    electricInput: /<\/[\s\w:]+>$/,
 	    blockCommentStart: "<!--",
 	    blockCommentEnd: "-->",
-	
+
 	    configuration: config.htmlMode ? "html" : "xml",
 	    helperType: config.htmlMode ? "html" : "xml",
-	
+
 	    skipAttribute: function(state) {
 	      if (state.state == attrValueState)
 	        state.state = attrState
 	    }
 	  };
 	});
-	
+
 	CodeMirror.defineMIME("text/xml", "xml");
 	CodeMirror.defineMIME("application/xml", "xml");
 	if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 	  CodeMirror.defineMIME("text/html", {name: "xml", htmlMode: true});
-	
+
 	});
 
 
@@ -31901,9 +31901,9 @@
 
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
 	// Distributed under an MIT license: http://codemirror.net/LICENSE
-	
+
 	// TODO actually recognize syntax of TypeScript constructs
-	
+
 	(function(mod) {
 	  if (true) // CommonJS
 	    mod(__webpack_require__(115));
@@ -31913,12 +31913,12 @@
 	    mod(CodeMirror);
 	})(function(CodeMirror) {
 	"use strict";
-	
+
 	function expressionAllowed(stream, state, backUp) {
 	  return /^(?:operator|sof|keyword c|case|new|[\[{}\(,;:]|=>)$/.test(state.lastType) ||
 	    (state.lastType == "quasi" && /\{\s*$/.test(stream.string.slice(0, stream.pos - (backUp || 0))))
 	}
-	
+
 	CodeMirror.defineMode("javascript", function(config, parserConfig) {
 	  var indentUnit = config.indentUnit;
 	  var statementIndent = parserConfig.statementIndent;
@@ -31926,14 +31926,14 @@
 	  var jsonMode = parserConfig.json || jsonldMode;
 	  var isTS = parserConfig.typescript;
 	  var wordRE = parserConfig.wordCharacters || /[\w$\xa1-\uffff]/;
-	
+
 	  // Tokenizer
-	
+
 	  var keywords = function(){
 	    function kw(type) {return {type: type, style: "keyword"};}
 	    var A = kw("keyword a"), B = kw("keyword b"), C = kw("keyword c");
 	    var operator = kw("operator"), atom = {type: "atom", style: "atom"};
-	
+
 	    var jsKeywords = {
 	      "if": kw("if"), "while": A, "with": A, "else": B, "do": B, "try": B, "finally": B,
 	      "return": C, "break": C, "continue": C, "new": kw("new"), "delete": C, "throw": C, "debugger": C,
@@ -31945,7 +31945,7 @@
 	      "this": kw("this"), "class": kw("class"), "super": kw("atom"),
 	      "yield": C, "export": kw("export"), "import": kw("import"), "extends": C
 	    };
-	
+
 	    // Extend the 'normal' keywords with the TypeScript language extensions
 	    if (isTS) {
 	      var type = {type: "variable", style: "variable-3"};
@@ -31956,31 +31956,31 @@
 	        "namespace": C,
 	        "module": kw("module"),
 	        "enum": kw("module"),
-	
+
 	        // scope modifiers
 	        "public": kw("modifier"),
 	        "private": kw("modifier"),
 	        "protected": kw("modifier"),
 	        "abstract": kw("modifier"),
-	
+
 	        // operators
 	        "as": operator,
-	
+
 	        // types
 	        "string": type, "number": type, "boolean": type, "any": type
 	      };
-	
+
 	      for (var attr in tsKeywords) {
 	        jsKeywords[attr] = tsKeywords[attr];
 	      }
 	    }
-	
+
 	    return jsKeywords;
 	  }();
-	
+
 	  var isOperatorChar = /[+\-*&%=<>!?|~^]/;
 	  var isJsonldKeyword = /^@(context|id|value|language|type|container|list|set|reverse|index|base|vocab|graph)"/;
-	
+
 	  function readRegexp(stream) {
 	    var escaped = false, next, inSet = false;
 	    while ((next = stream.next()) != null) {
@@ -31992,7 +31992,7 @@
 	      escaped = !escaped && next == "\\";
 	    }
 	  }
-	
+
 	  // Used as scratch variables to communicate multiple values without
 	  // consing up tons of objects.
 	  var type, content;
@@ -32056,7 +32056,7 @@
 	                     ret("variable", "variable", word);
 	    }
 	  }
-	
+
 	  function tokenString(quote) {
 	    return function(stream, state) {
 	      var escaped = false, next;
@@ -32072,7 +32072,7 @@
 	      return ret("string", "string");
 	    };
 	  }
-	
+
 	  function tokenComment(stream, state) {
 	    var maybeEnd = false, ch;
 	    while (ch = stream.next()) {
@@ -32084,7 +32084,7 @@
 	    }
 	    return ret("comment", "comment");
 	  }
-	
+
 	  function tokenQuasi(stream, state) {
 	    var escaped = false, next;
 	    while ((next = stream.next()) != null) {
@@ -32096,7 +32096,7 @@
 	    }
 	    return ret("quasi", "string-2", stream.current());
 	  }
-	
+
 	  var brackets = "([{}])";
 	  // This is a crude lookahead trick to try and notice that we're
 	  // parsing the argument patterns for a fat-arrow function before we
@@ -32109,7 +32109,7 @@
 	    if (state.fatArrowAt) state.fatArrowAt = null;
 	    var arrow = stream.string.indexOf("=>", stream.start);
 	    if (arrow < 0) return;
-	
+
 	    var depth = 0, sawSomething = false;
 	    for (var pos = arrow - 1; pos >= 0; --pos) {
 	      var ch = stream.string.charAt(pos);
@@ -32130,11 +32130,11 @@
 	    }
 	    if (sawSomething && !depth) state.fatArrowAt = pos;
 	  }
-	
+
 	  // Parser
-	
+
 	  var atomicTypes = {"atom": true, "number": true, "variable": true, "string": true, "regexp": true, "this": true, "jsonld-keyword": true};
-	
+
 	  function JSLexical(indented, column, type, align, prev, info) {
 	    this.indented = indented;
 	    this.column = column;
@@ -32143,7 +32143,7 @@
 	    this.info = info;
 	    if (align != null) this.align = align;
 	  }
-	
+
 	  function inScope(state, varname) {
 	    for (var v = state.localVars; v; v = v.next)
 	      if (v.name == varname) return true;
@@ -32152,16 +32152,16 @@
 	        if (v.name == varname) return true;
 	    }
 	  }
-	
+
 	  function parseJS(state, style, type, content, stream) {
 	    var cc = state.cc;
 	    // Communicate our context to the combinators.
 	    // (Less wasteful than consing up a hundred closures on every call.)
 	    cx.state = state; cx.stream = stream; cx.marked = null, cx.cc = cc; cx.style = style;
-	
+
 	    if (!state.lexical.hasOwnProperty("align"))
 	      state.lexical.align = true;
-	
+
 	    while(true) {
 	      var combinator = cc.length ? cc.pop() : jsonMode ? expression : statement;
 	      if (combinator(type, content)) {
@@ -32173,9 +32173,9 @@
 	      }
 	    }
 	  }
-	
+
 	  // Combinator utils
-	
+
 	  var cx = {state: null, column: null, marked: null, cc: null};
 	  function pass() {
 	    for (var i = arguments.length - 1; i >= 0; i--) cx.cc.push(arguments[i]);
@@ -32201,9 +32201,9 @@
 	        state.globalVars = {name: varname, next: state.globalVars};
 	    }
 	  }
-	
+
 	  // Combinators
-	
+
 	  var defaultVars = {name: "this", next: {name: "arguments"}};
 	  function pushcontext() {
 	    cx.state.context = {prev: cx.state.context, vars: cx.state.localVars};
@@ -32233,7 +32233,7 @@
 	    }
 	  }
 	  poplex.lex = true;
-	
+
 	  function expect(wanted) {
 	    function exp(type) {
 	      if (type == wanted) return cont();
@@ -32242,7 +32242,7 @@
 	    };
 	    return exp;
 	  }
-	
+
 	  function statement(type, value) {
 	    if (type == "var") return cont(pushlex("vardef", value.length), vardef, expect(";"), poplex);
 	    if (type == "keyword a") return cont(pushlex("form"), expression, statement, poplex);
@@ -32281,7 +32281,7 @@
 	      if (type == "(") return cont(pushcontext, pushlex(")"), commasep(pattern, ")"), poplex, expect("=>"), body, popcontext);
 	      else if (type == "variable") return pass(pushcontext, pattern, expect("=>"), body, popcontext);
 	    }
-	
+
 	    var maybeop = noComma ? maybeoperatorNoComma : maybeoperatorComma;
 	    if (atomicTypes.hasOwnProperty(type)) return cont(maybeop);
 	    if (type == "function") return cont(functiondef, maybeop);
@@ -32302,7 +32302,7 @@
 	    if (type.match(/[;\}\)\],]/)) return pass();
 	    return pass(expressionNoComma);
 	  }
-	
+
 	  function maybeoperatorComma(type, value) {
 	    if (type == ",") return cont(expression);
 	    return maybeoperatorNoComma(type, value, false);
@@ -32543,15 +32543,15 @@
 	    if (type == "for") return cont(forspec, comprehension);
 	    if (type == "if") return cont(expression, comprehension);
 	  }
-	
+
 	  function isContinuedStatement(state, textAfter) {
 	    return state.lastType == "operator" || state.lastType == "," ||
 	      isOperatorChar.test(textAfter.charAt(0)) ||
 	      /[,.]/.test(textAfter.charAt(0));
 	  }
-	
+
 	  // Interface
-	
+
 	  return {
 	    startState: function(basecolumn) {
 	      var state = {
@@ -32567,7 +32567,7 @@
 	        state.globalVars = parserConfig.globalVars;
 	      return state;
 	    },
-	
+
 	    token: function(stream, state) {
 	      if (stream.sol()) {
 	        if (!state.lexical.hasOwnProperty("align"))
@@ -32581,7 +32581,7 @@
 	      state.lastType = type == "operator" && (content == "++" || content == "--") ? "incdec" : type;
 	      return parseJS(state, style, type, content, stream);
 	    },
-	
+
 	    indent: function(state, textAfter) {
 	      if (state.tokenize == tokenComment) return CodeMirror.Pass;
 	      if (state.tokenize != tokenBase) return 0;
@@ -32596,7 +32596,7 @@
 	      if (statementIndent && lexical.type == ")" && lexical.prev.type == "stat")
 	        lexical = lexical.prev;
 	      var type = lexical.type, closing = firstChar == type;
-	
+
 	      if (type == "vardef") return lexical.indented + (state.lastType == "operator" || state.lastType == "," ? lexical.info + 1 : 0);
 	      else if (type == "form" && firstChar == "{") return lexical.indented;
 	      else if (type == "form") return lexical.indented + indentUnit;
@@ -32607,18 +32607,18 @@
 	      else if (lexical.align) return lexical.column + (closing ? 0 : 1);
 	      else return lexical.indented + (closing ? 0 : indentUnit);
 	    },
-	
+
 	    electricInput: /^\s*(?:case .*?:|default:|\{|\})$/,
 	    blockCommentStart: jsonMode ? null : "/*",
 	    blockCommentEnd: jsonMode ? null : "*/",
 	    lineComment: jsonMode ? null : "//",
 	    fold: "brace",
 	    closeBrackets: "()[]{}''\"\"``",
-	
+
 	    helperType: jsonMode ? "json" : "javascript",
 	    jsonldMode: jsonldMode,
 	    jsonMode: jsonMode,
-	
+
 	    expressionAllowed: expressionAllowed,
 	    skipExpression: function(state) {
 	      var top = state.cc[state.cc.length - 1]
@@ -32626,9 +32626,9 @@
 	    }
 	  };
 	});
-	
+
 	CodeMirror.registerHelper("wordChars", "javascript", /[\w$]/);
-	
+
 	CodeMirror.defineMIME("text/javascript", "javascript");
 	CodeMirror.defineMIME("text/ecmascript", "javascript");
 	CodeMirror.defineMIME("application/javascript", "javascript");
@@ -32639,7 +32639,7 @@
 	CodeMirror.defineMIME("application/ld+json", {name: "javascript", jsonld: true});
 	CodeMirror.defineMIME("text/typescript", { name: "javascript", typescript: true });
 	CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript: true });
-	
+
 	});
 
 
@@ -32649,7 +32649,7 @@
 
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
 	// Distributed under an MIT license: http://codemirror.net/LICENSE
-	
+
 	(function(mod) {
 	  if (true) // CommonJS
 	    mod(__webpack_require__(115));
@@ -32659,11 +32659,11 @@
 	    mod(CodeMirror);
 	})(function(CodeMirror) {
 	"use strict";
-	
+
 	CodeMirror.defineMode("css", function(config, parserConfig) {
 	  var inline = parserConfig.inline
 	  if (!parserConfig.propertyKeywords) parserConfig = CodeMirror.resolveMode("text/css");
-	
+
 	  var indentUnit = config.indentUnit,
 	      tokenHooks = parserConfig.tokenHooks,
 	      documentTypes = parserConfig.documentTypes || {},
@@ -32678,12 +32678,12 @@
 	      valueKeywords = parserConfig.valueKeywords || {},
 	      allowNested = parserConfig.allowNested,
 	      supportsAtComponent = parserConfig.supportsAtComponent === true;
-	
+
 	  var type, override;
 	  function ret(style, tp) { type = tp; return style; }
-	
+
 	  // Tokenizers
-	
+
 	  function tokenBase(stream, state) {
 	    var ch = stream.next();
 	    if (tokenHooks[ch]) {
@@ -32738,7 +32738,7 @@
 	      return ret(null, null);
 	    }
 	  }
-	
+
 	  function tokenString(quote) {
 	    return function(stream, state) {
 	      var escaped = false, ch;
@@ -32753,7 +32753,7 @@
 	      return ret("string", "string");
 	    };
 	  }
-	
+
 	  function tokenParenthesized(stream, state) {
 	    stream.next(); // Must be '('
 	    if (!stream.match(/\s*[\"\')]/, false))
@@ -32762,26 +32762,26 @@
 	      state.tokenize = null;
 	    return ret(null, "(");
 	  }
-	
+
 	  // Context management
-	
+
 	  function Context(type, indent, prev) {
 	    this.type = type;
 	    this.indent = indent;
 	    this.prev = prev;
 	  }
-	
+
 	  function pushContext(state, stream, type, indent) {
 	    state.context = new Context(type, stream.indentation() + (indent === false ? 0 : indentUnit), state.context);
 	    return type;
 	  }
-	
+
 	  function popContext(state) {
 	    if (state.context.prev)
 	      state.context = state.context.prev;
 	    return state.context.type;
 	  }
-	
+
 	  function pass(type, stream, state) {
 	    return states[state.context.type](type, stream, state);
 	  }
@@ -32790,9 +32790,9 @@
 	      state.context = state.context.prev;
 	    return pass(type, stream, state);
 	  }
-	
+
 	  // Parser
-	
+
 	  function wordAsValue(stream) {
 	    var word = stream.current().toLowerCase();
 	    if (valueKeywords.hasOwnProperty(word))
@@ -32802,9 +32802,9 @@
 	    else
 	      override = "variable";
 	  }
-	
+
 	  var states = {};
-	
+
 	  states.top = function(type, stream, state) {
 	    if (type == "{") {
 	      return pushContext(state, stream, "block");
@@ -32838,7 +32838,7 @@
 	    }
 	    return state.context.type;
 	  };
-	
+
 	  states.block = function(type, stream, state) {
 	    if (type == "word") {
 	      var word = stream.current().toLowerCase();
@@ -32864,18 +32864,18 @@
 	      return states.top(type, stream, state);
 	    }
 	  };
-	
+
 	  states.maybeprop = function(type, stream, state) {
 	    if (type == ":") return pushContext(state, stream, "prop");
 	    return pass(type, stream, state);
 	  };
-	
+
 	  states.prop = function(type, stream, state) {
 	    if (type == ";") return popContext(state);
 	    if (type == "{" && allowNested) return pushContext(state, stream, "propBlock");
 	    if (type == "}" || type == "{") return popAndPass(type, stream, state);
 	    if (type == "(") return pushContext(state, stream, "parens");
-	
+
 	    if (type == "hash" && !/^#([0-9a-fA-f]{3,4}|[0-9a-fA-f]{6}|[0-9a-fA-f]{8})$/.test(stream.current())) {
 	      override += " error";
 	    } else if (type == "word") {
@@ -32885,13 +32885,13 @@
 	    }
 	    return "prop";
 	  };
-	
+
 	  states.propBlock = function(type, _stream, state) {
 	    if (type == "}") return popContext(state);
 	    if (type == "word") { override = "property"; return "maybeprop"; }
 	    return state.context.type;
 	  };
-	
+
 	  states.parens = function(type, stream, state) {
 	    if (type == "{" || type == "}") return popAndPass(type, stream, state);
 	    if (type == ")") return popContext(state);
@@ -32900,7 +32900,7 @@
 	    if (type == "word") wordAsValue(stream);
 	    return "parens";
 	  };
-	
+
 	  states.pseudo = function(type, stream, state) {
 	    if (type == "word") {
 	      override = "variable-3";
@@ -32908,7 +32908,7 @@
 	    }
 	    return pass(type, stream, state);
 	  };
-	
+
 	  states.documentTypes = function(type, stream, state) {
 	    if (type == "word" && documentTypes.hasOwnProperty(stream.current())) {
 	      override = "tag";
@@ -32917,14 +32917,14 @@
 	      return states.atBlock(type, stream, state);
 	    }
 	  };
-	
+
 	  states.atBlock = function(type, stream, state) {
 	    if (type == "(") return pushContext(state, stream, "atBlock_parens");
 	    if (type == "}" || type == ";") return popAndPass(type, stream, state);
 	    if (type == "{") return popContext(state) && pushContext(state, stream, allowNested ? "block" : "top");
-	
+
 	    if (type == "interpolation") return pushContext(state, stream, "interpolation");
-	
+
 	    if (type == "word") {
 	      var word = stream.current().toLowerCase();
 	      if (word == "only" || word == "not" || word == "and" || word == "or")
@@ -32948,7 +32948,7 @@
 	    }
 	    return state.context.type;
 	  };
-	
+
 	  states.atComponentBlock = function(type, stream, state) {
 	    if (type == "}")
 	      return popAndPass(type, stream, state);
@@ -32958,13 +32958,13 @@
 	      override = "error";
 	    return state.context.type;
 	  };
-	
+
 	  states.atBlock_parens = function(type, stream, state) {
 	    if (type == ")") return popContext(state);
 	    if (type == "{" || type == "}") return popAndPass(type, stream, state, 2);
 	    return states.atBlock(type, stream, state);
 	  };
-	
+
 	  states.restricted_atBlock_before = function(type, stream, state) {
 	    if (type == "{")
 	      return pushContext(state, stream, "restricted_atBlock");
@@ -32974,7 +32974,7 @@
 	    }
 	    return pass(type, stream, state);
 	  };
-	
+
 	  states.restricted_atBlock = function(type, stream, state) {
 	    if (type == "}") {
 	      state.stateArg = null;
@@ -32990,13 +32990,13 @@
 	    }
 	    return "restricted_atBlock";
 	  };
-	
+
 	  states.keyframes = function(type, stream, state) {
 	    if (type == "word") { override = "variable"; return "keyframes"; }
 	    if (type == "{") return pushContext(state, stream, "top");
 	    return pass(type, stream, state);
 	  };
-	
+
 	  states.at = function(type, stream, state) {
 	    if (type == ";") return popContext(state);
 	    if (type == "{" || type == "}") return popAndPass(type, stream, state);
@@ -33004,7 +33004,7 @@
 	    else if (type == "hash") override = "builtin";
 	    return "at";
 	  };
-	
+
 	  states.interpolation = function(type, stream, state) {
 	    if (type == "}") return popContext(state);
 	    if (type == "{" || type == ";") return popAndPass(type, stream, state);
@@ -33012,7 +33012,7 @@
 	    else if (type != "variable" && type != "(" && type != ")") override = "error";
 	    return "interpolation";
 	  };
-	
+
 	  return {
 	    startState: function(base) {
 	      return {tokenize: null,
@@ -33020,7 +33020,7 @@
 	              stateArg: null,
 	              context: new Context(inline ? "block" : "top", base || 0, null)};
 	    },
-	
+
 	    token: function(stream, state) {
 	      if (!state.tokenize && stream.eatSpace()) return null;
 	      var style = (state.tokenize || tokenBase)(stream, state);
@@ -33032,7 +33032,7 @@
 	      state.state = states[state.state](type, stream, state);
 	      return override;
 	    },
-	
+
 	    indent: function(state, textAfter) {
 	      var cx = state.context, ch = textAfter && textAfter.charAt(0);
 	      var indent = cx.indent;
@@ -33052,14 +33052,14 @@
 	      }
 	      return indent;
 	    },
-	
+
 	    electricChars: "}",
 	    blockCommentStart: "/*",
 	    blockCommentEnd: "*/",
 	    fold: "brace"
 	  };
 	});
-	
+
 	  function keySet(array) {
 	    var keys = {};
 	    for (var i = 0; i < array.length; ++i) {
@@ -33067,16 +33067,16 @@
 	    }
 	    return keys;
 	  }
-	
+
 	  var documentTypes_ = [
 	    "domain", "regexp", "url", "url-prefix"
 	  ], documentTypes = keySet(documentTypes_);
-	
+
 	  var mediaTypes_ = [
 	    "all", "aural", "braille", "handheld", "print", "projection", "screen",
 	    "tty", "tv", "embossed"
 	  ], mediaTypes = keySet(mediaTypes_);
-	
+
 	  var mediaFeatures_ = [
 	    "width", "min-width", "max-width", "height", "min-height", "max-height",
 	    "device-width", "min-device-width", "max-device-width", "device-height",
@@ -33089,12 +33089,12 @@
 	    "device-pixel-ratio", "min-device-pixel-ratio", "max-device-pixel-ratio",
 	    "pointer", "any-pointer", "hover", "any-hover"
 	  ], mediaFeatures = keySet(mediaFeatures_);
-	
+
 	  var mediaValueKeywords_ = [
 	    "landscape", "portrait", "none", "coarse", "fine", "on-demand", "hover",
 	    "interlace", "progressive"
 	  ], mediaValueKeywords = keySet(mediaValueKeywords_);
-	
+
 	  var propertyKeywords_ = [
 	    "align-content", "align-items", "align-self", "alignment-adjust",
 	    "alignment-baseline", "anchor-point", "animation", "animation-delay",
@@ -33186,7 +33186,7 @@
 	    "baseline-shift", "dominant-baseline", "glyph-orientation-horizontal",
 	    "glyph-orientation-vertical", "text-anchor", "writing-mode"
 	  ], propertyKeywords = keySet(propertyKeywords_);
-	
+
 	  var nonStandardPropertyKeywords_ = [
 	    "scrollbar-arrow-color", "scrollbar-base-color", "scrollbar-dark-shadow-color",
 	    "scrollbar-face-color", "scrollbar-highlight-color", "scrollbar-shadow-color",
@@ -33194,17 +33194,17 @@
 	    "searchfield-cancel-button", "searchfield-decoration", "searchfield-results-button",
 	    "searchfield-results-decoration", "zoom"
 	  ], nonStandardPropertyKeywords = keySet(nonStandardPropertyKeywords_);
-	
+
 	  var fontProperties_ = [
 	    "font-family", "src", "unicode-range", "font-variant", "font-feature-settings",
 	    "font-stretch", "font-weight", "font-style"
 	  ], fontProperties = keySet(fontProperties_);
-	
+
 	  var counterDescriptors_ = [
 	    "additive-symbols", "fallback", "negative", "pad", "prefix", "range",
 	    "speak-as", "suffix", "symbols", "system"
 	  ], counterDescriptors = keySet(counterDescriptors_);
-	
+
 	  var colorKeywords_ = [
 	    "aliceblue", "antiquewhite", "aqua", "aquamarine", "azure", "beige",
 	    "bisque", "black", "blanchedalmond", "blue", "blueviolet", "brown",
@@ -33233,7 +33233,7 @@
 	    "teal", "thistle", "tomato", "turquoise", "violet", "wheat", "white",
 	    "whitesmoke", "yellow", "yellowgreen"
 	  ], colorKeywords = keySet(colorKeywords_);
-	
+
 	  var valueKeywords_ = [
 	    "above", "absolute", "activeborder", "additive", "activecaption", "afar",
 	    "after-white-space", "ahead", "alias", "all", "all-scroll", "alphabetic", "alternate",
@@ -33330,12 +33330,12 @@
 	    "window", "windowframe", "windowtext", "words", "wrap", "wrap-reverse", "x-large", "x-small", "xor",
 	    "xx-large", "xx-small"
 	  ], valueKeywords = keySet(valueKeywords_);
-	
+
 	  var allWords = documentTypes_.concat(mediaTypes_).concat(mediaFeatures_).concat(mediaValueKeywords_)
 	    .concat(propertyKeywords_).concat(nonStandardPropertyKeywords_).concat(colorKeywords_)
 	    .concat(valueKeywords_);
 	  CodeMirror.registerHelper("hintWords", "css", allWords);
-	
+
 	  function tokenCComment(stream, state) {
 	    var maybeEnd = false, ch;
 	    while ((ch = stream.next()) != null) {
@@ -33347,7 +33347,7 @@
 	    }
 	    return ["comment", "comment"];
 	  }
-	
+
 	  CodeMirror.defineMIME("text/css", {
 	    documentTypes: documentTypes,
 	    mediaTypes: mediaTypes,
@@ -33368,7 +33368,7 @@
 	    },
 	    name: "css"
 	  });
-	
+
 	  CodeMirror.defineMIME("text/x-scss", {
 	    mediaTypes: mediaTypes,
 	    mediaFeatures: mediaFeatures,
@@ -33410,7 +33410,7 @@
 	    name: "css",
 	    helperType: "scss"
 	  });
-	
+
 	  CodeMirror.defineMIME("text/x-less", {
 	    mediaTypes: mediaTypes,
 	    mediaFeatures: mediaFeatures,
@@ -33448,7 +33448,7 @@
 	    name: "css",
 	    helperType: "less"
 	  });
-	
+
 	  CodeMirror.defineMIME("text/x-gss", {
 	    documentTypes: documentTypes,
 	    mediaTypes: mediaTypes,
@@ -33470,7 +33470,7 @@
 	    name: "css",
 	    helperType: "gss"
 	  });
-	
+
 	});
 
 
@@ -33479,46 +33479,46 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	__webpack_require__(121);
-	
+
 	__webpack_require__(123);
-	
+
 	__webpack_require__(124);
-	
+
 	__webpack_require__(125);
-	
+
 	__webpack_require__(130);
-	
+
 	__webpack_require__(131);
-	
+
 	__webpack_require__(132);
-	
+
 	__webpack_require__(190);
-	
+
 	__webpack_require__(133);
-	
+
 	__webpack_require__(134);
-	
+
 	__webpack_require__(135);
-	
+
 	__webpack_require__(136);
-	
+
 	__webpack_require__(139);
-	
+
 	__webpack_require__(155);
-	
+
 	__webpack_require__(163);
-	
+
 	__webpack_require__(164);
-	
+
 	__webpack_require__(165);
-	
+
 	__webpack_require__(166);
-	
+
 	riot.tag2("r-app", "<yield from=\"header\"></yield> <div name=\"content\"></div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.on("mount", function () {
 	    _this.opts.api.sessions.on("signin.success", _this.update);
 	    _this.opts.api.sessions.on("signout.success", _this.update);
@@ -33529,7 +33529,7 @@
 	    _this.opts.api.sessions.off("signout.success", _this.update);
 	    _this.opts.api.registrations.off("signup.success", _this.update);
 	  });
-	
+
 	  riot.route("signout", function () {
 	    _this.opts.api.sessions.signout();
 	  });
@@ -33568,7 +33568,7 @@
 	      contentOpts: { tab: "r-reset-password", api: opts.api }
 	    });
 	  });
-	
+
 	  riot.route("leads/new..", function () {
 	    // console.log(riot.route.query())
 	    riot.mount(_this.content, "r-lead", { api: opts.api, query: riot.route.query() });
@@ -33633,7 +33633,7 @@
 	      project_id: project_id
 	    });
 	  });
-	
+
 	  riot.route("projects/*/quotes/*/payments", function (project_id, quote_id) {
 	    riot.mount(_this.content, "r-projects-show", {
 	      api: opts.api,
@@ -33668,7 +33668,7 @@
 	      readonly: _this.currentAccount && _this.currentAccount.isCustomer
 	    });
 	  });
-	
+
 	  riot.route("invitations/accept/*", function (token) {
 	    opts.api.invitationToken = token;
 	    riot.mount("r-modal", {
@@ -33678,7 +33678,7 @@
 	      contentOpts: { tab: "r-invitation-accept", api: opts.api }
 	    });
 	  });
-	
+
 	  riot.route("settings", function () {
 	    riot.route("/settings/profile", "Profile", true);
 	  });
@@ -33688,10 +33688,10 @@
 	      tab: "r-settings-" + tab
 	    });
 	  });
-	
+
 	  // if (this.currentAccount && this.currentAccount.isAdministrator) {
 	  //this.mixin('admin')
-	
+
 	  _.each(["content/", ""], function (ns) {
 	    riot.route("admin/" + ns + "*", function (resource) {
 	      _this.renderAdminIndex(ns, resource, { resource: resource, api: opts.api, page: 1 });
@@ -33708,7 +33708,7 @@
 	    riot.route("admin/" + ns + "*/search/*/page/*/order/*", function (resource, query, page, order) {
 	      _this.renderAdminIndex(ns, resource, { resource: resource, api: opts.api, page: page, query: decodeURIComponent(query), order: order.split(",") });
 	    });
-	
+
 	    riot.route("admin/" + ns + "*/new", function (resource) {
 	      //this.renderAdminIndex(ns, resource, {resource: resource, api: opts.api, page: 1})
 	      _this.renderAdminForm(ns, resource, {});
@@ -33721,23 +33721,23 @@
 	        _this.renderAdminForm(ns, resource, { item: { id: id } });
 	      }
 	    });
-	
+
 	    riot.route("admin/projects/*/edit/*", function (id, tab) {
 	      //this.renderAdminIndex(ns, resource, {resource: resource, api: opts.api, page: 1})
 	      _this.renderAdminForm("", "projects", { tab: "r-admin-project-form-" + tab, item: { id: id } });
 	    });
-	
+
 	    riot.route("admin/projects/*/*/new", function (project_id, resource) {
 	      //this.renderAdminIndex(ns, resource, {resource: resource, api: opts.api, page: 1})
 	      _this.renderAdminForm("", resource, { project_id: project_id });
 	    });
 	  });
 	  // }
-	
+
 	  riot.route(function () {
 	    riot.route("/projects", "Projects", true);
 	  });
-	
+
 	  this.mixin("admin");
 	});
 	// riot.route(`admin/${ns}*/*`, (resource, id) => {
@@ -33751,21 +33751,21 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	var links = __webpack_require__(122);
-	
+
 	riot.tag2("r-admin-menu", "<r-typeahead-input if=\"{currentAccount.isAdministrator}\" resource=\"accounts\" api=\"{opts.api}\" id=\"{currentAccount.impersonating ?  currentAccount.user_id : null}\" datum_tokenizer=\"{['email']}\"></r-typeahead-input> <div class=\"relative inline-block\" data-disclosure> <button type=\"button\" class=\"btn bg-blue white\"> Menu &#9662; </button> <div data-details class=\"fixed top-0 right-0 bottom-0 left-0\"></div> <div data-details class=\"absolute left-0 mt1 nowrap black bg-blue white rounded z4\"> <a each=\"{items}\" href=\"{href}\" class=\"btn block\">{title}</a> </div> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.items = links.AdministratorLinks;
 	  this.tags["r-typeahead-input"].on("itemselected", function (item) {
 	    _this.opts.api.sessions.impersonate({ id: item.id });
 	  });
 	});
-	
+
 	riot.tag2("r-header", "<header class=\"{'bg-red': currentAccount && currentAccount.impersonating && currentAccount.isProfessional,     'bg-yellow': currentAccount && currentAccount.impersonating && currentAccount.isCustomer,     'bg-blue': currentAccount && currentAccount.impersonating && currentAccount.isAdministrator}\"> <div class=\"container\"> <nav class=\"relative clearfix black h5\"> <div class=\"left\"> <a href=\"/app/projects\" class=\"btn py2\" black><img src=\"/images/logos/black.svg\" class=\"logo--small\"></a> </div> <div class=\"right py1 sm-show mr1\"> <r-admin-menu if=\"{currentAccount.isAdministrator}\"></r-admin-menu> <virtual if=\"{currentAccount.impersonating}\"> <span class=\"btn py2 silver cursor-default\">{currentAccount.email}</span> <a class=\"btn btn-narrow\" onclick=\"{stopImpersonate}\">STOP</a> </virtual> <span if=\"{!currentAccount.impersonating}\" class=\"btn py2 silver cursor-default\">{currentAccount.user_type[0]}</span> <a each=\"{items}\" href=\"{href}\" class=\"btn py2\">{title}</a> </div> <div class=\"right sm-hide py1 mr1\"> <div class=\"inline-block\" data-disclosure> <div data-details class=\"fixed top-0 right-0 bottom-0 left-0\"></div> <a class=\"btn py2 m0\"> <span class=\"md-hide\"> <i class=\"fa fa-bars\"></i> </span> </a> <div data-details class=\"absolute left-0 right-0 nowrap bg-white black mt1\"> <ul class=\"h5 list-reset py1 mb0\"> <li each=\"{items}\"><a href=\"{href}\" class=\"btn block\">{title}</a></li> </ul> </div> </div> </div> </nav> </div> </header>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.stopImpersonate = function (e) {
 	    e.preventDefault();
 	    _this.opts.api.sessions.stopImpersonate();
@@ -33904,7 +33904,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-subnav", "<aside class=\"sm-col sm-col-3 px2\"> <ul class=\"list-reset border-left border-top border-right rounded\"> <li each=\"{opts.links}\"> <a href=\"{href}\" class=\"btn block border-bottom {'bg-yellow': parent.opts.active_tab_name ? name == parent.opts.active_tab_name : tag == parent.opts.tab}\" title=\"{name.humanize()}\" name=\"{tag}\" onclick=\"{push}\"> {name.humanize()} </a> </li> </ul> </aside>", "", "", function (opts) {
 	  this.push = function (e) {
 	    history.pushState(null, e.target.title, e.target.href);
@@ -33917,10 +33917,10 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-tabs", "<div name=\"tab\" class=\"px2 sm-p0\"></div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.navigate = function (e) {
 	    if (e) {
 	      e.preventDefault();
@@ -33943,15 +33943,15 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	__webpack_require__(126);
-	
+
 	__webpack_require__(127);
-	
+
 	__webpack_require__(128);
-	
+
 	__webpack_require__(129);
-	
+
 	riot.tag2("r-auth", "<r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\"></r-tabs>", "", "", function (opts) {});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
@@ -33960,23 +33960,23 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-signup", "<h2 class=\"center mt0 mb2\">Sign up</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/auth\" onsubmit=\"{submit}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"user[profile][first_name]\">First Name *</label> <input class=\"block col-12 mb2 field\" autofocus=\"true\" type=\"text\" name=\"user[profile][first_name]\"> <span if=\"{errors['user.profile.first_name']}\" class=\"inline-error\">{errors['user.profile.first_name']}</span> </div> <div class=\"col col-6 px2\"> <label for=\"user[profile][last_name]\">Last Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"user[profile][last_name]\"> <span if=\"{errors['user.profile.last_name']}\" class=\"inline-error\">{errors['user.profile.last_name']}</span> </div> </div> <label for=\"user[profile][phone_number]\">Phone Number *</label> <input class=\"block col-12 mb2 field\" type=\"tel\" name=\"user[profile][phone_number]\"> <span if=\"{errors['user.profile.phone_number']}\" class=\"inline-error\">{errors['user.profile.phone_number']}</span> <h6 class=\"mb2 p1 green border-left border-right border-bottom\" style=\"margin-top:-1rem\">Your privacy is important. <br>We only share your number with selected contractors working on your project. </h6> <label for=\"email\">Email *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"email\"> <span if=\"{errors['email']}\" class=\"inline-error\">{errors['email']}</span> <label for=\"password\">Password *</label> <em class=\"h5\">(8 characters minimum)</em> <input class=\"block col-12 mb2 field\" autocomplete=\"off\" type=\"password\" name=\"password\"> <span if=\"{errors['password']}\" class=\"inline-error\">{errors['password']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Sign up</button> <small class=\"h6 block center\">By signing up, you agree to the <a href=\"/pages/terms-conditions\">Terms of Service</a></small> </form> <div class=\"center\"><a name=\"r-signin\" href=\"/app/signin\" title=\"Sign in\" onclick=\"{opts.navigate}\">Sign in</a></div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.submit = function (e) {
-	
+
 	    e.preventDefault();
-	
+
 	    var data = _this.serializeForm(_this.form);
-	
+
 	    if (_.isEmpty(data)) {
 	      $(_this.form).animateCss("shake");
 	      return;
 	    }
-	
+
 	    _this.update({ busy: true, errors: null });
-	
+
 	    _this.opts.api.registrations.signup(data).fail(_this.errorHandler).then(function (account) {
 	      _this.update({ busy: false });
 	      riot.route(opts.api.authenticatedRoot, "Projects", true);
@@ -33990,23 +33990,23 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-signin", "<h2 class=\"center mt0 mb2\">Sign in</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/auth/sign_in\" onsubmit=\"{submit}\"> <div if=\"{errors}\" id=\"error_explanation\"> {errors} </div> <label for=\"email\">Email</label> <input class=\"block col-12 mb2 field\" autofocus=\"true\" type=\"text\" name=\"email\"> <label for=\"email\">Password</label> <input class=\"block col-12 mb2 field\" autocomplete=\"off\" type=\"password\" name=\"password\"> <div> <label class=\"inline-block mb2\"> <input type=\"checkbox\" label=\"Remember me\" name=\"remember_me\"> Remember me </label> </div> <button name=\"submit\" type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\" __disabled=\"{busy}\">Sign in</button> <div class=\"center\"> <a name=\"r-forgot-password\" href=\"/app/forgot-password\" title=\"Forgot Password\" onclick=\"{opts.navigate}\" class=\"block\">Forgot your password?</a> </div> </form> <div class=\"center\"><a name=\"r-signup\" href=\"/app/signup\" title=\"Sign up\" onclick=\"{opts.navigate}\">Sign up</a></div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.submit = function (e) {
-	
+
 	    e.preventDefault();
-	
+
 	    var creds = _this.serializeForm(_this.form);
-	
+
 	    if (_.isEmpty(creds)) {
 	      $(_this.form).animateCss("shake");
 	      return;
 	    }
-	
+
 	    _this.update({ busy: true, errors: null });
-	
+
 	    _this.opts.api.sessions.signin(creds).fail(_this.errorHandler).then(function (account) {
 	      _this.update({ busy: false });
 	      riot.route(opts.api.authenticatedRoot, "Projects", true);
@@ -34023,23 +34023,23 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-forgot-password", "<h2 class=\"center mt0 mb2\">Forgot Password</h2> <form if=\"{!succeed}\" name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/auth/password\" onsubmit=\"{submit}\"> <label for=\"email\">Email *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"email\"> <span if=\"{errors['email']}\" class=\"inline-error\">{errors['email']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Send password reset instructions</button> </form> <p if=\"{succeed}\" class=\"p2\">Password reset instructions sent to your email.</p> <div class=\"center\"> <a name=\"r-signin\" href=\"/app/signin\" title=\"Sign in\" onclick=\"{opts.navigate}\">Sign in</a> <a name=\"r-signin\" href=\"/app/signup\" title=\"Sign up\" onclick=\"{opts.navigate}\">Sign up</a> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.submit = function (e) {
-	
+
 	    e.preventDefault();
-	
+
 	    var data = _this.serializeForm(_this.form);
-	
+
 	    if (_.isEmpty(data)) {
 	      $(_this.form).animateCss("shake");
 	      return;
 	    }
-	
+
 	    _this.update({ busy: true, errors: null });
-	
+
 	    _this.opts.api.passwords.create(data).fail(_this.errorHandler).then(function (account) {
 	      _this.update({ busy: false, succeed: true });
 	    });
@@ -34052,24 +34052,24 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-reset-password", "<h2 class=\"center mt0 mb2\">Reset Password</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/auth/password\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"reset_password_token\" value=\"{resetPasswordToken}\"> <span if=\"{errors['reset_password_token']}\" class=\"inline-error\">Token {errors['reset_password_token']}</span> <label for=\"password\">Password *</label> <input class=\"block col-12 mb2 field\" type=\"password\" name=\"password\"> <span if=\"{errors['password']}\" class=\"inline-error\">{errors['password']}</span> <label for=\"password\">Password Confirmation *</label> <input class=\"block col-12 mb2 field\" type=\"password\" name=\"password_confirmation\"> <span if=\"{errors['password_confirmation']}\" class=\"inline-error\">{errors['password_confirmation']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Reset password</button> </form> <div class=\"center\"> <a name=\"r-signin\" href=\"/app/signin\" title=\"Sign in\" onclick=\"{opts.navigate}\">Sign in</a> <a name=\"r-signin\" href=\"/app/signup\" title=\"Sign up\" onclick=\"{opts.navigate}\">Sign up</a> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.resetPasswordToken = riot.route.query().reset_password_token;
 	  this.submit = function (e) {
-	
+
 	    e.preventDefault();
-	
+
 	    var data = _this.serializeForm(_this.form);
-	
+
 	    if (_.isEmpty(data)) {
 	      $(_this.form).animateCss("shake");
 	      return;
 	    }
-	
+
 	    _this.update({ busy: true, errors: null });
-	
+
 	    _this.opts.api.passwords.update(data).fail(_this.errorHandler).then(function () {
 	      _this.update({ busy: false, succeed: true });
 	      window.location.href = "/app/signin";
@@ -34083,23 +34083,23 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-invitation-accept", "<h2 class=\"center mt0 mb2\">Sign up</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/invitations/accept\" onsubmit=\"{submit}\"> <div if=\"{errors.token}\" id=\"error_explanation\">{errors.token}</div> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"invitee_attributes[profile][first_name]\">First Name *</label> <input class=\"block col-12 mb2 field\" autofocus=\"true\" type=\"text\" name=\"invitee_attributes[profile][first_name]\"> <span if=\"{errors['user.profile.first_name']}\" class=\"inline-error\">{errors['user.profile.first_name']}</span> </div> <div class=\"col col-6 px2\"> <label for=\"invitee_attributes[profile][last_name]\">Last Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"invitee_attributes[profile][last_name]\"> <span if=\"{errors['user.profile.last_name']}\" class=\"inline-error\">{errors['user.profile.last_name']}</span> </div> </div> <label for=\"invitee_attributes[profile][phone_number]\">Phone Number *</label> <input class=\"block col-12 mb2 field\" type=\"tel\" name=\"invitee_attributes[profile][phone_number]\"> <span if=\"{errors['user.profile.phone_number']}\" class=\"inline-error\">{errors['user.profile.phone_number']}</span> <h6 class=\"mb2 p1 green border-left border-right border-bottom\" style=\"margin-top:-1rem\">Your privacy is important. <br>We only share your number with selected contractors working on your project. </h6> <label for=\"password\">Password *</label> <em class=\"h5\">(8 characters minimum)</em> <input class=\"block col-12 mb2 field\" autocomplete=\"off\" type=\"password\" name=\"invitee_attributes[password]\"> <span if=\"{errors['password']}\" class=\"inline-error\">{errors['password']}</span> <input type=\"hidden\" name=\"token\" value=\"{opts.api.invitationToken}\"> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Sign up</button> <small class=\"h6 block center\">By signing up, you agree to the <a href=\"/pages/terms-conditions\">Terms of Service</a></small> </form>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.submit = function (e) {
-	
+
 	    e.preventDefault();
-	
+
 	    var data = _this.serializeForm(_this.form);
-	
+
 	    if (_.isEmpty(data)) {
 	      $(_this.form).animateCss("shake");
 	      return;
 	    }
-	
+
 	    _this.update({ busy: true, errors: null });
-	
+
 	    _this.opts.api.invitations.accept(data).fail(_this.errorHandler).then(function (invitation) {
 	      _this.opts.api.invitationToken = null;
 	      delete _this.opts.api.invitationToken;
@@ -34115,12 +34115,12 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-modal", "<div name=\"body\" class=\"black modal-body out\"> <div class=\"fixed left-0 top-0 right-0 bottom-0 z4 overflow-auto bg-darken-4\"> <div class=\"relative {opts.classes || 'sm-col-6 sm-px3 px1 py3 mt4 mb4'} mx-auto bg-white modal-container\"> <a if=\"{!opts.persisted}\" class=\"absolute btn btn-small right-0 top-0 mr1 mt1\" onclick=\"{close}\"> <i class=\"fa fa-times\"></i> </a> <div name=\"content\"></div> </div> </div> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.contentTags = riot.mount(this.content, this.opts.content, this.opts.contentOpts);
-	
+
 	  // auth modal? let's auto close it when it's done
 	  if (this.opts.content == "r-auth") {
 	    this.opts.api.sessions.on("signin.success", function () {
@@ -34130,19 +34130,19 @@
 	      return _this.close();
 	    });
 	  }
-	
+
 	  this.close = function (e) {
 	    if (e) e.preventUpdate = true;
 	    $(_this.body).on("transitionend", _this.unmount.bind(true)).addClass("out");
 	  };
-	
+
 	  this.on("mount", function () {
 	    document.body.classList.add("overflow-hidden");
 	    setTimeout(function () {
 	      $(_this.body).removeClass("out");
 	    }, 100);
 	  });
-	
+
 	  this.on("unmount", function () {
 	    $("body").removeClass("overflow-hidden");
 	  });
@@ -34159,10 +34159,10 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-pagination", "<div if=\"{meta.total_pages > 1}\" class=\"center py2\"> <a if=\"{meta.has_previous_page}\" class=\"btn btn-small bg-blue white\" onclick=\"{parent.prevPage}\">Prev</a> <select onchange=\"{parent.gotoPage}\" class=\"field\"> <option each=\"{i, page in new Array(meta.total_pages)}\" if=\"{page > 0}\" __selected=\"{page == meta.current_page}\">{page}</option> </select> <a if=\"{meta.has_next_page}\" class=\"btn btn-small bg-blue white\" onclick=\"{parent.nextPage}\">Next</a> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.on("update", function () {
 	    if (_this.opts.api[_this.parent.opts.resource].meta) {
 	      _this.update({ meta: _this.opts.api[_this.parent.opts.resource].meta });
@@ -34176,43 +34176,43 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-file-input", "<input type=\"file\" name=\"{opts.name}\" multiple class=\"absolute col-12 left-0 top-0 bottom-0 center transparent\" style=\"height:100%\" data-accept=\"{opts.data_accept}\" accept=\"{opts.accept}\" ondragover=\"{fileDragHover}\" ondragleave=\"{fileDragHover}\" ondrop=\"{fileSelectHandler}\">", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.index = 0;
-	
+
 	  this.fileDragHover = function (e) {
 	    e.stopPropagation();
 	    e.preventDefault();
 	    $(".dropzone", _this.parent.root).toggleClass("hover", e.type === "dragover");
 	  };
-	
+
 	  this.fileSelectHandler = function (e) {
 	    // cancel event and hover styling
 	    _this.fileDragHover(e);
-	
+
 	    // // fetch FileList object
 	    var files = e.dataTransfer && e.dataTransfer.files.length > 0 ? e.dataTransfer.files : e.currentTarget.files;
-	
+
 	    _this.uploader.fileupload("add", {
 	      files: files
 	    });
 	  };
 	  this.on("mount", function () {
-	
+
 	    _this.uploader = $("input[type=file]", _this.root).fileupload({
 	      paramName: "asset[file]",
 	      url: "/api/assets",
 	      dropZone: $(".dropzone", _this.parent.root),
 	      add: function (e, data) {
 	        _this.parent.update({ busy: true });
-	
+
 	        // not a new project? then assign assets directly to it
 	        if (opts.record.id) data.formData = { "asset[project_id]": opts.record.id };
-	
+
 	        data.submit().success(function (result, textStatus, jqXHR) {
-	
+
 	          var files = opts.record[opts.name] || [];
 	          var file = _.last(data.files);
 	          var reader = new FileReader();
@@ -34223,7 +34223,7 @@
 	            reader = null; // do not leak memory
 	            file = null;
 	          };
-	
+
 	          if (file.type.startsWith("image")) {
 	            reader.readAsDataURL(file);
 	          } else {
@@ -34246,10 +34246,10 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-files-input-with-preview", "<div class=\"relative\"> <r-file-input name=\"{opts.name}\" record=\"{opts.record}\" data-accept=\"{opts.data_accept}\" accept=\"{opts.accept}\"></r-file-input> <div class=\"border center dropzone {busy: busy}\"> <i class=\"fa fa-plus fa-2x mt3\"></i> <p>Drag and drop your documents here or click to select</p> </div> <div class=\"clearfix upload-previews mxn1\"> <div each=\"{asset, index in opts.record[opts.name]}\" class=\"sm-col col-6 sm-col-4 p1 rounded center thumb animated bounceIn\"> <div class=\"border p1 truncate overflow-hidden\"> <a class=\"cursor-zoom\" href=\"{asset.file.url}\" target=\"_blank\"> <img riot-src=\"{thumbUrl(asset)}\"> </a> <br><span>{filename(asset.file.url)}</span> <br><a class=\"btn btn-small\" onclick=\"{destroy}\"><i class=\"fa fa-times\"></i></a> </div> </div> </div> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.thumbUrl = function (asset) {
 	    if (asset.file_processing) {
 	      asset.file.cover.url = "/images/file-document-icon.png";
@@ -34260,11 +34260,11 @@
 	  this.destroy = function (e) {
 	    if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
 	      (function () {
-	
+
 	        var index = e.item.index;
 	        var assets = opts.record[opts.name];
 	        var id = assets[index].id;
-	
+
 	        _this.request({
 	          type: "delete",
 	          url: "/api/assets/" + id
@@ -34288,13 +34288,13 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-projects-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <h1 class=\"px2\">Projects <a href=\"/app/projects/new\" class=\"ml1 h5 btn btn-primary\"><i class=\"fa fa-rocket mr1\"></i> New Project</a></h1> <form class=\"px2\" onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <ul class=\"list-reset\"> <li each=\"{projects}\" class=\"p2\"> <div class=\"border p2\"> <a href=\"/app/projects/{id}\" class=\"no-decoration\"> <h3 class=\"mb3\"><img class=\"kind-ico\" riot-src=\"/images/project_types/{kind}.png\" alt=\"{name}\"> {name}</h3> </a> <div class=\"mb1\"> <i class=\"fa fa-clock-o mr1\"></i> updated {fromNow(updated_at)} </div> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-3 px2\"> <span each=\"{acc in customers}\" class=\"px1 border border-yellow mr1 mb1 h6 inline-block truncate\">{acc.full_name}</span> </div> <div class=\"sm-col sm-col-3 px2\"> <span each=\"{acc in professionals}\" class=\"px1 border border-red mr1 mb1 h6 inline-block truncate\">{acc.full_name} *</span> </div> <div class=\"sm-col sm-col-3 px2\"> <span each=\"{acc in administrators}\" class=\"px1 border border-blue mr1 mb1 h6 inline-block truncate\">{acc.full_name}</span> </div> </div> </div> </li> </ul> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.opts.page = this.opts.page || 1;
 	  this.opts.resource = "projects";
-	
+
 	  this.updateProjects = function (projects) {
 	    opts.api.projects.cache.index = projects;
 	    _this.update({ projects: projects });
@@ -34348,20 +34348,20 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
-	
+
 	var options = __webpack_require__(137);
-	
+
 	__webpack_require__(133);
-	
+
 	__webpack_require__(134);
-	
+
 	__webpack_require__(138);
-	
-	riot.tag2("r-projects-brief", "<yield if=\"{!opts.api.currentAccount}\" to=\"header\"> <header class=\"container\"> <nav class=\"relative clearfix {step > 0 ? 'black' : 'white'} h5\"> <div class=\"left\"> <a href=\"/\" class=\"btn py2\"><img riot-src=\"/images/logos/{step > 0 ? 'black' : 'white'}.svg\" class=\"logo--small\"></a> </div> </nav> </header> </yield> <yield if=\"{opts.api.currentAccount}\" to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <section if=\"{!opts.api.currentAccount}\" class=\"absolute col-12 center px2 py2 white {out: step != 0}\" data-step=\"0\"> <div class=\"container\"> <h1 class=\"h1 h1-responsive sm-mt4 mb1\">Thanks for getting started!</h1> <p class=\"h3 sm-col-6 mx-auto mb2\">The next few questions will create your brief :)</p> <div><button class=\"btn btn-big btn-primary mb3\" onclick=\"{start}\">Ok, Got it</button></div> <p>Or <button class=\"h5 btn btn-narrow btn-outline white ml1 mr1\" onclick=\"{showArrangeCallbackModal}\">Arrange a callback</button> to speak with a human</p> </div> </section> <form name=\"form\" action=\"/api/projects\" onsubmit=\"{submit}\"> <section class=\"absolute col-12 center px2 py2 {out: step != 1}\" data-step=\"1\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Mission</h1> <div class=\"clearfix mxn2 border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === project.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === project.kind}\"> </a> </div> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 2}\" data-step=\"2\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Helpful details</h1> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" autofocus=\"true\" oninput=\"{setValue}\">{project.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === project.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === project.brief.preferred_start}\">{value}</option> </select> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb4\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb4\" onclick=\"{nextStep}\">Continue</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 3}\" data-step=\"3\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Documents and Photos</h1> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-12 px2 mb2\"> <p class=\"h2\">Upload plans, documents, site photos or any other files about your project</p> <r-files-input-with-preview name=\"assets\" record=\"{project}\"></r-files-input-with-preview> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb1\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb1\" onclick=\"{nextStep}\">Continue</a> </div> <div class=\"right-align mb4\"> <a onclick=\"{nextStep}\">Skip for now</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 4}\" data-step=\"4\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Address</h1> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{project.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{project.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{project.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb1\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb1\" onclick=\"{nextStep}\">Continue</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 5}\" data-step=\"5\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Project Summary</h1> <div class=\"clearfix p3 border mb3\"> <p class=\"h3 mt0\"> You are planning a <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--project-type\">{project.kind}</span></strong> <span show=\"{!_.isEmpty(_.compact(_.values(project.address)))}\" class=\"summary--address-container\">at <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--address\"><span each=\"{name, add in project.address}\">{add}, </span></span></strong></span>. The basic overview of the brief is: <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--description\">{project.brief.description}</span></strong>. <br> <span show=\"{project.brief.budget}\" class=\"summary--budget-container\">You have a budget of <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--budget\">{project.brief.budget}</span></strong></span> <span show=\"{project.brief.preferred_start}\" class=\"summary--start-date-container\">and would like to start <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--start-date\">{project.brief.preferred_start}</span></strong>.</span> </p> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb4\" onclick=\"{prevStep}\">Back</a> <button class=\"btn btn-big btn-primary mb4 {busy: busy}\" __disabled=\"{busy}\" type=\"submit\">Correct! Make it happen</button> </div> </div> </section> </form>", "", "", function (opts) {
+
+	riot.tag2("r-projects-brief", "<yield if=\"{!opts.api.currentAccount}\" to=\"header\"> <header class=\"container\"> <nav class=\"relative clearfix {step > 0 ? 'black' : 'white'} h5\"> <div class=\"left\"> <a href=\"/\" class=\"btn py2\"><img riot-src=\"/images/logos/{step > 0 ? 'black' : 'white'}.svg\" class=\"logo--small\"></a> </div> </nav> </header> </yield> <yield if=\"{opts.api.currentAccount}\" to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <section if=\"{!opts.api.currentAccount}\" class=\"absolute col-12 center px2 py2 white {out: step != 0}\" data-step=\"0\"> <div class=\"container\"> <h1 class=\"h1 h1-responsive sm-mt4 mb1\">Thanks for getting started!</h1> <p class=\"h3 sm-col-6 mx-auto mb2\">The next few questions will create your brief :)</p> <div><button class=\"btn btn-big btn-primary mb3\" onclick=\"{start}\">Ok, Got it</button></div> <p>Or <button class=\"h5 btn btn-narrow btn-outline white ml1 mr1\" onclick=\"{showArrangeCallbackModal}\">Arrange a callback</button> to speak with a human</p> </div> </section> <form name=\"form\" action=\"/api/projects\" onsubmit=\"{submit}\"> <section class=\"absolute col-12 center px2 py2 {out: step != 1}\" data-step=\"1\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">What would you like to do?</h1> <div class=\"clearfix mxn2 border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === project.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === project.kind}\"> </a> </div> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 2}\" data-step=\"2\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Helpful details</h1> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" autofocus=\"true\" oninput=\"{setValue}\">{project.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === project.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === project.brief.preferred_start}\">{value}</option> </select> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb4\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb4\" onclick=\"{nextStep}\">Continue</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 3}\" data-step=\"3\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Documents and Photos</h1> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-12 px2 mb2\"> <p class=\"h2\">Upload plans, documents, site photos or any other files about your project</p> <r-files-input-with-preview name=\"assets\" record=\"{project}\"></r-files-input-with-preview> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb1\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb1\" onclick=\"{nextStep}\">Continue</a> </div> <div class=\"right-align mb4\"> <a onclick=\"{nextStep}\">Skip for now</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 4}\" data-step=\"4\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Address</h1> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{project.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{project.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{project.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb1\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb1\" onclick=\"{nextStep}\">Continue</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 5}\" data-step=\"5\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Project Summary</h1> <div class=\"clearfix p3 border mb3\"> <p class=\"h3 mt0\"> You are planning a <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--project-type\">{project.kind}</span></strong> <span show=\"{!_.isEmpty(_.compact(_.values(project.address)))}\" class=\"summary--address-container\">at <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--address\"><span each=\"{name, add in project.address}\">{add}, </span></span></strong></span>. The basic overview of the brief is: <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--description\">{project.brief.description}</span></strong>. <br> <span show=\"{project.brief.budget}\" class=\"summary--budget-container\">You have a budget of <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--budget\">{project.brief.budget}</span></strong></span> <span show=\"{project.brief.preferred_start}\" class=\"summary--start-date-container\">and would like to start <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--start-date\">{project.brief.preferred_start}</span></strong>.</span> </p> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb4\" onclick=\"{prevStep}\">Back</a> <button class=\"btn btn-big btn-primary mb4 {busy: busy}\" __disabled=\"{busy}\" type=\"submit\">Correct! Make it happen</button> </div> </div> </section> </form>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.step = opts.api.currentAccount ? 1 : 0;
 	  this.project = { brief: {}, address: {} };
 	  this.options = options;
@@ -34377,17 +34377,17 @@
 	      _this.submit();
 	    });
 	  }
-	
+
 	  this.on("mount", function () {
 	    $("r-app").removeClass("display-none");
 	  });
-	
+
 	  if (this.step === 0) {
 	    $("body").one("transitionend", function () {
 	      return $("body").removeClass("no-transition");
 	    }).addClass("no-transition bg-gray");
 	  }
-	
+
 	  this.start = function () {
 	    $("body").toggleClass("no-transition bg-gray");
 	    setTimeout(function () {
@@ -34396,34 +34396,34 @@
 	    _this.update({ step: 1 });
 	    _this.gaSend("event", "brief", "start", "Ok, Got it");
 	  };
-	
+
 	  this.setProjectKind = function (e) {
 	    _this.project.kind = e.item.value;
-	
+
 	    _this.gaSendForStep(e);
-	
+
 	    _this.update({ step: 2 });
 	  };
-	
+
 	  this.setValue = function (e) {
 	    _this.dot.str(e.target.id, e.target.value, _this.project);
 	  };
-	
+
 	  this.nextStep = function (e) {
 	    e.preventDefault();
 	    if (_this.validateStep()) {
-	
+
 	      _this.gaSendForStep(e);
-	
+
 	      _this.update({ step: _this.step + 1 });
 	    }
 	  };
-	
+
 	  this.prevStep = function (e) {
 	    e.preventDefault();
 	    _this.update({ step: _this.step - 1 });
 	  };
-	
+
 	  this.validateStep = function () {
 	    var hasError = undefined,
 	        $requireds = $("[data-step=" + _this.step + "] [required]", _this.root);
@@ -34440,29 +34440,29 @@
 	      return true;
 	    }
 	  };
-	
+
 	  this.submit = function (e) {
 	    var project = undefined,
 	        assetsToAssign = undefined;
 	    if (e) e.preventDefault();
-	
+
 	    if (_this.step === 5) {
 	      project = _this.serializeForm(_this.form);
-	
+
 	      if (_.isEmpty(project)) {
 	        $(_this.form).animateCss("shake");
 	        return;
 	      }
-	
+
 	      _this.update({ busy: true, errors: null });
-	
+
 	      // stash uploaded assets to be assigned to project
 	      assetsToAssign = _.pluck(_this.project.assets, "id");
-	
+
 	      _this.opts.api.projects.create(project).fail(_this.errorHandler).then(function (project) {
-	
+
 	        _this.gaSend("event", "brief", "summary", "Correct, Make it happen");
-	
+
 	        // no assets? go to project page immediately
 	        if (_.isEmpty(assetsToAssign)) {
 	          _this.redirect(project);
@@ -34479,7 +34479,7 @@
 	      _this.update({ step: _this.step + 1 });
 	    }
 	  };
-	
+
 	  this.showArrangeCallbackModal = function () {
 	    riot.mount("r-modal", {
 	      content: "r-arrange-callback",
@@ -34489,9 +34489,9 @@
 	    });
 	    _this.gaSend("event", "brief", "start", "Arrange a callback");
 	  };
-	
+
 	  this.redirect = function (project) {
-	
+
 	    _this.sendGALeadConfirmationConversion().then(function (image) {
 	      image.onload = function () {
 	        _this.update({ busy: false });
@@ -34499,7 +34499,7 @@
 	      };
 	    });
 	  };
-	
+
 	  this.gaSendForStep = function (e) {
 	    _this.gaSend("event", "brief", $("[data-step=" + _this.step + "] h1", _this.root).text().toLowerCase(), $(e.currentTarget).text().replace(/\n/g, "").replace(/^\s+/, "").replace(/\s+$/, ""));
 	  };
@@ -34586,15 +34586,15 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-arrange-callback", "<div if=\"{lead}\" class=\"center\"> <h1 class=\"mt0\">Your callback has been successfully arranged.</h2> <p class=\"h3 sm-col-6 mx-auto mb2\">Thanks for your interest! We will get back to you very shortly.</p> <a href=\"/\" class=\"btn btn-primary gray\">Take me home</a> </div> <form if=\"{!lead}\" name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/leads\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"meta[source]\" value=\"brief_callback\"> <h2 class=\"center mt0 mb2\">A 1Roof expert will get in touch soon to talk about your project and help you with any questions or concerns you may have. </h2> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"first_name\">First Name *</label> <input id=\"first_name\" class=\"block col-12 mb2 field\" type=\"text\" name=\"first_name\" autofocus=\"true\"> <span if=\"{errors.first_name}\" class=\"inline-error\">{errors.first_name}</span> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"last_name\">First Name *</label> <input id=\"last_name\" class=\"block col-12 mb2 field\" type=\"text\" name=\"last_name\"> <span if=\"{errors.last_name}\" class=\"inline-error\">{errors.last_name}</span> </div> </div> <label for=\"phone_number\">Phone Number *</label> <input id=\"phone_number\" class=\"block col-12 mb2 field\" type=\"tel\" name=\"phone_number\"> <span if=\"{errors.phone_number}\" class=\"inline-error\">{errors.phone_number}</span> <button class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\" type=\"submit\">Arrange a Callback</button> </form>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.submit = function (e) {
 	    var data = _this.serializeForm(_this.form);
-	
+
 	    _this.update({ busy: true, errors: null });
-	
+
 	    opts.api.leads.create(data).fail(_this.errorHandler).then(function (lead) {
 	      _this.update({ busy: false });
 	      _this.update({ lead: lead });
@@ -34608,27 +34608,27 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	__webpack_require__(140);
-	
+
 	__webpack_require__(141);
-	
+
 	__webpack_require__(142);
-	
+
 	__webpack_require__(144);
-	
+
 	__webpack_require__(145);
-	
+
 	__webpack_require__(147);
-	
+
 	__webpack_require__(149);
-	
+
 	__webpack_require__(150);
-	
+
 	__webpack_require__(154);
-	
+
 	riot.tag2("r-projects-show", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <div class=\"py3 px2\"> <div class=\"clearfix mxn2\"> <r-subnav links=\"{subnavLinks}\" tab=\"{opts.tab}\" active_tab_name=\"{opts.activeTabName}\"></r-subnav> <div class=\"sm-col sm-col-9 sm-px2\"> <r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\" content_opts=\"{opts.contentOpts}\"></r-tabs> </div> </div> </div> </div>", "", "", function (opts) {
-	
+
 	  this.subnavLinks = [{ href: "/app/projects/" + opts.id + "/overview", name: "overview", tag: "r-project-overview" }, { href: "/app/projects/" + opts.id + "/brief", name: "brief", tag: "r-project-brief" }, { href: "/app/projects/" + opts.id + "/docs", name: "docs", tag: "r-project-docs" }, { href: "/app/projects/" + opts.id + "/team", name: "team", tag: "r-project-team" }, { href: "/app/projects/" + opts.id + "/tender", name: "tender", tag: "r-project-tender" }, { href: "/app/projects/" + opts.id + "/quotes", name: "quotes", tag: "r-project-quotes" }, { href: "/app/projects/" + opts.id + "/payments", name: "payments", tag: "r-project-quotes" }];
 	  if (this.currentAccount && this.currentAccount.isProfessional) {
 	    this.subnavLinks = [{ href: "/app/projects/" + opts.id + "/overview", name: "overview", tag: "r-project-overview" }, { href: "/app/projects/" + opts.id + "/docs", name: "docs", tag: "r-project-docs" }, { href: "/app/projects/" + opts.id + "/team", name: "team", tag: "r-project-team" }, { href: "/app/projects/" + opts.id + "/tender", name: "tender", tag: "r-project-tender" }, { href: "/app/projects/" + opts.id + "/quotes", name: "quotes", tag: "r-project-quotes" }, { href: "/app/projects/" + opts.id + "/payments", name: "payments", tag: "r-project-quotes" }];
@@ -34641,19 +34641,19 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	
+
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
-	
+
 	var riot = _interopRequire(__webpack_require__(1));
-	
+
 	riot.mixin("projectTab", {
 	  init: function init() {
 	    var _this = this;
-	
+
 	    var project = undefined,
 	        opts = this.opts,
 	        project_id = opts.project_id || opts.id;
-	
+
 	    this.updateProject = function (project) {
 	      _this.update({ project: project });
 	    };
@@ -34672,7 +34672,7 @@
 	      // } else {
 	      opts.api.projects.show(project_id);
 	    });
-	
+
 	    this.on("unmount", function () {
 	      // subscribe projects api updates
 	      opts.api.projects.off("show.fail", _this.errorHandler);
@@ -34687,7 +34687,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-project-overview", "<h2 class=\"mt0\">{project.name}</h2> <hr> <h3>Description</h3> <p>{project.brief.description}</p> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-6 px1\"> <h3>Budget</h3> <p if=\"{project.brief.budget}\">{project.brief.budget}</p> <p if=\"{!project.brief.budget && !currentAccount.isProfessional}\"> You have not set a project budget yet (<a href=\"/app/projects/{project.id}/brief\">add one</a>) </p> <p if=\"{!project.brief.budget && currentAccount.isProfessional}\"> N/A </p> </div> <div class=\"sm-col sm-col-6 px1\"> <h3>Preferred Start date</h3> <p if=\"{project.brief.preferred_start}\">{project.brief.preferred_start}</p> <p if=\"{!project.brief.preferred_start && !currentAccount.isProfessional}\"> You have not defined a start date yet (<a href=\"/app/projects/{project.id}/brief\">set now</a>) </p> <p if=\"{!project.brief.preferred_start && currentAccount.isProfessional}\"> N/A </p> </div> </div> <h3>Address</h3> <address if=\"{!isAllValuesEmpty(project.address)}\" class=\"mb3\"> {project.address.street_address} {project.address.city}, {project.address.postcode} </address> <p if=\"{isAllValuesEmpty(project.address) && !currentAccount.isProfessional}\"> You have not defined the address yet (<a href=\"/app/projects/{project.id}/brief\">fix now</a>) </p> <p if=\"{isAllValuesEmpty(project.address) && currentAccount.isProfessional}\"> N/A </p> </div>", "", "", function (opts) {
 	  this.mixin("projectTab");
 	});
@@ -34698,18 +34698,18 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	var options = __webpack_require__(137);
-	
+
 	__webpack_require__(143);
-	
-	riot.tag2("r-project-brief", "<form name=\"form\" class=\"edit_project\" action=\"/api/projects/{opts.id}\" onsubmit=\"{submit}\"> <section class=\"container clearfix\"> <h2 class=\"mt0\">Name of your project</h2> <input type=\"text\" id=\"name\" class=\"block col-12 mb2 field\" name=\"name\" placeholder=\"My Home, Swiss Cottage, Jenny's Flat ...\" value=\"{project.name}\"> <div class=\"right-align\"> <button class=\"btn btn-primary {busy: busy}\" type=\"submit\">Save</button> </div> </section> <section class=\"container clearfix\"> <h2>Mission</h2> <div class=\"clearfix border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === project.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === project.kind}\"> </a> </div> </div> <div class=\"mt2 right-align\"> <button class=\"btn btn-primary {busy: busy}\" type=\"submit\">Save</button> </div> </section> <section class=\"container clearfix\"> <h2>Helpful details</h2> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" oninput=\"{setValue}\">{project.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-4 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === project.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-4 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === project.brief.preferred_start}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-4 px2\"> <label for=\"brief[ownership]\">Owner</label> <select id=\"brief.ownership\" name=\"brief[ownership]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.ownership}\" value=\"{value}\" __selected=\"{value === project.brief.ownership}\">{value}</option> </select> </div> </div> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <r-option-group-input record=\"{project.brief}\" name=\"brief\" groups=\"{['plans', 'planning_permission']}\" options=\"{options.yesNo}\"> </r-option-group-input> </div> <div class=\"sm-col sm-col-6 px2\"> <r-option-group-input record=\"{project.brief}\" name=\"brief\" groups=\"{['structural_drawings', 'party_wall_agreement']}\" options=\"{options.yesNo}\"> </r-option-group-input> </div> </div> <div class=\"right-align\"> <button class=\"btn btn-primary {busy: busy}\" type=\"submit\">Save</button> </div> </section> <section class=\"container clearfix\"> <h2>Address</h2> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{project.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{project.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{project.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> <div class=\"right-align\"> <button class=\"btn btn-primary {busy: busy}\" type=\"submit\">Save</button> </div> </section> </form>", "", "", function (opts) {
+
+	riot.tag2("r-project-brief", "<form name=\"form\" class=\"edit_project\" action=\"/api/projects/{opts.id}\" onsubmit=\"{submit}\"> <section class=\"container clearfix\"> <h2 class=\"mt0\">Name of your project</h2> <input type=\"text\" id=\"name\" class=\"block col-12 mb2 field\" name=\"name\" placeholder=\"My Home, Swiss Cottage, Jenny's Flat ...\" value=\"{project.name}\"> <div class=\"right-align\"> <button class=\"btn btn-primary {busy: busy}\" type=\"submit\">Save</button> </div> </section> <section class=\"container clearfix\"> <h2>What would you like to do?</h2> <div class=\"clearfix border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === project.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === project.kind}\"> </a> </div> </div> <div class=\"mt2 right-align\"> <button class=\"btn btn-primary {busy: busy}\" type=\"submit\">Save</button> </div> </section> <section class=\"container clearfix\"> <h2>Helpful details</h2> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" oninput=\"{setValue}\">{project.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-4 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === project.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-4 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === project.brief.preferred_start}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-4 px2\"> <label for=\"brief[ownership]\">Owner</label> <select id=\"brief.ownership\" name=\"brief[ownership]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.ownership}\" value=\"{value}\" __selected=\"{value === project.brief.ownership}\">{value}</option> </select> </div> </div> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <r-option-group-input record=\"{project.brief}\" name=\"brief\" groups=\"{['plans', 'planning_permission']}\" options=\"{options.yesNo}\"> </r-option-group-input> </div> <div class=\"sm-col sm-col-6 px2\"> <r-option-group-input record=\"{project.brief}\" name=\"brief\" groups=\"{['structural_drawings', 'party_wall_agreement']}\" options=\"{options.yesNo}\"> </r-option-group-input> </div> </div> <div class=\"right-align\"> <button class=\"btn btn-primary {busy: busy}\" type=\"submit\">Save</button> </div> </section> <section class=\"container clearfix\"> <h2>Address</h2> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{project.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{project.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{project.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> <div class=\"right-align\"> <button class=\"btn btn-primary {busy: busy}\" type=\"submit\">Save</button> </div> </section> </form>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.step = 5;
 	  this.project = { brief: {}, address: {} };
 	  this.options = options;
-	
+
 	  this.setProjectKind = function (e) {
 	    _this.project.kind = e.item.value;
 	  };
@@ -34720,21 +34720,21 @@
 	    var project = undefined,
 	        assetsToAssign = undefined;
 	    if (e) e.preventDefault();
-	
+
 	    project = _this.serializeForm(_this.form);
-	
+
 	    if (_.isEmpty(project)) {
 	      $(_this.form).animateCss("shake");
 	      return;
 	    }
-	
+
 	    _this.update({ busy: true, errors: null });
-	
+
 	    _this.opts.api.projects.update(opts.id, project).fail(_this.errorHandler).then(function (id) {
 	      return _this.update({ busy: false });
 	    });
 	  };
-	
+
 	  this.mixin("projectTab");
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
@@ -34744,7 +34744,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-option-group-input", "<div each=\"{field, i in opts.groups}\" class=\"mb2\"> <label class=\"block\">{field.humanize()}</label> <label each=\"{op, n in parent.opts.options}\"> <input type=\"radio\" name=\"{getName(field)}\" value=\"{op}\" __checked=\"{parent.parent.opts.record[field] === op}\"> {op.humanize()} </label> </div>", "", "", function (opts) {
 	  this.getName = function (field) {
 	    return opts.name ? "" + opts.name + "[" + field + "]" : field;
@@ -34757,7 +34757,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-project-docs", "<h2 class=\"mt0\">Documents and Photos</h2> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-12 px2 mb2\"> <p class=\"h2\">Upload plans, documents, site photos or any other files about your project</p> <r-files-input-with-preview name=\"assets\" record=\"{project}\"></r-files-input-with-preview> </div> </div>", "", "", function (opts) {
 	  this.mixin("projectTab");
 	});
@@ -34768,22 +34768,22 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
-	
+
 	var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
-	
+
 	var Pikaday = _interopRequire(__webpack_require__(146));
-	
+
 	riot.tag2("r-project-appointments", "<div class=\"sm-col-12 px2 border\"> <h3><i class=\"fa fa-calendar-o\"></i> Appointments</h3> <a class=\"h6 btn btn-small btn-primary mb2\" onclick=\"{openAppointmentModal}\"><i class=\"fa fa-calendar-check-o\"></i> Arrange Appointment</a> <dl each=\"{appointments}\" class=\"{gray: isPast(time)}\"> <dt class=\"left\"> <i class=\"fa fa-{'thumbs-o-up': isPast(time), 'hand-o-right': isFuture(time)}\"></i> </dt> <dd> <h4>At {formatTime(time)}</h4> <div><strong>Host:</strong> {host.profile.first_name} {host.profile.last_name}</div> <div><strong>Attendant:</strong> {attendant.profile.first_name} {attendant.profile.last_name}</div> <a if=\"{isFuture(time)}\" class=\"btn btn-small h6 bg-maroon white mt1\" onclick=\"{cancelAppointment}\"><i class=\"fa fa-ban\"></i> Cancel</a> </dd> </dl> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.on("mount", function () {
 	    opts.api.appointments.on("create.success", _this.addAppointment);
 	    opts.api.appointments.on("delete.success", _this.removeAppointment);
 	    _this.loadResources("appointments", { project_id: _this.opts.record.id });
 	  });
-	
+
 	  this.on("unmount", function () {
 	    opts.api.appointments.off("create.success", _this.addAppointment);
 	    opts.api.appointments.off("delete.success", _this.removeAppointment);
@@ -34815,7 +34815,7 @@
 	      _this.update();
 	    }
 	  };
-	
+
 	  this.removeAppointment = function (id) {
 	    var _id = _.findIndex(_this.appointments, function (r) {
 	      return r.id == id;
@@ -34826,10 +34826,10 @@
 	    }
 	  };
 	});
-	
+
 	riot.tag2("r-appointment-form", "<h2 class=\"center mt0 mb2\">Arrange an Appointment</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/appointments\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <input type=\"hidden\" name=\"host_id\" value=\"{record.host_id}\"> <input type=\"hidden\" name=\"host_type\" value=\"{record.host_type}\"> <input type=\"hidden\" name=\"attendant_id\" value=\"{record.attendant_id}\"> <input type=\"hidden\" name=\"attendant_type\" value=\"{record.attendant_type}\"> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"time\" value=\"{record.time}\" placeholder=\"Time\"> <span if=\"{errors['time']}\" class=\"inline-error\">{errors['time']}</span> <textarea class=\"block col-12 mb2 field\" type=\"text\" name=\"description\" placeholder=\"Description\">{record.description}</textarea> <span if=\"{errors['description']}\" class=\"inline-error\">{errors['description']}</span> <div if=\"{currentAccount.isAdministrator}\" class=\"bg-blue white p1\"> <label for=\"host_id\">Host</label> <select class=\"block col-12 mb2 field\" onchange=\"{setHost}\"> <option></option> <option each=\"{opts.project.customers}\" value=\"{user_id}:{user_type}\" __selected=\"{record.host_id == user_id && record.host_type == user_type}\">{profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors['host']}\" class=\"inline-error\">{errors['host']}</span> <span if=\"{errors['host_id']}\" class=\"inline-error\">{errors['host_id']}</span> <span if=\"{errors['host_type']}\" class=\"inline-error\">{errors['host_type']}</span> </div> <label for=\"host_id\">Attendand</label> <select class=\"block col-12 mb2 field\" onchange=\"{setAttendant}\"> <option></option> <option each=\"{opts.project.professionals}\" value=\"{user_id}:{user_type}\" __selected=\"{record.attendant_id == user_id && record.attendant_type == user_type}\">{profile.first_name} {profile.last_name}</option> </select> <span if=\"{errors['attendant']}\" class=\"inline-error\">{errors['attendant']}</span> <span if=\"{errors['attendant_id']}\" class=\"inline-error\">{errors['attendant_id']}</span> <span if=\"{errors['attendant_type']}\" class=\"inline-error\">{errors['attendant_type']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Schedule</button> </form>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.on("mount", function () {
 	    var picker = new Pikaday({
 	      field: _this.time,
@@ -34845,40 +34845,40 @@
 	    host_type: this.currentAccount.user_type };
 	  this.setHost = function (e) {
 	    var _e$target$value$split = e.target.value.split(":");
-	
+
 	    var _e$target$value$split2 = _slicedToArray(_e$target$value$split, 2);
-	
+
 	    var id = _e$target$value$split2[0];
 	    var type = _e$target$value$split2[1];
-	
+
 	    _this.record.host_id = id;
 	    _this.record.host_type = type;
 	    _this.update();
 	  };
 	  this.setAttendant = function (e) {
 	    var _e$target$value$split = e.target.value.split(":");
-	
+
 	    var _e$target$value$split2 = _slicedToArray(_e$target$value$split, 2);
-	
+
 	    var id = _e$target$value$split2[0];
 	    var type = _e$target$value$split2[1];
-	
+
 	    _this.record.attendant_id = id;
 	    _this.record.attendant_type = type;
 	    _this.update();
 	  };
 	  this.submit = function (e) {
 	    e.preventDefault();
-	
+
 	    var data = _this.serializeForm(_this.form);
-	
+
 	    if (_.isEmpty(data) || _.isEmpty(data.time)) {
 	      $(_this.form).animateCss("shake");
 	      return;
 	    }
-	
+
 	    _this.update({ busy: true, errors: null });
-	
+
 	    _this.opts.api.appointments.create(data).fail(_this.errorHandler).then(function (record) {
 	      _this.update({ record: record, busy: false });
 	      _this.closeModal();
@@ -34896,11 +34896,11 @@
 	 *
 	 * Copyright © 2014 David Bushell | BSD & MIT license | https://github.com/dbushell/Pikaday
 	 */
-	
+
 	(function (root, factory)
 	{
 	    'use strict';
-	
+
 	    var moment;
 	    if (true) {
 	        // CommonJS module
@@ -34922,18 +34922,18 @@
 	}(this, function (moment)
 	{
 	    'use strict';
-	
+
 	    /**
 	     * feature detection and helper functions
 	     */
 	    var hasMoment = typeof moment === 'function',
-	
+
 	    hasEventListeners = !!window.addEventListener,
-	
+
 	    document = window.document,
-	
+
 	    sto = window.setTimeout,
-	
+
 	    addEvent = function(el, e, callback, capture)
 	    {
 	        if (hasEventListeners) {
@@ -34942,7 +34942,7 @@
 	            el.attachEvent('on' + e, callback);
 	        }
 	    },
-	
+
 	    removeEvent = function(el, e, callback, capture)
 	    {
 	        if (hasEventListeners) {
@@ -34951,11 +34951,11 @@
 	            el.detachEvent('on' + e, callback);
 	        }
 	    },
-	
+
 	    fireEvent = function(el, eventName, data)
 	    {
 	        var ev;
-	
+
 	        if (document.createEvent) {
 	            ev = document.createEvent('HTMLEvents');
 	            ev.initEvent(eventName, true, false);
@@ -34967,61 +34967,61 @@
 	            el.fireEvent('on' + eventName, ev);
 	        }
 	    },
-	
+
 	    trim = function(str)
 	    {
 	        return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g,'');
 	    },
-	
+
 	    hasClass = function(el, cn)
 	    {
 	        return (' ' + el.className + ' ').indexOf(' ' + cn + ' ') !== -1;
 	    },
-	
+
 	    addClass = function(el, cn)
 	    {
 	        if (!hasClass(el, cn)) {
 	            el.className = (el.className === '') ? cn : el.className + ' ' + cn;
 	        }
 	    },
-	
+
 	    removeClass = function(el, cn)
 	    {
 	        el.className = trim((' ' + el.className + ' ').replace(' ' + cn + ' ', ' '));
 	    },
-	
+
 	    isArray = function(obj)
 	    {
 	        return (/Array/).test(Object.prototype.toString.call(obj));
 	    },
-	
+
 	    isDate = function(obj)
 	    {
 	        return (/Date/).test(Object.prototype.toString.call(obj)) && !isNaN(obj.getTime());
 	    },
-	
+
 	    isWeekend = function(date)
 	    {
 	        var day = date.getDay();
 	        return day === 0 || day === 6;
 	    },
-	
+
 	    isLeapYear = function(year)
 	    {
 	        // solution by Matti Virkkunen: http://stackoverflow.com/a/4881951
 	        return year % 4 === 0 && year % 100 !== 0 || year % 400 === 0;
 	    },
-	
+
 	    getDaysInMonth = function(year, month)
 	    {
 	        return [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
 	    },
-	
+
 	    setToStartOfDay = function(date)
 	    {
 	        if (isDate(date)) date.setHours(0,0,0,0);
 	    },
-	
+
 	    compareDates = function(a,b)
 	    {
 	        // Copy so we don't change the dates being passed in
@@ -35031,7 +35031,7 @@
 	        setToStartOfDay(_b);
 	        return _a.getTime() === _b.getTime();
 	    },
-	
+
 	    extend = function(to, from, overwrite)
 	    {
 	        var prop, hasProp;
@@ -35056,7 +35056,7 @@
 	        }
 	        return to;
 	    },
-	
+
 	    adjustCalendar = function(calendar) {
 	        if (calendar.month < 0) {
 	            calendar.year -= Math.ceil(Math.abs(calendar.month)/12);
@@ -35068,80 +35068,80 @@
 	        }
 	        return calendar;
 	    },
-	
+
 	    /**
 	     * defaults and localisation
 	     */
 	    defaults = {
-	
+
 	        // bind the picker to a form field
 	        field: null,
-	
+
 	        // automatically show/hide the picker on `field` focus (default `true` if `field` is set)
 	        bound: undefined,
-	
+
 	        // position of the datepicker, relative to the field (default to bottom & left)
 	        // ('bottom' & 'left' keywords are not used, 'top' & 'right' are modifier on the bottom/left position)
 	        position: 'bottom left',
-	
+
 	        // automatically fit in the viewport even if it means repositioning from the position option
 	        reposition: true,
-	
+
 	        // the default output format for `.toString()` and `field` value
 	        // set in `config` based on if showTime is set
 	        format: null,
-	
+
 	        // an array giving the allowable input format(s).  As with moment,
 	        // the input formats may be either a single string or an array of strings.
 	        // Usually set in `config`
 	        inputFormats: null,
-	
+
 	        // the initial date to view when first opened
 	        defaultDate: null,
-	
+
 	        // make the `defaultDate` the initial selected value
 	        setDefaultDate: false,
-	
+
 	        // first day of week (0: Sunday, 1: Monday etc)
 	        firstDay: 0,
-	
+
 	        // the default flag for moment's strict date parsing
 	        formatStrict: false,
-	
+
 	        // the minimum/earliest date that can be selected
 	        minDate: null,
 	        // the maximum/latest date that can be selected
 	        maxDate: null,
-	
+
 	        // number of years either side, or array of upper/lower range
 	        yearRange: 10,
-	
+
 	        // show week numbers at head of row
 	        showWeekNumber: false,
-	
+
 	        // used internally (don't config outside)
 	        minYear: 0,
 	        maxYear: 9999,
 	        minMonth: undefined,
 	        maxMonth: undefined,
-	
+
 	        startRange: null,
 	        endRange: null,
-	
+
 	        isRTL: false,
-	
+
 	        // Additional text to append to the year in the calendar title
 	        yearSuffix: '',
-	
+
 	        // Render the month after year in the calendar title
 	        showMonthAfterYear: false,
-	
+
 	        // Render days of the calendar grid that fall in the next or previous month
 	        showDaysInNextAndPreviousMonths: false,
-	
+
 	        // how many months are visible
 	        numberOfMonths: 1,
-	
+
 	        // time
 	        showTime: true,
 	        showSeconds: false,
@@ -35149,17 +35149,17 @@
 	        incrementHourBy: 1,
 	        incrementMinuteBy: 1,
 	        incrementSecondBy: 1,
-	
+
 	        // option to prevent calendar from auto-closing after date is selected
 	        autoClose: true,
-	
+
 	        // when numberOfMonths is used, this will help you to choose where the main calendar will be (default `left`, can be set to `right`)
 	        // only used for the first display or when a selected date is not visible
 	        mainCalendar: 'left',
-	
+
 	        // Specify a DOM element to render the calendar in
 	        container: undefined,
-	
+
 	        // internationalization
 	        i18n: {
 	            previousMonth : 'Previous Month',
@@ -35170,18 +35170,18 @@
 	            midnight      : 'Midnight',
 	            noon          : 'Noon'
 	        },
-	
+
 	        // Theme Classname
 	        theme: null,
-	
+
 	        // callback function
 	        onSelect: null,
 	        onOpen: null,
 	        onClose: null,
 	        onDraw: null
 	    },
-	
-	
+
+
 	    /**
 	     * templating functions to abstract HTML rendering
 	     */
@@ -35193,7 +35193,7 @@
 	        }
 	        return abbr ? opts.i18n.weekdaysShort[day] : opts.i18n.weekdays[day];
 	    },
-	
+
 	    renderDay = function(opts)
 	    {
 	        var arr = [];
@@ -35229,24 +35229,24 @@
 	                 '</button>' +
 	               '</td>';
 	    },
-	
+
 	    renderWeek = function (d, m, y) {
 	        // Lifted from http://javascript.about.com/library/blweekyear.htm, lightly modified.
 	        var onejan = new Date(y, 0, 1),
 	            weekNum = Math.ceil((((new Date(y, m, d) - onejan) / 86400000) + onejan.getDay()+1)/7);
 	        return '<td class="pika-week">' + weekNum + '</td>';
 	    },
-	
+
 	    renderRow = function(days, isRTL)
 	    {
 	        return '<tr>' + (isRTL ? days.reverse() : days).join('') + '</tr>';
 	    },
-	
+
 	    renderBody = function(rows)
 	    {
 	        return '<tbody>' + rows.join('') + '</tbody>';
 	    },
-	
+
 	    renderHead = function(opts)
 	    {
 	        var i, arr = [];
@@ -35258,7 +35258,7 @@
 	        }
 	        return '<thead>' + (opts.isRTL ? arr.reverse() : arr).join('') + '</thead>';
 	    },
-	
+
 	    renderTitle = function(instance, c, year, month, refYear)
 	    {
 	        var i, j, arr,
@@ -35270,7 +35270,7 @@
 	            yearHtml,
 	            prev = true,
 	            next = true;
-	
+
 	        for (arr = [], i = 0; i < 12; i++) {
 	            arr.push('<option value="' + (year === refYear ? i - c : 12 + i - c) + '"' +
 	                (i === month ? ' selected': '') +
@@ -35278,7 +35278,7 @@
 	                opts.i18n.months[i] + '</option>');
 	        }
 	        monthHtml = '<div class="pika-label">' + opts.i18n.months[month] + '<select class="pika-select pika-select-month" tabindex="-1">' + arr.join('') + '</select></div>';
-	
+
 	        if (isArray(opts.yearRange)) {
 	            i = opts.yearRange[0];
 	            j = opts.yearRange[1] + 1;
@@ -35286,43 +35286,43 @@
 	            i = year - opts.yearRange;
 	            j = 1 + year + opts.yearRange;
 	        }
-	
+
 	        for (arr = []; i < j && i <= opts.maxYear; i++) {
 	            if (i >= opts.minYear) {
 	                arr.push('<option value="' + i + '"' + (i === year ? ' selected': '') + '>' + (i) + '</option>');
 	            }
 	        }
 	        yearHtml = '<div class="pika-label">' + year + opts.yearSuffix + '<select class="pika-select pika-select-year" tabindex="-1">' + arr.join('') + '</select></div>';
-	
+
 	        if (opts.showMonthAfterYear) {
 	            html += yearHtml + monthHtml;
 	        } else {
 	            html += monthHtml + yearHtml;
 	        }
-	
+
 	        if (isMinYear && (month === 0 || opts.minMonth >= month)) {
 	            prev = false;
 	        }
-	
+
 	        if (isMaxYear && (month === 11 || opts.maxMonth <= month)) {
 	            next = false;
 	        }
-	
+
 	        if (c === 0) {
 	            html += '<button class="pika-prev' + (prev ? '' : ' is-disabled') + '" type="button">' + opts.i18n.previousMonth + '</button>';
 	        }
 	        if (c === (instance._o.numberOfMonths - 1) ) {
 	            html += '<button class="pika-next' + (next ? '' : ' is-disabled') + '" type="button">' + opts.i18n.nextMonth + '</button>';
 	        }
-	
+
 	        return html += '</div>';
 	    },
-	
+
 	    renderTable = function(opts, data)
 	    {
 	        return '<table cellpadding="0" cellspacing="0" class="pika-table">' + renderHead(opts) + renderBody(data) + '</table>';
 	    },
-	
+
 	    renderTimePicker = function(num_options, selected_val, select_class, display_func, increment_by) {
 	        increment_by = increment_by || 1;
 	        var to_return = '<td><select class="pika-select '+select_class+'">';
@@ -35332,7 +35332,7 @@
 	        to_return += '</select></td>';
 	        return to_return;
 	    },
-	
+
 	    renderTime = function(hh, mm, ss, opts)
 	    {
 	        var to_return = '<table cellpadding="0" cellspacing="0" class="pika-time"><tbody><tr>' +
@@ -35353,16 +35353,16 @@
 	            opts.incrementHourBy) +
 	            '<td>:</td>' +
 	            renderTimePicker(60, mm, 'pika-select-minute', function(i) { if (i < 10) return "0" + i; return i }, opts.incrementMinuteBy);
-	
+
 	        if (opts.showSeconds) {
 	            to_return += '<td>:</td>' +
 	                renderTimePicker(60, ss, 'pika-select-second', function(i) { if (i < 10) return "0" + i; return i }, opts.incrementSecondBy);
 	        }
 	        return to_return + '</tr></tbody></table>';
 	    },
-	
-	
-	
+
+
+
 	    /**
 	     * Pikaday constructor
 	     */
@@ -35370,7 +35370,7 @@
 	    {
 	        var self = this,
 	            opts = self.config(options);
-	
+
 	        self._onMouseDown = function(e)
 	        {
 	            if (!self._v) {
@@ -35381,7 +35381,7 @@
 	            if (!target) {
 	                return;
 	            }
-	
+
 	            if (!hasClass(target, 'is-disabled')) {
 	                if (hasClass(target, 'pika-button') && !hasClass(target, 'is-empty')) {
 	                    var newDate = new Date(
@@ -35428,7 +35428,7 @@
 	                self._c = true;
 	            }
 	        };
-	
+
 	        self._onChange = function(e)
 	        {
 	            e = e || window.event;
@@ -35452,11 +35452,11 @@
 	                self.setTime(null, null, target.value);
 	            }
 	        };
-	
+
 	        self._onInputChange = function(e)
 	        {
 	            var date;
-	
+
 	            if (e.firedBy === self) {
 	                return;
 	            }
@@ -35474,17 +35474,17 @@
 	                self.show();
 	            }
 	        };
-	
+
 	        self._onInputFocus = function()
 	        {
 	            self.show();
 	        };
-	
+
 	        self._onInputClick = function()
 	        {
 	            self.show();
 	        };
-	
+
 	        self._onInputBlur = function()
 	        {
 	            // IE allows pika div to gain focus; catch blur the input field
@@ -35495,7 +35495,7 @@
 	                }
 	            }
 	            while ((pEl = pEl.parentNode));
-	
+
 	            if (opts.autoClose && !self._c) {
 	                self._b = sto(function() {
 	                    self.hide();
@@ -35503,7 +35503,7 @@
 	            }
 	            self._c = false;
 	        };
-	
+
 	        self._onClick = function(e)
 	        {
 	            e = e || window.event;
@@ -35530,14 +35530,14 @@
 	                self.hide();
 	            }
 	        };
-	
+
 	        self.el = document.createElement('div');
 	        self.el.className = 'pika-single' + (opts.isRTL ? ' is-rtl' : '') + (opts.theme ? ' ' + opts.theme : '');
-	
+
 	        addEvent(self.el, 'mousedown', self._onMouseDown, true);
 	        addEvent(self.el, 'touchend', self._onMouseDown, true);
 	        addEvent(self.el, 'change', self._onChange);
-	
+
 	        if (opts.field) {
 	            if (opts.container) {
 	                opts.container.appendChild(self.el);
@@ -35547,7 +35547,7 @@
 	                opts.field.parentNode.insertBefore(self.el, opts.field.nextSibling);
 	            }
 	            addEvent(opts.field, 'change', self._onInputChange);
-	
+
 	            if (!opts.defaultDate) {
 	                if (hasMoment && opts.field.value) {
 	                    opts.defaultDate = moment(opts.field.value, opts.inputFormats).toDate();
@@ -35557,9 +35557,9 @@
 	                opts.setDefaultDate = true;
 	            }
 	        }
-	
+
 	        var defDate = opts.defaultDate;
-	
+
 	        if (isDate(defDate)) {
 	            if (opts.setDefaultDate) {
 	                self.setDate(defDate, true);
@@ -35569,7 +35569,7 @@
 	        } else {
 	            self.gotoDate(new Date());
 	        }
-	
+
 	        if (opts.bound) {
 	            this.hide();
 	            self.el.className += ' is-bound';
@@ -35580,14 +35580,14 @@
 	            this.show();
 	        }
 	    };
-	
-	
+
+
 	    /**
 	     * public Pikaday API
 	     */
 	    Pikaday.prototype = {
-	
-	
+
+
 	        /**
 	         * configure functionality
 	         */
@@ -35596,28 +35596,28 @@
 	            if (!this._o) {
 	                this._o = extend({}, defaults, true);
 	            }
-	
+
 	            var opts = extend(this._o, options, true);
-	
+
 	            opts.isRTL = !!opts.isRTL;
-	
+
 	            opts.autoClose = !!opts.autoClose;
-	
+
 	            opts.field = (opts.field && opts.field.nodeName) ? opts.field : null;
-	
+
 	            opts.theme = (typeof opts.theme) === 'string' && opts.theme ? opts.theme : null;
-	
+
 	            opts.bound = !!(opts.bound !== undefined ? opts.field && opts.bound : opts.field);
-	
+
 	            opts.trigger = (opts.trigger && opts.trigger.nodeName) ? opts.trigger : opts.field;
-	
+
 	            opts.disableWeekends = !!opts.disableWeekends;
-	
+
 	            opts.disableDayFn = (typeof opts.disableDayFn) === 'function' ? opts.disableDayFn : null;
-	
+
 	            var nom = parseInt(opts.numberOfMonths, 10) || 1;
 	            opts.numberOfMonths = nom > 4 ? 4 : nom;
-	
+
 	            if (!isDate(opts.minDate)) {
 	                opts.minDate = false;
 	            }
@@ -35633,7 +35633,7 @@
 	            if (opts.maxDate) {
 	                this.setMaxDate(opts.maxDate);
 	            }
-	
+
 	            if (isArray(opts.yearRange)) {
 	                var fallback = new Date().getFullYear() - 10;
 	                opts.yearRange[0] = parseInt(opts.yearRange[0], 10) || fallback;
@@ -35644,7 +35644,7 @@
 	                    opts.yearRange = 100;
 	                }
 	            }
-	
+
 	            // If no format is given, set based on showTime
 	            if (opts.format === null) {
 	                opts.format = 'YYYY-MM-DD';
@@ -35652,14 +35652,14 @@
 	                    opts.format += ' HH:mm:ss';
 	                }
 	            }
-	
+
 	            if(!opts.inputFormats) {
 	                opts.inputFormats = opts.format;
 	            }
-	
+
 	            return opts;
 	        },
-	
+
 	        /**
 	         * return a formatted string of the current selection (using Moment.js if available)
 	         */
@@ -35667,7 +35667,7 @@
 	        {
 	            return !isDate(this._d) ? '' : hasMoment ? moment(this._d).format(format || this._o.format) : this._o.showTime ? this._d.toString() : this._d.toDateString();
 	        },
-	
+
 	        /**
 	         * return a Moment.js object of the current selection (if available)
 	         */
@@ -35675,7 +35675,7 @@
 	        {
 	            return hasMoment ? moment(this._d) : null;
 	        },
-	
+
 	        /**
 	         * set the current selection from a Moment.js object (if available)
 	         */
@@ -35685,7 +35685,7 @@
 	                this.setDate(date.toDate(), preventOnSelect);
 	            }
 	        },
-	
+
 	        /**
 	         * return a Date object of the current selection
 	         */
@@ -35693,7 +35693,7 @@
 	        {
 	            return isDate(this._d) ? new Date(this._d.getTime()) : null;
 	        },
-	
+
 	        /**
 	         * set time components
 	         * Currently defaulting to setting date to today if not set
@@ -35714,7 +35714,7 @@
 	            }
 	            this.setDate(this._d);
 	        },
-	
+
 	        /**
 	         * set the current selection
 	         */
@@ -35722,12 +35722,12 @@
 	        {
 	            if (!date) {
 	                this._d = null;
-	
+
 	                if (this._o.field) {
 	                    this._o.field.value = '';
 	                    fireEvent(this._o.field, 'change', { firedBy: this });
 	                }
-	
+
 	                return this.draw();
 	            }
 	            if (typeof date === 'string') {
@@ -35736,26 +35736,26 @@
 	            if (!isDate(date)) {
 	                return;
 	            }
-	
+
 	            var min = this._o.minDate,
 	                max = this._o.maxDate;
-	
+
 	            if (isDate(min) && date < min) {
 	                date = min;
 	            } else if (isDate(max) && date > max) {
 	                date = max;
 	            }
-	
+
 	            this._d = new Date(date.getTime());
-	
+
 	            if (this._o.showTime && !this._o.showSeconds) {
 	                this._d.setSeconds(0);
 	            } else if (!this._o.showTime) {
 	                setToStartOfDay(this._d);
 	            }
-	
+
 	            this.gotoDate(this._d);
-	
+
 	            if (this._o.field) {
 	                this._o.field.value = this.toString();
 	                fireEvent(this._o.field, 'change', { firedBy: this });
@@ -35764,18 +35764,18 @@
 	                this._o.onSelect.call(this, this.getDate());
 	            }
 	        },
-	
+
 	        /**
 	         * change view to a specific date
 	         */
 	        gotoDate: function(date)
 	        {
 	            var newCalendar = true;
-	
+
 	            if (!isDate(date)) {
 	                return;
 	            }
-	
+
 	            if (this.calendars) {
 	                var firstVisibleDate = new Date(this.calendars[0].year, this.calendars[0].month, 1),
 	                    lastVisibleDate = new Date(this.calendars[this.calendars.length-1].year, this.calendars[this.calendars.length-1].month, 1),
@@ -35785,7 +35785,7 @@
 	                lastVisibleDate.setDate(lastVisibleDate.getDate()-1);
 	                newCalendar = (visibleDate < firstVisibleDate.getTime() || lastVisibleDate.getTime() < visibleDate);
 	            }
-	
+
 	            if (newCalendar) {
 	                this.calendars = [{
 	                    month: date.getMonth(),
@@ -35798,10 +35798,10 @@
 	                    this.calendars[0].month += 1 - this._o.numberOfMonths;
 	                }
 	            }
-	
+
 	            this.adjustCalendars();
 	        },
-	
+
 	        adjustCalendars: function() {
 	            this.calendars[0] = adjustCalendar(this.calendars[0]);
 	            for (var c = 1; c < this._o.numberOfMonths; c++) {
@@ -35812,12 +35812,12 @@
 	            }
 	            this.draw();
 	        },
-	
+
 	        gotoToday: function()
 	        {
 	            this.gotoDate(new Date());
 	        },
-	
+
 	        /**
 	         * change view to a specific month (zero-index, e.g. 0: January)
 	         */
@@ -35828,19 +35828,19 @@
 	                this.adjustCalendars();
 	            }
 	        },
-	
+
 	        nextMonth: function()
 	        {
 	            this.calendars[0].month++;
 	            this.adjustCalendars();
 	        },
-	
+
 	        prevMonth: function()
 	        {
 	            this.calendars[0].month--;
 	            this.adjustCalendars();
 	        },
-	
+
 	        /**
 	         * change view to a specific full year (e.g. "2012")
 	         */
@@ -35851,7 +35851,7 @@
 	                this.adjustCalendars();
 	            }
 	        },
-	
+
 	        /**
 	         * change the minDate
 	         */
@@ -35863,7 +35863,7 @@
 	            this._o.minMonth = value.getMonth();
 	            this.draw();
 	        },
-	
+
 	        /**
 	         * change the maxDate
 	         */
@@ -35875,17 +35875,17 @@
 	            this._o.maxMonth = value.getMonth();
 	            this.draw();
 	        },
-	
+
 	        setStartRange: function(value)
 	        {
 	            this._o.startRange = value;
 	        },
-	
+
 	        setEndRange: function(value)
 	        {
 	            this._o.endRange = value;
 	        },
-	
+
 	        /**
 	         * refresh the HTML
 	         */
@@ -35900,7 +35900,7 @@
 	                minMonth = opts.minMonth,
 	                maxMonth = opts.maxMonth,
 	                html = '';
-	
+
 	            if (this._y <= minYear) {
 	                this._y = minYear;
 	                if (!isNaN(minMonth) && this._m < minMonth) {
@@ -35913,11 +35913,11 @@
 	                    this._m = maxMonth;
 	                }
 	            }
-	
+
 	            for (var c = 0; c < opts.numberOfMonths; c++) {
 	                html += '<div class="pika-lendar">' + renderTitle(this, c, this.calendars[c].year, this.calendars[c].month, this.calendars[0].year) + this.render(this.calendars[c].year, this.calendars[c].month) + '</div>';
 	            }
-	
+
 	            if (opts.showTime) {
 	                html += '<div class="pika-time-container">' +
 	                        renderTime(
@@ -35927,9 +35927,9 @@
 	                            opts)
 	                    + '</div>';
 	            }
-	
+
 	            this.el.innerHTML = html;
-	
+
 	            if (opts.bound) {
 	                if(opts.field.type !== 'hidden') {
 	                    sto(function() {
@@ -35937,7 +35937,7 @@
 	                    }, 1);
 	                }
 	            }
-	
+
 	            if (typeof this._o.onDraw === 'function') {
 	                var self = this;
 	                sto(function() {
@@ -35945,15 +35945,15 @@
 	                }, 0);
 	            }
 	        },
-	
+
 	        adjustPosition: function()
 	        {
 	            var field, pEl, width, height, viewportWidth, viewportHeight, scrollTop, left, top, clientRect;
-	
+
 	            if (this._o.container) return;
-	
+
 	            this.el.style.position = 'absolute';
-	
+
 	            field = this._o.trigger;
 	            pEl = field;
 	            width = this.el.offsetWidth;
@@ -35961,7 +35961,7 @@
 	            viewportWidth = window.innerWidth || document.documentElement.clientWidth;
 	            viewportHeight = window.innerHeight || document.documentElement.clientHeight;
 	            scrollTop = window.pageYOffset || document.body.scrollTop || document.documentElement.scrollTop;
-	
+
 	            if (typeof field.getBoundingClientRect === 'function') {
 	                clientRect = field.getBoundingClientRect();
 	                left = clientRect.left + window.pageXOffset;
@@ -35974,7 +35974,7 @@
 	                    top  += pEl.offsetTop;
 	                }
 	            }
-	
+
 	            // default position is bottom & left
 	            if ((this._o.reposition && left + width > viewportWidth) ||
 	                (
@@ -35992,11 +35992,11 @@
 	            ) {
 	                top = top - height - field.offsetHeight;
 	            }
-	
+
 	            this.el.style.left = left + 'px';
 	            this.el.style.top = top + 'px';
 	        },
-	
+
 	        /**
 	         * render HTML for a particular month
 	         */
@@ -36026,11 +36026,11 @@
 	                after -= 7;
 	            }
 	            cells += 7 - after;
-	
+
 	            // Ensure we only compare date portion when deciding to show a date in picker
 	            var minDate_date = opts.minDate ? new Date(opts.minDate.getFullYear(), opts.minDate.getMonth(), opts.minDate.getDate()) : null;
 	            var maxDate_date = opts.maxDate ? new Date(opts.maxDate.getFullYear(), opts.maxDate.getMonth(), opts.maxDate.getDate()) : null;
-	
+
 	            for (var i = 0, r = 0; i < cells; i++)
 	            {
 	                var day = new Date(year, month, 1 + (i - before)),
@@ -36047,7 +36047,7 @@
 	                                 (opts.maxDate && day > opts.maxDate) ||
 	                                 (opts.disableWeekends && isWeekend(day)) ||
 	                                 (opts.disableDayFn && opts.disableDayFn(day));
-	
+
 	                if (isEmpty) {
 	                    if (i < before) {
 	                        dayNumber = daysInPreviousMonth + dayNumber;
@@ -36059,7 +36059,7 @@
 	                        yearNumber = yearOfNextMonth;
 	                    }
 	                }
-	
+
 	                var dayConfig = {
 	                        day: dayNumber,
 	                        month: monthNumber,
@@ -36073,9 +36073,9 @@
 	                        isInRange: isInRange,
 	                        showDaysInNextAndPreviousMonths: opts.showDaysInNextAndPreviousMonths
 	                    };
-	
+
 	                row.push(renderDay(dayConfig));
-	
+
 	                if (++r === 7) {
 	                    if (opts.showWeekNumber) {
 	                        row.unshift(renderWeek(i - before, month, year));
@@ -36087,12 +36087,12 @@
 	            }
 	            return renderTable(opts, data);
 	        },
-	
+
 	        isVisible: function()
 	        {
 	            return this._v;
 	        },
-	
+
 	        show: function()
 	        {
 	            if (!this._v) {
@@ -36108,7 +36108,7 @@
 	                }
 	            }
 	        },
-	
+
 	        hide: function()
 	        {
 	            var v = this._v;
@@ -36126,7 +36126,7 @@
 	                }
 	            }
 	        },
-	
+
 	        /**
 	         * GAME OVER
 	         */
@@ -36148,11 +36148,11 @@
 	                this.el.parentNode.removeChild(this.el);
 	            }
 	        }
-	
+
 	    };
-	
+
 	    return Pikaday;
-	
+
 	}));
 
 
@@ -36161,12 +36161,12 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	__webpack_require__(148);
-	
+
 	riot.tag2("r-project-team", "<h2 class=\"mt0\">Team</h2> <div if=\"{currentAccount.isAdministrator}\" class=\"bg-blue white\"> <r-typeahead-input resource=\"accounts\" api=\"{opts.api}\" datum_tokenizer=\"{['full_name', 'email', 'user_type']}\"></r-typeahead-input> </div> <p>Here is the team of your project. You can arrange site visits with professionals here or invite other members such as family members or your own builders. </p> <ul class=\"list-reset clearfix mxn1\"> <li each=\"{project.customers}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-lime navy right mt2\">Customer</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> </p> </div> <div if=\"{currentAccount.isAdministrator}\" class=\"bg-blue white p1\"> <a onclick=\"{removeCustomer}\" class=\"btn btn-small bg-red white\">Remove</a> <a onclick=\"{impersonate}\" class=\"btn btn-small bg-maroon white\">Impersonate</a> </div> </li> <li each=\"{project.professionals}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-aqua blue white right mt2\">Professional *</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> <div if=\"{profile.website}\"><i class=\"fa fa-world\"></i><a href=\"{profile.website}\" target=\"_blank\">{profile.website}</a></div> </p> </div> <div if=\"{currentAccount.isAdministrator}\" class=\"bg-blue white p1\"> <a onclick=\"{removeProfessional}\" class=\"btn btn-small bg-red white\">Remove</a> <a onclick=\"{impersonate}\" class=\"btn btn-small bg-maroon white\">Impersonate</a> </div> </li> <li each=\"{project.administrators}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Admin</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> </p> </div> <div if=\"{currentAccount.isAdministrator}\" class=\"bg-blue white p1\"> <a onclick=\"{removeAdministrator}\" class=\"btn btn-small bg-red white\">Remove</a> <a onclick=\"{impersonate}\" class=\"btn btn-small bg-maroon white\">Impersonate</a> </div> </li> </ul> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-12 px1 mb2\"> <form name=\"form\" class=\"sm-col-12 px2 border\" onsubmit=\"{submit}\"> <h3><i class=\"fa fa-paper-plane-o\"></i> Invite a new member</h3> <div class=\"clearfix\"> <label class=\"inline-block col col-6 mb2 truncate\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Customer\">Customer </label> <label class=\"inline-block col col-6 mb2 truncate\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Professional\">Professional </label> </div> <span class=\"inline-error block\" if=\"{errors['invitee_attributes.user_type']}\">{errors['invitee_attributes.user_type']}</span> <input name=\"invitee_attributes[email]\" class=\"col-12 mb2 field\" placeholder=\"Email\" type=\"email\"> <span class=\"inline-error\" if=\"{errors['invitee_attributes.email']}\">{errors['invitee_attributes.email']}</span> <input type=\"hidden\" name=\"inviter_id\" value=\"{opts.api.currentAccount.id}\"> <input type=\"hidden\" name=\"project_id\" value=\"{opts.id}\"> <div class=\"right-align\"> <button type=\"submit\" class=\"btn btn-primary mb2 {busy: busy}\">Invite</button> </div> </form> </div> <div if=\"{project.professionals.length > 0}\" class=\"sm-col sm-col-6 px1 mb2\"> <r-project-appointments record=\"{project}\"></r-project-appointments> </div> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  if (this.currentAccount.isAdministrator) {
 	    this.tags["r-typeahead-input"].on("itemselected", function (item) {
 	      var coll = item.user_type.plural().toLowerCase();
@@ -36215,7 +36215,7 @@
 	      _this.opts.api.sessions.impersonate({ id: e.item.id });
 	    };
 	  }
-	
+
 	  this.mixin("teamTab");
 	  this.mixin("projectTab");
 	});
@@ -36226,42 +36226,42 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	
+
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
-	
+
 	var riot = _interopRequire(__webpack_require__(1));
-	
+
 	riot.mixin("teamTab", {
 	  init: function init() {
 	    var _this = this;
-	
+
 	    this.isPast = function (time) {
 	      return new Date(time.split(" ")[0]) < new Date();
 	    };
 	    this.isFuture = function (time) {
 	      return new Date(time.split(" ")[0]) >= new Date();
 	    };
-	
+
 	    this.getName = function () {
 	      return this.id !== this.currentAccount.id ? this.fullName() : "You";
 	    };
 	    this.fullName = function () {
 	      return "" + this.profile.first_name + " " + this.profile.last_name;
 	    };
-	
+
 	    this.submit = function (e) {
-	
+
 	      e.preventDefault();
-	
+
 	      var data = _this.serializeForm(_this.form);
-	
+
 	      if (_.isEmpty(data)) {
 	        $(_this.form).animateCss("shake");
 	        return;
 	      }
-	
+
 	      _this.update({ busy: true, errors: null });
-	
+
 	      _this.opts.api.invitations.invite(data).fail(_this.errorHandler).then(function (invitation) {
 	        _this.update({ busy: false });
 	        _this.form.reset();
@@ -36275,14 +36275,14 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
-	
+
 	var Pikaday = _interopRequire(__webpack_require__(146));
-	
+
 	riot.tag2("r-payment-form", "<h2 class=\"center mt0 mb2\">Payment Form</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/payments\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <input type=\"hidden\" name=\"quote_id\" value=\"{record.quote_id}\"> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <input class=\"block col-12 mb2 field\" name=\"amount\" value=\"{record.amount}\" placeholder=\"Amount\" type=\"{'number'}\"> <span if=\"{errors['amount']}\" class=\"inline-error\">{errors['amount']}</span> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"due_date\" value=\"{record.due_date}\" placeholder=\"Due Date\"> <span if=\"{errors['due_date']}\" class=\"inline-error\">{errors['due_date']}</span> <textarea class=\"block col-12 mb2 field\" type=\"text\" name=\"description\" placeholder=\"Description\">{record.description}</textarea> <span if=\"{errors['description']}\" class=\"inline-error\">{errors['description']}</span> <div if=\"{errors}\" id=\"error_explanation\"> <ul> <li each=\"{field, messages in errors}\">{field.humanize()} {messages.join(',')}</li> </ul> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Create</button> </form>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.on("mount", function () {
 	    var picker = new Pikaday({
 	      showTime: false,
@@ -36293,11 +36293,11 @@
 	      }
 	    });
 	  });
-	
+
 	  this.updateRecord = function (record) {
 	    _this.update({ record: record });
 	  };
-	
+
 	  if (!this.opts.id) {
 	    this.record = {
 	      project_id: opts.quote.project_id,
@@ -36306,19 +36306,19 @@
 	  } else {
 	    this.opts.api.payments.show(this.opts.id).fail(this.errorHandler).then(this.updateRecord);
 	  }
-	
+
 	  this.submit = function (e) {
 	    e.preventDefault();
-	
+
 	    var data = _this.serializeForm(_this.form);
-	
+
 	    if (_.isEmpty(data) || _.isEmpty(data.due_date)) {
 	      $(_this.form).animateCss("shake");
 	      return;
 	    }
-	
+
 	    _this.update({ busy: true, errors: null });
-	
+
 	    if (_this.opts.id) {
 	      _this.opts.api.payments.update(opts.id, data).fail(_this.errorHandler).then(_this.updateReset);
 	    } else {
@@ -36337,22 +36337,22 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	__webpack_require__(151);
-	
+
 	__webpack_require__(153);
-	
+
 	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <div if=\"{_.isEmpty(this.quotes) && !currentAccount.isCustomer}\" class=\"mt2\"> <p>There is no quote yet</p> <a class=\"btn btn-primary mb2\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{_.isEmpty(this.quotes) && currentAccount.isCustomer}\" class=\"mt2\"> <p>There is no quote submitted yet</p> </div> <a if=\"{!_.isEmpty(this.quotes) && currentAccount.isAdministrator}\" class=\"btn btn-primary mb2\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> <ul class=\"list-reset mxn1\"> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block sm-mb4\">{formatCurrency(total_amount)}</h2> <div class=\"inline-block mt2 p2 border sm-right mb2 sm-mb0\"> <span if=\"{submitted_at}\"> <i class=\"fa fa-clock-o mr1\"></i> Submitted at: {fromNow(submitted_at)}<br> </span> <span if=\"{accepted_at}\"> <i class=\"fa fa-clock-o mr1\"></i> Accepted at: {fromNow(accepted_at)}<br> </span> <span> <i class=\"fa fa-user mr1\"></i> Professional: <strong>{professional.profile.first_name} {professional.profile.last_name}</strong> </span> </div> <div class=\"tab-nav\"> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'summary'}\" onclick=\"{changeTab}\" rel=\"summary\">Summary</a> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'payments'}\" onclick=\"{changeTab}\" rel=\"payments\">Payments</a> </div> <div class=\"tabs m0 mxn2 border-top\"> <div if=\"{activeTab == 'summary'}\" class=\"mt2\"> <r-tender-summary document=\"{document}\"></r-tender-summary> <div class=\"clearfix overflow-hidden p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Open</a> <a class=\"btn btn-small bg-darken-2\" if=\"{!currentAccount.isCustomer && !accepted_at}\" onclick=\"{delete}\">Delete</a> </div> </div> <div if=\"{activeTab == 'payments'}\" class=\"mt2\"> <r-project-payments api=\"{opts.api}\" quote=\"{this}\" payment_id=\"{parent.opts.payment_id}\"></r-project-payments> </div> </div> </div> </li> </ul>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.activeTab = this.opts.tab || "summary";
-	
+
 	  this.changeTab = function (e) {
 	    e.preventDefault();
 	    _this.update({ activeTab: e.target.rel });
 	    history.pushState(null, null, _this.activeTab == "summary" ? window.location.href.replace("payments", "quotes") : window.location.href.replace("quotes", "payments"));
 	  };
-	
+
 	  this.on("mount", function () {
 	    opts.api.quotes.on("index.fail", _this.errorHandler);
 	    opts.api.quotes.on("index.success", _this.updateQuote);
@@ -36360,18 +36360,18 @@
 	    opts.api.quotes.on("delete.success", _this.removeQuote);
 	    opts.api.quotes.index({ project_id: opts.id, id: opts.quote_id });
 	  });
-	
+
 	  this.on("unmount", function () {
 	    opts.api.quotes.off("index.fail", _this.errorHandler);
 	    opts.api.quotes.off("index.success", _this.updateQuote);
 	    opts.api.quotes.off("create.success", _this.addQuote);
 	    opts.api.quotes.off("delete.success", _this.removeQuote);
 	  });
-	
+
 	  this.updateQuote = function (quotes) {
 	    return _this.update({ quotes: quotes });
 	  };
-	
+
 	  this.addQuote = function (quote) {
 	    _this.quotes = _this.quotes || [];
 	    if (!_.findWhere(_this.quotes, { id: quote.id })) {
@@ -36379,7 +36379,7 @@
 	    }
 	    _this.update();
 	  };
-	
+
 	  this.removeQuote = function (id) {
 	    var _id = _.findIndex(_this.quotes, function (q) {
 	      return q.id === id;
@@ -36387,14 +36387,14 @@
 	    if (_id > -1) _this.quotes.splice(_id, 1);
 	    _this.update();
 	  };
-	
+
 	  this["delete"] = function (e) {
 	    e.preventDefault();
 	    if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
 	      opts.api.quotes["delete"](e.item.id);
 	    }
 	  };
-	
+
 	  this.mixin("projectTab");
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
@@ -36404,12 +36404,12 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	var taskActions = __webpack_require__(152);
-	
+
 	riot.tag2("r-tender-summary", "<table class=\"table-light\"> <tbody> <tr each=\"{name, amount in summary}\"> <td>{name}</td> <td>{formatCurrency(amount)}</td> </tr> </tbody> </table>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.on("mount", function () {
 	    var summary = _.reduce(_.map(_this.opts.document.sections, function (section) {
 	      var tasks = _.mapObject(_.groupBy(section.tasks, "action"), function (val, key) {
@@ -36449,18 +36449,18 @@
 	    var sorted = {},
 	        key,
 	        a = [];
-	
+
 	    for (key in o) {
 	      if (o.hasOwnProperty(key)) {
 	        a.push(key);
 	      }
 	    }
-	
+
 	    // a.sort();
 	    a = _.sortBy(a, function (key) {
 	      return _.indexOf(_.values(taskActions), key);
 	    });
-	
+
 	    for (key = 0; key < a.length; key++) {
 	      sorted[a[key]] = o[a[key]];
 	    }
@@ -36494,28 +36494,28 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-project-payments", "<div class=\"overflow-scroll\"> <table class=\"table-light\"> <thead> <tr> <th>Amount</th> <th>Due Date</th> <th>Status</th> <th></th> </tr> </thead> <tbody> <tr each=\"{payments}\" class=\"{'bg-yellow': id == parent.opts.payment_id}\"> <td>{formatCurrency(amount)}</td> <td>{formatTime(due_date)}</td> <td>{status}</td> <td> <a if=\"{currentAccount.isAdministrator && (status == 'waiting')}\" class=\"btn btn-small bg-red white h6\" href=\"/app/admin/payments/{id}/edit\" target=\"_blank\">Edit</a> <a if=\"{currentAccount.isProfessional && (status == 'payable' || status == 'waiting')}\" class=\"btn btn-small bg-red white h6 {busy: busy}\" onclick=\"{cancelPayment}\">Cancel</a> <button if=\"{currentAccount.isCustomer && status == 'payable'}\" class=\"btn btn-small bg-green white h6 {busy: busy}\" __disabled=\"{busy}\" onclick=\"{payPayment}\">Pay</button> </td> </tr> </tbody> </table> <table if=\"{payments.length > 0}\" class=\"table-light mt2\"> <thead> <tr> <th>Paid</th> <th if=\"{quote.refunded_amount > 0}\">Refunded</th> <th if=\"{quote.declined_amount > 0}\">Declined</th> <th if=\"{currentAccount.isProfessional}\">Approved</th> </tr> </thead> <tbody> <tr> <td>{formatCurrency(quote.paid_amount)}</th> <td if=\"{refunded_amount > 0}\">{formatCurrency(quote.refunded_amount)}</td> <td if=\"{declined_amount > 0}\">{formatCurrency(quote.declined_amount)}</td> <td if=\"{currentAccount.isProfessional}\">{formatCurrency(quote.approved_amount)}</td> </tr> </tbody> </table> <div if=\"{currentAccount.isProfessional}\" class=\"clearfix overflow-hidden p1 bg-yellow\"> <div class=\"mt1\"> <a class=\"btn btn-small bg-darken-2\" onclick=\"{openPaymentForm}\">Add Payment</a> </div> </div> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.on("mount", function () {
-	
+
 	    opts.api.payments.on("create.success", _this.addPayment);
 	    opts.api.payments.on("cancel.success", _this.removePayment);
 	    opts.api.payments.on("cancel.fail", _this.errorHandler);
 	    opts.api.payments.on("pay.success", _this.reload);
 	    opts.api.payments.on("pay.fail", _this.errorHandler);
 	  });
-	
+
 	  this.on("unmount", function () {
-	
+
 	    opts.api.payments.off("create.success", _this.addPayment);
 	    opts.api.payments.off("cancel.success", _this.removePayment);
 	    opts.api.payments.off("cancel.fail", _this.errorHandler);
 	    opts.api.payments.off("pay.success", _this.reload);
 	    opts.api.payments.off("pay.fail", _this.errorHandler);
 	  });
-	
+
 	  this.on("before-mount", function () {
 	    if (_this.opts.quote_id) {
 	      // this.quote = this.opts.quote
@@ -36528,12 +36528,12 @@
 	      _this.loadResources("payments", { quote_id: _this.quote.id });
 	    }
 	  });
-	
+
 	  this.reload = function () {
 	    _this.update({ busy: false });
 	    _this.opts.api.quotes.index({ project_id: opts.id });
 	  };
-	
+
 	  this.openPaymentForm = function (e) {
 	    e.preventDefault();
 	    riot.mount("r-modal", {
@@ -36543,14 +36543,14 @@
 	      contentOpts: { api: opts.api, quote: _this.quote }
 	    });
 	  };
-	
+
 	  this.cancelPayment = function (e) {
 	    e.preventDefault();
 	    if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
 	      opts.api.payments.cancel(e.item.id);
 	    }
 	  };
-	
+
 	  this.payPayment = function (e) {
 	    e.preventDefault();
 	    //if (this.currentAccount.paying) {
@@ -36558,7 +36558,7 @@
 	    //  this.opts.api.payments.pay(e.item.id)
 	    //} else {
 	    _this.payment = e.item;
-	
+
 	    // load Stripe if not loaded
 	    if (typeof window.StripeCheckout !== "undefined" || window.StripeCheckout != null) {
 	      // Open Checkout with further options
@@ -36570,7 +36570,7 @@
 	    } else {
 	      _this.update({ busy: true });
 	      $.getScript("https://checkout.stripe.com/checkout.js").then(function () {
-	
+
 	        _this.stripeHandler = StripeCheckout.configure({
 	          key: $("meta[name=stripe-key]").attr("content"),
 	          //image: '/img/documentation/checkout/marketplace.png',
@@ -36584,13 +36584,13 @@
 	            _this.update({ busy: false });
 	          }
 	        });
-	
+
 	        // Close Checkout on page navigation
 	        $(window).on("popstate", function () {
 	          this.stripeHandler.close();
 	          this.update({ busy: false });
 	        });
-	
+
 	        // Open Checkout with further options
 	        _this.stripeHandler.open({
 	          //name: 'Stripe.com',
@@ -36601,14 +36601,14 @@
 	    }
 	    //}
 	  };
-	
+
 	  this.addPayment = function (payment) {
 	    if (!_.findWhere(_this.payments, { id: payment.id })) {
 	      _this.payments.push(payment);
 	    }
 	    _this.update();
 	  };
-	
+
 	  this.removePayment = function (id) {
 	    var _id = _.findIndex(_this.payments, function (p) {
 	      return p.id === id;
@@ -36626,10 +36626,10 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-project-tender", "<h2 class=\"mt0\">Tender</h2> <p if=\"{_.isEmpty(project.tender)}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. <virtual if=\"{currentAccount.isCustomer}\"> You can speed up the process by creating a tender document and we will be notified about it. </virtual> <div if=\"{_.isEmpty(project.tender) && !currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> </p> <div if=\"{currentAccount.isAdministrator}\" class=\"bg-blue white p1\"> Apply tender template <r-typeahead-input resource=\"tender_templates\" api=\"{opts.api}\" datum_tokenizer=\"{['name']}\"></r-typeahead-input> </div> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <div class=\"m0 mxn2\"> <r-tender-summary document=\"{project.tender.document}\"></r-tender-summary> </div> <p class=\"overflow-hidden m0 mxn2 p1 border-top\"> <a class=\"btn btn-small\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Open</a> <a class=\"btn btn-small btn-primary\" if=\"{currentAccount.isProfessional}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> </ul>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.clone = function (e) {
 	    e.preventDefault();
 	    opts.api.quotes.create({
@@ -36640,7 +36640,7 @@
 	      riot.route("/projects/" + quote.project_id + "/quotes/" + quote.id);
 	    });
 	  };
-	
+
 	  this.tags["r-typeahead-input"].on("itemselected", function (item) {
 	    opts.api.tenders.create({
 	      project_id: _this.opts.id, tender_template_id: item.id
@@ -36651,7 +36651,7 @@
 	      _this.update();
 	    });
 	  });
-	
+
 	  this.mixin("projectTab");
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
@@ -36661,47 +36661,47 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	__webpack_require__(156);
-	
+
 	__webpack_require__(157);
-	
+
 	__webpack_require__(159);
-	
+
 	__webpack_require__(161);
-	
+
 	__webpack_require__(162);
-	
+
 	__webpack_require__(191);
-	
+
 	__webpack_require__(192);
-	
+
 	riot.tag2("r-tenders-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1> {opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Tender ' + opts.id : 'New Tender'}</h1> <a class=\"mb1 btn btn-small h6 btn-outline orange\" href=\"/app/projects/{project.id}\"> <i class=\"fa fa-chevron-left\"></i> Back to Project </a> <r-tender-filters record=\"{record}\"></r-tender-filters> <r-tender-section each=\"{section , i in sections()}\" no-reorder></r-tender-section> <div class=\"py3\"> <h2 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h2> <h1 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h2> </div> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{!currentAccount.isProfessional}\" type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{currentAccount.isProfessional}\" onclick=\"{cloneTender}\" class=\"btn btn-primary btn-big {busy: busy}\">Clone</a> </form> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.type = "Tender";
-	
+
 	  this.headers = {
 	    task: { name: 3, description: 4, quantity: 3, actions: 2 },
 	    material: { name: 3, description: 4, quantity: 3, actions: 2 }
 	  };
-	
+
 	  this.tags["r-tender-filters"].on("update", this.update);
-	
+
 	  if (opts.readonly) {
 	    delete this.headers.task.actions;
 	    this.headers.task.name = 5;
 	    delete this.headers.material.actions;
 	    this.headers.material.name = 5;
 	  }
-	
+
 	  if (opts.api.currentAccount.isAdministrator) {
 	    this.headers = {
 	      task: { name: 3, description: 3, quantity: 1, price: 1, total_cost: 2, actions: 2 },
 	      material: { name: 2, description: 3, supplied: 1, quantity: 1, price: 1, total_cost: 2, actions: 2 }
 	    };
 	  }
-	
+
 	  if (opts.id) {
 	    this.on("mount", function () {
 	      opts.api.projects.on("show.success", _this.updateTenderFromProject);
@@ -36714,12 +36714,12 @@
 	  } else {
 	    this.record = { project_id: this.opts.project_id, document: { sections: [] } };
 	  }
-	
+
 	  this.submit = function (e) {
 	    if (e) e.preventDefault();
-	
+
 	    _this.update({ busy: true, errors: null });
-	
+
 	    _.map(_this.record.document.sections, function (sec) {
 	      if (_.isEmpty(sec.materials)) {
 	        sec.materials = null;
@@ -36731,7 +36731,7 @@
 	      }
 	      return sec;
 	    });
-	
+
 	    if (_this.opts.id) {
 	      _this.opts.api.tenders.update(opts.id, _this.record).fail(_this.errorHandler).then(function (id) {
 	        return _this.update({ busy: false });
@@ -36744,7 +36744,7 @@
 	      });
 	    }
 	  };
-	
+
 	  this.updateTenderFromProject = function (project) {
 	    _this.update({ record: project.tender });
 	  };
@@ -36761,7 +36761,7 @@
 	      riot.route("/projects/" + _this.record.project_id + "/quotes/" + quote.id);
 	    });
 	  };
-	
+
 	  this.mixin("tenderMixin");
 	  this.mixin("projectTab");
 	});
@@ -36772,15 +36772,15 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	
+
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
-	
+
 	var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
-	
+
 	var riot = _interopRequire(__webpack_require__(1));
-	
+
 	var VAT = 20;
-	
+
 	riot.mixin("tenderMixin", {
 	  warnUnsavedChanges: function warnUnsavedChanges() {
 	    if (!this.saved) {
@@ -36789,20 +36789,20 @@
 	  },
 	  init: function init() {
 	    var _this = this;
-	
+
 	    this.includeVat = false;
-	
+
 	    this.preventUnsaved = function (e) {
 	      e.preventDefault();
 	      if (_this.saved || !_this.saved && window.confirm(_this.ERRORS.CONFIRM_UNSAVED_CHANGES)) {
 	        riot.route($(e.currentTarget).attr("href").substr(5), e.currentTarget.title, true);
 	      }
 	    };
-	
+
 	    this.setUnsaved = function () {
 	      _this.saved = false;
 	    };
-	
+
 	    this.on("mount", function () {
 	      _this.saved = true;
 	      _this.opts.api.tenders.on("update", _this.updateTenderTotal);
@@ -36812,29 +36812,29 @@
 	        _this.saved = true;
 	        _submit(e);
 	      });
-	
+
 	      $(_this.root).bind("input", "input", _this.setUnsaved);
 	    });
-	
+
 	    this.on("unmount", function () {
 	      $("a[href*=\"/app/\"]", _this.root).off("click", _this.preventUnsaved);
 	      _this.opts.api.tenders.off("update", _this.updateTenderTotal);
 	      window.onbeforeunload = null;
 	      $(_this.root).unbind("input", "input", _this.setUnsaved);
 	    });
-	
+
 	    this.updateTenderTotal = function () {
 	      //this.tenderTotal()
 	      _this.update({ tenderTotal: _this.calcTenderTotal() });
 	    };
-	
+
 	    this.sections = function () {
 	      var filterSection = _this.tags["r-tender-filters"].section;
 	      return filterSection ? _.filter(_this.record.document.sections, function (section) {
 	        return section.id == filterSection;
 	      }) : _this.record.document.sections;
 	    };
-	
+
 	    this.addSection = function (e) {
 	      e.preventDefault();
 	      if (_.isEmpty(_this.sectionName.value)) {
@@ -36866,13 +36866,13 @@
 	    };
 	    this.calcSectionTotal = function (section) {
 	      var formatted = arguments[1] === undefined ? false : arguments[1];
-	
+
 	      var filterAction = _this.tags["r-tender-filters"].action;
-	
+
 	      var tasks = _.isString(filterAction) ? _.filter(section.tasks, function (task) {
 	        return task.action == filterAction;
 	      }) : section.tasks;
-	
+
 	      var itemTotal = _.reduce(tasks, function (total, item) {
 	        return total + item.price * item.quantity;
 	      }, 0);
@@ -36881,7 +36881,7 @@
 	      }, 0) : 0;
 	      section.itemTotal = itemTotal;
 	      section.materialTotal = materialTotal;
-	
+
 	      if (formatted) {
 	        // return this.formatCurrency(itemTotal + (itemTotal * VAT / 100) + materialTotal)
 	        return _this.formatCurrency(itemTotal + materialTotal);
@@ -36893,25 +36893,25 @@
 	      // console.log('tenderVat')
 	      return _this.formatCurrency(_this.record.document.include_vat ? _.reduce(_this.record.document.sections, function (total, section) {
 	        var _ref = section.itemTotal ? [section.itemTotal, section.materialTotal] : _this.calcSectionTotal(section);
-	
+
 	        var _ref2 = _slicedToArray(_ref, 2);
-	
+
 	        var itemTotal = _ref2[0];
 	        var materialTotal = _ref2[1];
-	
+
 	        return total + itemTotal * 20 / 100;
 	      }, 0) : 0);
 	    };
 	    this.calcTenderTotal = function () {
-	
+
 	      return _this.formatCurrency(_.reduce(_this.sections(), function (total, section) {
 	        var _ref = section.itemTotal ? [section.itemTotal, section.materialTotal] : _this.calcSectionTotal(section);
-	
+
 	        var _ref2 = _slicedToArray(_ref, 2);
-	
+
 	        var itemTotal = _ref2[0];
 	        var materialTotal = _ref2[1];
-	
+
 	        return total + itemTotal + materialTotal + (_this.record.document.include_vat ? itemTotal * 20 / 100 : 0);
 	      }, 0));
 	    };
@@ -36933,16 +36933,16 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
-	
+
 	var Handlebars = _interopRequire(__webpack_require__(158));
-	
+
 	riot.tag2("r-tender-item-input", "<div class=\"relative\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Start typing to add {opts.name}\" autocomplete=\"off\"> </form> <i class=\"fa fa-plus absolute right-0 top-0 p1\" onclick=\"{addDefaultItem}\"></i> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  //this.request({url: `/api/${this.opts.name.plural()}`}).then((data) => {
-	
+
 	  var source = new Bloodhound({
 	    datumTokenizer: function datumTokenizer(d) {
 	      return Bloodhound.tokenizers.whitespace("" + d.action + " " + d.group + " " + d.name + " " + (d.tags && d.tags.join(" ")));
@@ -36958,7 +36958,7 @@
 	      }
 	    }
 	  });
-	
+
 	  $(this.query).on("typeahead:notfound", function (e) {
 	    _this.addDefaultItem();
 	  }).on("typeahead:select", function (e, suggestion) {
@@ -36970,24 +36970,24 @@
 	    limit: 10,
 	    templates: {
 	      empty: "\n        <div class=\"empty-message border-bottom typeahead-item p1\">\n          unable to find any " + opts.name + " that match the current query, hit enter to add in Other category\n        </div>",
-	
+
 	      suggestion: Handlebars.compile("\n          <div class=\"border-bottom typeahead-item\">\n            <a class=\"cursor-pointer p2\"><span class=\"bg-orange p1\">{{action}}</span> {{name}}</a>\n          </div>\n        ")
 	    }
 	  });
 	  //})
-	
+
 	  this.addDefaultItem = function () {
 	    var val = $(_this.query).typeahead("val");
 	    if (val) {
 	      _this.selectItem(_this.getDefaultItem(val));
 	    }
 	  };
-	
+
 	  this.selectItem = function (item) {
 	    $(_this.query).typeahead("val", null);
 	    _this.trigger("itemselected", item);
 	  };
-	
+
 	  this.getDefaultItem = function (name) {
 	    var item = undefined;
 	    if (opts.name === "task") {
@@ -37009,7 +37009,7 @@
 	    }
 	    return item;
 	  };
-	
+
 	  if (this.opts.auto_focus) {
 	    this.on("mount", function () {
 	      _.defer(function () {
@@ -37025,21 +37025,21 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/*!
-	
+
 	 handlebars v4.0.5
-	
+
 	Copyright (C) 2011-2015 by Yehuda Katz
-	
+
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
 	in the Software without restriction, including without limitation the rights
 	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 	copies of the Software, and to permit persons to whom the Software is
 	furnished to do so, subject to the following conditions:
-	
+
 	The above copyright notice and this permission notice shall be included in
 	all copies or substantial portions of the Software.
-	
+
 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -37047,7 +37047,7 @@
 	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 	THE SOFTWARE.
-	
+
 	@license
 	*/
 	(function webpackUniversalModuleDefinition(root, factory) {
@@ -37063,41 +37063,41 @@
 	return /******/ (function(modules) { // webpackBootstrap
 	/******/ 	// The module cache
 	/******/ 	var installedModules = {};
-	
+
 	/******/ 	// The require function
 	/******/ 	function __webpack_require__(moduleId) {
-	
+
 	/******/ 		// Check if module is in cache
 	/******/ 		if(installedModules[moduleId])
 	/******/ 			return installedModules[moduleId].exports;
-	
+
 	/******/ 		// Create a new module (and put it into the cache)
 	/******/ 		var module = installedModules[moduleId] = {
 	/******/ 			exports: {},
 	/******/ 			id: moduleId,
 	/******/ 			loaded: false
 	/******/ 		};
-	
+
 	/******/ 		// Execute the module function
 	/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-	
+
 	/******/ 		// Flag the module as loaded
 	/******/ 		module.loaded = true;
-	
+
 	/******/ 		// Return the exports of the module
 	/******/ 		return module.exports;
 	/******/ 	}
-	
-	
+
+
 	/******/ 	// expose the modules object (__webpack_modules__)
 	/******/ 	__webpack_require__.m = modules;
-	
+
 	/******/ 	// expose the module cache
 	/******/ 	__webpack_require__.c = installedModules;
-	
+
 	/******/ 	// __webpack_public_path__
 	/******/ 	__webpack_require__.p = "";
-	
+
 	/******/ 	// Load entry module and return exports
 	/******/ 	return __webpack_require__(0);
 	/******/ })
@@ -37105,206 +37105,206 @@
 	/******/ ([
 	/* 0 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		'use strict';
-	
+
 		var _interopRequireDefault = __webpack_require__(1)['default'];
-	
+
 		exports.__esModule = true;
-	
+
 		var _handlebarsRuntime = __webpack_require__(2);
-	
+
 		var _handlebarsRuntime2 = _interopRequireDefault(_handlebarsRuntime);
-	
+
 		// Compiler imports
-	
+
 		var _handlebarsCompilerAst = __webpack_require__(21);
-	
+
 		var _handlebarsCompilerAst2 = _interopRequireDefault(_handlebarsCompilerAst);
-	
+
 		var _handlebarsCompilerBase = __webpack_require__(22);
-	
+
 		var _handlebarsCompilerCompiler = __webpack_require__(27);
-	
+
 		var _handlebarsCompilerJavascriptCompiler = __webpack_require__(28);
-	
+
 		var _handlebarsCompilerJavascriptCompiler2 = _interopRequireDefault(_handlebarsCompilerJavascriptCompiler);
-	
+
 		var _handlebarsCompilerVisitor = __webpack_require__(25);
-	
+
 		var _handlebarsCompilerVisitor2 = _interopRequireDefault(_handlebarsCompilerVisitor);
-	
+
 		var _handlebarsNoConflict = __webpack_require__(20);
-	
+
 		var _handlebarsNoConflict2 = _interopRequireDefault(_handlebarsNoConflict);
-	
+
 		var _create = _handlebarsRuntime2['default'].create;
 		function create() {
 		  var hb = _create();
-	
+
 		  hb.compile = function (input, options) {
 		    return _handlebarsCompilerCompiler.compile(input, options, hb);
 		  };
 		  hb.precompile = function (input, options) {
 		    return _handlebarsCompilerCompiler.precompile(input, options, hb);
 		  };
-	
+
 		  hb.AST = _handlebarsCompilerAst2['default'];
 		  hb.Compiler = _handlebarsCompilerCompiler.Compiler;
 		  hb.JavaScriptCompiler = _handlebarsCompilerJavascriptCompiler2['default'];
 		  hb.Parser = _handlebarsCompilerBase.parser;
 		  hb.parse = _handlebarsCompilerBase.parse;
-	
+
 		  return hb;
 		}
-	
+
 		var inst = create();
 		inst.create = create;
-	
+
 		_handlebarsNoConflict2['default'](inst);
-	
+
 		inst.Visitor = _handlebarsCompilerVisitor2['default'];
-	
+
 		inst['default'] = inst;
-	
+
 		exports['default'] = inst;
 		module.exports = exports['default'];
-	
+
 	/***/ },
 	/* 1 */
 	/***/ function(module, exports) {
-	
+
 		"use strict";
-	
+
 		exports["default"] = function (obj) {
 		  return obj && obj.__esModule ? obj : {
 		    "default": obj
 		  };
 		};
-	
+
 		exports.__esModule = true;
-	
+
 	/***/ },
 	/* 2 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		'use strict';
-	
+
 		var _interopRequireWildcard = __webpack_require__(3)['default'];
-	
+
 		var _interopRequireDefault = __webpack_require__(1)['default'];
-	
+
 		exports.__esModule = true;
-	
+
 		var _handlebarsBase = __webpack_require__(4);
-	
+
 		var base = _interopRequireWildcard(_handlebarsBase);
-	
+
 		// Each of these augment the Handlebars object. No need to setup here.
 		// (This is done to easily share code between commonjs and browse envs)
-	
+
 		var _handlebarsSafeString = __webpack_require__(18);
-	
+
 		var _handlebarsSafeString2 = _interopRequireDefault(_handlebarsSafeString);
-	
+
 		var _handlebarsException = __webpack_require__(6);
-	
+
 		var _handlebarsException2 = _interopRequireDefault(_handlebarsException);
-	
+
 		var _handlebarsUtils = __webpack_require__(5);
-	
+
 		var Utils = _interopRequireWildcard(_handlebarsUtils);
-	
+
 		var _handlebarsRuntime = __webpack_require__(19);
-	
+
 		var runtime = _interopRequireWildcard(_handlebarsRuntime);
-	
+
 		var _handlebarsNoConflict = __webpack_require__(20);
-	
+
 		var _handlebarsNoConflict2 = _interopRequireDefault(_handlebarsNoConflict);
-	
+
 		// For compatibility and usage outside of module systems, make the Handlebars object a namespace
 		function create() {
 		  var hb = new base.HandlebarsEnvironment();
-	
+
 		  Utils.extend(hb, base);
 		  hb.SafeString = _handlebarsSafeString2['default'];
 		  hb.Exception = _handlebarsException2['default'];
 		  hb.Utils = Utils;
 		  hb.escapeExpression = Utils.escapeExpression;
-	
+
 		  hb.VM = runtime;
 		  hb.template = function (spec) {
 		    return runtime.template(spec, hb);
 		  };
-	
+
 		  return hb;
 		}
-	
+
 		var inst = create();
 		inst.create = create;
-	
+
 		_handlebarsNoConflict2['default'](inst);
-	
+
 		inst['default'] = inst;
-	
+
 		exports['default'] = inst;
 		module.exports = exports['default'];
-	
+
 	/***/ },
 	/* 3 */
 	/***/ function(module, exports) {
-	
+
 		"use strict";
-	
+
 		exports["default"] = function (obj) {
 		  if (obj && obj.__esModule) {
 		    return obj;
 		  } else {
 		    var newObj = {};
-	
+
 		    if (obj != null) {
 		      for (var key in obj) {
 		        if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key];
 		      }
 		    }
-	
+
 		    newObj["default"] = obj;
 		    return newObj;
 		  }
 		};
-	
+
 		exports.__esModule = true;
-	
+
 	/***/ },
 	/* 4 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		'use strict';
-	
+
 		var _interopRequireDefault = __webpack_require__(1)['default'];
-	
+
 		exports.__esModule = true;
 		exports.HandlebarsEnvironment = HandlebarsEnvironment;
-	
+
 		var _utils = __webpack_require__(5);
-	
+
 		var _exception = __webpack_require__(6);
-	
+
 		var _exception2 = _interopRequireDefault(_exception);
-	
+
 		var _helpers = __webpack_require__(7);
-	
+
 		var _decorators = __webpack_require__(15);
-	
+
 		var _logger = __webpack_require__(17);
-	
+
 		var _logger2 = _interopRequireDefault(_logger);
-	
+
 		var VERSION = '4.0.5';
 		exports.VERSION = VERSION;
 		var COMPILER_REVISION = 7;
-	
+
 		exports.COMPILER_REVISION = COMPILER_REVISION;
 		var REVISION_CHANGES = {
 		  1: '<= 1.0.rc.2', // 1.0.rc.2 is actually rev2 but doesn't report it
@@ -37315,25 +37315,25 @@
 		  6: '>= 2.0.0-beta.1',
 		  7: '>= 4.0.0'
 		};
-	
+
 		exports.REVISION_CHANGES = REVISION_CHANGES;
 		var objectType = '[object Object]';
-	
+
 		function HandlebarsEnvironment(helpers, partials, decorators) {
 		  this.helpers = helpers || {};
 		  this.partials = partials || {};
 		  this.decorators = decorators || {};
-	
+
 		  _helpers.registerDefaultHelpers(this);
 		  _decorators.registerDefaultDecorators(this);
 		}
-	
+
 		HandlebarsEnvironment.prototype = {
 		  constructor: HandlebarsEnvironment,
-	
+
 		  logger: _logger2['default'],
 		  log: _logger2['default'].log,
-	
+
 		  registerHelper: function registerHelper(name, fn) {
 		    if (_utils.toString.call(name) === objectType) {
 		      if (fn) {
@@ -37347,7 +37347,7 @@
 		  unregisterHelper: function unregisterHelper(name) {
 		    delete this.helpers[name];
 		  },
-	
+
 		  registerPartial: function registerPartial(name, partial) {
 		    if (_utils.toString.call(name) === objectType) {
 		      _utils.extend(this.partials, name);
@@ -37361,7 +37361,7 @@
 		  unregisterPartial: function unregisterPartial(name) {
 		    delete this.partials[name];
 		  },
-	
+
 		  registerDecorator: function registerDecorator(name, fn) {
 		    if (_utils.toString.call(name) === objectType) {
 		      if (fn) {
@@ -37376,19 +37376,19 @@
 		    delete this.decorators[name];
 		  }
 		};
-	
+
 		var log = _logger2['default'].log;
-	
+
 		exports.log = log;
 		exports.createFrame = _utils.createFrame;
 		exports.logger = _logger2['default'];
-	
+
 	/***/ },
 	/* 5 */
 	/***/ function(module, exports) {
-	
+
 		'use strict';
-	
+
 		exports.__esModule = true;
 		exports.extend = extend;
 		exports.indexOf = indexOf;
@@ -37406,14 +37406,14 @@
 		  '`': '&#x60;',
 		  '=': '&#x3D;'
 		};
-	
+
 		var badChars = /[&<>"'`=]/g,
 		    possible = /[&<>"'`=]/;
-	
+
 		function escapeChar(chr) {
 		  return escape[chr];
 		}
-	
+
 		function extend(obj /* , ...source */) {
 		  for (var i = 1; i < arguments.length; i++) {
 		    for (var key in arguments[i]) {
@@ -37422,12 +37422,12 @@
 		      }
 		    }
 		  }
-	
+
 		  return obj;
 		}
-	
+
 		var toString = Object.prototype.toString;
-	
+
 		exports.toString = toString;
 		// Sourced from lodash
 		// https://github.com/bestiejs/lodash/blob/master/LICENSE.txt
@@ -37443,17 +37443,17 @@
 		  };
 		}
 		exports.isFunction = isFunction;
-	
+
 		/* eslint-enable func-style */
-	
+
 		/* istanbul ignore next */
 		var isArray = Array.isArray || function (value) {
 		  return value && typeof value === 'object' ? toString.call(value) === '[object Array]' : false;
 		};
-	
+
 		exports.isArray = isArray;
 		// Older IE versions do not directly support indexOf so we must implement our own, sadly.
-	
+
 		function indexOf(array, value) {
 		  for (var i = 0, len = array.length; i < len; i++) {
 		    if (array[i] === value) {
@@ -37462,7 +37462,7 @@
 		  }
 		  return -1;
 		}
-	
+
 		function escapeExpression(string) {
 		  if (typeof string !== 'string') {
 		    // don't escape SafeStrings, since they're already safe
@@ -37473,19 +37473,19 @@
 		    } else if (!string) {
 		      return string + '';
 		    }
-	
+
 		    // Force a string conversion as this will be done by the append regardless and
 		    // the regex test will do this transparently behind the scenes, causing issues if
 		    // an object's to string has escaped characters in it.
 		    string = '' + string;
 		  }
-	
+
 		  if (!possible.test(string)) {
 		    return string;
 		  }
 		  return string.replace(badChars, escapeChar);
 		}
-	
+
 		function isEmpty(value) {
 		  if (!value && value !== 0) {
 		    return true;
@@ -37495,32 +37495,32 @@
 		    return false;
 		  }
 		}
-	
+
 		function createFrame(object) {
 		  var frame = extend({}, object);
 		  frame._parent = object;
 		  return frame;
 		}
-	
+
 		function blockParams(params, ids) {
 		  params.path = ids;
 		  return params;
 		}
-	
+
 		function appendContextPath(contextPath, id) {
 		  return (contextPath ? contextPath + '.' : '') + id;
 		}
-	
+
 	/***/ },
 	/* 6 */
 	/***/ function(module, exports) {
-	
+
 		'use strict';
-	
+
 		exports.__esModule = true;
-	
+
 		var errorProps = ['description', 'fileName', 'lineNumber', 'message', 'name', 'number', 'stack'];
-	
+
 		function Exception(message, node) {
 		  var loc = node && node.loc,
 		      line = undefined,
@@ -37528,72 +37528,72 @@
 		  if (loc) {
 		    line = loc.start.line;
 		    column = loc.start.column;
-	
+
 		    message += ' - ' + line + ':' + column;
 		  }
-	
+
 		  var tmp = Error.prototype.constructor.call(this, message);
-	
+
 		  // Unfortunately errors are not enumerable in Chrome (at least), so `for prop in tmp` doesn't work.
 		  for (var idx = 0; idx < errorProps.length; idx++) {
 		    this[errorProps[idx]] = tmp[errorProps[idx]];
 		  }
-	
+
 		  /* istanbul ignore else */
 		  if (Error.captureStackTrace) {
 		    Error.captureStackTrace(this, Exception);
 		  }
-	
+
 		  if (loc) {
 		    this.lineNumber = line;
 		    this.column = column;
 		  }
 		}
-	
+
 		Exception.prototype = new Error();
-	
+
 		exports['default'] = Exception;
 		module.exports = exports['default'];
-	
+
 	/***/ },
 	/* 7 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		'use strict';
-	
+
 		var _interopRequireDefault = __webpack_require__(1)['default'];
-	
+
 		exports.__esModule = true;
 		exports.registerDefaultHelpers = registerDefaultHelpers;
-	
+
 		var _helpersBlockHelperMissing = __webpack_require__(8);
-	
+
 		var _helpersBlockHelperMissing2 = _interopRequireDefault(_helpersBlockHelperMissing);
-	
+
 		var _helpersEach = __webpack_require__(9);
-	
+
 		var _helpersEach2 = _interopRequireDefault(_helpersEach);
-	
+
 		var _helpersHelperMissing = __webpack_require__(10);
-	
+
 		var _helpersHelperMissing2 = _interopRequireDefault(_helpersHelperMissing);
-	
+
 		var _helpersIf = __webpack_require__(11);
-	
+
 		var _helpersIf2 = _interopRequireDefault(_helpersIf);
-	
+
 		var _helpersLog = __webpack_require__(12);
-	
+
 		var _helpersLog2 = _interopRequireDefault(_helpersLog);
-	
+
 		var _helpersLookup = __webpack_require__(13);
-	
+
 		var _helpersLookup2 = _interopRequireDefault(_helpersLookup);
-	
+
 		var _helpersWith = __webpack_require__(14);
-	
+
 		var _helpersWith2 = _interopRequireDefault(_helpersWith);
-	
+
 		function registerDefaultHelpers(instance) {
 		  _helpersBlockHelperMissing2['default'](instance);
 		  _helpersEach2['default'](instance);
@@ -37603,22 +37603,22 @@
 		  _helpersLookup2['default'](instance);
 		  _helpersWith2['default'](instance);
 		}
-	
+
 	/***/ },
 	/* 8 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		'use strict';
-	
+
 		exports.__esModule = true;
-	
+
 		var _utils = __webpack_require__(5);
-	
+
 		exports['default'] = function (instance) {
 		  instance.registerHelper('blockHelperMissing', function (context, options) {
 		    var inverse = options.inverse,
 		        fn = options.fn;
-	
+
 		    if (context === true) {
 		      return fn(this);
 		    } else if (context === false || context == null) {
@@ -37628,7 +37628,7 @@
 		        if (options.ids) {
 		          options.ids = [options.name];
 		        }
-	
+
 		        return instance.helpers.each(context, options);
 		      } else {
 		        return inverse(this);
@@ -37639,73 +37639,73 @@
 		        data.contextPath = _utils.appendContextPath(options.data.contextPath, options.name);
 		        options = { data: data };
 		      }
-	
+
 		      return fn(context, options);
 		    }
 		  });
 		};
-	
+
 		module.exports = exports['default'];
-	
+
 	/***/ },
 	/* 9 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		'use strict';
-	
+
 		var _interopRequireDefault = __webpack_require__(1)['default'];
-	
+
 		exports.__esModule = true;
-	
+
 		var _utils = __webpack_require__(5);
-	
+
 		var _exception = __webpack_require__(6);
-	
+
 		var _exception2 = _interopRequireDefault(_exception);
-	
+
 		exports['default'] = function (instance) {
 		  instance.registerHelper('each', function (context, options) {
 		    if (!options) {
 		      throw new _exception2['default']('Must pass iterator to #each');
 		    }
-	
+
 		    var fn = options.fn,
 		        inverse = options.inverse,
 		        i = 0,
 		        ret = '',
 		        data = undefined,
 		        contextPath = undefined;
-	
+
 		    if (options.data && options.ids) {
 		      contextPath = _utils.appendContextPath(options.data.contextPath, options.ids[0]) + '.';
 		    }
-	
+
 		    if (_utils.isFunction(context)) {
 		      context = context.call(this);
 		    }
-	
+
 		    if (options.data) {
 		      data = _utils.createFrame(options.data);
 		    }
-	
+
 		    function execIteration(field, index, last) {
 		      if (data) {
 		        data.key = field;
 		        data.index = index;
 		        data.first = index === 0;
 		        data.last = !!last;
-	
+
 		        if (contextPath) {
 		          data.contextPath = contextPath + field;
 		        }
 		      }
-	
+
 		      ret = ret + fn(context[field], {
 		        data: data,
 		        blockParams: _utils.blockParams([context[field], field], [contextPath + field, null])
 		      });
 		    }
-	
+
 		    if (context && typeof context === 'object') {
 		      if (_utils.isArray(context)) {
 		        for (var j = context.length; i < j; i++) {
@@ -37715,7 +37715,7 @@
 		        }
 		      } else {
 		        var priorKey = undefined;
-	
+
 		        for (var key in context) {
 		          if (context.hasOwnProperty(key)) {
 		            // We're running the iterations one step out of sync so we can detect
@@ -37733,31 +37733,31 @@
 		        }
 		      }
 		    }
-	
+
 		    if (i === 0) {
 		      ret = inverse(this);
 		    }
-	
+
 		    return ret;
 		  });
 		};
-	
+
 		module.exports = exports['default'];
-	
+
 	/***/ },
 	/* 10 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		'use strict';
-	
+
 		var _interopRequireDefault = __webpack_require__(1)['default'];
-	
+
 		exports.__esModule = true;
-	
+
 		var _exception = __webpack_require__(6);
-	
+
 		var _exception2 = _interopRequireDefault(_exception);
-	
+
 		exports['default'] = function (instance) {
 		  instance.registerHelper('helperMissing', function () /* [args, ]options */{
 		    if (arguments.length === 1) {
@@ -37769,25 +37769,25 @@
 		    }
 		  });
 		};
-	
+
 		module.exports = exports['default'];
-	
+
 	/***/ },
 	/* 11 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		'use strict';
-	
+
 		exports.__esModule = true;
-	
+
 		var _utils = __webpack_require__(5);
-	
+
 		exports['default'] = function (instance) {
 		  instance.registerHelper('if', function (conditional, options) {
 		    if (_utils.isFunction(conditional)) {
 		      conditional = conditional.call(this);
 		    }
-	
+
 		    // Default behavior is to render the positive path if the value is truthy and not empty.
 		    // The `includeZero` option may be set to treat the condtional as purely not empty based on the
 		    // behavior of isEmpty. Effectively this determines if 0 is handled by the positive path or negative.
@@ -37797,22 +37797,22 @@
 		      return options.fn(this);
 		    }
 		  });
-	
+
 		  instance.registerHelper('unless', function (conditional, options) {
 		    return instance.helpers['if'].call(this, conditional, { fn: options.inverse, inverse: options.fn, hash: options.hash });
 		  });
 		};
-	
+
 		module.exports = exports['default'];
-	
+
 	/***/ },
 	/* 12 */
 	/***/ function(module, exports) {
-	
+
 		'use strict';
-	
+
 		exports.__esModule = true;
-	
+
 		exports['default'] = function (instance) {
 		  instance.registerHelper('log', function () /* message, options */{
 		    var args = [undefined],
@@ -37820,7 +37820,7 @@
 		    for (var i = 0; i < arguments.length - 1; i++) {
 		      args.push(arguments[i]);
 		    }
-	
+
 		    var level = 1;
 		    if (options.hash.level != null) {
 		      level = options.hash.level;
@@ -37828,54 +37828,54 @@
 		      level = options.data.level;
 		    }
 		    args[0] = level;
-	
+
 		    instance.log.apply(instance, args);
 		  });
 		};
-	
+
 		module.exports = exports['default'];
-	
+
 	/***/ },
 	/* 13 */
 	/***/ function(module, exports) {
-	
+
 		'use strict';
-	
+
 		exports.__esModule = true;
-	
+
 		exports['default'] = function (instance) {
 		  instance.registerHelper('lookup', function (obj, field) {
 		    return obj && obj[field];
 		  });
 		};
-	
+
 		module.exports = exports['default'];
-	
+
 	/***/ },
 	/* 14 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		'use strict';
-	
+
 		exports.__esModule = true;
-	
+
 		var _utils = __webpack_require__(5);
-	
+
 		exports['default'] = function (instance) {
 		  instance.registerHelper('with', function (context, options) {
 		    if (_utils.isFunction(context)) {
 		      context = context.call(this);
 		    }
-	
+
 		    var fn = options.fn;
-	
+
 		    if (!_utils.isEmpty(context)) {
 		      var data = options.data;
 		      if (options.data && options.ids) {
 		        data = _utils.createFrame(options.data);
 		        data.contextPath = _utils.appendContextPath(options.data.contextPath, options.ids[0]);
 		      }
-	
+
 		      return fn(context, {
 		        data: data,
 		        blockParams: _utils.blockParams([context], [data && data.contextPath])
@@ -37885,38 +37885,38 @@
 		    }
 		  });
 		};
-	
+
 		module.exports = exports['default'];
-	
+
 	/***/ },
 	/* 15 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		'use strict';
-	
+
 		var _interopRequireDefault = __webpack_require__(1)['default'];
-	
+
 		exports.__esModule = true;
 		exports.registerDefaultDecorators = registerDefaultDecorators;
-	
+
 		var _decoratorsInline = __webpack_require__(16);
-	
+
 		var _decoratorsInline2 = _interopRequireDefault(_decoratorsInline);
-	
+
 		function registerDefaultDecorators(instance) {
 		  _decoratorsInline2['default'](instance);
 		}
-	
+
 	/***/ },
 	/* 16 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		'use strict';
-	
+
 		exports.__esModule = true;
-	
+
 		var _utils = __webpack_require__(5);
-	
+
 		exports['default'] = function (instance) {
 		  instance.registerDecorator('inline', function (fn, props, container, options) {
 		    var ret = fn;
@@ -37931,29 +37931,29 @@
 		        return ret;
 		      };
 		    }
-	
+
 		    props.partials[options.args[0]] = options.fn;
-	
+
 		    return ret;
 		  });
 		};
-	
+
 		module.exports = exports['default'];
-	
+
 	/***/ },
 	/* 17 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		'use strict';
-	
+
 		exports.__esModule = true;
-	
+
 		var _utils = __webpack_require__(5);
-	
+
 		var logger = {
 		  methodMap: ['debug', 'info', 'warn', 'error'],
 		  level: 'info',
-	
+
 		  // Maps a given level value to the `methodMap` indexes above.
 		  lookupLevel: function lookupLevel(level) {
 		    if (typeof level === 'string') {
@@ -37964,62 +37964,62 @@
 		        level = parseInt(level, 10);
 		      }
 		    }
-	
+
 		    return level;
 		  },
-	
+
 		  // Can be overridden in the host environment
 		  log: function log(level) {
 		    level = logger.lookupLevel(level);
-	
+
 		    if (typeof console !== 'undefined' && logger.lookupLevel(logger.level) <= level) {
 		      var method = logger.methodMap[level];
 		      if (!console[method]) {
 		        // eslint-disable-line no-console
 		        method = 'log';
 		      }
-	
+
 		      for (var _len = arguments.length, message = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
 		        message[_key - 1] = arguments[_key];
 		      }
-	
+
 		      console[method].apply(console, message); // eslint-disable-line no-console
 		    }
 		  }
 		};
-	
+
 		exports['default'] = logger;
 		module.exports = exports['default'];
-	
+
 	/***/ },
 	/* 18 */
 	/***/ function(module, exports) {
-	
+
 		// Build out our basic SafeString type
 		'use strict';
-	
+
 		exports.__esModule = true;
 		function SafeString(string) {
 		  this.string = string;
 		}
-	
+
 		SafeString.prototype.toString = SafeString.prototype.toHTML = function () {
 		  return '' + this.string;
 		};
-	
+
 		exports['default'] = SafeString;
 		module.exports = exports['default'];
-	
+
 	/***/ },
 	/* 19 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		'use strict';
-	
+
 		var _interopRequireWildcard = __webpack_require__(3)['default'];
-	
+
 		var _interopRequireDefault = __webpack_require__(1)['default'];
-	
+
 		exports.__esModule = true;
 		exports.checkRevision = checkRevision;
 		exports.template = template;
@@ -38027,21 +38027,21 @@
 		exports.resolvePartial = resolvePartial;
 		exports.invokePartial = invokePartial;
 		exports.noop = noop;
-	
+
 		var _utils = __webpack_require__(5);
-	
+
 		var Utils = _interopRequireWildcard(_utils);
-	
+
 		var _exception = __webpack_require__(6);
-	
+
 		var _exception2 = _interopRequireDefault(_exception);
-	
+
 		var _base = __webpack_require__(4);
-	
+
 		function checkRevision(compilerInfo) {
 		  var compilerRevision = compilerInfo && compilerInfo[0] || 1,
 		      currentRevision = _base.COMPILER_REVISION;
-	
+
 		  if (compilerRevision !== currentRevision) {
 		    if (compilerRevision < currentRevision) {
 		      var runtimeVersions = _base.REVISION_CHANGES[currentRevision],
@@ -38053,7 +38053,7 @@
 		    }
 		  }
 		}
-	
+
 		function template(templateSpec, env) {
 		  /* istanbul ignore next */
 		  if (!env) {
@@ -38062,13 +38062,13 @@
 		  if (!templateSpec || !templateSpec.main) {
 		    throw new _exception2['default']('Unknown template object: ' + typeof templateSpec);
 		  }
-	
+
 		  templateSpec.main.decorator = templateSpec.main_d;
-	
+
 		  // Note: Using env.VM references rather than local var references throughout this section to allow
 		  // for external users to override these as psuedo-supported APIs.
 		  env.VM.checkRevision(templateSpec.compiler);
-	
+
 		  function invokePartialWrapper(partial, context, options) {
 		    if (options.hash) {
 		      context = Utils.extend({}, context, options.hash);
@@ -38076,10 +38076,10 @@
 		        options.ids[0] = true;
 		      }
 		    }
-	
+
 		    partial = env.VM.resolvePartial.call(this, partial, context, options);
 		    var result = env.VM.invokePartial.call(this, partial, context, options);
-	
+
 		    if (result == null && env.compile) {
 		      options.partials[options.name] = env.compile(partial, templateSpec.compilerOptions, env);
 		      result = options.partials[options.name](context, options);
@@ -38091,7 +38091,7 @@
 		          if (!lines[i] && i + 1 === l) {
 		            break;
 		          }
-	
+
 		          lines[i] = options.indent + lines[i];
 		        }
 		        result = lines.join('\n');
@@ -38101,7 +38101,7 @@
 		      throw new _exception2['default']('The partial ' + options.name + ' could not be compiled when running in runtime-only mode');
 		    }
 		  }
-	
+
 		  // Just add water
 		  var container = {
 		    strict: function strict(obj, name) {
@@ -38121,16 +38121,16 @@
 		    lambda: function lambda(current, context) {
 		      return typeof current === 'function' ? current.call(context) : current;
 		    },
-	
+
 		    escapeExpression: Utils.escapeExpression,
 		    invokePartial: invokePartialWrapper,
-	
+
 		    fn: function fn(i) {
 		      var ret = templateSpec[i];
 		      ret.decorator = templateSpec[i + '_d'];
 		      return ret;
 		    },
-	
+
 		    programs: [],
 		    program: function program(i, data, declaredBlockParams, blockParams, depths) {
 		      var programWrapper = this.programs[i],
@@ -38142,7 +38142,7 @@
 		      }
 		      return programWrapper;
 		    },
-	
+
 		    data: function data(value, depth) {
 		      while (value && depth--) {
 		        value = value._parent;
@@ -38151,23 +38151,23 @@
 		    },
 		    merge: function merge(param, common) {
 		      var obj = param || common;
-	
+
 		      if (param && common && param !== common) {
 		        obj = Utils.extend({}, common, param);
 		      }
-	
+
 		      return obj;
 		    },
-	
+
 		    noop: env.VM.noop,
 		    compilerInfo: templateSpec.compiler
 		  };
-	
+
 		  function ret(context) {
 		    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	
+
 		    var data = options.data;
-	
+
 		    ret._setup(options);
 		    if (!options.partial && templateSpec.useData) {
 		      data = initData(context, data);
@@ -38181,7 +38181,7 @@
 		        depths = [context];
 		      }
 		    }
-	
+
 		    function main(context /*, options*/) {
 		      return '' + templateSpec.main(container, context, container.helpers, container.partials, data, blockParams, depths);
 		    }
@@ -38189,11 +38189,11 @@
 		    return main(context, options);
 		  }
 		  ret.isTop = true;
-	
+
 		  ret._setup = function (options) {
 		    if (!options.partial) {
 		      container.helpers = container.merge(options.helpers, env.helpers);
-	
+
 		      if (templateSpec.usePartial) {
 		        container.partials = container.merge(options.partials, env.partials);
 		      }
@@ -38206,7 +38206,7 @@
 		      container.decorators = options.decorators;
 		    }
 		  };
-	
+
 		  ret._child = function (i, data, blockParams, depths) {
 		    if (templateSpec.useBlockParams && !blockParams) {
 		      throw new _exception2['default']('must pass block params');
@@ -38214,32 +38214,32 @@
 		    if (templateSpec.useDepths && !depths) {
 		      throw new _exception2['default']('must pass parent depths');
 		    }
-	
+
 		    return wrapProgram(container, i, templateSpec[i], data, 0, blockParams, depths);
 		  };
 		  return ret;
 		}
-	
+
 		function wrapProgram(container, i, fn, data, declaredBlockParams, blockParams, depths) {
 		  function prog(context) {
 		    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	
+
 		    var currentDepths = depths;
 		    if (depths && context !== depths[0]) {
 		      currentDepths = [context].concat(depths);
 		    }
-	
+
 		    return fn(container, context, container.helpers, container.partials, options.data || data, blockParams && [options.blockParams].concat(blockParams), currentDepths);
 		  }
-	
+
 		  prog = executeDecorators(fn, prog, container, depths, data, blockParams);
-	
+
 		  prog.program = i;
 		  prog.depth = depths ? depths.length : 0;
 		  prog.blockParams = declaredBlockParams || 0;
 		  return prog;
 		}
-	
+
 		function resolvePartial(partial, context, options) {
 		  if (!partial) {
 		    if (options.name === '@partial-block') {
@@ -38254,38 +38254,38 @@
 		  }
 		  return partial;
 		}
-	
+
 		function invokePartial(partial, context, options) {
 		  options.partial = true;
 		  if (options.ids) {
 		    options.data.contextPath = options.ids[0] || options.data.contextPath;
 		  }
-	
+
 		  var partialBlock = undefined;
 		  if (options.fn && options.fn !== noop) {
 		    options.data = _base.createFrame(options.data);
 		    partialBlock = options.data['partial-block'] = options.fn;
-	
+
 		    if (partialBlock.partials) {
 		      options.partials = Utils.extend({}, options.partials, partialBlock.partials);
 		    }
 		  }
-	
+
 		  if (partial === undefined && partialBlock) {
 		    partial = partialBlock;
 		  }
-	
+
 		  if (partial === undefined) {
 		    throw new _exception2['default']('The partial ' + options.name + ' could not be found');
 		  } else if (partial instanceof Function) {
 		    return partial(context, options);
 		  }
 		}
-	
+
 		function noop() {
 		  return '';
 		}
-	
+
 		function initData(context, data) {
 		  if (!data || !('root' in data)) {
 		    data = data ? _base.createFrame(data) : {};
@@ -38293,7 +38293,7 @@
 		  }
 		  return data;
 		}
-	
+
 		function executeDecorators(fn, prog, container, depths, data, blockParams) {
 		  if (fn.decorator) {
 		    var props = {};
@@ -38302,16 +38302,16 @@
 		  }
 		  return prog;
 		}
-	
+
 	/***/ },
 	/* 20 */
 	/***/ function(module, exports) {
-	
+
 		/* WEBPACK VAR INJECTION */(function(global) {/* global window */
 		'use strict';
-	
+
 		exports.__esModule = true;
-	
+
 		exports['default'] = function (Handlebars) {
 		  /* istanbul ignore next */
 		  var root = typeof global !== 'undefined' ? global : window,
@@ -38324,16 +38324,16 @@
 		    return Handlebars;
 		  };
 		};
-	
+
 		module.exports = exports['default'];
 		/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-	
+
 	/***/ },
 	/* 21 */
 	/***/ function(module, exports) {
-	
+
 		'use strict';
-	
+
 		exports.__esModule = true;
 		var AST = {
 		  // Public API used to evaluate derived attributes regarding AST nodes
@@ -38344,12 +38344,12 @@
 		    helperExpression: function helperExpression(node) {
 		      return node.type === 'SubExpression' || (node.type === 'MustacheStatement' || node.type === 'BlockStatement') && !!(node.params && node.params.length || node.hash);
 		    },
-	
+
 		    scopedId: function scopedId(path) {
 		      return (/^\.|this\b/.test(path.original)
 		      );
 		    },
-	
+
 		    // an ID is simple if it only has one part, and that part is not
 		    // `..` or `this`.
 		    simpleId: function simpleId(path) {
@@ -38357,69 +38357,69 @@
 		    }
 		  }
 		};
-	
+
 		// Must be exported as an object rather than the root of the module as the jison lexer
 		// must modify the object to operate properly.
 		exports['default'] = AST;
 		module.exports = exports['default'];
-	
+
 	/***/ },
 	/* 22 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		'use strict';
-	
+
 		var _interopRequireDefault = __webpack_require__(1)['default'];
-	
+
 		var _interopRequireWildcard = __webpack_require__(3)['default'];
-	
+
 		exports.__esModule = true;
 		exports.parse = parse;
-	
+
 		var _parser = __webpack_require__(23);
-	
+
 		var _parser2 = _interopRequireDefault(_parser);
-	
+
 		var _whitespaceControl = __webpack_require__(24);
-	
+
 		var _whitespaceControl2 = _interopRequireDefault(_whitespaceControl);
-	
+
 		var _helpers = __webpack_require__(26);
-	
+
 		var Helpers = _interopRequireWildcard(_helpers);
-	
+
 		var _utils = __webpack_require__(5);
-	
+
 		exports.parser = _parser2['default'];
-	
+
 		var yy = {};
 		_utils.extend(yy, Helpers);
-	
+
 		function parse(input, options) {
 		  // Just return if an already-compiled AST was passed in.
 		  if (input.type === 'Program') {
 		    return input;
 		  }
-	
+
 		  _parser2['default'].yy = yy;
-	
+
 		  // Altering the shared object here, but this is ok as parser is a sync operation
 		  yy.locInfo = function (locInfo) {
 		    return new yy.SourceLocation(options && options.srcName, locInfo);
 		  };
-	
+
 		  var strip = new _whitespaceControl2['default'](options);
 		  return strip.accept(_parser2['default'].parse(input));
 		}
-	
+
 	/***/ },
 	/* 23 */
 	/***/ function(module, exports) {
-	
+
 		/* istanbul ignore next */
 		/* Jison generated parser */
 		"use strict";
-	
+
 		var handlebars = (function () {
 		    var parser = { trace: function trace() {},
 		        yy: {},
@@ -38428,7 +38428,7 @@
 		        productions_: [0, [3, 2], [4, 1], [7, 1], [7, 1], [7, 1], [7, 1], [7, 1], [7, 1], [7, 1], [13, 1], [10, 3], [16, 5], [9, 4], [9, 4], [24, 6], [27, 6], [38, 6], [43, 2], [45, 3], [45, 1], [26, 3], [8, 5], [8, 5], [11, 5], [12, 3], [59, 5], [63, 1], [63, 1], [64, 5], [69, 1], [71, 3], [74, 3], [20, 1], [20, 1], [20, 1], [20, 1], [20, 1], [20, 1], [20, 1], [56, 1], [56, 1], [79, 2], [78, 1], [86, 3], [86, 1], [6, 0], [6, 2], [17, 1], [17, 2], [21, 0], [21, 2], [22, 0], [22, 1], [25, 0], [25, 1], [28, 0], [28, 1], [30, 0], [30, 2], [31, 0], [31, 1], [32, 0], [32, 1], [35, 0], [35, 2], [36, 0], [36, 1], [37, 0], [37, 1], [40, 0], [40, 2], [41, 0], [41, 1], [42, 0], [42, 1], [46, 0], [46, 1], [49, 0], [49, 2], [50, 0], [50, 1], [52, 0], [52, 2], [53, 0], [53, 1], [57, 0], [57, 2], [58, 0], [58, 1], [61, 0], [61, 2], [62, 0], [62, 1], [66, 0], [66, 2], [67, 0], [67, 1], [70, 1], [70, 2], [76, 1], [76, 2]],
 		        performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate, $$, _$
 		        /**/) {
-	
+
 		            var $0 = $$.length - 1;
 		            switch (yystate) {
 		                case 1:
@@ -38462,7 +38462,7 @@
 		                        strip: yy.stripFlags($$[$0], $$[$0]),
 		                        loc: yy.locInfo(this._$)
 		                    };
-	
+
 		                    break;
 		                case 10:
 		                    this.$ = {
@@ -38471,7 +38471,7 @@
 		                        value: $$[$0],
 		                        loc: yy.locInfo(this._$)
 		                    };
-	
+
 		                    break;
 		                case 11:
 		                    this.$ = yy.prepareRawBlock($$[$0 - 2], $$[$0 - 1], $$[$0], this._$);
@@ -38501,9 +38501,9 @@
 		                    var inverse = yy.prepareBlock($$[$0 - 2], $$[$0 - 1], $$[$0], $$[$0], false, this._$),
 		                        program = yy.prepareProgram([inverse], $$[$0 - 1].loc);
 		                    program.chained = true;
-	
+
 		                    this.$ = { strip: $$[$0 - 2].strip, program: program, chain: true };
-	
+
 		                    break;
 		                case 20:
 		                    this.$ = $$[$0];
@@ -38527,7 +38527,7 @@
 		                        strip: yy.stripFlags($$[$0 - 4], $$[$0]),
 		                        loc: yy.locInfo(this._$)
 		                    };
-	
+
 		                    break;
 		                case 25:
 		                    this.$ = yy.preparePartialBlock($$[$0 - 2], $$[$0 - 1], $$[$0], this._$);
@@ -38549,7 +38549,7 @@
 		                        hash: $$[$0 - 1],
 		                        loc: yy.locInfo(this._$)
 		                    };
-	
+
 		                    break;
 		                case 30:
 		                    this.$ = { type: 'Hash', pairs: $$[$0], loc: yy.locInfo(this._$) };
@@ -38840,14 +38840,14 @@
 		                    this.yylloc.last_column++;
 		                }
 		                if (this.options.ranges) this.yylloc.range[1]++;
-	
+
 		                this._input = this._input.slice(1);
 		                return ch;
 		            },
 		            unput: function unput(ch) {
 		                var len = ch.length;
 		                var lines = ch.split(/(?:\r\n?|\n)/g);
-	
+
 		                this._input = ch + this._input;
 		                this.yytext = this.yytext.substr(0, this.yytext.length - len - 1);
 		                //this.yyleng -= len;
@@ -38855,16 +38855,16 @@
 		                var oldLines = this.match.split(/(?:\r\n?|\n)/g);
 		                this.match = this.match.substr(0, this.match.length - 1);
 		                this.matched = this.matched.substr(0, this.matched.length - 1);
-	
+
 		                if (lines.length - 1) this.yylineno -= lines.length - 1;
 		                var r = this.yylloc.range;
-	
+
 		                this.yylloc = { first_line: this.yylloc.first_line,
 		                    last_line: this.yylineno + 1,
 		                    first_column: this.yylloc.first_column,
 		                    last_column: lines ? (lines.length === oldLines.length ? this.yylloc.first_column : 0) + oldLines[oldLines.length - lines.length].length - lines[0].length : this.yylloc.first_column - len
 		                };
-	
+
 		                if (this.options.ranges) {
 		                    this.yylloc.range = [r[0], r[0] + this.yyleng - len];
 		                }
@@ -38898,7 +38898,7 @@
 		                    return this.EOF;
 		                }
 		                if (!this._input) this.done = true;
-	
+
 		                var token, match, tempMatch, index, col, lines;
 		                if (!this._more) {
 		                    this.yytext = '';
@@ -38966,11 +38966,11 @@
 		        lexer.options = {};
 		        lexer.performAction = function anonymous(yy, yy_, $avoiding_name_collisions, YY_START
 		        /**/) {
-	
+
 		            function strip(start, end) {
 		                return yy_.yytext = yy_.yytext.substr(start, yy_.yyleng - end);
 		            }
-	
+
 		            var YYSTATE = YY_START;
 		            switch ($avoiding_name_collisions) {
 		                case 0:
@@ -38984,7 +38984,7 @@
 		                        this.begin("mu");
 		                    }
 		                    if (yy_.yytext) return 15;
-	
+
 		                    break;
 		                case 1:
 		                    return 15;
@@ -38992,7 +38992,7 @@
 		                case 2:
 		                    this.popState();
 		                    return 15;
-	
+
 		                    break;
 		                case 3:
 		                    this.begin('raw');return 15;
@@ -39008,7 +39008,7 @@
 		                        yy_.yytext = yy_.yytext.substr(5, yy_.yyleng - 9);
 		                        return 'END_RAW_BLOCK';
 		                    }
-	
+
 		                    break;
 		                case 5:
 		                    return 15;
@@ -39016,7 +39016,7 @@
 		                case 6:
 		                    this.popState();
 		                    return 14;
-	
+
 		                    break;
 		                case 7:
 		                    return 65;
@@ -39031,7 +39031,7 @@
 		                    this.popState();
 		                    this.begin('raw');
 		                    return 23;
-	
+
 		                    break;
 		                case 11:
 		                    return 55;
@@ -39067,12 +39067,12 @@
 		                    this.unput(yy_.yytext);
 		                    this.popState();
 		                    this.begin('com');
-	
+
 		                    break;
 		                case 22:
 		                    this.popState();
 		                    return 14;
-	
+
 		                    break;
 		                case 23:
 		                    return 48;
@@ -39153,59 +39153,59 @@
 		    return new Parser();
 		})();exports.__esModule = true;
 		exports['default'] = handlebars;
-	
+
 	/***/ },
 	/* 24 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		'use strict';
-	
+
 		var _interopRequireDefault = __webpack_require__(1)['default'];
-	
+
 		exports.__esModule = true;
-	
+
 		var _visitor = __webpack_require__(25);
-	
+
 		var _visitor2 = _interopRequireDefault(_visitor);
-	
+
 		function WhitespaceControl() {
 		  var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-	
+
 		  this.options = options;
 		}
 		WhitespaceControl.prototype = new _visitor2['default']();
-	
+
 		WhitespaceControl.prototype.Program = function (program) {
 		  var doStandalone = !this.options.ignoreStandalone;
-	
+
 		  var isRoot = !this.isRootSeen;
 		  this.isRootSeen = true;
-	
+
 		  var body = program.body;
 		  for (var i = 0, l = body.length; i < l; i++) {
 		    var current = body[i],
 		        strip = this.accept(current);
-	
+
 		    if (!strip) {
 		      continue;
 		    }
-	
+
 		    var _isPrevWhitespace = isPrevWhitespace(body, i, isRoot),
 		        _isNextWhitespace = isNextWhitespace(body, i, isRoot),
 		        openStandalone = strip.openStandalone && _isPrevWhitespace,
 		        closeStandalone = strip.closeStandalone && _isNextWhitespace,
 		        inlineStandalone = strip.inlineStandalone && _isPrevWhitespace && _isNextWhitespace;
-	
+
 		    if (strip.close) {
 		      omitRight(body, i, true);
 		    }
 		    if (strip.open) {
 		      omitLeft(body, i, true);
 		    }
-	
+
 		    if (doStandalone && inlineStandalone) {
 		      omitRight(body, i);
-	
+
 		      if (omitLeft(body, i)) {
 		        // If we are on a standalone node, save the indent info for partials
 		        if (current.type === 'PartialStatement') {
@@ -39216,68 +39216,68 @@
 		    }
 		    if (doStandalone && openStandalone) {
 		      omitRight((current.program || current.inverse).body);
-	
+
 		      // Strip out the previous content node if it's whitespace only
 		      omitLeft(body, i);
 		    }
 		    if (doStandalone && closeStandalone) {
 		      // Always strip the next node
 		      omitRight(body, i);
-	
+
 		      omitLeft((current.inverse || current.program).body);
 		    }
 		  }
-	
+
 		  return program;
 		};
-	
+
 		WhitespaceControl.prototype.BlockStatement = WhitespaceControl.prototype.DecoratorBlock = WhitespaceControl.prototype.PartialBlockStatement = function (block) {
 		  this.accept(block.program);
 		  this.accept(block.inverse);
-	
+
 		  // Find the inverse program that is involed with whitespace stripping.
 		  var program = block.program || block.inverse,
 		      inverse = block.program && block.inverse,
 		      firstInverse = inverse,
 		      lastInverse = inverse;
-	
+
 		  if (inverse && inverse.chained) {
 		    firstInverse = inverse.body[0].program;
-	
+
 		    // Walk the inverse chain to find the last inverse that is actually in the chain.
 		    while (lastInverse.chained) {
 		      lastInverse = lastInverse.body[lastInverse.body.length - 1].program;
 		    }
 		  }
-	
+
 		  var strip = {
 		    open: block.openStrip.open,
 		    close: block.closeStrip.close,
-	
+
 		    // Determine the standalone candiacy. Basically flag our content as being possibly standalone
 		    // so our parent can determine if we actually are standalone
 		    openStandalone: isNextWhitespace(program.body),
 		    closeStandalone: isPrevWhitespace((firstInverse || program).body)
 		  };
-	
+
 		  if (block.openStrip.close) {
 		    omitRight(program.body, null, true);
 		  }
-	
+
 		  if (inverse) {
 		    var inverseStrip = block.inverseStrip;
-	
+
 		    if (inverseStrip.open) {
 		      omitLeft(program.body, null, true);
 		    }
-	
+
 		    if (inverseStrip.close) {
 		      omitRight(firstInverse.body, null, true);
 		    }
 		    if (block.closeStrip.open) {
 		      omitLeft(lastInverse.body, null, true);
 		    }
-	
+
 		    // Find standalone else statments
 		    if (!this.options.ignoreStandalone && isPrevWhitespace(program.body) && isNextWhitespace(firstInverse.body)) {
 		      omitLeft(program.body);
@@ -39286,14 +39286,14 @@
 		  } else if (block.closeStrip.open) {
 		    omitLeft(program.body, null, true);
 		  }
-	
+
 		  return strip;
 		};
-	
+
 		WhitespaceControl.prototype.Decorator = WhitespaceControl.prototype.MustacheStatement = function (mustache) {
 		  return mustache.strip;
 		};
-	
+
 		WhitespaceControl.prototype.PartialStatement = WhitespaceControl.prototype.CommentStatement = function (node) {
 		  /* istanbul ignore next */
 		  var strip = node.strip || {};
@@ -39303,12 +39303,12 @@
 		    close: strip.close
 		  };
 		};
-	
+
 		function isPrevWhitespace(body, i, isRoot) {
 		  if (i === undefined) {
 		    i = body.length;
 		  }
-	
+
 		  // Nodes that end with newlines are considered whitespace (but are special
 		  // cased for strip operations)
 		  var prev = body[i - 1],
@@ -39316,7 +39316,7 @@
 		  if (!prev) {
 		    return isRoot;
 		  }
-	
+
 		  if (prev.type === 'ContentStatement') {
 		    return (sibling || !isRoot ? /\r?\n\s*?$/ : /(^|\r?\n)\s*?$/).test(prev.original);
 		  }
@@ -39325,18 +39325,18 @@
 		  if (i === undefined) {
 		    i = -1;
 		  }
-	
+
 		  var next = body[i + 1],
 		      sibling = body[i + 2];
 		  if (!next) {
 		    return isRoot;
 		  }
-	
+
 		  if (next.type === 'ContentStatement') {
 		    return (sibling || !isRoot ? /^\s*?\r?\n/ : /^\s*?(\r?\n|$)/).test(next.original);
 		  }
 		}
-	
+
 		// Marks the node to the right of the position as omitted.
 		// I.e. {{foo}}' ' will mark the ' ' node as omitted.
 		//
@@ -39349,12 +39349,12 @@
 		  if (!current || current.type !== 'ContentStatement' || !multiple && current.rightStripped) {
 		    return;
 		  }
-	
+
 		  var original = current.value;
 		  current.value = current.value.replace(multiple ? /^\s+/ : /^[ \t]*\r?\n?/, '');
 		  current.rightStripped = current.value !== original;
 		}
-	
+
 		// Marks the node to the left of the position as omitted.
 		// I.e. ' '{{foo}} will mark the ' ' node as omitted.
 		//
@@ -39367,39 +39367,39 @@
 		  if (!current || current.type !== 'ContentStatement' || !multiple && current.leftStripped) {
 		    return;
 		  }
-	
+
 		  // We omit the last node if it's whitespace only and not preceeded by a non-content node.
 		  var original = current.value;
 		  current.value = current.value.replace(multiple ? /\s+$/ : /[ \t]+$/, '');
 		  current.leftStripped = current.value !== original;
 		  return current.leftStripped;
 		}
-	
+
 		exports['default'] = WhitespaceControl;
 		module.exports = exports['default'];
-	
+
 	/***/ },
 	/* 25 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		'use strict';
-	
+
 		var _interopRequireDefault = __webpack_require__(1)['default'];
-	
+
 		exports.__esModule = true;
-	
+
 		var _exception = __webpack_require__(6);
-	
+
 		var _exception2 = _interopRequireDefault(_exception);
-	
+
 		function Visitor() {
 		  this.parents = [];
 		}
-	
+
 		Visitor.prototype = {
 		  constructor: Visitor,
 		  mutating: false,
-	
+
 		  // Visits a given value. If mutating, will replace the value if necessary.
 		  acceptKey: function acceptKey(node, name) {
 		    var value = this.accept(node[name]);
@@ -39412,23 +39412,23 @@
 		      node[name] = value;
 		    }
 		  },
-	
+
 		  // Performs an accept operation with added sanity check to ensure
 		  // required keys are not removed.
 		  acceptRequired: function acceptRequired(node, name) {
 		    this.acceptKey(node, name);
-	
+
 		    if (!node[name]) {
 		      throw new _exception2['default'](node.type + ' requires ' + name);
 		    }
 		  },
-	
+
 		  // Traverses a given array. If mutating, empty respnses will be removed
 		  // for child elements.
 		  acceptArray: function acceptArray(array) {
 		    for (var i = 0, l = array.length; i < l; i++) {
 		      this.acceptKey(array, i);
-	
+
 		      if (!array[i]) {
 		        array.splice(i, 1);
 		        i--;
@@ -39436,63 +39436,63 @@
 		      }
 		    }
 		  },
-	
+
 		  accept: function accept(object) {
 		    if (!object) {
 		      return;
 		    }
-	
+
 		    /* istanbul ignore next: Sanity code */
 		    if (!this[object.type]) {
 		      throw new _exception2['default']('Unknown type: ' + object.type, object);
 		    }
-	
+
 		    if (this.current) {
 		      this.parents.unshift(this.current);
 		    }
 		    this.current = object;
-	
+
 		    var ret = this[object.type](object);
-	
+
 		    this.current = this.parents.shift();
-	
+
 		    if (!this.mutating || ret) {
 		      return ret;
 		    } else if (ret !== false) {
 		      return object;
 		    }
 		  },
-	
+
 		  Program: function Program(program) {
 		    this.acceptArray(program.body);
 		  },
-	
+
 		  MustacheStatement: visitSubExpression,
 		  Decorator: visitSubExpression,
-	
+
 		  BlockStatement: visitBlock,
 		  DecoratorBlock: visitBlock,
-	
+
 		  PartialStatement: visitPartial,
 		  PartialBlockStatement: function PartialBlockStatement(partial) {
 		    visitPartial.call(this, partial);
-	
+
 		    this.acceptKey(partial, 'program');
 		  },
-	
+
 		  ContentStatement: function ContentStatement() /* content */{},
 		  CommentStatement: function CommentStatement() /* comment */{},
-	
+
 		  SubExpression: visitSubExpression,
-	
+
 		  PathExpression: function PathExpression() /* path */{},
-	
+
 		  StringLiteral: function StringLiteral() /* string */{},
 		  NumberLiteral: function NumberLiteral() /* number */{},
 		  BooleanLiteral: function BooleanLiteral() /* bool */{},
 		  UndefinedLiteral: function UndefinedLiteral() /* literal */{},
 		  NullLiteral: function NullLiteral() /* literal */{},
-	
+
 		  Hash: function Hash(hash) {
 		    this.acceptArray(hash.pairs);
 		  },
@@ -39500,7 +39500,7 @@
 		    this.acceptRequired(pair, 'value');
 		  }
 		};
-	
+
 		function visitSubExpression(mustache) {
 		  this.acceptRequired(mustache, 'path');
 		  this.acceptArray(mustache.params);
@@ -39508,7 +39508,7 @@
 		}
 		function visitBlock(block) {
 		  visitSubExpression.call(this, block);
-	
+
 		  this.acceptKey(block, 'program');
 		  this.acceptKey(block, 'inverse');
 		}
@@ -39517,18 +39517,18 @@
 		  this.acceptArray(partial.params);
 		  this.acceptKey(partial, 'hash');
 		}
-	
+
 		exports['default'] = Visitor;
 		module.exports = exports['default'];
-	
+
 	/***/ },
 	/* 26 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		'use strict';
-	
+
 		var _interopRequireDefault = __webpack_require__(1)['default'];
-	
+
 		exports.__esModule = true;
 		exports.SourceLocation = SourceLocation;
 		exports.id = id;
@@ -39540,21 +39540,21 @@
 		exports.prepareBlock = prepareBlock;
 		exports.prepareProgram = prepareProgram;
 		exports.preparePartialBlock = preparePartialBlock;
-	
+
 		var _exception = __webpack_require__(6);
-	
+
 		var _exception2 = _interopRequireDefault(_exception);
-	
+
 		function validateClose(open, close) {
 		  close = close.path ? close.path.original : close;
-	
+
 		  if (open.path.original !== close) {
 		    var errorNode = { loc: open.path.loc };
-	
+
 		    throw new _exception2['default'](open.path.original + " doesn't match " + close, errorNode);
 		  }
 		}
-	
+
 		function SourceLocation(source, locInfo) {
 		  this.source = source;
 		  this.start = {
@@ -39566,7 +39566,7 @@
 		    column: locInfo.last_column
 		  };
 		}
-	
+
 		function id(token) {
 		  if (/^\[.*\]$/.test(token)) {
 		    return token.substr(1, token.length - 2);
@@ -39574,34 +39574,34 @@
 		    return token;
 		  }
 		}
-	
+
 		function stripFlags(open, close) {
 		  return {
 		    open: open.charAt(2) === '~',
 		    close: close.charAt(close.length - 3) === '~'
 		  };
 		}
-	
+
 		function stripComment(comment) {
 		  return comment.replace(/^\{\{~?\!-?-?/, '').replace(/-?-?~?\}\}$/, '');
 		}
-	
+
 		function preparePath(data, parts, loc) {
 		  loc = this.locInfo(loc);
-	
+
 		  var original = data ? '@' : '',
 		      dig = [],
 		      depth = 0,
 		      depthString = '';
-	
+
 		  for (var i = 0, l = parts.length; i < l; i++) {
 		    var part = parts[i].part,
-	
+
 		    // If we have [] syntax then we do not treat path references as operators,
 		    // i.e. foo.[this] resolves to approximately context.foo['this']
 		    isLiteral = parts[i].original !== part;
 		    original += (parts[i].separator || '') + part;
-	
+
 		    if (!isLiteral && (part === '..' || part === '.' || part === 'this')) {
 		      if (dig.length > 0) {
 		        throw new _exception2['default']('Invalid path: ' + original, { loc: loc });
@@ -39613,7 +39613,7 @@
 		      dig.push(part);
 		    }
 		  }
-	
+
 		  return {
 		    type: 'PathExpression',
 		    data: data,
@@ -39623,12 +39623,12 @@
 		    loc: loc
 		  };
 		}
-	
+
 		function prepareMustache(path, params, hash, open, strip, locInfo) {
 		  // Must use charAt to support IE pre-10
 		  var escapeFlag = open.charAt(3) || open.charAt(2),
 		      escaped = escapeFlag !== '{' && escapeFlag !== '&';
-	
+
 		  var decorator = /\*/.test(open);
 		  return {
 		    type: decorator ? 'Decorator' : 'MustacheStatement',
@@ -39640,10 +39640,10 @@
 		    loc: this.locInfo(locInfo)
 		  };
 		}
-	
+
 		function prepareRawBlock(openRawBlock, contents, close, locInfo) {
 		  validateClose(openRawBlock, close);
-	
+
 		  locInfo = this.locInfo(locInfo);
 		  var program = {
 		    type: 'Program',
@@ -39651,7 +39651,7 @@
 		    strip: {},
 		    loc: locInfo
 		  };
-	
+
 		  return {
 		    type: 'BlockStatement',
 		    path: openRawBlock.path,
@@ -39664,38 +39664,38 @@
 		    loc: locInfo
 		  };
 		}
-	
+
 		function prepareBlock(openBlock, program, inverseAndProgram, close, inverted, locInfo) {
 		  if (close && close.path) {
 		    validateClose(openBlock, close);
 		  }
-	
+
 		  var decorator = /\*/.test(openBlock.open);
-	
+
 		  program.blockParams = openBlock.blockParams;
-	
+
 		  var inverse = undefined,
 		      inverseStrip = undefined;
-	
+
 		  if (inverseAndProgram) {
 		    if (decorator) {
 		      throw new _exception2['default']('Unexpected inverse block on decorator', inverseAndProgram);
 		    }
-	
+
 		    if (inverseAndProgram.chain) {
 		      inverseAndProgram.program.body[0].closeStrip = close.strip;
 		    }
-	
+
 		    inverseStrip = inverseAndProgram.strip;
 		    inverse = inverseAndProgram.program;
 		  }
-	
+
 		  if (inverted) {
 		    inverted = inverse;
 		    inverse = program;
 		    program = inverted;
 		  }
-	
+
 		  return {
 		    type: decorator ? 'DecoratorBlock' : 'BlockStatement',
 		    path: openBlock.path,
@@ -39709,12 +39709,12 @@
 		    loc: this.locInfo(locInfo)
 		  };
 		}
-	
+
 		function prepareProgram(statements, loc) {
 		  if (!loc && statements.length) {
 		    var firstLoc = statements[0].loc,
 		        lastLoc = statements[statements.length - 1].loc;
-	
+
 		    /* istanbul ignore else */
 		    if (firstLoc && lastLoc) {
 		      loc = {
@@ -39730,7 +39730,7 @@
 		      };
 		    }
 		  }
-	
+
 		  return {
 		    type: 'Program',
 		    body: statements,
@@ -39738,10 +39738,10 @@
 		    loc: loc
 		  };
 		}
-	
+
 		function preparePartialBlock(open, program, close, locInfo) {
 		  validateClose(open, close);
-	
+
 		  return {
 		    type: 'PartialBlockStatement',
 		    name: open.path,
@@ -39753,50 +39753,50 @@
 		    loc: this.locInfo(locInfo)
 		  };
 		}
-	
+
 	/***/ },
 	/* 27 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		/* eslint-disable new-cap */
-	
+
 		'use strict';
-	
+
 		var _interopRequireDefault = __webpack_require__(1)['default'];
-	
+
 		exports.__esModule = true;
 		exports.Compiler = Compiler;
 		exports.precompile = precompile;
 		exports.compile = compile;
-	
+
 		var _exception = __webpack_require__(6);
-	
+
 		var _exception2 = _interopRequireDefault(_exception);
-	
+
 		var _utils = __webpack_require__(5);
-	
+
 		var _ast = __webpack_require__(21);
-	
+
 		var _ast2 = _interopRequireDefault(_ast);
-	
+
 		var slice = [].slice;
-	
+
 		function Compiler() {}
-	
+
 		// the foundHelper register will disambiguate helper lookup from finding a
 		// function in a context. This is necessary for mustache compatibility, which
 		// requires that context functions in blocks are evaluated by blockHelperMissing,
 		// and then proceed as if the resulting value was provided to blockHelperMissing.
-	
+
 		Compiler.prototype = {
 		  compiler: Compiler,
-	
+
 		  equals: function equals(other) {
 		    var len = this.opcodes.length;
 		    if (other.opcodes.length !== len) {
 		      return false;
 		    }
-	
+
 		    for (var i = 0; i < len; i++) {
 		      var opcode = this.opcodes[i],
 		          otherOpcode = other.opcodes[i];
@@ -39804,7 +39804,7 @@
 		        return false;
 		      }
 		    }
-	
+
 		    // We know that length is the same between the two arrays because they are directly tied
 		    // to the opcode behavior above.
 		    len = this.children.length;
@@ -39813,12 +39813,12 @@
 		        return false;
 		      }
 		    }
-	
+
 		    return true;
 		  },
-	
+
 		  guid: 0,
-	
+
 		  compile: function compile(program, options) {
 		    this.sourceNode = [];
 		    this.opcodes = [];
@@ -39826,9 +39826,9 @@
 		    this.options = options;
 		    this.stringParams = options.stringParams;
 		    this.trackIds = options.trackIds;
-	
+
 		    options.blockParams = options.blockParams || [];
-	
+
 		    // These changes will propagate to the other compiler components
 		    var knownHelpers = options.knownHelpers;
 		    options.knownHelpers = {
@@ -39849,69 +39849,69 @@
 		        }
 		      }
 		    }
-	
+
 		    return this.accept(program);
 		  },
-	
+
 		  compileProgram: function compileProgram(program) {
 		    var childCompiler = new this.compiler(),
 		        // eslint-disable-line new-cap
 		    result = childCompiler.compile(program, this.options),
 		        guid = this.guid++;
-	
+
 		    this.usePartial = this.usePartial || result.usePartial;
-	
+
 		    this.children[guid] = result;
 		    this.useDepths = this.useDepths || result.useDepths;
-	
+
 		    return guid;
 		  },
-	
+
 		  accept: function accept(node) {
 		    /* istanbul ignore next: Sanity code */
 		    if (!this[node.type]) {
 		      throw new _exception2['default']('Unknown type: ' + node.type, node);
 		    }
-	
+
 		    this.sourceNode.unshift(node);
 		    var ret = this[node.type](node);
 		    this.sourceNode.shift();
 		    return ret;
 		  },
-	
+
 		  Program: function Program(program) {
 		    this.options.blockParams.unshift(program.blockParams);
-	
+
 		    var body = program.body,
 		        bodyLength = body.length;
 		    for (var i = 0; i < bodyLength; i++) {
 		      this.accept(body[i]);
 		    }
-	
+
 		    this.options.blockParams.shift();
-	
+
 		    this.isSimple = bodyLength === 1;
 		    this.blockParams = program.blockParams ? program.blockParams.length : 0;
-	
+
 		    return this;
 		  },
-	
+
 		  BlockStatement: function BlockStatement(block) {
 		    transformLiteralToPath(block);
-	
+
 		    var program = block.program,
 		        inverse = block.inverse;
-	
+
 		    program = program && this.compileProgram(program);
 		    inverse = inverse && this.compileProgram(inverse);
-	
+
 		    var type = this.classifySexpr(block);
-	
+
 		    if (type === 'helper') {
 		      this.helperSexpr(block, program, inverse);
 		    } else if (type === 'simple') {
 		      this.simpleSexpr(block);
-	
+
 		      // now that the simple mustache is resolved, we need to
 		      // evaluate it by executing `blockHelperMissing`
 		      this.opcode('pushProgram', program);
@@ -39920,7 +39920,7 @@
 		      this.opcode('blockValue', block.path.original);
 		    } else {
 		      this.ambiguousSexpr(block, program, inverse);
-	
+
 		      // now that the simple mustache is resolved, we need to
 		      // evaluate it by executing `blockHelperMissing`
 		      this.opcode('pushProgram', program);
@@ -39928,27 +39928,27 @@
 		      this.opcode('emptyHash');
 		      this.opcode('ambiguousBlockValue');
 		    }
-	
+
 		    this.opcode('append');
 		  },
-	
+
 		  DecoratorBlock: function DecoratorBlock(decorator) {
 		    var program = decorator.program && this.compileProgram(decorator.program);
 		    var params = this.setupFullMustacheParams(decorator, program, undefined),
 		        path = decorator.path;
-	
+
 		    this.useDecorators = true;
 		    this.opcode('registerDecorator', params.length, path.original);
 		  },
-	
+
 		  PartialStatement: function PartialStatement(partial) {
 		    this.usePartial = true;
-	
+
 		    var program = partial.program;
 		    if (program) {
 		      program = this.compileProgram(partial.program);
 		    }
-	
+
 		    var params = partial.params;
 		    if (params.length > 1) {
 		      throw new _exception2['default']('Unsupported number of partial arguments: ' + params.length, partial);
@@ -39959,31 +39959,31 @@
 		        params.push({ type: 'PathExpression', parts: [], depth: 0 });
 		      }
 		    }
-	
+
 		    var partialName = partial.name.original,
 		        isDynamic = partial.name.type === 'SubExpression';
 		    if (isDynamic) {
 		      this.accept(partial.name);
 		    }
-	
+
 		    this.setupFullMustacheParams(partial, program, undefined, true);
-	
+
 		    var indent = partial.indent || '';
 		    if (this.options.preventIndent && indent) {
 		      this.opcode('appendContent', indent);
 		      indent = '';
 		    }
-	
+
 		    this.opcode('invokePartial', isDynamic, partialName, indent);
 		    this.opcode('append');
 		  },
 		  PartialBlockStatement: function PartialBlockStatement(partialBlock) {
 		    this.PartialStatement(partialBlock);
 		  },
-	
+
 		  MustacheStatement: function MustacheStatement(mustache) {
 		    this.SubExpression(mustache);
-	
+
 		    if (mustache.escaped && !this.options.noEscape) {
 		      this.opcode('appendEscaped');
 		    } else {
@@ -39993,19 +39993,19 @@
 		  Decorator: function Decorator(decorator) {
 		    this.DecoratorBlock(decorator);
 		  },
-	
+
 		  ContentStatement: function ContentStatement(content) {
 		    if (content.value) {
 		      this.opcode('appendContent', content.value);
 		    }
 		  },
-	
+
 		  CommentStatement: function CommentStatement() {},
-	
+
 		  SubExpression: function SubExpression(sexpr) {
 		    transformLiteralToPath(sexpr);
 		    var type = this.classifySexpr(sexpr);
-	
+
 		    if (type === 'simple') {
 		      this.simpleSexpr(sexpr);
 		    } else if (type === 'helper') {
@@ -40018,30 +40018,30 @@
 		    var path = sexpr.path,
 		        name = path.parts[0],
 		        isBlock = program != null || inverse != null;
-	
+
 		    this.opcode('getContext', path.depth);
-	
+
 		    this.opcode('pushProgram', program);
 		    this.opcode('pushProgram', inverse);
-	
+
 		    path.strict = true;
 		    this.accept(path);
-	
+
 		    this.opcode('invokeAmbiguous', name, isBlock);
 		  },
-	
+
 		  simpleSexpr: function simpleSexpr(sexpr) {
 		    var path = sexpr.path;
 		    path.strict = true;
 		    this.accept(path);
 		    this.opcode('resolvePossibleLambda');
 		  },
-	
+
 		  helperSexpr: function helperSexpr(sexpr, program, inverse) {
 		    var params = this.setupFullMustacheParams(sexpr, program, inverse),
 		        path = sexpr.path,
 		        name = path.parts[0];
-	
+
 		    if (this.options.knownHelpers[name]) {
 		      this.opcode('invokeKnownHelper', params.length, name);
 		    } else if (this.options.knownHelpersOnly) {
@@ -40049,20 +40049,20 @@
 		    } else {
 		      path.strict = true;
 		      path.falsy = true;
-	
+
 		      this.accept(path);
 		      this.opcode('invokeHelper', params.length, path.original, _ast2['default'].helpers.simpleId(path));
 		    }
 		  },
-	
+
 		  PathExpression: function PathExpression(path) {
 		    this.addDepth(path.depth);
 		    this.opcode('getContext', path.depth);
-	
+
 		    var name = path.parts[0],
 		        scoped = _ast2['default'].helpers.scopedId(path),
 		        blockParamId = !path.depth && !scoped && this.blockParamIndex(name);
-	
+
 		    if (blockParamId) {
 		      this.opcode('lookupBlockParam', blockParamId, path.parts);
 		    } else if (!name) {
@@ -40075,34 +40075,34 @@
 		      this.opcode('lookupOnContext', path.parts, path.falsy, path.strict, scoped);
 		    }
 		  },
-	
+
 		  StringLiteral: function StringLiteral(string) {
 		    this.opcode('pushString', string.value);
 		  },
-	
+
 		  NumberLiteral: function NumberLiteral(number) {
 		    this.opcode('pushLiteral', number.value);
 		  },
-	
+
 		  BooleanLiteral: function BooleanLiteral(bool) {
 		    this.opcode('pushLiteral', bool.value);
 		  },
-	
+
 		  UndefinedLiteral: function UndefinedLiteral() {
 		    this.opcode('pushLiteral', 'undefined');
 		  },
-	
+
 		  NullLiteral: function NullLiteral() {
 		    this.opcode('pushLiteral', 'null');
 		  },
-	
+
 		  Hash: function Hash(hash) {
 		    var pairs = hash.pairs,
 		        i = 0,
 		        l = pairs.length;
-	
+
 		    this.opcode('pushHash');
-	
+
 		    for (; i < l; i++) {
 		      this.pushParam(pairs[i].value);
 		    }
@@ -40111,47 +40111,47 @@
 		    }
 		    this.opcode('popHash');
 		  },
-	
+
 		  // HELPERS
 		  opcode: function opcode(name) {
 		    this.opcodes.push({ opcode: name, args: slice.call(arguments, 1), loc: this.sourceNode[0].loc });
 		  },
-	
+
 		  addDepth: function addDepth(depth) {
 		    if (!depth) {
 		      return;
 		    }
-	
+
 		    this.useDepths = true;
 		  },
-	
+
 		  classifySexpr: function classifySexpr(sexpr) {
 		    var isSimple = _ast2['default'].helpers.simpleId(sexpr.path);
-	
+
 		    var isBlockParam = isSimple && !!this.blockParamIndex(sexpr.path.parts[0]);
-	
+
 		    // a mustache is an eligible helper if:
 		    // * its id is simple (a single part, not `this` or `..`)
 		    var isHelper = !isBlockParam && _ast2['default'].helpers.helperExpression(sexpr);
-	
+
 		    // if a mustache is an eligible helper but not a definite
 		    // helper, it is ambiguous, and will be resolved in a later
 		    // pass or at runtime.
 		    var isEligible = !isBlockParam && (isHelper || isSimple);
-	
+
 		    // if ambiguous, we can possibly resolve the ambiguity now
 		    // An eligible helper is one that does not have a complex path, i.e. `this.foo`, `../foo` etc.
 		    if (isEligible && !isHelper) {
 		      var _name2 = sexpr.path.parts[0],
 		          options = this.options;
-	
+
 		      if (options.knownHelpers[_name2]) {
 		        isHelper = true;
 		      } else if (options.knownHelpersOnly) {
 		        isEligible = false;
 		      }
 		    }
-	
+
 		    if (isHelper) {
 		      return 'helper';
 		    } else if (isEligible) {
@@ -40160,27 +40160,27 @@
 		      return 'simple';
 		    }
 		  },
-	
+
 		  pushParams: function pushParams(params) {
 		    for (var i = 0, l = params.length; i < l; i++) {
 		      this.pushParam(params[i]);
 		    }
 		  },
-	
+
 		  pushParam: function pushParam(val) {
 		    var value = val.value != null ? val.value : val.original || '';
-	
+
 		    if (this.stringParams) {
 		      if (value.replace) {
 		        value = value.replace(/^(\.?\.\/)*/g, '').replace(/\//g, '.');
 		      }
-	
+
 		      if (val.depth) {
 		        this.addDepth(val.depth);
 		      }
 		      this.opcode('getContext', val.depth || 0);
 		      this.opcode('pushStringParam', value, val.type);
-	
+
 		      if (val.type === 'SubExpression') {
 		        // SubExpressions get evaluated and passed in
 		        // in string params mode.
@@ -40200,30 +40200,30 @@
 		          if (value.replace) {
 		            value = value.replace(/^this(?:\.|$)/, '').replace(/^\.\//, '').replace(/^\.$/, '');
 		          }
-	
+
 		          this.opcode('pushId', val.type, value);
 		        }
 		      }
 		      this.accept(val);
 		    }
 		  },
-	
+
 		  setupFullMustacheParams: function setupFullMustacheParams(sexpr, program, inverse, omitEmpty) {
 		    var params = sexpr.params;
 		    this.pushParams(params);
-	
+
 		    this.opcode('pushProgram', program);
 		    this.opcode('pushProgram', inverse);
-	
+
 		    if (sexpr.hash) {
 		      this.accept(sexpr.hash);
 		    } else {
 		      this.opcode('emptyHash', omitEmpty);
 		    }
-	
+
 		    return params;
 		  },
-	
+
 		  blockParamIndex: function blockParamIndex(name) {
 		    for (var depth = 0, len = this.options.blockParams.length; depth < len; depth++) {
 		      var blockParams = this.options.blockParams[depth],
@@ -40234,12 +40234,12 @@
 		    }
 		  }
 		};
-	
+
 		function precompile(input, options, env) {
 		  if (input == null || typeof input !== 'string' && input.type !== 'Program') {
 		    throw new _exception2['default']('You must pass a string or Handlebars AST to Handlebars.precompile. You passed ' + input);
 		  }
-	
+
 		  options = options || {};
 		  if (!('data' in options)) {
 		    options.data = true;
@@ -40247,35 +40247,35 @@
 		  if (options.compat) {
 		    options.useDepths = true;
 		  }
-	
+
 		  var ast = env.parse(input, options),
 		      environment = new env.Compiler().compile(ast, options);
 		  return new env.JavaScriptCompiler().compile(environment, options);
 		}
-	
+
 		function compile(input, options, env) {
 		  if (options === undefined) options = {};
-	
+
 		  if (input == null || typeof input !== 'string' && input.type !== 'Program') {
 		    throw new _exception2['default']('You must pass a string or Handlebars AST to Handlebars.compile. You passed ' + input);
 		  }
-	
+
 		  if (!('data' in options)) {
 		    options.data = true;
 		  }
 		  if (options.compat) {
 		    options.useDepths = true;
 		  }
-	
+
 		  var compiled = undefined;
-	
+
 		  function compileInput() {
 		    var ast = env.parse(input, options),
 		        environment = new env.Compiler().compile(ast, options),
 		        templateSpec = new env.JavaScriptCompiler().compile(environment, options, undefined, true);
 		    return env.template(templateSpec);
 		  }
-	
+
 		  // Template is only compiled on first use and cached after that point.
 		  function ret(context, execOptions) {
 		    if (!compiled) {
@@ -40297,12 +40297,12 @@
 		  };
 		  return ret;
 		}
-	
+
 		function argEquals(a, b) {
 		  if (a === b) {
 		    return true;
 		  }
-	
+
 		  if (_utils.isArray(a) && _utils.isArray(b) && a.length === b.length) {
 		    for (var i = 0; i < a.length; i++) {
 		      if (!argEquals(a[i], b[i])) {
@@ -40312,7 +40312,7 @@
 		    return true;
 		  }
 		}
-	
+
 		function transformLiteralToPath(sexpr) {
 		  if (!sexpr.path.parts) {
 		    var literal = sexpr.path;
@@ -40328,35 +40328,35 @@
 		    };
 		  }
 		}
-	
+
 	/***/ },
 	/* 28 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		'use strict';
-	
+
 		var _interopRequireDefault = __webpack_require__(1)['default'];
-	
+
 		exports.__esModule = true;
-	
+
 		var _base = __webpack_require__(4);
-	
+
 		var _exception = __webpack_require__(6);
-	
+
 		var _exception2 = _interopRequireDefault(_exception);
-	
+
 		var _utils = __webpack_require__(5);
-	
+
 		var _codeGen = __webpack_require__(29);
-	
+
 		var _codeGen2 = _interopRequireDefault(_codeGen);
-	
+
 		function Literal(value) {
 		  this.value = value;
 		}
-	
+
 		function JavaScriptCompiler() {}
-	
+
 		JavaScriptCompiler.prototype = {
 		  // PUBLIC API: You can override these methods in a subclass to provide
 		  // alternative compiled forms for name lookup and buffering semantics
@@ -40370,20 +40370,20 @@
 		  depthedLookup: function depthedLookup(name) {
 		    return [this.aliasable('container.lookup'), '(depths, "', name, '")'];
 		  },
-	
+
 		  compilerInfo: function compilerInfo() {
 		    var revision = _base.COMPILER_REVISION,
 		        versions = _base.REVISION_CHANGES[revision];
 		    return [revision, versions];
 		  },
-	
+
 		  appendToBuffer: function appendToBuffer(source, location, explicit) {
 		    // Force a source as this simplifies the merge logic.
 		    if (!_utils.isArray(source)) {
 		      source = [source];
 		    }
 		    source = this.source.wrap(source, location);
-	
+
 		    if (this.environment.isSimple) {
 		      return ['return ', source, ';'];
 		    } else if (explicit) {
@@ -40396,19 +40396,19 @@
 		      return source;
 		    }
 		  },
-	
+
 		  initializeBuffer: function initializeBuffer() {
 		    return this.quotedString('');
 		  },
 		  // END PUBLIC API
-	
+
 		  compile: function compile(environment, options, context, asObject) {
 		    this.environment = environment;
 		    this.options = options;
 		    this.stringParams = this.options.stringParams;
 		    this.trackIds = this.options.trackIds;
 		    this.precompile = !asObject;
-	
+
 		    this.name = this.environment.name;
 		    this.isChild = !!context;
 		    this.context = context || {
@@ -40416,9 +40416,9 @@
 		      programs: [],
 		      environments: []
 		    };
-	
+
 		    this.preamble();
-	
+
 		    this.stackSlot = 0;
 		    this.stackVars = [];
 		    this.aliases = {};
@@ -40427,41 +40427,41 @@
 		    this.compileStack = [];
 		    this.inlineStack = [];
 		    this.blockParams = [];
-	
+
 		    this.compileChildren(environment, options);
-	
+
 		    this.useDepths = this.useDepths || environment.useDepths || environment.useDecorators || this.options.compat;
 		    this.useBlockParams = this.useBlockParams || environment.useBlockParams;
-	
+
 		    var opcodes = environment.opcodes,
 		        opcode = undefined,
 		        firstLoc = undefined,
 		        i = undefined,
 		        l = undefined;
-	
+
 		    for (i = 0, l = opcodes.length; i < l; i++) {
 		      opcode = opcodes[i];
-	
+
 		      this.source.currentLocation = opcode.loc;
 		      firstLoc = firstLoc || opcode.loc;
 		      this[opcode.opcode].apply(this, opcode.args);
 		    }
-	
+
 		    // Flush any trailing content that might be pending.
 		    this.source.currentLocation = firstLoc;
 		    this.pushSource('');
-	
+
 		    /* istanbul ignore next */
 		    if (this.stackSlot || this.inlineStack.length || this.compileStack.length) {
 		      throw new _exception2['default']('Compile completed with content left on stack');
 		    }
-	
+
 		    if (!this.decorators.isEmpty()) {
 		      this.useDecorators = true;
-	
+
 		      this.decorators.prepend('var decorators = container.decorators;\n');
 		      this.decorators.push('return fn;');
-	
+
 		      if (asObject) {
 		        this.decorators = Function.apply(this, ['fn', 'props', 'container', 'depth0', 'data', 'blockParams', 'depths', this.decorators.merge()]);
 		      } else {
@@ -40472,23 +40472,23 @@
 		    } else {
 		      this.decorators = undefined;
 		    }
-	
+
 		    var fn = this.createFunctionContext(asObject);
 		    if (!this.isChild) {
 		      var ret = {
 		        compiler: this.compilerInfo(),
 		        main: fn
 		      };
-	
+
 		      if (this.decorators) {
 		        ret.main_d = this.decorators; // eslint-disable-line camelcase
 		        ret.useDecorators = true;
 		      }
-	
+
 		      var _context = this.context;
 		      var programs = _context.programs;
 		      var decorators = _context.decorators;
-	
+
 		      for (i = 0, l = programs.length; i < l; i++) {
 		        if (programs[i]) {
 		          ret[i] = programs[i];
@@ -40498,7 +40498,7 @@
 		          }
 		        }
 		      }
-	
+
 		      if (this.environment.usePartial) {
 		        ret.usePartial = true;
 		      }
@@ -40514,13 +40514,13 @@
 		      if (this.options.compat) {
 		        ret.compat = true;
 		      }
-	
+
 		      if (!asObject) {
 		        ret.compiler = JSON.stringify(ret.compiler);
-	
+
 		        this.source.currentLocation = { start: { line: 1, column: 0 } };
 		        ret = this.objectLiteral(ret);
-	
+
 		        if (options.srcName) {
 		          ret = ret.toStringWithSourceMap({ file: options.destName });
 		          ret.map = ret.map && ret.map.toString();
@@ -40530,13 +40530,13 @@
 		      } else {
 		        ret.compilerOptions = this.options;
 		      }
-	
+
 		      return ret;
 		    } else {
 		      return fn;
 		    }
 		  },
-	
+
 		  preamble: function preamble() {
 		    // track the last context pushed into place to allow skipping the
 		    // getContext opcode when it would be a noop
@@ -40544,15 +40544,15 @@
 		    this.source = new _codeGen2['default'](this.options.srcName);
 		    this.decorators = new _codeGen2['default'](this.options.srcName);
 		  },
-	
+
 		  createFunctionContext: function createFunctionContext(asObject) {
 		    var varDeclarations = '';
-	
+
 		    var locals = this.stackVars.concat(this.registers.list);
 		    if (locals.length > 0) {
 		      varDeclarations += ', ' + locals.join(', ');
 		    }
-	
+
 		    // Generate minimizer alias mappings
 		    //
 		    // When using true SourceNodes, this will update all references to the given alias
@@ -40563,28 +40563,28 @@
 		    for (var alias in this.aliases) {
 		      // eslint-disable-line guard-for-in
 		      var node = this.aliases[alias];
-	
+
 		      if (this.aliases.hasOwnProperty(alias) && node.children && node.referenceCount > 1) {
 		        varDeclarations += ', alias' + ++aliasCount + '=' + alias;
 		        node.children[0] = 'alias' + aliasCount;
 		      }
 		    }
-	
+
 		    var params = ['container', 'depth0', 'helpers', 'partials', 'data'];
-	
+
 		    if (this.useBlockParams || this.useDepths) {
 		      params.push('blockParams');
 		    }
 		    if (this.useDepths) {
 		      params.push('depths');
 		    }
-	
+
 		    // Perform a second pass over the output to merge content when possible
 		    var source = this.mergeSource(varDeclarations);
-	
+
 		    if (asObject) {
 		      params.push(source);
-	
+
 		      return Function.apply(this, params);
 		    } else {
 		      return this.source.wrap(['function(', params.join(','), ') {\n  ', source, '}']);
@@ -40615,14 +40615,14 @@
 		          bufferEnd.add(';');
 		          bufferStart = bufferEnd = undefined;
 		        }
-	
+
 		        sourceSeen = true;
 		        if (!isSimple) {
 		          appendOnly = false;
 		        }
 		      }
 		    });
-	
+
 		    if (appendOnly) {
 		      if (bufferStart) {
 		        bufferStart.prepend('return ');
@@ -40632,7 +40632,7 @@
 		      }
 		    } else {
 		      varDeclarations += ', buffer = ' + (appendFirst ? '' : this.initializeBuffer());
-	
+
 		      if (bufferStart) {
 		        bufferStart.prepend('return buffer + ');
 		        bufferEnd.add(';');
@@ -40640,14 +40640,14 @@
 		        this.source.push('return buffer;');
 		      }
 		    }
-	
+
 		    if (varDeclarations) {
 		      this.source.prepend('var ' + varDeclarations.substring(2) + (appendFirst ? '' : ';\n'));
 		    }
-	
+
 		    return this.source.merge();
 		  },
-	
+
 		  // [blockValue]
 		  //
 		  // On stack, before: hash, inverse, program, value
@@ -40661,13 +40661,13 @@
 		    var blockHelperMissing = this.aliasable('helpers.blockHelperMissing'),
 		        params = [this.contextName(0)];
 		    this.setupHelperArgs(name, 0, params);
-	
+
 		    var blockName = this.popStack();
 		    params.splice(1, 0, blockName);
-	
+
 		    this.push(this.source.functionCall(blockHelperMissing, 'call', params));
 		  },
-	
+
 		  // [ambiguousBlockValue]
 		  //
 		  // On stack, before: hash, inverse, program, value
@@ -40679,15 +40679,15 @@
 		    var blockHelperMissing = this.aliasable('helpers.blockHelperMissing'),
 		        params = [this.contextName(0)];
 		    this.setupHelperArgs('', 0, params, true);
-	
+
 		    this.flushInline();
-	
+
 		    var current = this.topStack();
 		    params.splice(1, 0, current);
-	
+
 		    this.pushSource(['if (!', this.lastHelper, ') { ', current, ' = ', this.source.functionCall(blockHelperMissing, 'call', params), '}']);
 		  },
-	
+
 		  // [appendContent]
 		  //
 		  // On stack, before: ...
@@ -40700,10 +40700,10 @@
 		    } else {
 		      this.pendingLocation = this.source.currentLocation;
 		    }
-	
+
 		    this.pendingContent = content;
 		  },
-	
+
 		  // [append]
 		  //
 		  // On stack, before: value, ...
@@ -40718,7 +40718,7 @@
 		      this.replaceStack(function (current) {
 		        return [' != null ? ', current, ' : ""'];
 		      });
-	
+
 		      this.pushSource(this.appendToBuffer(this.popStack()));
 		    } else {
 		      var local = this.popStack();
@@ -40728,7 +40728,7 @@
 		      }
 		    }
 		  },
-	
+
 		  // [appendEscaped]
 		  //
 		  // On stack, before: value, ...
@@ -40738,7 +40738,7 @@
 		  appendEscaped: function appendEscaped() {
 		    this.pushSource(this.appendToBuffer([this.aliasable('container.escapeExpression'), '(', this.popStack(), ')']));
 		  },
-	
+
 		  // [getContext]
 		  //
 		  // On stack, before: ...
@@ -40749,7 +40749,7 @@
 		  getContext: function getContext(depth) {
 		    this.lastContext = depth;
 		  },
-	
+
 		  // [pushContext]
 		  //
 		  // On stack, before: ...
@@ -40759,7 +40759,7 @@
 		  pushContext: function pushContext() {
 		    this.pushStackLiteral(this.contextName(this.lastContext));
 		  },
-	
+
 		  // [lookupOnContext]
 		  //
 		  // On stack, before: ...
@@ -40769,7 +40769,7 @@
 		  // it onto the stack.
 		  lookupOnContext: function lookupOnContext(parts, falsy, strict, scoped) {
 		    var i = 0;
-	
+
 		    if (!scoped && this.options.compat && !this.lastContext) {
 		      // The depthed query is expected to handle the undefined logic for the root level that
 		      // is implemented below, so we evaluate that directly in compat mode
@@ -40777,10 +40777,10 @@
 		    } else {
 		      this.pushContext();
 		    }
-	
+
 		    this.resolvePath('context', parts, i, falsy, strict);
 		  },
-	
+
 		  // [lookupBlockParam]
 		  //
 		  // On stack, before: ...
@@ -40790,11 +40790,11 @@
 		  // it onto the stack.
 		  lookupBlockParam: function lookupBlockParam(blockParamId, parts) {
 		    this.useBlockParams = true;
-	
+
 		    this.push(['blockParams[', blockParamId[0], '][', blockParamId[1], ']']);
 		    this.resolvePath('context', parts, 1);
 		  },
-	
+
 		  // [lookupData]
 		  //
 		  // On stack, before: ...
@@ -40807,20 +40807,20 @@
 		    } else {
 		      this.pushStackLiteral('container.data(data, ' + depth + ')');
 		    }
-	
+
 		    this.resolvePath('data', parts, 0, true, strict);
 		  },
-	
+
 		  resolvePath: function resolvePath(type, parts, i, falsy, strict) {
 		    // istanbul ignore next
-	
+
 		    var _this = this;
-	
+
 		    if (this.options.strict || this.options.assumeObjects) {
 		      this.push(strictLookup(this.options.strict && strict, this, parts, type));
 		      return;
 		    }
-	
+
 		    var len = parts.length;
 		    for (; i < len; i++) {
 		      /* eslint-disable no-loop-func */
@@ -40838,7 +40838,7 @@
 		      /* eslint-enable no-loop-func */
 		    }
 		  },
-	
+
 		  // [resolvePossibleLambda]
 		  //
 		  // On stack, before: value, ...
@@ -40849,7 +40849,7 @@
 		  resolvePossibleLambda: function resolvePossibleLambda() {
 		    this.push([this.aliasable('container.lambda'), '(', this.popStack(), ', ', this.contextName(0), ')']);
 		  },
-	
+
 		  // [pushStringParam]
 		  //
 		  // On stack, before: ...
@@ -40861,7 +40861,7 @@
 		  pushStringParam: function pushStringParam(string, type) {
 		    this.pushContext();
 		    this.pushString(type);
-	
+
 		    // If it's a subexpression, the string result
 		    // will be pushed after this opcode.
 		    if (type !== 'SubExpression') {
@@ -40872,7 +40872,7 @@
 		      }
 		    }
 		  },
-	
+
 		  emptyHash: function emptyHash(omitEmpty) {
 		    if (this.trackIds) {
 		      this.push('{}'); // hashIds
@@ -40892,7 +40892,7 @@
 		  popHash: function popHash() {
 		    var hash = this.hash;
 		    this.hash = this.hashes.pop();
-	
+
 		    if (this.trackIds) {
 		      this.push(this.objectLiteral(hash.ids));
 		    }
@@ -40900,10 +40900,10 @@
 		      this.push(this.objectLiteral(hash.contexts));
 		      this.push(this.objectLiteral(hash.types));
 		    }
-	
+
 		    this.push(this.objectLiteral(hash.values));
 		  },
-	
+
 		  // [pushString]
 		  //
 		  // On stack, before: ...
@@ -40913,7 +40913,7 @@
 		  pushString: function pushString(string) {
 		    this.pushStackLiteral(this.quotedString(string));
 		  },
-	
+
 		  // [pushLiteral]
 		  //
 		  // On stack, before: ...
@@ -40925,7 +40925,7 @@
 		  pushLiteral: function pushLiteral(value) {
 		    this.pushStackLiteral(value);
 		  },
-	
+
 		  // [pushProgram]
 		  //
 		  // On stack, before: ...
@@ -40941,7 +40941,7 @@
 		      this.pushStackLiteral(null);
 		    }
 		  },
-	
+
 		  // [registerDecorator]
 		  //
 		  // On stack, before: hash, program, params..., ...
@@ -40952,10 +40952,10 @@
 		  registerDecorator: function registerDecorator(paramSize, name) {
 		    var foundDecorator = this.nameLookup('decorators', name, 'decorator'),
 		        options = this.setupHelperArgs(name, paramSize);
-	
+
 		    this.decorators.push(['fn = ', this.decorators.functionCall(foundDecorator, '', ['fn', 'props', 'container', options]), ' || fn;']);
 		  },
-	
+
 		  // [invokeHelper]
 		  //
 		  // On stack, before: hash, inverse, program, params..., ...
@@ -40969,16 +40969,16 @@
 		    var nonHelper = this.popStack(),
 		        helper = this.setupHelper(paramSize, name),
 		        simple = isSimple ? [helper.name, ' || '] : '';
-	
+
 		    var lookup = ['('].concat(simple, nonHelper);
 		    if (!this.options.strict) {
 		      lookup.push(' || ', this.aliasable('helpers.helperMissing'));
 		    }
 		    lookup.push(')');
-	
+
 		    this.push(this.source.functionCall(lookup, 'call', helper.callParams));
 		  },
-	
+
 		  // [invokeKnownHelper]
 		  //
 		  // On stack, before: hash, inverse, program, params..., ...
@@ -40990,7 +40990,7 @@
 		    var helper = this.setupHelper(paramSize, name);
 		    this.push(this.source.functionCall(helper.name, 'call', helper.callParams));
 		  },
-	
+
 		  // [invokeAmbiguous]
 		  //
 		  // On stack, before: hash, inverse, program, params..., ...
@@ -41005,23 +41005,23 @@
 		  // `knownHelpersOnly` flags at compile-time.
 		  invokeAmbiguous: function invokeAmbiguous(name, helperCall) {
 		    this.useRegister('helper');
-	
+
 		    var nonHelper = this.popStack();
-	
+
 		    this.emptyHash();
 		    var helper = this.setupHelper(0, name, helperCall);
-	
+
 		    var helperName = this.lastHelper = this.nameLookup('helpers', name, 'helper');
-	
+
 		    var lookup = ['(', '(helper = ', helperName, ' || ', nonHelper, ')'];
 		    if (!this.options.strict) {
 		      lookup[0] = '(helper = ';
 		      lookup.push(' != null ? helper : ', this.aliasable('helpers.helperMissing'));
 		    }
-	
+
 		    this.push(['(', lookup, helper.paramsInit ? ['),(', helper.paramsInit] : [], '),', '(typeof helper === ', this.aliasable('"function"'), ' ? ', this.source.functionCall('helper', 'call', helper.callParams), ' : helper))']);
 		  },
-	
+
 		  // [invokePartial]
 		  //
 		  // On stack, before: context, ...
@@ -41032,34 +41032,34 @@
 		  invokePartial: function invokePartial(isDynamic, name, indent) {
 		    var params = [],
 		        options = this.setupParams(name, 1, params);
-	
+
 		    if (isDynamic) {
 		      name = this.popStack();
 		      delete options.name;
 		    }
-	
+
 		    if (indent) {
 		      options.indent = JSON.stringify(indent);
 		    }
 		    options.helpers = 'helpers';
 		    options.partials = 'partials';
 		    options.decorators = 'container.decorators';
-	
+
 		    if (!isDynamic) {
 		      params.unshift(this.nameLookup('partials', name, 'partial'));
 		    } else {
 		      params.unshift(name);
 		    }
-	
+
 		    if (this.options.compat) {
 		      options.depths = 'depths';
 		    }
 		    options = this.objectLiteral(options);
 		    params.push(options);
-	
+
 		    this.push(this.source.functionCall('container.invokePartial', '', params));
 		  },
-	
+
 		  // [assignToHash]
 		  //
 		  // On stack, before: value, ..., hash, ...
@@ -41071,7 +41071,7 @@
 		        context = undefined,
 		        type = undefined,
 		        id = undefined;
-	
+
 		    if (this.trackIds) {
 		      id = this.popStack();
 		    }
@@ -41079,7 +41079,7 @@
 		      type = this.popStack();
 		      context = this.popStack();
 		    }
-	
+
 		    var hash = this.hash;
 		    if (context) {
 		      hash.contexts[key] = context;
@@ -41092,7 +41092,7 @@
 		    }
 		    hash.values[key] = value;
 		  },
-	
+
 		  pushId: function pushId(type, name, child) {
 		    if (type === 'BlockParam') {
 		      this.pushStackLiteral('blockParams[' + name[0] + '].path[' + name[1] + ']' + (child ? ' + ' + JSON.stringify('.' + child) : ''));
@@ -41104,22 +41104,22 @@
 		      this.pushStackLiteral('null');
 		    }
 		  },
-	
+
 		  // HELPERS
-	
+
 		  compiler: JavaScriptCompiler,
-	
+
 		  compileChildren: function compileChildren(environment, options) {
 		    var children = environment.children,
 		        child = undefined,
 		        compiler = undefined;
-	
+
 		    for (var i = 0, l = children.length; i < l; i++) {
 		      child = children[i];
 		      compiler = new this.compiler(); // eslint-disable-line new-cap
-	
+
 		      var index = this.matchExistingProgram(child);
-	
+
 		      if (index == null) {
 		        this.context.programs.push(''); // Placeholder to prevent name conflicts for nested children
 		        index = this.context.programs.length;
@@ -41128,13 +41128,13 @@
 		        this.context.programs[index] = compiler.compile(child, options, this.context, !this.precompile);
 		        this.context.decorators[index] = compiler.decorators;
 		        this.context.environments[index] = child;
-	
+
 		        this.useDepths = this.useDepths || compiler.useDepths;
 		        this.useBlockParams = this.useBlockParams || compiler.useBlockParams;
 		      } else {
 		        child.index = index;
 		        child.name = 'program' + index;
-	
+
 		        this.useDepths = this.useDepths || child.useDepths;
 		        this.useBlockParams = this.useBlockParams || child.useBlockParams;
 		      }
@@ -41148,66 +41148,66 @@
 		      }
 		    }
 		  },
-	
+
 		  programExpression: function programExpression(guid) {
 		    var child = this.environment.children[guid],
 		        programParams = [child.index, 'data', child.blockParams];
-	
+
 		    if (this.useBlockParams || this.useDepths) {
 		      programParams.push('blockParams');
 		    }
 		    if (this.useDepths) {
 		      programParams.push('depths');
 		    }
-	
+
 		    return 'container.program(' + programParams.join(', ') + ')';
 		  },
-	
+
 		  useRegister: function useRegister(name) {
 		    if (!this.registers[name]) {
 		      this.registers[name] = true;
 		      this.registers.list.push(name);
 		    }
 		  },
-	
+
 		  push: function push(expr) {
 		    if (!(expr instanceof Literal)) {
 		      expr = this.source.wrap(expr);
 		    }
-	
+
 		    this.inlineStack.push(expr);
 		    return expr;
 		  },
-	
+
 		  pushStackLiteral: function pushStackLiteral(item) {
 		    this.push(new Literal(item));
 		  },
-	
+
 		  pushSource: function pushSource(source) {
 		    if (this.pendingContent) {
 		      this.source.push(this.appendToBuffer(this.source.quotedString(this.pendingContent), this.pendingLocation));
 		      this.pendingContent = undefined;
 		    }
-	
+
 		    if (source) {
 		      this.source.push(source);
 		    }
 		  },
-	
+
 		  replaceStack: function replaceStack(callback) {
 		    var prefix = ['('],
 		        stack = undefined,
 		        createdStack = undefined,
 		        usedLiteral = undefined;
-	
+
 		    /* istanbul ignore next */
 		    if (!this.isInline()) {
 		      throw new _exception2['default']('replaceStack on non-inline');
 		    }
-	
+
 		    // We want to merge the inline statement into the replacement statement via ','
 		    var top = this.popStack(true);
-	
+
 		    if (top instanceof Literal) {
 		      // Literals do not need to be inlined
 		      stack = [top.value];
@@ -41217,13 +41217,13 @@
 		      // Get or create the current stack name for use by the inline
 		      createdStack = true;
 		      var _name = this.incrStack();
-	
+
 		      prefix = ['((', this.push(_name), ' = ', top, ')'];
 		      stack = this.topStack();
 		    }
-	
+
 		    var item = callback.call(this, stack);
-	
+
 		    if (!usedLiteral) {
 		      this.popStack();
 		    }
@@ -41232,7 +41232,7 @@
 		    }
 		    this.push(prefix.concat(item, ')'));
 		  },
-	
+
 		  incrStack: function incrStack() {
 		    this.stackSlot++;
 		    if (this.stackSlot > this.stackVars.length) {
@@ -41261,11 +41261,11 @@
 		  isInline: function isInline() {
 		    return this.inlineStack.length;
 		  },
-	
+
 		  popStack: function popStack(wrapped) {
 		    var inline = this.isInline(),
 		        item = (inline ? this.inlineStack : this.compileStack).pop();
-	
+
 		    if (!wrapped && item instanceof Literal) {
 		      return item.value;
 		    } else {
@@ -41279,11 +41279,11 @@
 		      return item;
 		    }
 		  },
-	
+
 		  topStack: function topStack() {
 		    var stack = this.isInline() ? this.inlineStack : this.compileStack,
 		        item = stack[stack.length - 1];
-	
+
 		    /* istanbul ignore if */
 		    if (item instanceof Literal) {
 		      return item.value;
@@ -41291,7 +41291,7 @@
 		      return item;
 		    }
 		  },
-	
+
 		  contextName: function contextName(context) {
 		    if (this.useDepths && context) {
 		      return 'depths[' + context + ']';
@@ -41299,35 +41299,35 @@
 		      return 'depth' + context;
 		    }
 		  },
-	
+
 		  quotedString: function quotedString(str) {
 		    return this.source.quotedString(str);
 		  },
-	
+
 		  objectLiteral: function objectLiteral(obj) {
 		    return this.source.objectLiteral(obj);
 		  },
-	
+
 		  aliasable: function aliasable(name) {
 		    var ret = this.aliases[name];
 		    if (ret) {
 		      ret.referenceCount++;
 		      return ret;
 		    }
-	
+
 		    ret = this.aliases[name] = this.source.wrap(name);
 		    ret.aliasable = true;
 		    ret.referenceCount = 1;
-	
+
 		    return ret;
 		  },
-	
+
 		  setupHelper: function setupHelper(paramSize, name, blockHelper) {
 		    var params = [],
 		        paramsInit = this.setupHelperArgs(name, paramSize, params, blockHelper);
 		    var foundHelper = this.nameLookup('helpers', name, 'helper'),
 		        callContext = this.aliasable(this.contextName(0) + ' != null ? ' + this.contextName(0) + ' : {}');
-	
+
 		    return {
 		      params: params,
 		      paramsInit: paramsInit,
@@ -41335,7 +41335,7 @@
 		      callParams: [callContext].concat(params)
 		    };
 		  },
-	
+
 		  setupParams: function setupParams(helper, paramSize, params) {
 		    var options = {},
 		        contexts = [],
@@ -41343,14 +41343,14 @@
 		        ids = [],
 		        objectArgs = !params,
 		        param = undefined;
-	
+
 		    if (objectArgs) {
 		      params = [];
 		    }
-	
+
 		    options.name = this.quotedString(helper);
 		    options.hash = this.popStack();
-	
+
 		    if (this.trackIds) {
 		      options.hashIds = this.popStack();
 		    }
@@ -41358,24 +41358,24 @@
 		      options.hashTypes = this.popStack();
 		      options.hashContexts = this.popStack();
 		    }
-	
+
 		    var inverse = this.popStack(),
 		        program = this.popStack();
-	
+
 		    // Avoid setting fn and inverse if neither are set. This allows
 		    // helpers to do a check for `if (options.fn)`
 		    if (program || inverse) {
 		      options.fn = program || 'container.noop';
 		      options.inverse = inverse || 'container.noop';
 		    }
-	
+
 		    // The parameters go on to the stack in order (making sure that they are evaluated in order)
 		    // so we need to pop them off the stack in reverse order
 		    var i = paramSize;
 		    while (i--) {
 		      param = this.popStack();
 		      params[i] = param;
-	
+
 		      if (this.trackIds) {
 		        ids[i] = this.popStack();
 		      }
@@ -41384,11 +41384,11 @@
 		        contexts[i] = this.popStack();
 		      }
 		    }
-	
+
 		    if (objectArgs) {
 		      options.args = this.source.generateArray(params);
 		    }
-	
+
 		    if (this.trackIds) {
 		      options.ids = this.source.generateArray(ids);
 		    }
@@ -41396,7 +41396,7 @@
 		      options.types = this.source.generateArray(types);
 		      options.contexts = this.source.generateArray(contexts);
 		    }
-	
+
 		    if (this.options.data) {
 		      options.data = 'data';
 		    }
@@ -41405,7 +41405,7 @@
 		    }
 		    return options;
 		  },
-	
+
 		  setupHelperArgs: function setupHelperArgs(helper, paramSize, params, useRegister) {
 		    var options = this.setupParams(helper, paramSize, params);
 		    options = this.objectLiteral(options);
@@ -41421,21 +41421,21 @@
 		    }
 		  }
 		};
-	
+
 		(function () {
 		  var reservedWords = ('break else new var' + ' case finally return void' + ' catch for switch while' + ' continue function this with' + ' default if throw' + ' delete in try' + ' do instanceof typeof' + ' abstract enum int short' + ' boolean export interface static' + ' byte extends long super' + ' char final native synchronized' + ' class float package throws' + ' const goto private transient' + ' debugger implements protected volatile' + ' double import public let yield await' + ' null true false').split(' ');
-	
+
 		  var compilerWords = JavaScriptCompiler.RESERVED_WORDS = {};
-	
+
 		  for (var i = 0, l = reservedWords.length; i < l; i++) {
 		    compilerWords[reservedWords[i]] = true;
 		  }
 		})();
-	
+
 		JavaScriptCompiler.isValidJavaScriptVariableName = function (name) {
 		  return !JavaScriptCompiler.RESERVED_WORDS[name] && /^[a-zA-Z_$][0-9a-zA-Z_$]*$/.test(name);
 		};
-	
+
 		function strictLookup(requireTerminal, compiler, parts, type) {
 		  var stack = compiler.popStack(),
 		      i = 0,
@@ -41443,34 +41443,34 @@
 		  if (requireTerminal) {
 		    len--;
 		  }
-	
+
 		  for (; i < len; i++) {
 		    stack = compiler.nameLookup(stack, parts[i], type);
 		  }
-	
+
 		  if (requireTerminal) {
 		    return [compiler.aliasable('container.strict'), '(', stack, ', ', compiler.quotedString(parts[i]), ')'];
 		  } else {
 		    return stack;
 		  }
 		}
-	
+
 		exports['default'] = JavaScriptCompiler;
 		module.exports = exports['default'];
-	
+
 	/***/ },
 	/* 29 */
 	/***/ function(module, exports, __webpack_require__) {
-	
+
 		/* global define */
 		'use strict';
-	
+
 		exports.__esModule = true;
-	
+
 		var _utils = __webpack_require__(5);
-	
+
 		var SourceNode = undefined;
-	
+
 		try {
 		  /* istanbul ignore next */
 		  if (false) {
@@ -41481,7 +41481,7 @@
 		  }
 		} catch (err) {}
 		/* NOP */
-	
+
 		/* istanbul ignore if: tested but not covered in istanbul due to dist build  */
 		if (!SourceNode) {
 		  SourceNode = function (line, column, srcFile, chunks) {
@@ -41512,11 +41512,11 @@
 		    }
 		  };
 		}
-	
+
 		function castChunk(chunk, codeGen, loc) {
 		  if (_utils.isArray(chunk)) {
 		    var ret = [];
-	
+
 		    for (var i = 0, len = chunk.length; i < len; i++) {
 		      ret.push(codeGen.wrap(chunk[i], loc));
 		    }
@@ -41527,12 +41527,12 @@
 		  }
 		  return chunk;
 		}
-	
+
 		function CodeGen(srcFile) {
 		  this.srcFile = srcFile;
 		  this.source = [];
 		}
-	
+
 		CodeGen.prototype = {
 		  isEmpty: function isEmpty() {
 		    return !this.source.length;
@@ -41543,7 +41543,7 @@
 		  push: function push(source, loc) {
 		    this.source.push(this.wrap(source, loc));
 		  },
-	
+
 		  merge: function merge() {
 		    var source = this.empty();
 		    this.each(function (line) {
@@ -41551,42 +41551,42 @@
 		    });
 		    return source;
 		  },
-	
+
 		  each: function each(iter) {
 		    for (var i = 0, len = this.source.length; i < len; i++) {
 		      iter(this.source[i]);
 		    }
 		  },
-	
+
 		  empty: function empty() {
 		    var loc = this.currentLocation || { start: {} };
 		    return new SourceNode(loc.start.line, loc.start.column, this.srcFile);
 		  },
 		  wrap: function wrap(chunk) {
 		    var loc = arguments.length <= 1 || arguments[1] === undefined ? this.currentLocation || { start: {} } : arguments[1];
-	
+
 		    if (chunk instanceof SourceNode) {
 		      return chunk;
 		    }
-	
+
 		    chunk = castChunk(chunk, this, loc);
-	
+
 		    return new SourceNode(loc.start.line, loc.start.column, this.srcFile, chunk);
 		  },
-	
+
 		  functionCall: function functionCall(fn, type, params) {
 		    params = this.generateList(params);
 		    return this.wrap([fn, type ? '.' + type + '(' : '(', params, ')']);
 		  },
-	
+
 		  quotedString: function quotedString(str) {
 		    return '"' + (str + '').replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\u2028/g, '\\u2028') // Per Ecma-262 7.3 + 7.8.4
 		    .replace(/\u2029/g, '\\u2029') + '"';
 		  },
-	
+
 		  objectLiteral: function objectLiteral(obj) {
 		    var pairs = [];
-	
+
 		    for (var key in obj) {
 		      if (obj.hasOwnProperty(key)) {
 		        var value = castChunk(obj[key], this);
@@ -41595,39 +41595,39 @@
 		        }
 		      }
 		    }
-	
+
 		    var ret = this.generateList(pairs);
 		    ret.prepend('{');
 		    ret.add('}');
 		    return ret;
 		  },
-	
+
 		  generateList: function generateList(entries) {
 		    var ret = this.empty();
-	
+
 		    for (var i = 0, len = entries.length; i < len; i++) {
 		      if (i) {
 		        ret.add(',');
 		      }
-	
+
 		      ret.add(castChunk(entries[i], this));
 		    }
-	
+
 		    return ret;
 		  },
-	
+
 		  generateArray: function generateArray(entries) {
 		    var ret = this.generateList(entries);
 		    ret.prepend('[');
 		    ret.add(']');
-	
+
 		    return ret;
 		  }
 		};
-	
+
 		exports['default'] = CodeGen;
 		module.exports = exports['default'];
-	
+
 	/***/ }
 	/******/ ])
 	});
@@ -41638,14 +41638,14 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	var taskActions = __webpack_require__(152);
-	
+
 	__webpack_require__(160);
-	
+
 	riot.tag2("r-tender-item-action-group-dropdown", "<select onchange=\"{changeTaskAction}\"> <option each=\"{val, name in taskActions}\" value=\"{val}\" __selected=\"{val == 'Other'}\" no-reorder>{name}</option> </select>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.taskActions = _.omit(taskActions, "Materials", "VAT");
 	  this.changeTaskAction = function (e) {
 	    e.item = _this.opts.item;
@@ -41653,33 +41653,33 @@
 	    _this.closeModal();
 	  };
 	});
-	
+
 	riot.tag2("r-tender-item", "<li class=\"relative border-right\"> <div class=\"clearfix p1 border-bottom\"> <div if=\"{parent.headers.name}\" class=\"sm-col sm-col-{parent.headers.name} mb1 sm-mb0\"> <input if=\"{this.parent.parent.type == 'Tender'}\" type=\"text\" name=\"name\" value=\"{display_name || name}\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputname}\"> <label if=\"{this.parent.parent.type == 'Quote'}\">{display_name || name}</label> <br class=\"sm-hide\"> </div> <div if=\"{parent.headers.description}\" class=\"sm-col sm-col-{parent.headers.description} mb1 sm-mb0\"> <input type=\"text\" name=\"description\" value=\"{description}\" placeholder=\"Description\" class=\"fit field inline-input align-left col-12\" oninput=\"{inputdesc}\"> <br class=\"sm-hide\"> </div> <div if=\"{parent.headers.supplied}\" class=\"col sm-col-{parent.headers.supplied} col-1 center\"> <input if=\"{parent.opts.name == 'material'}\" type=\"checkbox\" name=\"supplied\" __checked=\"{supplied}\" class=\"align-middle\" onchange=\"{input}\"> </div> <div if=\"{parent.headers.quantity}\" class=\"col sm-col-{parent.headers.quantity} col-3 center relative\"> <a if=\"{!parent.opts.readonly && ['Decorating','Lay'].indexOf(action) > -1}\" rel=\"edit_dimensions_task_{id}_{name}\" onclick=\"{setActivity}\"><i class=\"fa fa-edit absolute left-0 top-0 z1 mt1 mr1 bg-white\"></i></a> <input name=\"quantity\" value=\"{quantity}\" step=\"1\" min=\"0\" class=\"fit field inline-input center\" oninput=\"{input}\" type=\"{'number'}\"> </div> <div if=\"{parent.headers.price}\" class=\"col sm-col-{parent.headers.price} col-{parent.opts.name == 'task' ? 3 : 2} center relative\"> <i if=\"{!parent.opts.readonly}\" class=\"fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white\"></i><input if=\"{!parent.opts.readonly}\" name=\"price\" value=\"{parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0)}\" __disabled=\"{parent.opts.name == 'material' && !supplied}\" step=\"1\" min=\"0\" class=\"fit field inline-input center price\" oninput=\"{input}\" type=\"{'number'}\"> <label if=\"{parent.opts.readonly}\">{formatCurrency(parent.opts.name == 'task' ? price : (supplied ? price : 0))}</label> </div> <div if=\"{parent.headers.total_cost}\" class=\"col sm-col-{parent.headers.total_cost} col-3 center relative\"> <i if=\"{!parent.opts.readonly}\" class=\"fa fa-gbp absolute left-0 top-0 z1 mt1 mr1 bg-white\"></i><input if=\"{!parent.opts.readonly}\" value=\"{parent.opts.name == 'task' ? (price / 100 * quantity) : (supplied ? price / 100 * quantity : '0')}\" step=\"1\" min=\"0\" class=\"fit field inline-input center price\" oninput=\"{inputTotalCost}\" type=\"{'number'}\"> <label if=\"{parent.opts.readonly}\">{formatCurrency(parent.opts.name == 'task' ? (price * quantity) : (supplied ? price * quantity : '0'))}</label> </div> <div if=\"{parent.headers.actions}\" class=\"col sm-col-{parent.headers.actions} col-2 center\"> <a href=\"#\" class=\"btn btn-small border-red red mb1 sm-mb0\" onclick=\"{removeItem}\" title=\"Delete\"><i class=\"fa fa-trash-o\"></i></a> <a href=\"#\" if=\"{parent && parent.parent && parent.parent.record.id && this.parent.parent.type != 'TenderTemplate'}\" class=\"btn btn-small border mb1 sm-mb0\" onclick=\"{openComments}\" title=\"Comments\"><i class=\"fa fa-comment-o\"></i> [{getCommentsCount()}]</a> <a if=\"{action == 'Other'}\" class=\"btn btn-small btn-outline mb1 sm-mb0\" onclick=\"{openGroupCombo}\" title=\"Change Category\"><i class=\"fa fa-edit\"></i></a> </div> </div> </li> <r-dialog if=\"{opts.api.activity == ('edit_dimensions_task_' + id + '_' + name)}\" title=\"Edit Dimensions\"> <form class=\"p2\" onsubmit=\"{parent.updateDimensions}\"> <label>Dimensions</label> <r-area-calculator dimensions=\"{parent.parent.parent.section.dimensions}\" callback=\"{parent.setQuantity}\"></r-area-calculator> <div class=\"clearfix mt2 mxn2\"> <div class=\"col col-6 px2\"> <button class=\"block col-12 mb2 btn btn-primary\">Save</button> </div> </div> </form> </r-dialog>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.commentsCount = 0;
 	  this.on("mount", function () {
 	    // $('.animate', this.root).animateCss('bounceIn')
 	    _this.getCommentsCount();
 	  });
-	
+
 	  this.updateDimensions = function (e) {
 	    e.preventDefault();
 	    _this._item.dimensions = _.compact([parseInt(e.target.width.value), parseInt(e.target.height.value), parseInt(e.target.length.value)]);
 	    _this.unsetActivity();
 	  };
-	
+
 	  this.setQuantity = function (e) {
 	    e.preventDefault();
 	    _this._item.quantity = parseInt(e.currentTarget.value);
 	    _this.unsetActivity();
 	  };
-	
+
 	  this.input = _.debounce(function (e) {
 	    //e.preventUpdate=true
 	    e.item[e.target.name] = e.target.type === "checkbox" ? e.target.checked : e.target.name === "price" ? (parseInt(e.target.value) || 0) * 100 : parseInt(e.target.value) || 0;
 	    //this.update()
-	
+
 	    //this.opts.api.tenders.trigger('update')
 	    _this.parent.updateGroupTotal();
 	    _this.parent.parent.updateSectionTotal();
@@ -41708,7 +41708,7 @@
 	    _this.parent.updateGroupTotal();
 	    _this.parent.parent.updateSectionTotal();
 	  }, 200);
-	
+
 	  this.openGroupCombo = function (e) {
 	    e.preventDefault();
 	    // console.log(this.parent.parent.section)
@@ -41719,7 +41719,7 @@
 	      contentOpts: { api: opts.api, changeTaskAction: _this.changeTaskAction, item: e.item }
 	    });
 	  };
-	
+
 	  this.removeItem = function (e) {
 	    e.preventDefault();
 	    if (window.confirm(_this.ERRORS.CONFIRM_DELETE)) {
@@ -41727,7 +41727,7 @@
 	      _this.parent.opts.onitemremoved(e, _this.parent.opts.name);
 	    }
 	  };
-	
+
 	  this.openComments = function (e) {
 	    e.preventDefault();
 	    // console.log(this.parent.parent.section)
@@ -41759,9 +41759,9 @@
 	    // this.update({commentsCount: counts ? (counts.comments_count || 0) : 0})
 	    return counts ? counts.comments_count || 0 : 0;
 	  };
-	
+
 	  this.changeTaskAction = function (e) {
-	
+
 	    //e.preventUpdate=true
 	    e.item.action = e.target.value;
 	    //this.update()
@@ -41778,14 +41778,14 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-raw", "<span></span>", "", "", function (opts) {
 	  this.root.innerHTML = opts.content;
 	});
-	
+
 	riot.tag2("r-comments", "<h3>Comments</h3> <blockquote each=\"{comments}\" class=\"clearfix m0 p1 border-left mb1\"> <r-raw content=\"{autolinker.link( text )}\"></r-raw> <a class=\"btn btn-small border-red red right\" onclick=\"{delete}\" if=\"{account_id == currentAccount.id}\"> <i class=\"fa fa-trash-o\"></i> </a> <div class=\"h5 right-align mt1\"><strong>{account.profile.first_name} {account.profile.last_name}</strong> <span class=\"italic\">{fromNow(created_at)}</span></div> </blockquote> <form name=\"form\" onsubmit=\"{create}\" class=\"mt2\"> <input type=\"hidden\" name=\"project_id\" value=\"{opts.project_id}\"> <input type=\"hidden\" name=\"account_id\" value=\"{currentAccount.id}\"> <input type=\"hidden\" name=\"commentable_id\" value=\"{opts.commentable_id}\"> <input type=\"hidden\" name=\"commentable_type\" value=\"{opts.commentable_type}\"> <input type=\"hidden\" name=\"commentable_parent_id\" value=\"{opts.commentable_parent_id}\"> <input type=\"hidden\" name=\"commentable_parent_type\" value=\"{opts.commentable_parent_type}\"> <textarea class=\"block col-12 mb2 field\" name=\"text\" placeholder=\"Leave your comment\"></textarea> <button class=\"btn btn-primary {busy: busy}\" __disabled=\"{busy}\">Comment</button> </form>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  console.log(this.autolinker);
 	  this.on("mount", function () {
 	    _this.commentsCount = _this.opts.commentsCount;
@@ -41806,26 +41806,26 @@
 	    _this.opts.api.comments.off("delete.success", _this.removeComment);
 	    _this.opts.api.comments.off("delete.fail", _this.errorHandler);
 	  });
-	
+
 	  this.create = function (e) {
 	    e.preventDefault();
-	
+
 	    var data = _this.serializeForm(_this.form);
-	
+
 	    if (_.isEmpty(data)) {
 	      $(_this.form).animateCss("shake");
 	      return;
 	    }
-	
+
 	    _this.update({ busy: true, errors: null });
-	
+
 	    _this.opts.api.comments.create(data);
 	  };
 	  this["delete"] = function (e) {
 	    e.preventDefault();
 	    _this.opts.api.comments["delete"](e.item.id);
 	  };
-	
+
 	  this.addComment = function (comment) {
 	    _this.text.value = null;
 	    var _id = _.findIndex(_this.comments, function (c) {
@@ -41864,32 +41864,32 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-tender-item-group", "<ul class=\"list-reset ml2 mb0 relative {last: last}\"> <li> <h4 class=\"block mb0 mt1 p1 border-bottom border-right group-title\"> <a onclick=\"{toggle}\" class=\"cursor-pointer\"> <i class=\"fa fa-{icon} mr1\"></i> {group.humanize()} </a> </h4> <ul class=\"list-reset ml2 border-left mb0\" if=\"{visible}\"> <li if=\"{header}\" class=\"sm-show relative\"> <div class=\"clearfix p1 border-bottom\"> <div each=\"{name, width in headers}\" class=\"sm-col sm-col-{width} {center: name != 'name'} mb1 sm-mb0 truncate\"> {['name','description'].indexOf(name) > -1  ? '&nbsp;' : name.humanize()} </div> </div> </li> <r-tender-item each=\"{items}\" border_cleaner=\"{last}\" __readonly=\"{opts.readonly}\" no-reorder></r-tender-item> </ul> </li> </ul> <div class=\"clearfix relative group-total-wrapper\"> <h4 class=\"right mt1 mb0 p1 border abolute group-total bg-white z2\"> <div class=\"bg-white relative z4\">{formatCurrency(groupTotal)}</div> </h4> </div>", "", "class=\"col-11\"", function (opts) {
 	  var _this = this;
-	
+
 	  var itemKeys = undefined;
-	
+
 	  // this.taskActions = opts.task_actions
-	
+
 	  this.visible = this.parent.parent.opts.id ? false : true;
-	
+
 	  this.icon = this.visible ? "minus-square-o" : "plus-square-o";
-	
+
 	  this.toggle = function (e) {
 	    e.preventDefault();
 	    _this.visible = !_this.visible;
 	    _this.icon = _this.visible ? "plus-square-o" : "minus-square-o";
 	  };
-	
+
 	  // this.on('update', () => {
 	  //   if(this.tags['r-tender-item'] && this.items && this.items.length != this.tags['r-tender-item'].length) this.update({visible: true})
 	  // })
-	
+
 	  this.updateGroupTotal = function () {
 	    _this.groupTotal = _this.calcGroupTotal();
 	  };
-	
+
 	  this.calcGroupTotal = function () {
 	    return _.reduce(_this.items, function (total, item) {
 	      if (_this.group == "materials") {
@@ -41899,7 +41899,7 @@
 	      }
 	    }, 0);
 	  };
-	
+
 	  this.on("mount", function () {
 	    itemKeys = Object.keys(_this.opts.groupitems);
 	    _this.groupTotal = _this.calcGroupTotal();
@@ -41907,9 +41907,9 @@
 	    _this.header = _this.drawHeader();
 	    _this.update();
 	  });
-	
+
 	  this.on("update", function () {
-	
+
 	    if (_this.items) {
 	      _this.groupTotal = _this.calcGroupTotal();
 	      _this.last = _this.drawBorderCleaner();
@@ -41917,19 +41917,19 @@
 	      _this.update();
 	    }
 	  });
-	
+
 	  this.drawHeader = function () {
 	    if (_this.isMounted) {
 	      return itemKeys.indexOf(_this.group) == 0;
 	    }
 	  };
-	
+
 	  this.drawBorderCleaner = function () {
 	    if (_this.isMounted) {
 	      return itemKeys.indexOf(_this.group) == itemKeys.length - 1;
 	    }
 	  };
-	
+
 	  this.headers = this.opts.headers;
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
@@ -41939,60 +41939,60 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	var taskActions = __webpack_require__(152);
-	
+
 	riot.tag2("r-tender-section", "<div> <div class=\"relative border-bottom mt2\"> <h3 class=\"block overflow-hidden mb0\"> <i class=\"cursor-pointer fa fa-{icon}\" onclick=\"{toggle}\"></i> <a if=\"{section.dimensions && section.dimensions.length > 0}\" class=\"h6 bg-teal gray rounded notification-badge\" onclick=\"{setActivity}\" rel=\"edit_dimensions_{section.id}\">{section.dimensions.join('x')}</a> <a if=\"{!parent.opts.readonly && (!section.dimensions || section.dimensions.length == 0)}\" onclick=\"{setActivity}\" rel=\"edit_dimensions_{section.id}\"><i class=\"fa fa-edit\"></i></a> <input type=\"text\" class=\"col-10 field border-none tender-section-name h3\" value=\"{section.name.humanize()}\" oninput=\"{renameSection}\"> </h3> <a class=\"absolute right-0 top-0 btn btn-small border-red red\" onclick=\"{removeSection}\"><i class=\"fa fa-trash-o\"></i></a> </div> <virtual if=\"{visible}\"> <r-tender-item-group name=\"task\" groupitems=\"{section.tasks_by_action}\" __readonly=\"{parent.parent.opts.readonly}\" each=\"{group, items in section.tasks_by_action}\" headers=\"{parent.headers.task}\" onitemremoved=\"{removeItem}\" no-reorder> </r-tender-item-group> <r-tender-item-group name=\"material\" if=\"{(filterAction == 'Materials' || !filterAction)}\" __readonly=\"{parent.parent.opts.readonly}\" groupitems=\"{section.materials_by_group}\" show=\"{section.materials && section.materials.length > 0}\" each=\"{group, items in section.materials_by_group}\" headers=\"{parent.headers.material}\" onitemremoved=\"{removeItem}\" no-reorder> </r-tender-item-group> </virtual> <div class=\"clearfix {'with-line': !visible}\"> <h3 class=\"right border p1 bg-white relative z2 section-total\">{visible ? section.name + ':' : ''} {sectionTotal}</h3> </div> <div if=\"{visible}\" class=\"clearfix mxn1 mt2 mb3\"> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"task\" auto_focus=\"{true}\" api=\"{parent.opts.api}\" icon=\"tasks\"></r-tender-item-input> </div> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"material\" api=\"{parent.opts.api}\" icon=\"shopping-basket\"></r-tender-item-input> </div> </div> <r-dialog if=\"{opts.api.activity == ('edit_dimensions_' + section.id)}\" title=\"Edit Dimensions\"> <form class=\"p2\" onsubmit=\"{parent.updateDimensions}\"> <label>Section Dimensions</label> <r-area-calculator dimensions=\"{parent.section.dimensions}\" callback=\"{preventSubmit}\"></r-area-calculator> <div class=\"clearfix mt2 mxn2\"> <div class=\"col col-6 px2\"> <button class=\"block col-12 mb2 btn btn-primary\">Save</button> </div> </div> </form> </r-dialog> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.taskActions = _.omit(taskActions, "Materials", "VAT");
 	  //this.showDisclosures = true
 	  this.visible = this.parent.opts.id ? false : true;
 	  this.icon = this.visible ? "minus-square-o" : "plus-square-o";
-	
+
 	  this.toggle = function (e) {
 	    e.preventDefault();
 	    _this.visible = !_this.visible;
 	    _this.icon = _this.visible ? "minus-square-o" : "plus-square-o";
 	  };
-	
+
 	  this.updateDimensions = function (e) {
 	    _this.section.dimensions = _.compact([parseInt(e.target.width.value), parseInt(e.target.height.value), parseInt(e.target.length.value)]);
 	    _this.unsetActivity();
 	    _this.update();
 	  };
-	
+
 	  this.updateSectionTotalLocal = function () {
 	    _this.sectionTotal = _this.calcSectionTotal(_this.section, true);
 	  };
-	
+
 	  this.updateSectionTotal = function () {
 	    _this.updateSectionTotalLocal();
 	    _this.parent.updateTenderTotal();
 	  };
-	
+
 	  this.on("mount", function () {
 	    _this.parent.tags["r-tender-filters"].on("update", _this.updateSectionTotalLocal);
 	  });
-	
+
 	  this.on("before-unmount", function () {
 	    _this.parent.tags["r-tender-filters"] && _this.parent.tags["r-tender-filters"].off("update", _this.updateSectionTotalLocal);
 	  });
-	
+
 	  this.on("update", function () {
-	
+
 	    if (_this.section) {
 	      _this.filterAction = _this.parent.tags["r-tender-filters"].action;
-	
+
 	      var tasks = _.isString(_this.filterAction) ? _.filter(_this.section.tasks, function (task) {
 	        return task.action == _this.filterAction;
 	      }) : _this.section.tasks;
-	
+
 	      var tasksWithDescription = _.map(tasks, function (item) {
 	        item.description = item.description ? item.description : "";
 	        return item;
 	      });
-	
+
 	      var grouped = _.groupBy(tasksWithDescription, function (item) {
 	        return item.action;
 	      });
@@ -42001,7 +42001,7 @@
 	      })), function (item) {
 	        return item.action;
 	      });
-	
+
 	      var materialsWithDescription = _.map(_this.section.materials, function (item) {
 	        item.description = item.description ? item.description : "";
 	        return item;
@@ -42010,7 +42010,7 @@
 	      if (!_this.sectionTotal) _this.updateSectionTotal();
 	    }
 	  });
-	
+
 	  this.tags.task.on("itemselected", function (item) {
 	    _this.section.tasks = _this.section.tasks || [];
 	    var index = _.findIndex(_this.section.tasks, function (task) {
@@ -42035,7 +42035,7 @@
 	      _this.opts.api.tenders.trigger("update");
 	    }
 	  });
-	
+
 	  this.removeItem = function (e, name) {
 	    name = name.plural();
 	    var index = _.findIndex(_this.section[name], function (itm) {
@@ -42046,7 +42046,7 @@
 	    _this.update();
 	    _this.opts.api.tenders.trigger("update");
 	  };
-	
+
 	  this.renameSection = function (e) {
 	    e.preventUpdate = true;
 	    _this.section.name = e.target.value;
@@ -42059,16 +42059,16 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	__webpack_require__(156);
-	
+
 	riot.tag2("r-quotes-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: isReadonly()} \"> <div class=\"clearfix\"> <div class=\"left mb4 overflow-hidden\"> <h1 class=\"mb0\">{opts.id ? getTitle() : 'New Quote'}</h1> <a class=\"btn btn-small h6 btn-outline orange\" href=\"/app/projects/{record.project_id}\"><i class=\"fa fa-chevron-left\"></i> Back to Project</a> </div> <div class=\"right h5 mt3 align-right\"> <div>Created at: {formatTime(record.created_at)}</div> <div if=\"{record.submitted_at}\">Submitted at: {formatTime(record.submitted_at)}</div> <div if=\"{record.accepted_at}\">Accepted at: {formatTime(record.accepted_at)}</div> </div> </div> <div if=\"{currentAccount.isAdministrator}\" class=\"p1 bg-blue white\"> <label for=\"project_id\">Professional</label> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" id=\"{record.professional_id}\" filters=\"{professionalFilters()}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"tender_id\">Tender</label> <input type=\"hidden\" name=\"tender_id\" value=\"{record.tender_id}\"> <r-typeahead-input resource=\"tenders\" api=\"{opts.api}\" id=\"{record.tender_id}\" filters=\"{tenderFilters()}\" datum_tokenizer=\"{['id', 'total_amount']}\"></r-typeahead-input> <span if=\"{errors.tender_id}\" class=\"inline-error\">{errors.tender_id}</span> </div> <div if=\"{record.id}\" class=\"clearfix mb4\"> <div class=\"sm-col sm-col-6\"> <h4>From</h4> <address> {record.professional.profile.first_name} {record.professional.profile.last_name}<br> <virtual if=\"{!isAllValuesEmpty(record.professional.address)}\"> {record.professional.address.street_address}<br> {record.professional.address.postcode}, {record.professional.address.city}<br> {record.professional.address.country} </virtual> </address> </div> </div> <r-tender-filters record=\"{record}\"></r-tender-filters> <r-tender-section __readonly=\"{opts.readonly}\" each=\"{section , i in sections()}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\"> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-6 px2\"> <label>Insurance Amount</label> <select name=\"insurance_amount\" class=\"block col-12 field mb2\" onchange=\"{setVal}\" if=\"{!currentAccount.isCustomer}\"> <option>Select</option> <option each=\"{_, i in new Array(19)}\" key=\"0\" value=\"{(i+1)}\" __selected=\"{record.insurance_amount == (i+1)}\">{(i+1) + ' Million'}</option> </select> <p if=\"{currentAccount.isCustomer}\">{record.insurance_amount ?  record.insurance_amount + ' Million' : 'N/A'}</p> </div> <div class=\"sm-col sm-col-6 px2\"> <label>Guarantee Length</label> <select name=\"guarantee_length\" class=\"block col-12 field mb2\" onchange=\"{setVal}\" if=\"{!currentAccount.isCustomer}\"> <option>Select</option> <option each=\"{_, i in new Array(19)}\" key=\"0\" value=\"{(i+1)}\" __selected=\"{record.guarantee_length == (i+1)}\">{(i+1) + (i > 0 ? ' Years' : ' Year')}</option> </select> <p if=\"{currentAccount.isCustomer}\">{record.guarantee_length ? record.guarantee_length + ' Years' : 'N/A'} </p> </div> </div> <label>Summary</label> <textarea type=\"text\" name=\"summary\" placeholder=\"Summary\" class=\"block col-12 field mb2\" oninput=\"{setVal}\" if=\"{!currentAccount.isCustomer}\">{record.summary}</textarea> <p if=\"{currentAccount.isCustomer}\">{record.summary ? record.summary : 'N/A'}</p> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <div class=\"right-align\"> <button if=\"{opts.id && !currentAccount.isProfessional && record.submitted_at}\" class=\"btn btn-primary btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </button> <virtual if=\"{!opts.readonly && !currentAccount.isCustomer}\"> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{opts.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\"> {record.submitted_at ? 'Submitted' : 'Submit'} <span if=\"{record.submitted_at}\">{fromNow(record.submitted_at)}</span> </a> </virtual> </div> </form> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.type = "Quote";
-	
+
 	  this.tags["r-tender-filters"].on("update", this.update);
-	
+
 	  this.getTitle = function () {
 	    // (opts.readonly ? 'Showing' : 'Editing') + ' Quote ' + opts.id
 	    if (_this.title) {
@@ -42082,16 +42082,16 @@
 	      });
 	    }
 	  };
-	
+
 	  this.headers = {
 	    task: { name: 3, description: 3, quantity: 1, price: 1, total_cost: 2, actions: 2 },
 	    material: { name: 2, description: 3, supplied: 1, quantity: 1, price: 1, total_cost: 2, actions: 2 }
 	  };
-	
+
 	  this.isReadonly = function () {
 	    return _this.opts.readonly;
 	  };
-	
+
 	  if (this.opts.readonly) {
 	    delete this.headers.task.actions;
 	    this.headers.task.description = 5;
@@ -42099,7 +42099,7 @@
 	    this.headers.material.name = 3;
 	    this.headers.material.description = 4;
 	  }
-	
+
 	  if (this.opts.id) {
 	    this.on("mount", function () {
 	      opts.api.quotes.on("show.fail", _this.errorHandler);
@@ -42114,16 +42114,16 @@
 	    this.record = { project_id: this.opts.project_id, document: { sections: [] } };
 	    if (this.currentAccount.isProfessional) this.record.professional_id = this.currentAccount.user_id;
 	  }
-	
+
 	  this.setVal = function (e) {
 	    _this.record[e.target.name] = e.target.value;
 	  };
-	
+
 	  this.submit = function (e) {
 	    if (e) e.preventDefault();
-	
+
 	    _this.update({ busy: true, errors: null });
-	
+
 	    _.map(_this.record.document.sections, function (sec) {
 	      if (_.isEmpty(sec.materials)) {
 	        sec.materials = null;
@@ -42135,7 +42135,7 @@
 	      }
 	      return sec;
 	    });
-	
+
 	    if (_this.opts.id) {
 	      _this.opts.api.quotes.update(opts.id, _this.record).fail(_this.errorHandler).then(function (id) {
 	        return _this.update({ busy: false });
@@ -42148,14 +42148,14 @@
 	      });
 	    }
 	  };
-	
+
 	  this.updateQuote = function (record) {
 	    if (!_this.currentAccount.isAdministrator && record.accepted_at) {
 	      _this.opts.readonly = true;
 	    }
 	    _this.update({ record: record });
 	  };
-	
+
 	  this.submitQuote = function (e) {
 	    if (_this.opts.id) {
 	      if (e) e.preventDefault();
@@ -42166,7 +42166,7 @@
 	      });
 	    }
 	  };
-	
+
 	  this.acceptQuote = function (e) {
 	    if (_this.opts.id) {
 	      if (e) e.preventDefault();
@@ -42176,7 +42176,7 @@
 	      });
 	    }
 	  };
-	
+
 	  this.tags["r-typeahead-input"][0].on("itemselected", function (item) {
 	    _this.record.professional_id = item.id;
 	    _this.update();
@@ -42191,7 +42191,7 @@
 	  this.tenderFilters = function () {
 	    return [{ name: "project_id", value: _this.record.project_id }];
 	  };
-	
+
 	  this.mixin("tenderMixin");
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
@@ -42201,15 +42201,15 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-leads-form", "<form class=\"sm-col-7 md-col-5 left-align mx-auto mb4 p3 bg-lighten-4 black border adwords-form\" name=\"form\" onsubmit=\"{submit}\"> <h4 class=\"mt0 mb2 center\">Arrange a free phone consultation</h4> <input type=\"hidden\" name=\"meta[source]\" value=\"adwords\"> <input type=\"hidden\" name=\"meta[glcid]\" value=\"{opts.query.gclid}\"> <input type=\"hidden\" name=\"meta[utm_referrer]\" value=\"{opts.query.utm_referrer}\"> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"first_name\">First Name *</label> <input id=\"first_name\" class=\"block col-12 mb2 field\" type=\"text\" name=\"first_name\" __autofocus=\"{opts.autofocus}\"> <span if=\"{errors.first_name}\" class=\"inline-error\">{errors.first_name}</span> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"last_name\">First Name *</label> <input id=\"last_name\" class=\"block col-12 mb2 field\" type=\"text\" name=\"last_name\"> <span if=\"{errors.last_name}\" class=\"inline-error\">{errors.last_name}</span> </div> </div> <label for=\"phone_number\">Phone Number *</label> <input id=\"phone_number\" class=\"block col-12 mb2 field\" type=\"tel\" name=\"phone_number\"> <span if=\"{errors.phone_number}\" class=\"inline-error\">{errors.phone_number}</span> <p class=\"h6 mb2\">We never pass your details to 3rd parties.</p> <label for=\"person_project_type\">Project type</label> <select class=\"block col-12 field mb2\" name=\"meta[project_kind]\"> <option value=\"renovation\">Renovation</option> <option value=\"loft conversion\">Loft Conversion</option> <option value=\"extension\">Extension</option> <option value=\"basement conversion\">Basement Conversion</option> <option value=\"kitchen renovation\">Kitchen Renovation</option> <option value=\"bathroom Renovation\">Bathroom Renovation</option> <option value=\"redecoration\">Redecoration</option> <option value=\"new build\">New Build</option> </select> <button name=\"button\" type=\"submit\" class=\"block col-12 btn btn-big btn-primary\">Arrange a Callback</button> </form>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.submit = function (e) {
 	    var data = _this.serializeForm(_this.form);
-	
+
 	    _this.update({ busy: true, errors: null });
-	
+
 	    opts.api.leads.create(data).fail(_this.errorHandler).then(function (lead) {
 	      _this.update({ lead: lead, busy: false });
 	      _this.sendGALeadConfirmationConversion().then(function () {
@@ -42218,7 +42218,7 @@
 	    });
 	  };
 	});
-	
+
 	riot.tag2("r-lead", "<yield to=\"header\"> <header class=\"white bg-gray bg-cover bg-center\" style=\"background-image: url(/assets/home/bg1_blur-e5c75336b83fc12f32299970aa6dde8b3fd0ea2f2227329fabd88b019a2da107.jpg)\"> <div class=\"container\"> <div class=\"center px2 clearfix\"> <div class=\"center mt2\"> <img src=\"/images/logos/black.svg\" class=\"logo--medium\"> </div> <h1 class=\"h1 h2-responsive mt1 mb1\">Get your project off to the perfect start by speaking to an expert</h1> <p class=\"sm-col-10 mx-auto mb3 h3\">We will help answer any questions you have and advise you on the next steps.</p> <r-leads-form autofocus=\"true\" query=\"{opts.query}\"></r-leads-form> </div> </div> </header> </yield>", "", "", function (opts) {});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
@@ -42227,14 +42227,14 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
-	
+
 	var Pikaday = _interopRequire(__webpack_require__(146));
-	
+
 	riot.tag2("r-settings-notifications", "<h2 class=\"mt0\">Notifications</h2> <form name=\"form\" onsubmit=\"{submit}\"> <div each=\"{not, i in notifications}\"> <label> <input type=\"checkbox\" name=\"notifications[{not}]\" __checked=\"{currentAccount.notifications[not]}\"> {not.humanize()} </label> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  if (this.currentAccount.isCustomer) {
 	    this.notifications = ["added_to_professionals", "appointment_canceled", "appointment_upcoming", "new_appointment", "new_payment", "new_project", "payment_canceled", "payment_refunded", "payment_due", "quote_submitted", "welcome", "new_comment"];
 	  } else if (this.currentAccount.isProfessional) {
@@ -42242,27 +42242,27 @@
 	  } else {
 	    this.notifications = ["added_to_professionals", "appointment_canceled", "lead", "new_appointment", "new_payment", "new_project", "payment_approved", "payment_canceled", "payment_paid", "payment_refunded", "quote_accepted", "quote_submitted", "welcome", "new_comment"];
 	  }
-	
+
 	  this.submit = function (e) {
-	
+
 	    e.preventDefault();
-	
+
 	    var data = _this.serializeForm(_this.form);
-	
+
 	    if (_.isEmpty(data)) {
 	      $(_this.form).animateCss("shake");
 	      return;
 	    }
-	
+
 	    _this.update({ busy: true, errors: null });
-	
+
 	    _this.opts.api[_this.currentAccount.user_type.plural().toLowerCase()].update(_this.currentAccount.user_id, data).fail(_this.errorHandler).then(_this.updateReset);
 	  };
 	});
-	
+
 	riot.tag2("r-settings-account", "<h2 class=\"mt0\">Account</h2> <p class=\"bg-green white p1\" if=\"{fieldsComplete()}\"> Congrats! Your account is verified and you can receive your payments. </p> <form if=\"{record}\" name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <virtual if=\"{fieldsNeeded('business_logo')}\"> <label>Business Logo</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.business_logo}\" name=\"stripe_account[updates][business_logo]\"> </virtual> <virtual if=\"{fieldsNeeded('business_name')}\"> <label>Business Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.business_name}\" name=\"stripe_account[updates][business_name]\"> </virtual> <virtual if=\"{fieldsNeeded('business_primary_color')}\"> <label>Business Primary Color</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.business_primary_color}\" name=\"stripe_account[updates][business_primary_color]\"> </virtual> <virtual if=\"{fieldsNeeded('business_url')}\"> <label>Business URL</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.business_url}\" name=\"stripe_account[updates][business_url]\"> </virtual> <virtual if=\"{fieldsNeeded('debit_negative_balances')}\"> <label>Debit Negative Balances</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.debit_negative_balances}\" name=\"stripe_account[updates][debit_negative_balances]\"> </virtual> <virtual if=\"{fieldsNeeded('default_currency')}\"> <label>Default Currency</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.default_currency}\" name=\"stripe_account[updates][default_currency]\"> </virtual> <virtual if=\"{fieldsNeeded('email')}\"> <label>Email</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.email}\" name=\"stripe_account[updates][email]\"> </virtual> <fieldset if=\"{fieldsNeeded('decline_charge_on')}\"> <legend>Decline Charge On</legend> <label>Avs Failure</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.decline_charge_on.avs_failure}\" name=\"stripe_account[updates][decline_charge_on][avs_failure]\"> <label>Avs Failure</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.decline_charge_on.cvc_failure}\" name=\"stripe_account[updates][decline_charge_on][cvc_failure]\"> </fieldset> <fieldset class=\"mb2 p1 border\"> <legend><h3>Bank Account</h3></legend> <p if=\"{record.stripe_account.object.external_accounts.total_count > 0}\" class=\"bg-orange white p1\"> You have already registered your bank account with us. You can change the details but this will trigger verification process again. <br> <a class=\"btn btn-primary\" onclick=\"{letBankAccountChange}\">OK, got it. Let me change my account details</a> </p> <virtual if=\"{bankAccountWillChange || fieldsNeeded('bank')}\"> <label class=\"display-none\">Object</label> <input class=\"block col-12 mb2 field\" type=\"hidden\" value=\"bank_account\" name=\"stripe_account[updates][external_account][object]\"> <label>Account Number *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][external_account][account_number]\"> <label>Country *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"GB\" name=\"stripe_account[updates][external_account][country]\"> <label>Currency *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"gbp\" name=\"stripe_account[updates][external_account][currency]\"> <label>Account Holder Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][external_account][account_holder_name]\"> <label>Account Holder Type *</label> <select class=\"block col-12 mb2 field\" name=\"stripe_account[updates][external_account][account_holder_type]\"> <option></option> <option value=\"individual\">Individual</option> <option value=\"company\">Company</option> </select> <label>Account Sort Code *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"stripe_account[updates][external_account][routing_number]\"> <a if=\"{!fieldsNeeded('bank')}\" class=\"btn btn-primary\" onclick=\"{cancelBankAccountChange}\">Cancel</a> </virtual> </fieldset> <fieldset class=\"mb2 p1 border\" if=\"{fieldsNeeded('legal_entity')}\"> <legend><h3>Legal Entity</h3></legend> <virtual if=\"{fieldsNeeded('legal_entity.type')}\"> <label>Type *</label> <select class=\"block col-12 mb2 field\" name=\"stripe_account[updates][legal_entity][type]\"> <option></option> <option value=\"individual\" __selected=\"{record.stripe_account.object.legal_entity.type === 'individual'}\">Individual</option> <option value=\"company\" __selected=\"{record.stripe_account.object.legal_entity.type === 'company'}\">Company</option> </select> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.first_name')}\"> <label>First Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.first_name}\" name=\"stripe_account[updates][legal_entity][first_name]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.last_name')}\"> <label>Last Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.last_name}\" name=\"stripe_account[updates][legal_entity][last_name]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.gender')}\"> <label>Gender</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.gender}\" name=\"stripe_account[updates][legal_entity][gender]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.maiden_name')}\"> <label>Maiden Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.maiden_name}\" name=\"stripe_account[updates][legal_entity][maiden_name]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.dob')}\"> <label>Date of Birth</label> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-4 px1\"> <label>Day *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.dob.day}\" name=\"stripe_account[updates][legal_entity][dob][day]\"> </div> <div class=\"sm-col sm-col-4 px1\"> <label>Month *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.dob.month}\" name=\"stripe_account[updates][legal_entity][dob][month]\"> </div> <div class=\"sm-col sm-col-4 px1\"> <label>Year *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.dob.year}\" name=\"stripe_account[updates][legal_entity][dob][year]\"> </div> </div> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.phone_number')}\"> <label>Phone Number *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.phone_number}\" name=\"stripe_account[updates][legal_entity][phone_number]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.personal_id_number')}\"> <label>Personal ID Number *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_id_number}\" name=\"stripe_account[updates][legal_entity][personal_id_number]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.business_name')}\"> <label>Business Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.business_name}\" name=\"stripe_account[updates][legal_entity][business_name]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.business_tax_id')}\"> <label>Business Tax ID</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.business_tax_id}\" name=\"stripe_account[updates][legal_entity][business_tax_id]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.business_vat_id')}\"> <label>Business VAT ID</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.business_vat_id}\" name=\"stripe_account[updates][legal_entity][business_vat_id]\"> </virtual> <fieldset class=\"mb2 p1 border\" if=\"{fieldsNeeded('legal_entity.address')}\"> <legend><h4>Address</h4></legend> <label>Line1 *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.address.line1}\" name=\"stripe_account[updates][legal_entity][address][line1]\"> <label>Line2</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.address.line2}\" name=\"stripe_account[updates][legal_entity][address][line2]\"> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-3 px1\"> <label>City *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.address.city}\" name=\"stripe_account[updates][legal_entity][address][city]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>Country *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.address.country}\" name=\"stripe_account[updates][legal_entity][address][country]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>Postcode *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.address.postal_code}\" name=\"stripe_account[updates][legal_entity][address][postal_code]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>State *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.address.state}\" name=\"stripe_account[updates][legal_entity][address][state]\"> </div> </div> </fieldset> <fieldset class=\"mb2 p1 border\" if=\"{fieldsNeeded('legal_entity.personal_address')}\"> <legend><h4>Personal Address</h4></legend> <label>Line1 *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_address.line1}\" name=\"stripe_account[updates][legal_entity][personal_address][line1]\"> <label>Line2</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_address.line2}\" name=\"stripe_account[updates][legal_entity][personal_address][line2]\"> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-3 px1\"> <label>City *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_address.city}\" name=\"stripe_account[updates][legal_entity][personal_address][city]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>Country *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_address.country}\" name=\"stripe_account[updates][legal_entity][personal_address][country]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>Postcode *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_address.postal_code}\" name=\"stripe_account[updates][legal_entity][personal_address][postal_code]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>State *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{record.stripe_account.object.legal_entity.personal_address.state}\" name=\"stripe_account[updates][legal_entity][personal_address][state]\"> </div> </div> </fieldset> <fieldset class=\"mb2 p1 border\" if=\"{fieldsNeeded('legal_entity.additional_owners')}\"> <legend><h4>Additional Owners</h4></legend> <ol> <li each=\"{owner, index in record.stripe_account.object.legal_entity.additional_owners}\" class=\"p1 border\"> <virtual if=\"{fieldsNeeded('legal_entity.additional_owners.' + index + '.first_name')}\"> <label>First Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.first_name}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][first_name]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.additional_owners.' + index + '.last_name')}\"> <label>Last Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.last_name}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][last_name]\"> </virtual> <virtual if=\"{fieldsNeeded('legal_entity.additional_owners.' + index + '.dob')}\"> <label>Date of Birth</label> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-4 px1\"> <label>Day *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.dob.day}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][dob][day]\"> </div> <div class=\"sm-col sm-col-4 px1\"> <label>Month *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.dob.month}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][dob][month]\"> </div> <div class=\"sm-col sm-col-4 px1\"> <label>Year *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.dob.year}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][dob][year]\"> </div> </div> </virtual> <fieldset class=\"mb2 p1 border\" if=\"{fieldsNeeded('legal_entity.additional_owners.' + index + '.address')}\"> <legend><h5>Address</h5></legend> <label>Line1 *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.address.line1}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][address][line1]\"> <label>Line2</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.address.line2}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][address][line2]\"> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-3 px1\"> <label>City *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.address.city}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][address][city]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>Country *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.address.country}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][address][country]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>Postcode *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.address.postal_code}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][address][postal_code]\"> </div> <div class=\"sm-col sm-col-3 px1\"> <label>State *</label> <input class=\"block col-12 mb2 field\" type=\"text\" value=\"{owner.address.state}\" name=\"stripe_account[updates][legal_entity][additional_owners][{index}][address][state]\"> </div> </div> </fieldset> <virtual if=\"{fieldsNeeded('legal_entity.additional_owners.' + index + '.verification.document')}\"> <label>Verification Document *</label> <input class=\"block col-12 p1 mb2 field\" type=\"file\" data-additional-owners-file-index=\"{index}\" name=\"professional[stripe_account][updates][legal_entity][additional_owners][{index}][identity_document]\"> </virtual> <a class=\"btn btn-small btn-primary\" onclick=\"{removeAdditionalOwner}\">Remove Additional Owner</a> </li> </ol> <a class=\"btn btn-small btn-primary mb2\" onclick=\"{addAdditionalOwner}\">Add Additional Owner</a> </fieldset> </fieldset> <virtual if=\"{fieldsNeeded('legal_entity.verification.document')}\"> <label>Verification Document *</label> <input class=\"block col-12 p1 mb2 field\" type=\"file\" id=\"stripe_account_updates_legal_entity_identity_document\" name=\"professional[stripe_account][updates][legal_entity][identity_document]\"> </virtual> <div if=\"{!_.isEmpty(errors)}\" id=\"error_explanation\"> <ul> <li each=\"{field, messages in errors}\">{field.humanize()} {messages.join(', ')}</li> </ul> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.fieldsComplete = function () {
 	    return _.isEmpty(_this.record.stripe_account.object.verification.fields_needed);
 	  };
@@ -42323,14 +42323,14 @@
 	  };
 	  this.submit = function (e) {
 	    e.preventDefault();
-	
+
 	    var data = _this.serializeForm(e.target, { useIntKeysAsArrayIndex: true });
-	
+
 	    if (_.isEmpty(data)) {
 	      $(e.target).animateCss("shake");
 	      return;
 	    }
-	
+
 	    _this.update({ busy: true, errors: null });
 	    _this.opts.api.professionals.update(_this.currentAccount.user_id, data);
 	  };
@@ -42353,23 +42353,23 @@
 	    $("input[type=file]", _this.root).fileupload("destroy");
 	  };
 	});
-	
+
 	riot.tag2("r-settings-profile", "<h2 class=\"mt0\">Profile</h2> <form name=\"{currentAccount.user_type.plural()}\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"profile[first_name]\">First Name *</label> <input class=\"block col-12 mb2 field\" autofocus=\"true\" type=\"text\" name=\"profile[first_name]\" value=\"{currentAccount.profile.first_name}\"> <span if=\"{errors['profile.first_name']}\" class=\"inline-error\">{errors['profile.first_name']}</span> </div> <div class=\"col col-6 px2\"> <label for=\"profile[last_name]\">Last Name *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"profile[last_name]\" value=\"{currentAccount.profile.last_name}\"> <span if=\"{errors['profile.last_name']}\" class=\"inline-error\">{errors['profile.last_name']}</span> </div> </div> <label for=\"profile[phone_number]\">Phone Number *</label> <input class=\"block col-12 mb2 field\" type=\"tel\" name=\"profile[phone_number]\" value=\"{currentAccount.profile.phone_number}\"> <span if=\"{errors['profile.phone_number']}\" class=\"inline-error\">{errors['profile.phone_number']}</span> <div if=\"{currentAccount.isProfessional}\"> <label for=\"profile[info]\">Info</label> <textarea class=\"block col-12 mb2 field\" name=\"profile[info]\" value=\"{currentAccount.profile.info}\"></textarea> <span if=\"{errors['profile.info']}\" class=\"inline-error\">{errors['profile.info']}</span> <label for=\"profile[dob]\">Date of birth</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"profile[dob]\" value=\"{currentAccount.profile.dob}\"> <span if=\"{errors['profile.dob']}\" class=\"inline-error\">{errors['profile.dob']}</span> <div each=\"{field, i in proFields}\"> <label for=\"profile[{field}]\">{field.humanize()}</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"profile[{field}]\" value=\"{currentAccount.profile[field]}\"> <span if=\"{errors['profile.' + field]}\" class=\"inline-error\">{errors['profile.'+field]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form> <form name=\"registrations\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <label for=\"email\">Email *</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"email\" value=\"{currentAccount.email}\"> <span if=\"{errors['email']}\" class=\"inline-error\">{errors['email']}</span> <label for=\"password\">Password</label> <em class=\"h5\">(8 characters minimum, leave empty if you don't want to change it)</em> <input class=\"block col-12 mb2 field\" autocomplete=\"off\" type=\"password\" name=\"password\"> <span if=\"{errors['password']}\" class=\"inline-error\">{errors['password']}</span> <label for=\"password\">Current Password *</label> <em class=\"h5\">(8 characters minimum)</em> <input class=\"block col-12 mb2 field\" autocomplete=\"off\" type=\"password\" name=\"current_password\"> <span if=\"{errors['current_password']}\" class=\"inline-error\">{errors['current_password']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.submit = function (e) {
-	
+
 	    e.preventDefault();
-	
+
 	    var data = _this.serializeForm(e.target);
-	
+
 	    if (_.isEmpty(data)) {
 	      $(e.target).animateCss("shake");
 	      return;
 	    }
-	
+
 	    _this.update({ busy: true, errors: null });
-	
+
 	    _this.opts.api[e.target.name].update(_this.currentAccount.user_id, data).fail(_this.errorHandler).then(function (id) {
 	      _this.update({ busy: false });
 	    });
@@ -42388,7 +42388,7 @@
 	    });
 	  }
 	});
-	
+
 	riot.tag2("r-settings", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <div class=\"py3 px2\"> <div class=\"clearfix mxn2\"> <r-subnav links=\"{subnavLinks}\" tab=\"{opts.tab}\"></r-subnav> <div class=\"sm-col sm-col-9 sm-px2\"> <r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\" content_opts=\"{opts.contentOpts}\"></r-tabs> </div> </div> </div> </div>", "", "", function (opts) {
 	  this.subnavLinks = [{ href: "/app/settings/profile", name: "profile", tag: "r-settings-profile" }, { href: "/app/settings/notifications", name: "notifications", tag: "r-settings-notifications" }];
 	  if (this.currentAccount.isProfessional) {
@@ -42402,51 +42402,51 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	__webpack_require__(167);
-	
+
 	__webpack_require__(168);
-	
+
 	__webpack_require__(169);
-	
+
 	__webpack_require__(170);
-	
+
 	__webpack_require__(171);
-	
+
 	__webpack_require__(172);
-	
+
 	__webpack_require__(173);
-	
+
 	__webpack_require__(174);
-	
+
 	__webpack_require__(175);
-	
+
 	__webpack_require__(176);
-	
+
 	__webpack_require__(177);
-	
+
 	__webpack_require__(179);
-	
+
 	__webpack_require__(180);
-	
+
 	__webpack_require__(181);
-	
+
 	__webpack_require__(182);
-	
+
 	__webpack_require__(183);
-	
+
 	__webpack_require__(184);
-	
+
 	__webpack_require__(185);
-	
+
 	__webpack_require__(186);
-	
+
 	__webpack_require__(187);
-	
+
 	__webpack_require__(188);
-	
+
 	__webpack_require__(189);
-	
+
 	riot.tag2("r-admin-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap cursor-pointer\" onclick=\"{sort}\">{attr.humanize()} <i class=\"fa fa-sort\"></i></th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td each=\"{attr, i in headers}\"> {record[attr]} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
@@ -42458,7 +42458,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-admin-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in attributes}\"> <div if=\"{attr != 'id'}\"> <label for=\"{attr}\">{attr.humanize()}</label> <textarea if=\"{_.isObject(record[attr])}\" class=\"block col-12 mb2 field fixed-height\" name=\"{attr}:object\">{JSON.stringify(record[attr], null, 2)}</textarea> <input if=\"{!_.isObject(record[attr])}\" class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form> </div>", "", "", function (opts) {
 	  this.mixin("adminForm");
 	});
@@ -42469,20 +42469,20 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	__webpack_require__(156);
-	
+
 	riot.tag2("r-admin-tender-template-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <h1><input type=\"text\" name=\"name\" value=\"{record.name}\" class=\"block col-12 field\" placeholder=\"Name\" oninput=\"{setInputValue}\"></h1> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>When you apply a template to a project, if there isn't Tender on the project it clones itself to project, if Tender exists it apply changes to project's tender </p> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> </div> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.type = "TenderTemplate";
 	  this.record = { name: null, document: { sections: [] } };
-	
+
 	  this.headers = {
 	    task: { name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2 },
 	    material: { name: 5, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2 }
 	  };
-	
+
 	  this.on("mount", function () {
 	    _this.opts.api[opts.resource].on("show.fail", _this.errorHandler);
 	    _this.opts.api[opts.resource].on("show.success", _this.updateRecord);
@@ -42495,20 +42495,20 @@
 	    opts.api.tenders.off("create.fail", _this.errorHandler);
 	    opts.api.tenders.off("create.success", _this.updateReset);
 	  });
-	
+
 	  if (opts.id) {
 	    this.opts.api[opts.resource].show(opts.id);
 	    history.pushState(null, null, "/app/admin/" + opts.resource + "/" + opts.id + "/edit");
 	  } else {
 	    history.pushState(null, null, "/app/admin/" + opts.resource + "/new");
 	  }
-	
+
 	  this.submit = function (e) {
 	    if (e) e.preventDefault();
-	
+
 	    _this.update({ busy: true, errors: null });
 	    _this.record.name = _this.name.value;
-	
+
 	    _.map(_this.record.document.sections, function (sec) {
 	      if (_.isEmpty(sec.materials)) {
 	        sec.materials = null;
@@ -42520,7 +42520,7 @@
 	      }
 	      return sec;
 	    });
-	
+
 	    if (_this.opts.id) {
 	      _this.opts.api[opts.resource].update(opts.id, _this.record).fail(_this.errorHandler).then(function (id) {
 	        _this.update({ busy: false });
@@ -42533,22 +42533,22 @@
 	      });
 	    }
 	  };
-	
+
 	  this.updateRecord = function (record) {
 	    _this.update({ record: record });
 	  };
-	
+
 	  this.setInputValue = function (e) {
 	    _this.record[e.target.name] = e.target.value;
 	  };
-	
+
 	  this.tags["r-typeahead-input"].on("itemselected", function (item) {
 	    _this.update({ busy: true });
 	    opts.api.tenders.create({
 	      project_id: item.id, tender_template_id: _this.record.id
 	    });
 	  });
-	
+
 	  this.mixin("tenderMixin");
 	});
 	//this.closeModal()
@@ -42560,20 +42560,20 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	__webpack_require__(156);
-	
+
 	riot.tag2("r-admin-tender-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <label for=\"project_id\">Project</label> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" id=\"{record.project_id}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> <span if=\"{errors.project_id}\" class=\"inline-error\">{errors.project_id}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\" __disabled=\"{busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>Add a Professional to this Project by creating a Quote from this tender. Choosen pro will be added to project.</p> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> </div> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.type = "Tender";
 	  this.record = { project_id: this.opts.project_id, document: { sections: [] } };
-	
+
 	  this.headers = {
 	    task: { name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2 },
 	    material: { name: 5, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2 }
 	  };
-	
+
 	  this.on("mount", function () {
 	    _this.opts.api[opts.resource].on("show.fail", _this.errorHandler);
 	    _this.opts.api[opts.resource].on("show.success", _this.updateRecord);
@@ -42586,19 +42586,19 @@
 	    opts.api.quotes.off("create.fail", _this.errorHandler);
 	    opts.api.quotes.off("create.success", _this.updateReset);
 	  });
-	
+
 	  if (opts.id) {
 	    this.opts.api[opts.resource].show(opts.id);
 	    history.pushState(null, null, "/app/admin/" + opts.resource + "/" + opts.id + "/edit");
 	  } else {
 	    history.pushState(null, null, "/app/admin/" + opts.resource + "/new");
 	  }
-	
+
 	  this.submit = function (e) {
 	    if (e) e.preventDefault();
-	
+
 	    _this.record.project_id = _this.project_id.value;
-	
+
 	    _.map(_this.record.document.sections, function (sec) {
 	      if (_.isEmpty(sec.materials)) {
 	        sec.materials = null;
@@ -42610,9 +42610,9 @@
 	      }
 	      return sec;
 	    });
-	
+
 	    _this.update({ busy: true, errors: null });
-	
+
 	    if (_this.opts.id) {
 	      _this.opts.api[opts.resource].update(opts.id, _this.record).fail(_this.errorHandler).then(function (id) {
 	        _this.update({ busy: false });
@@ -42625,20 +42625,20 @@
 	      });
 	    }
 	  };
-	
+
 	  this.updateRecord = function (record) {
 	    _this.update({ record: record });
 	  };
-	
+
 	  this.setInputValue = function (e) {
 	    _this.record[e.target.name] = e.target.value;
 	  };
-	
+
 	  this.tags["r-typeahead-input"][0].on("itemselected", function (item) {
 	    _this.record.project_id = item.id;
 	    _this.update();
 	  });
-	
+
 	  this.tags["r-typeahead-input"][1].on("itemselected", function (item) {
 	    _this.update({ busy: true });
 	    opts.api.quotes.create({
@@ -42647,7 +42647,7 @@
 	      professional_id: item.id
 	    });
 	  });
-	
+
 	  this.mixin("tenderMixin");
 	});
 	//this.closeModal()
@@ -42659,18 +42659,18 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	__webpack_require__(156);
-	
+
 	riot.tag2("r-admin-quote-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <label for=\"project\">Project</label> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" id=\"{record.project_id}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> <span if=\"{errors.project}\" class=\"inline-error\">{errors.project}</span> <label for=\"project_id\">Professional</label> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" id=\"{record.professional_id}\" filters=\"{professionalFilters()}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"tender_id\">Tender</label> <input type=\"hidden\" name=\"tender_id\" value=\"{record.tender_id}\"> <r-typeahead-input resource=\"tenders\" api=\"{opts.api}\" id=\"{record.tender_id}\" filters=\"{tenderFilters()}\" datum_tokenizer=\"{['id', 'total_amount']}\"></r-typeahead-input> <span if=\"{errors.tender_id}\" class=\"inline-error\">{errors.project}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{record.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> <button if=\"{record.id}\" class=\"btn bg-red btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </button> </form> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.type = "Quote";
 	  this.headers = {
 	    task: { name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2 },
 	    material: { name: 5, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2 }
 	  };
-	
+
 	  this.on("mount", function () {
 	    _this.opts.api[opts.resource].on("show.fail", _this.errorHandler);
 	    _this.opts.api[opts.resource].on("show.success", _this.updateRecord);
@@ -42679,21 +42679,21 @@
 	    _this.opts.api[opts.resource].off("show.fail", _this.errorHandler);
 	    _this.opts.api[opts.resource].off("show.success", _this.updateRecord);
 	  });
-	
+
 	  this.record = { project_id: this.opts.project_id, document: { sections: [] } };
-	
+
 	  if (opts.id) {
 	    this.opts.api[opts.resource].show(opts.id);
 	    history.pushState(null, null, "/app/admin/" + opts.resource + "/" + opts.id + "/edit");
 	  } else {
 	    history.pushState(null, null, "/app/admin/" + opts.resource + "/new");
 	  }
-	
+
 	  this.submit = function (e) {
 	    if (e) e.preventDefault();
-	
+
 	    _this.update({ busy: true, errors: null });
-	
+
 	    _.map(_this.record.document.sections, function (sec) {
 	      if (_.isEmpty(sec.materials)) {
 	        sec.materials = null;
@@ -42705,7 +42705,7 @@
 	      }
 	      return sec;
 	    });
-	
+
 	    if (_this.opts.id) {
 	      _this.opts.api[opts.resource].update(opts.id, _this.record).fail(_this.errorHandler).then(function (id) {
 	        _this.update({ busy: false });
@@ -42718,11 +42718,11 @@
 	      });
 	    }
 	  };
-	
+
 	  this.updateRecord = function (record) {
 	    _this.update({ record: record });
 	  };
-	
+
 	  this.submitQuote = function (e) {
 	    if (_this.opts.id) {
 	      if (e) e.preventDefault();
@@ -42732,7 +42732,7 @@
 	      });
 	    }
 	  };
-	
+
 	  this.acceptQuote = function (e) {
 	    if (_this.opts.id) {
 	      if (e) e.preventDefault();
@@ -42742,11 +42742,11 @@
 	      });
 	    }
 	  };
-	
+
 	  this.setInputValue = function (e) {
 	    _this.record[e.target.name] = e.target.value;
 	  };
-	
+
 	  this.tags["r-typeahead-input"][0].on("itemselected", function (item) {
 	    _this.record.project_id = item.id;
 	    _this.update();
@@ -42765,7 +42765,7 @@
 	  this.tenderFilters = function () {
 	    return [{ name: "project_id", value: _this.record.project_id }];
 	  };
-	
+
 	  this.mixin("tenderMixin");
 	});
 	//this.closeModal()
@@ -42777,19 +42777,19 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
-	
+
 	var Pikaday = _interopRequire(__webpack_require__(146));
-	
+
 	riot.tag2("r-admin-payment-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <label for=\"project_id\">Project</label> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" id=\"{record.project_id}\" datum_tokenizer=\"{['name', 'customers.0.full_name']}\"></r-typeahead-input> <span if=\"{errors.project_id}\" class=\"inline-error\">{errors.project_id}</span> <label for=\"professional_id\">Professional</label> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" id=\"{record.professional_id}\" filters=\"{professionalFilters()}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"quote_id\">Quote</label> <input type=\"hidden\" name=\"quote_id\" value=\"{record.quote_id}\"> <r-typeahead-input resource=\"quotes\" api=\"{opts.api}\" id=\"{record.quote_id}\" filters=\"{quoteFilters()}\" datum_tokenizer=\"{['id', 'status', 'amount']}\"></r-typeahead-input> <span if=\"{errors.quote_id}\" class=\"inline-error\">{errors.quote_id}</span> <div each=\"{attr, i in ['fee', 'amount']}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <input class=\"block col-12 mb2 field\" name=\"{attr}\" value=\"{parseInt(record[attr]) * 0.01}\" type=\"{'number'}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> <div each=\"{attr, i in ['due_date', 'description']}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> <div if=\"{!_.isEmpty(errors)}\" id=\"error_explanation\"> <ul> <li each=\"{field, messages in errors}\">{field.humanize()} {messages.join(', ')}</li> </ul> </div> <div class=\"right-align\"> <button type=\"submit\" class=\"mb2 btn btn-big btn-primary {busy: busy}\">Save</button> <a if=\"{record.id && !record.approved_at}\" onclick=\"{approve}\" class=\"mb2 btn btn-big bg-green white {busy: busy}\">Approve</a> <a if=\"{record.id && record.paid_at && !record.refunded_at}\" onclick=\"{refund}\" class=\"mb2 btn btn-big bg-red white {busy: busy}\">Refund</a> </div> </form> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.approve = function (e) {
 	    e.preventDefault();
-	
+
 	    var data = _this.serializeForm(_this.form);
-	
+
 	    _this.update({ busy: true, errors: null });
 	    _this.opts.api[opts.resource].approve(opts.id, data).fail(_this.errorHandler).then(function (id) {
 	      _this.record.fee = data.fee * 100;
@@ -42797,18 +42797,18 @@
 	      _this.updateReset();
 	    });
 	  };
-	
+
 	  this.refund = function (e) {
 	    e.preventDefault();
-	
+
 	    _this.update({ busy: true, errors: null });
 	    _this.opts.api[opts.resource].refund(opts.id).fail(_this.errorHandler).then(_this.updateReset);
 	  };
-	
+
 	  this.updateRecord = function (record) {
 	    _this.update({ record: record, attributes: _.keys(record) });
 	  };
-	
+
 	  this.tags["r-typeahead-input"][0].on("itemselected", function (item) {
 	    _this.record.project_id = item.id;
 	    _this.update();
@@ -42827,7 +42827,7 @@
 	  this.professionalFilters = function () {
 	    return [{ name: "project_id", value: _this.record.project_id }];
 	  };
-	
+
 	  this.on("mount", function () {
 	    var picker = new Pikaday({
 	      showTime: false,
@@ -42848,7 +42848,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-admin-account-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <label for=\"email\">Email</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"email\" value=\"{record['email']}\"> <span if=\"{errors['email']}\" class=\"inline-error\">{errors['email']}</span> <label for=\"password\">Password</label> <input class=\"block col-12 mb2 field\" type=\"password\" name=\"password\" value=\"{record['password']}\"> <span if=\"{errors['password']}\" class=\"inline-error\">{errors['password']}</span> <label for=\"user_attributes[type]\">Type</label> <select class=\"block col-12 mb2 field\" type=\"text\" name=\"user_attributes[type]\" value=\"{record['user']['type']}\"> <option></option> <option value=\"Customer\" __selected=\"{record['user_type'] == 'Customer'}\">Customer</option> <option value=\"Professional\" __selected=\"{record['user_type'] == 'Professional'}\">Professional</option> <option value=\"Administrator\" __selected=\"{record['user_type'] == 'Administrator'}\">Administrator</option> </select> <span if=\"{errors['user']['type']}\" class=\"inline-error\">{errors['user']['type']}</span> <label for=\"user_attributes[profile][first_name]\">First Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"user_attributes[profile][first_name]\" value=\"{record['profile']['first_name']}\"> <span if=\"{errors['user.profile.first_name']}\" class=\"inline-error\">{errors['user.profile.first_name']}</span> <label for=\"user_attributes[profile][last_name]\">Last Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"user_attributes[profile][last_name]\" value=\"{record['profile']['last_name']}\"> <span if=\"{errors['user.profile.last_name']}\" class=\"inline-error\">{errors['user.profile.last_name']}</span> <label for=\"user_attributes[profile][phone_number]\">Phone Number</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"user_attributes[profile][phone_number]\" value=\"{record['profile']['phone_number']}\"> <span if=\"{errors['user.profile.phone_number']}\" class=\"inline-error\">{errors['user.profile.phone_number']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form> </div>", "", "", function (opts) {
 	  this.mixin("adminForm");
 	});
@@ -42859,7 +42859,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-admin-customer-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in ['profile', 'notifications']}\"> <div if=\"{attr != 'id'}\"> <label for=\"{attr}\">{attr.humanize()}</label> <textarea if=\"{_.isObject(record[attr])}\" class=\"block col-12 mb2 field fixed-height\" name=\"{attr}:object\">{JSON.stringify(record[attr], null, 2)}</textarea> <input if=\"{!_.isObject(record[attr])}\" class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form> </div>", "", "", function (opts) {
 	  this.mixin("adminForm");
 	});
@@ -42870,7 +42870,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-admin-professional-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in ['profile', 'notifications']}\"> <div if=\"{attr != 'id'}\"> <label for=\"{attr}\">{attr.humanize()}</label> <textarea if=\"{_.isObject(record[attr])}\" class=\"block col-12 mb2 field fixed-height\" name=\"{attr}:object\">{JSON.stringify(record[attr], null, 2)}</textarea> <input if=\"{!_.isObject(record[attr])}\" class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form> </div>", "", "", function (opts) {
 	  this.mixin("adminForm");
 	});
@@ -42881,7 +42881,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-admin-administrator-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <div each=\"{attr, i in ['profile', 'notifications']}\"> <div if=\"{attr != 'id'}\"> <label for=\"{attr}\">{attr.humanize()}</label> <textarea if=\"{_.isObject(record[attr])}\" class=\"block col-12 mb2 field fixed-height\" name=\"{attr}:object\">{JSON.stringify(record[attr], null, 2)}</textarea> <input if=\"{!_.isObject(record[attr])}\" class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form> </div>", "", "", function (opts) {
 	  this.mixin("adminForm");
 	});
@@ -42892,7 +42892,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-admin-lead-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\" autocomplete=\"off\"> <label for=\"first_name\">First Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"first_name\" value=\"{record['first_name']}\"> <span if=\"{errors['first_name']}\" class=\"inline-error\">{errors['first_name']}</span> <label for=\"last_name\">Last Name</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"last_name\" value=\"{record['last_name']}\"> <span if=\"{errors['last_name']}\" class=\"inline-error\">{errors['last_name']}</span> <label for=\"phone_number\">Phone Number</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"phone_number\" value=\"{record['phone_number']}\"> <span if=\"{errors['phone_number']}\" class=\"inline-error\">{errors['phone_number']}</span> <label for=\"meta\">Meta</label> <textarea class=\"block col-12 mb2 field fixed-height\" name=\"meta:object\">{JSON.stringify(record['meta'], null, 2)}</textarea> <h3>Convert</h3> <p>Fill below fields if you want to convert Lead to a Customer, leave empty otherwise</p> <label for=\"email\">Email</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"email\" value=\"{record['email']}\" autocomplete=\"off\"> <span if=\"{errors['email']}\" class=\"inline-error\">{errors['email']}</span> <label for=\"password\">Password</label> <input class=\"block col-12 mb2 field\" type=\"password\" name=\"password\" value=\"{record['password']}\" autocomplete=\"off\"> <span if=\"{errors['password']}\" class=\"inline-error\">{errors['password']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form> </div>", "", "", function (opts) {
 	  this.mixin("adminForm");
 	});
@@ -42903,60 +42903,60 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	var options = __webpack_require__(137);
-	
+
 	__webpack_require__(178);
-	
+
 	__webpack_require__(143);
-	
-	riot.tag2("r-admin-project-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form name=\"form\" class=\"edit_project\" onsubmit=\"{submit}\" autocomplete=\"off\"> <label for=\"account_id\">Account</label> <input type=\"hidden\" name=\"account_id\" value=\"{record.account_id}\"> <r-typeahead-input resource=\"accounts\" api=\"{opts.api}\" id=\"{record.account_id}\" datum_tokenizer=\"{['email']}\"></r-typeahead-input> <span if=\"{errors.account_id}\" class=\"inline-error\">{errors.account_id}</span> <label for=\"name\">Name</label> <input id=\"name\" class=\"block col-12 mb2 field\" type=\"text\" name=\"name\" value=\"{record.name}\" oninput=\"{setValue}\"> <section class=\"container clearfix\" data-step=\"1\"> <div class=\"container\"> <h2>Mission</h2> <div class=\"clearfix border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === record.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === record.kind}\"> </a> </div> </div> </div> </section> <section class=\"container clearfix\" data-step=\"2\"> <div class=\"container\"> <h2>Helpful details</h2> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" autofocus=\"true\" oninput=\"{setValue}\">{record.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === record.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === record.brief.preferred_start}\">{value}</option> </select> </div> </div> </div> </section> <section class=\"container clearfix\" data-step=\"4\"> <div class=\"container\"> <h2>Address</h2> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{record.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{record.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{record.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> </div> </section> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form> </div>", "", "", function (opts) {
+
+	riot.tag2("r-admin-project-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form name=\"form\" class=\"edit_project\" onsubmit=\"{submit}\" autocomplete=\"off\"> <label for=\"account_id\">Account</label> <input type=\"hidden\" name=\"account_id\" value=\"{record.account_id}\"> <r-typeahead-input resource=\"accounts\" api=\"{opts.api}\" id=\"{record.account_id}\" datum_tokenizer=\"{['email']}\"></r-typeahead-input> <span if=\"{errors.account_id}\" class=\"inline-error\">{errors.account_id}</span> <label for=\"name\">Name</label> <input id=\"name\" class=\"block col-12 mb2 field\" type=\"text\" name=\"name\" value=\"{record.name}\" oninput=\"{setValue}\"> <section class=\"container clearfix\" data-step=\"1\"> <div class=\"container\"> <h2>What would you like to do?</h2> <div class=\"clearfix border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === record.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === record.kind}\"> </a> </div> </div> </div> </section> <section class=\"container clearfix\" data-step=\"2\"> <div class=\"container\"> <h2>Helpful details</h2> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" autofocus=\"true\" oninput=\"{setValue}\">{record.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === record.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === record.brief.preferred_start}\">{value}</option> </select> </div> </div> </div> </section> <section class=\"container clearfix\" data-step=\"4\"> <div class=\"container\"> <h2>Address</h2> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{record.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{record.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{record.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> </div> </section> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.step = 5;
 	  this.options = options;
-	
+
 	  this.setProjectKind = function (e) {
 	    _this.record.kind = e.item.value;
 	  };
-	
+
 	  this.setInputValue = function (e) {
 	    _this.record[e.target.name] = e.target.value;
 	  };
-	
+
 	  this.tags["r-typeahead-input"].on("itemselected", function (item) {
 	    _this.record.account_id = item.id;
 	    _this.update();
 	  });
-	
+
 	  this.submit = this.submit || function (e) {
 	    var assetsToAssign = undefined;
-	
+
 	    if (e) e.preventDefault();
-	
+
 	    var data = _this.serializeForm(_this.form);
-	
+
 	    if (_.isEmpty(data)) {
 	      $(_this.form).animateCss("shake");
 	      return;
 	    }
-	
+
 	    _this.update({ busy: true, errors: null });
-	
+
 	    if (_this.opts.id) {
 	      _this.opts.api[_this.opts.resource].update(_this.opts.id, data).fail(_this.errorHandler).then(function (id) {
 	        _this.update({ busy: false });
 	      });
 	    } else {
-	
+
 	      // stash uploaded assets to be assigned to project
 	      assetsToAssign = _.pluck(_this.record.assets, "id");
-	
+
 	      _this.opts.api[_this.opts.resource].create(data).fail(_this.errorHandler).then(function (record) {
 	        _this.update({ record: record, busy: false });
 	        _this.opts.id = record.id;
 	        history.pushState(null, null, "/app/admin/" + _this.opts.resource + "/" + record.id + "/edit");
-	
+
 	        // got some uploads, let's assign them to project
 	        if (!_.isEmpty(assetsToAssign)) {
 	          _this.request({ url: "/api/projects/" + record.id + "/assets", type: "post", data: { ids: assetsToAssign } }).fail(function () {
@@ -42983,14 +42983,14 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
-	
+
 	var Handlebars = _interopRequire(__webpack_require__(158));
-	
+
 	riot.tag2("r-typeahead-input", "<div class=\"relative inline-block\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 mb2 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Start typing to search {opts.resource}\" autocomplete=\"off\"> </form> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  var selected = false;
 	  this.on("update", function () {
 	    if (_this.isMounted && _this.opts.id && !selected) {
@@ -43001,9 +43001,9 @@
 	      });
 	    }
 	  });
-	
+
 	  // this.request({url: `/api/${this.opts.resource}`}).then((data) => {
-	
+
 	  var source = new Bloodhound({
 	    datumTokenizer: function (d) {
 	      var token = _.reduce(_this.opts.datum_tokenizer, function (mem, token) {
@@ -43030,7 +43030,7 @@
 	      }
 	    }
 	  });
-	
+
 	  $(this.query).on("typeahead:notfound", function () {
 	    $(_this.query).typeahead("val", _this.selected);
 	  }).on("typeahead:select", function (e, suggestion) {
@@ -43042,18 +43042,18 @@
 	    limit: 1000,
 	    templates: {
 	      empty: "\n        <div class=\"empty-message border-bottom typeahead-item p1\">\n          unable to find any " + this.opts.resource + "\n        </div>",
-	
+
 	      suggestion: Handlebars.compile("\n          <div class=\"border-bottom typeahead-item\">\n            <a class=\"cursor-pointer p2\">" + _.map(this.opts.datum_tokenizer, function (t, i) {
 	        return i == 0 ? "{{" + t + "}}" : "<span class=\"bg-orange p1 h6\">{{" + t + "}}</span>";
 	      }).join(" ") + "</a>\n          </div>\n        ")
 	    }
 	  });
 	  // })
-	
+
 	  this.selectItem = function (item) {
 	    _this.trigger("itemselected", item);
 	  };
-	
+
 	  if (this.opts.auto_focus) {
 	    this.on("mount", function () {
 	      _.defer(function () {
@@ -43069,7 +43069,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-admin-content-page-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\" autocomplete=\"off\"> <label for=\"first_name\">Pathname</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"pathname\" value=\"{record['pathname']}\"> <span if=\"{errors['pathname']}\" class=\"inline-error\">{errors['pathname']}</span> <label for=\"first_name\">Body</label> <textarea class=\"block col-12 mb2 field code\" name=\"body\">{record['Body']}</textarea> <span if=\"{errors['Body']}\" class=\"inline-error\">{errors['Body']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form> </div>", "", "", function (opts) {
 	  this.mixin("adminForm");
 	  this.mixin("codeMirror");
@@ -43081,10 +43081,10 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-admin-content-template-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\" autocomplete=\"off\"> <label for=\"first_name\">Path</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"path\" value=\"{record['path']}\"> <span if=\"{errors['path']}\" class=\"inline-error\">{errors['path']}</span> <input type=\"hidden\" name=\"locale\" value=\"en\"> <input type=\"hidden\" name=\"format\" value=\"html\"> <input type=\"hidden\" name=\"handler\" value=\"erb\"> <div class=\"mb2\"> <input type=\"hidden\" name=\"partial\" value=\"{record['partial']}\"> <label><input type=\"checkbox\" __checked=\"{record['partial']}\" onchange=\"{setPartial}\"> Partial</label> <span if=\"{errors['partial']}\" class=\"inline-error\">{errors['partial']}</span> </div> <label for=\"first_name\">Body</label> <textarea class=\"block col-12 mb2 field code\" name=\"body\">{record['Body']}</textarea> <span if=\"{errors['Body']}\" class=\"inline-error\">{errors['Body']}</span> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.setPartial = function (e) {
 	    return _this.partial.value = e.target.checked;
 	  };
@@ -43098,10 +43098,10 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-admin-account-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap cursor-pointer\" onclick=\"{sort}\">{attr.humanize()} <i class=\"fa fa-sort\"></i></th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.email} </td> <td> {record.full_name} </td> <td> <a href=\"/app/admin/{record.user_type.plural().toLowerCase()}/{record.user_id}/edit\">{record.user_id}</a> </td> <td> <a onclick=\"{impersonate}\"><i class=\"fa fa-sign-in\"></i> {record.user_type}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	  this.impersonate = function (e) {
@@ -43116,17 +43116,17 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-admin-project-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap cursor-pointer\" onclick=\"{sort}\">{attr.humanize()} <i class=\"fa fa-sort\"></i></th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> <a href=\"/app/projects/{record.id}\" target=\"_blank\">{record.id}</a> </td> <td> {record.name} </td> <td> {record.kind} </td> <td> <a href=\"/app/admin/accounts/{record.account_id}/edit\">{record.account_id}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td> <a each=\"{acc in record.customers}\" href=\"/app/admin/accounts/{acc.id}/edit\" class=\"mr1 mb1\">{acc.full_name}</a> </td> <td> <a each=\"{acc in record.professionals}\" href=\"/app/admin/accounts/{acc.id}/edit\" class=\"mr1 mb1\">{acc.full_name}</a> </td> <td> <a each=\"{acc in record.administrators}\" href=\"/app/admin/accounts/{acc.id}/edit\" class=\"mr1 mb1\">{acc.full_name}</a> </td> <td class=\"nowrap\"> <a class=\"btn border btn-small mr1 mb1\" href=\"/app/projects/{record.id}\" target=\"_blank\"> <i class=\"fa fa-pencil\"></i> </a> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.updateRecords = function (records) {
 	    var headers = _.filter(_.keys(records[0]), function (h) {
 	      return ["customers", "professionals", "administrators"].indexOf(h) == -1;
 	    });
 	    _this.update({ headers: headers, records: records });
 	  };
-	
+
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
@@ -43137,7 +43137,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-admin-payment-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap cursor-pointer\" onclick=\"{sort}\">{attr.humanize()} <i class=\"fa fa-sort\"></i></th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.status} </td> <td> {formatCurrency(record.fee)} </td> <td> {formatCurrency(record.amount)} </td> <td class=\"nowrap\"> {formatTime(record.due_date)} </td> <td class=\"nowrap\"> {record.approved_at && formatTime(record.approved_at)} </td> <td class=\"nowrap\"> {record.paid_at && formatTime(record.paid_at)} </td> <td class=\"nowrap\"> {record.canceled_at && formatTime(record.canceled_at)} </td> <td class=\"nowrap\"> {record.declined_at && formatTime(record.declined_at)} </td> <td class=\"nowrap\"> {record.refunded_at && formatTime(record.refunded_at)} </td> <td> <a href=\"/app/projects/{record.project_id}\">{record.project_id}</a> </td> <td> <a href=\"/app/admin/quotes/{record.quote_id}/edit\">{record.quote_id}</a> </td> <td> <a href=\"/app/admin/professionals/{record.professional_id}/edit\">{record.professional_id}</a> </td> <td> <a href=\"/app/admin/customers/{record.customer_id}/edit\">{record.customer_id}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
@@ -43149,7 +43149,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-admin-quote-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap cursor-pointer\" onclick=\"{sort}\">{attr.humanize()} <i class=\"fa fa-sort\"></i></th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.status} </td> <td> {formatCurrency(record.total_amount)} </td> <td> {formatCurrency(record.paid_amount)} </td> <td> {formatCurrency(record.refunded_amount)} </td> <td> {formatCurrency(record.approved_amount)} </td> <td> <a href=\"/app/projects/{record.project_id}\">{record.project_id}</a> </td> <td> <a href=\"/app/admin/professionals/{record.professional_id}/edit\">{record.professional_id}</a> </td> <td> <a href=\"/app/admin/tenders/{record.tender_id}/edit\">{record.tender_id}</a> </td> <td class=\"nowrap\"> {record.accepted_at && formatTime(record.accepted_at)} </td> <td class=\"nowrap\"> {record.submitted_at && formatTime(record.submitted_at)} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
@@ -43161,7 +43161,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-admin-tender-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap cursor-pointer\" onclick=\"{sort}\">{attr.humanize()} <i class=\"fa fa-sort\"></i></th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {formatCurrency(record.total_amount)} </td> <td> <a href=\"/app/projects/{record.project_id}\">{record.project_id}</a> </td> <td> <a href=\"/app/admin/tender_templates/{record.tender_template_id}/edit\">{record.tender_template_id}</a> </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
@@ -43173,7 +43173,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-admin-tender-template-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap cursor-pointer\" onclick=\"{sort}\">{attr.humanize()} <i class=\"fa fa-sort\"></i></th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.name} </td> <td> {formatCurrency(record.total_amount)} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
@@ -43185,7 +43185,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-admin-material-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap cursor-pointer\" onclick=\"{sort}\">{attr.humanize()} <i class=\"fa fa-sort\"></i></th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.name} </td> <td> {record.quantity} </td> <td> {formatCurrency(record.price)} </td> <td> {record.supplied} </td> <td> {record.searchable} </td> <td> {record.tags} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
@@ -43197,7 +43197,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-admin-task-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap cursor-pointer\" onclick=\"{sort}\">{attr.humanize()} <i class=\"fa fa-sort\"></i></th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> {record.action} </td> <td> {record.group} </td> <td> {record.name} </td> <td> {record.quantity} </td> <td> {record.unit} </td> <td> {formatCurrency(record.price)} </td> <td> {record.searchable} </td> <td> {record.tags} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
@@ -43209,17 +43209,17 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-admin-customer-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap cursor-pointer\" onclick=\"{sort}\">{attr.humanize()} <i class=\"fa fa-sort\"></i></th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> <a href=\"/app/admin/accounts/{record.account_id}/edit\">{record.account_id}</a> </td> <td> {record.full_name} </td> <td> {record.first_name} </td> <td> {record.last_name} </td> <td> {record.phone_number} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
-	
+
 	riot.tag2("r-admin-professional-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap cursor-pointer\" onclick=\"{sort}\">{attr.humanize()} <i class=\"fa fa-sort\"></i></th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> <a href=\"/app/admin/accounts/{record.account_id}/edit\">{record.account_id}</a> </td> <td> {record.full_name} </td> <td> {record.first_name} </td> <td> {record.last_name} </td> <td> {record.phone_number} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
-	
+
 	riot.tag2("r-admin-administrator-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap cursor-pointer\" onclick=\"{sort}\">{attr.humanize()} <i class=\"fa fa-sort\"></i></th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td> {record.id} </td> <td> <a href=\"/app/admin/accounts/{record.account_id}/edit\">{record.account_id}</a> </td> <td> {record.full_name} </td> <td> {record.first_name} </td> <td> {record.last_name} </td> <td> {record.phone_number} </td> <td class=\"nowrap\"> {formatTime(record.created_at)} </td> <td class=\"nowrap\"> {formatTime(record.updated_at)} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
@@ -43231,7 +43231,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-dialog", "<div class=\"fixed flex flex-center left-0 top-0 bottom-0 right-0 bg-darken-4 z30\"> <div class=\"relative clearfix mx-auto col-11 sm-col-6 md-col-5 lg-col-4 flex-center bg-white border border-darken-3 rounded shadow dialog\"> <div class=\"p1 bg-darken-2 gray\"> <h1 class=\"h4 m0 inline-block mr2\">{opts.title}</h1> <a class=\"center btn btn-small gray absolute right-0 top-0 mt1 mr1\" onclick=\"{unsetActivity}\"><i class=\"fa fa-times\"></i></a> </div> <yield></yield> </div> </div>", "", "", function (opts) {});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
@@ -43240,10 +43240,10 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-tender-filters", "<div class=\"overflow-auto nowrap mb1\"> <a class=\"btn btn-small {'btn-primary': section == null}\" onclick=\"{setSectionFilter}\">All</a> <a each=\"{opts.record.document.sections}\" class=\"btn btn-small {'btn-primary': section == id}\" onclick=\"{setSectionFilter}\">{name}</a> </div> <div class=\"overflow-auto nowrap\"> <a class=\"btn btn-small {'btn-primary': action == null}\" onclick=\"{setActionFilter}\">All</a> <a each=\"{name in actions()}\" class=\"btn btn-small {'btn-primary': action == name}\" onclick=\"{setActionFilter}\">{name}</a> </div>", "", "", function (opts) {
 	  var _this = this;
-	
+
 	  this.actions = function () {
 	    return _.union(_.uniq(_.pluck(_.flatten(_.pluck(_this.opts.record.document.sections, "tasks")), "action")), ["Materials"]);
 	  };
@@ -43261,7 +43261,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
+
 	riot.tag2("r-area-calculator", "<div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-4 px2\"> <label>Width</label> <input name=\"width\" min=\"0\" class=\"block col-12 mb2 field\" value=\"{opts.dimensions[0]}\" oninput=\"{update}\" type=\"{'number'}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Height</label> <input name=\"height\" min=\"0\" class=\"block col-12 mb2 field\" value=\"{opts.dimensions[1]}\" oninput=\"{update}\" type=\"{'number'}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Length</label> <input name=\"length\" min=\"0\" class=\"block col-12 mb2 field\" value=\"{opts.dimensions[2]}\" oninput=\"{update}\" type=\"{'number'}\"> </div> </div> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-4 px2\"> <label>Wall Area</label> <input type=\"submit\" class=\"block col-12 mb2 btn bg-blue white\" value=\"{wallArea(width.value, height.value, length.value)}\" onclick=\"{opts.callback}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Floor Area</label> <input type=\"submit\" class=\"block col-12 mb2 btn bg-blue white\" value=\"{floorArea(width.value, height.value, length.value)}\" onclick=\"{opts.callback}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Wall Length</label> <input type=\"submit\" class=\"block col-12 mb2 btn bg-blue white\" value=\"{wallLength(width.value, height.value, length.value)}\" onclick=\"{opts.callback}\"> </div> </div>", "", "", function (opts) {
 	  this.wallArea = function (w, h, l) {
 	    return 2 * w * h + 2 * l * h;
