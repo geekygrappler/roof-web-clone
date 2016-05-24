@@ -21,7 +21,7 @@ import '../arrange_callback.tag'
   <section if="{!opts.api.currentAccount}" class="absolute col-12 center px2 py2 white {out: step != 0}" data-step="0">
     <div class="container">
       <h1 class="h1 h1-responsive sm-mt4 mb1">Thanks for getting started!</h1>
-      <p class="h3 sm-col-6 mx-auto mb2">The next few questions will create your brief :)</p>
+      <p class="h3 sm-col-6 mx-auto mb2">The next few questions will help us create your brief :)</p>
       <div><button class="btn btn-big btn-primary mb3" onclick="{ start }">Ok, Got it</button></div>
       <p>Or <button class="h5 btn btn-narrow btn-outline white ml1 mr1" onclick="{ showArrangeCallbackModal }">Arrange a callback</button> to speak with a human</p>
     </div>
@@ -31,7 +31,7 @@ import '../arrange_callback.tag'
 
   <section class="absolute col-12 center px2 py2 {out: step != 1}" data-step="1">
     <div class="container">
-      <h1 class="h1-responsive mt0 mb4">Mission</h1>
+      <h1 class="h1-responsive mt0 mb4">What would you like to do?</h1>
       <div class="clearfix mxn2 border">
         <div each="{options.kind}" class="center col col-6 md-col-4">
           <a class="block p2 bg-lighten-4 black icon-radio--button {active: (name === project.kind)}" onclick="{ setProjectKind }">
@@ -80,7 +80,7 @@ import '../arrange_callback.tag'
 
   <section class="absolute col-12 center px2 py2 {out: step != 3}" data-step="3">
     <div class="container">
-      <h1 class="h1-responsive mt0 mb4">Documents and Photos</h1>
+      <h1 class="h1-responsive mt0 mb4">Do you have any plans or images for your project?</h1>
       <div class="clearfix mxn2">
         <div class="sm-col sm-col-12 px2 mb2">
           <p class="h2">Upload plans, documents, site photos or any other files about your project</p>
@@ -101,7 +101,7 @@ import '../arrange_callback.tag'
 
   <section class="absolute col-12 center px2 py2 {out: step != 4}" data-step="4">
     <div class="container">
-      <h1 class="h1-responsive mt0 mb4">Address</h1>
+      <h1 class="h1-responsive mt0 mb4">What is the project location?</h1>
       <p class="h2">Location of project</p>
       <div class="clearfix left-align">
         <label for="address[street_address]">Street Address</label>
