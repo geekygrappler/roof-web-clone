@@ -21,6 +21,7 @@ import from '../../mixins/tender.js'
     <span if="{errors.professional_id}" class="inline-error">{errors.professional_id}</span>
 
     <label for="tender_id">Tender</label>
+    
     <input type="hidden" name="tender_id" value="{record.tender_id}">
     <r-typeahead-input resource="tenders" api="{ opts.api }" id="{record.tender_id}" filters="{tenderFilters()}" datum_tokenizer="{['id', 'total_amount']}"></r-typeahead-input>
     <span if="{errors.tender_id}" class="inline-error">{errors.project}</span>

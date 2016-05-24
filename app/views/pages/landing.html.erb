@@ -4,17 +4,17 @@
     <%= render partial: 'pages/landing/components/benefit', locals: {
       image: 'benefits/customer-service2_dk.png',
       title: 'Tell us your plans',
-      description: "We arrange a call to discuss any details or unknowns and give you an estimated price"
+      description: "We will call you to discuss details, answer any questions and give you an estimated price."
     } %>
     <%= render partial: 'pages/landing/components/benefit', locals: {
       image: 'benefits/quote1_dk.png',
       title: 'Get an accurate quote',
-      description: 'We arrange a site visit with the most suitable professional who provides you with a free quote'
+      description: 'We will arrange a site visit with the most suitable professional who will provide you with a free quote.'
     } %>
     <%= render partial: 'pages/landing/components/benefit', locals: {
       image: 'benefits/house_renovate_dk.png',
       title: 'Renovate with confidence',
-      description: 'Our network consist of only the best hand-picked contractors providing itemised quotes'
+      description: 'Our network of contractors are hand-picked for their expertise and quality of work.'
     } %>
   </div>
 </section>
@@ -22,28 +22,28 @@
 
 <section>
   <div class="clearfix">
-    <%= render partial: 'pages/landing/components/recommendation', locals: {
-      image: 'recommendations/living.jpg',
-      name: 'Nigel',
+    <%= render partial: 'pages/landing/components/example_projects', locals: {
+      image: 'recommendations/bathroom1.jpg',
+      name: 'Nigel - Kensal Rise',
+      project_type: 'New bathroom',
+      comment: "A quality finnish from an efficent team"
+    }%>
+    <%= render partial: 'pages/landing/components/example_projects', locals: {
+      image: 'recommendations/mews.jpg',
+      name: 'Sophia - Notting Hill',
       project_type: 'Redecoration',
-      comment: "I found Sam through 1ROOF who did a great job with my redecoration."
+      comment: "The house feels brand new again thanks to Tom and his team"
     }%>
-    <%= render partial: 'pages/landing/components/recommendation', locals: {
-      image: 'recommendations/bathroom.jpg',
-      name: 'Zosia',
-      project_type: 'Kitchen Refurb',
-      comment: "1ROOF's recommended builder was punctual and his quote was broken down and easy to understand"
-    }%>
-    <%= render partial: 'pages/landing/components/recommendation', locals: {
-      image: 'recommendations/kitchen.jpg',
-      name: 'Richard',
-      project_type: 'Loft conversion',
-      comment: "The 1ROOF pro stood out by a mile in part thanks to a broken down price and plan."
+    <%= render partial: 'pages/landing/components/example_projects', locals: {
+      image: 'recommendations/living.jpg',
+      name: 'Angus - Fulham',
+      project_type: 'Flat renovation',
+      comment: "1ROOF made it so easy to get the project of to the perfect start"
     }%>
   </div>
 </section>
 
 <section class="container center px2 py4">
-  <a href="<%= brief_path %>" class="h4 btn btn-big bg-yellow">Get me a free quote now</a>
+  <a href="<%= brief_path %>" class="h4 btn btn-big bg-yellow">Get a free quote now</a>
 </section>
 
