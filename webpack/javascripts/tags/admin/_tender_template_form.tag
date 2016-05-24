@@ -14,7 +14,7 @@ import from '../../mixins/tender.js'
 
     <r-tender-filters record="{record}"></r-tender-filters>
 
-    <r-tender-section each="{ section , i in record.document.sections }" ></r-tender-section>
+    <r-tender-section each="{ section , i in sections() }" ></r-tender-section>
 
     <form if="{ !opts.readonly && record.document }" onsubmit="{ addSection }" class="mt3 py3 clearfix mxn1 border-top">
       <div class="col col-8 px1">
@@ -51,12 +51,14 @@ import from '../../mixins/tender.js'
   </div>
   <script>
   this.type = 'TenderTemplate'
-    this.record = {name: null, document: {sections: []}}
+    this.record = {name: null, description: null, document: {sections: []}}
 
     this.headers = {
-      task: {name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2},
-      material: {name: 5, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2}
+      task: {name: 3, description: 3, quantity: 1, price: 1, total_cost: 2, actions: 2},
+      material: {name: 2, description: 3, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2}
     }
+
+    this.tags['r-tender-filters'].on('update', this.update)
 
     this.on('mount', () => {
       this.opts.api[opts.resource].on('show.fail', this.errorHandler)

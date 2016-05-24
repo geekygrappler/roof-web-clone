@@ -21,13 +21,13 @@ import from '../../mixins/tender.js'
     <span if="{errors.professional_id}" class="inline-error">{errors.professional_id}</span>
 
     <label for="tender_id">Tender</label>
-    
+
     <input type="hidden" name="tender_id" value="{record.tender_id}">
     <r-typeahead-input resource="tenders" api="{ opts.api }" id="{record.tender_id}" filters="{tenderFilters()}" datum_tokenizer="{['id', 'total_amount']}"></r-typeahead-input>
     <span if="{errors.tender_id}" class="inline-error">{errors.project}</span>
 
     <r-tender-filters record="{record}"></r-tender-filters>
-    <r-tender-section each="{ section , i in record.document.sections }" ></r-tender-section>
+    <r-tender-section each="{ section , i in sections() }" ></r-tender-section>
 
     <form if="{ !opts.readonly && record.document }" onsubmit="{ addSection }" class="mt3 py3 clearfix mxn1 border-top">
       <div class="col col-8 px1">
@@ -64,8 +64,8 @@ import from '../../mixins/tender.js'
   <script>
   this.type = 'Quote'
     this.headers = {
-      task: {name: 6, quantity: 1, price: 1, total_cost: 2, actions: 2},
-      material: {name: 5, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2}
+      task: {name: 3, description: 3, quantity: 1, price: 1, total_cost: 2, actions: 2},
+      material: {name: 2, description: 3, quantity: 1, price: 1, total_cost: 2, supplied: 1, actions: 2}
     }
 
     this.on('mount', () => {
@@ -76,6 +76,8 @@ import from '../../mixins/tender.js'
       this.opts.api[opts.resource].off('show.fail', this.errorHandler)
       this.opts.api[opts.resource].off('show.success', this.updateRecord)
     })
+
+    this.tags['r-tender-filters'].on('update', this.update)
 
     this.record = {project_id: this.opts.project_id, document: {sections: []}}
 
