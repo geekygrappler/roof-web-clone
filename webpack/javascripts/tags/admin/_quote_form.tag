@@ -25,6 +25,7 @@ import from '../../mixins/tender.js'
     <r-typeahead-input resource="tenders" api="{ opts.api }" id="{record.tender_id}" filters="{tenderFilters()}" datum_tokenizer="{['id', 'total_amount']}"></r-typeahead-input>
     <span if="{errors.tender_id}" class="inline-error">{errors.project}</span>
 
+    <r-tender-filters record="{record}"></r-tender-filters>
     <r-tender-section each="{ section , i in record.document.sections }" ></r-tender-section>
 
     <form if="{ !opts.readonly && record.document }" onsubmit="{ addSection }" class="mt3 py3 clearfix mxn1 border-top">

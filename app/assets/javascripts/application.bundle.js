@@ -32709,8 +32709,6 @@
 	
 	__webpack_require__(129);
 	
-	__webpack_require__(189);
-	
 	__webpack_require__(130);
 	
 	__webpack_require__(131);
@@ -32719,17 +32717,19 @@
 	
 	__webpack_require__(133);
 	
-	__webpack_require__(136);
+	__webpack_require__(134);
 	
-	__webpack_require__(152);
+	__webpack_require__(137);
 	
-	__webpack_require__(161);
-	
-	__webpack_require__(162);
+	__webpack_require__(153);
 	
 	__webpack_require__(163);
 	
 	__webpack_require__(164);
+	
+	__webpack_require__(165);
+	
+	__webpack_require__(166);
 	
 	riot.tag2("r-app", "<yield from=\"header\"></yield> <div name=\"content\"></div>", "", "", function (opts) {
 	  var _this = this;
@@ -33392,6 +33392,15 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
+	riot.tag2("r-dialog", "<div class=\"fixed flex flex-center left-0 top-0 bottom-0 right-0 bg-darken-4 z30\"> <div class=\"relative clearfix mx-auto col-11 sm-col-6 md-col-5 lg-col-4 flex-center bg-white border border-darken-3 rounded shadow dialog\"> <div class=\"p1 bg-darken-2 gray\"> <h1 class=\"h4 m0 inline-block mr2\">{opts.title}</h1> <a class=\"center btn btn-small gray absolute right-0 top-0 mt1 mr1\" onclick=\"{unsetActivity}\"><i class=\"fa fa-times\"></i></a> </div> <yield></yield> </div> </div>", "", "", function (opts) {});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 131 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
 	riot.tag2("r-file-input", "<input type=\"file\" name=\"{opts.name}\" multiple class=\"absolute col-12 left-0 top-0 bottom-0 center transparent\" style=\"height:100%\" data-accept=\"{opts.data_accept}\" accept=\"{opts.accept}\" ondragover=\"{fileDragHover}\" ondragleave=\"{fileDragHover}\" ondrop=\"{fileSelectHandler}\">", "", "", function (opts) {
 	  var _this = this;
 	
@@ -33457,7 +33466,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 131 */
+/* 132 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33499,7 +33508,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 132 */
+/* 133 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33559,20 +33568,20 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 133 */
+/* 134 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
 	
-	var options = __webpack_require__(134);
-	
-	__webpack_require__(130);
+	var options = __webpack_require__(135);
 	
 	__webpack_require__(131);
 	
-	__webpack_require__(135);
+	__webpack_require__(132);
+	
+	__webpack_require__(136);
 	
 	riot.tag2("r-projects-brief", "<yield if=\"{!opts.api.currentAccount}\" to=\"header\"> <header class=\"container\"> <nav class=\"relative clearfix {step > 0 ? 'black' : 'white'} h5\"> <div class=\"left\"> <a href=\"/\" class=\"btn py2\"><img riot-src=\"/images/logos/{step > 0 ? 'black' : 'white'}.svg\" class=\"logo--small\"></a> </div> </nav> </header> </yield> <yield if=\"{opts.api.currentAccount}\" to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <section if=\"{!opts.api.currentAccount}\" class=\"absolute col-12 center px2 py2 white {out: step != 0}\" data-step=\"0\"> <div class=\"container\"> <h1 class=\"h1 h1-responsive sm-mt4 mb1\">Thanks for getting started!</h1> <p class=\"h3 sm-col-6 mx-auto mb2\">The next few questions will create your brief :)</p> <div><button class=\"btn btn-big btn-primary mb3\" onclick=\"{start}\">Ok, Got it</button></div> <p>Or <button class=\"h5 btn btn-narrow btn-outline white ml1 mr1\" onclick=\"{showArrangeCallbackModal}\">Arrange a callback</button> to speak with a human</p> </div> </section> <form name=\"form\" action=\"/api/projects\" onsubmit=\"{submit}\"> <section class=\"absolute col-12 center px2 py2 {out: step != 1}\" data-step=\"1\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Mission</h1> <div class=\"clearfix mxn2 border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === project.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === project.kind}\"> </a> </div> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 2}\" data-step=\"2\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Helpful details</h1> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" autofocus=\"true\" oninput=\"{setValue}\">{project.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === project.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === project.brief.preferred_start}\">{value}</option> </select> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb4\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb4\" onclick=\"{nextStep}\">Continue</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 3}\" data-step=\"3\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Documents and Photos</h1> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-12 px2 mb2\"> <p class=\"h2\">Upload plans, documents, site photos or any other files about your project</p> <r-files-input-with-preview name=\"assets\" record=\"{project}\"></r-files-input-with-preview> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb1\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb1\" onclick=\"{nextStep}\">Continue</a> </div> <div class=\"right-align mb4\"> <a onclick=\"{nextStep}\">Skip for now</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 4}\" data-step=\"4\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Address</h1> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{project.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{project.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{project.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb1\" onclick=\"{prevStep}\">Back</a> <a class=\"btn btn-big btn-primary mb1\" onclick=\"{nextStep}\">Continue</a> </div> </div> </section> <section class=\"absolute col-12 center px2 py2 {out: step != 5}\" data-step=\"5\"> <div class=\"container\"> <h1 class=\"h1-responsive mt0 mb4\">Project Summary</h1> <div class=\"clearfix p3 border mb3\"> <p class=\"h3 mt0\"> You are planning a <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--project-type\">{project.kind}</span></strong> <span show=\"{!_.isEmpty(_.compact(_.values(project.address)))}\" class=\"summary--address-container\">at <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--address\"><span each=\"{name, add in project.address}\">{add}, </span></span></strong></span>. The basic overview of the brief is: <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--description\">{project.brief.description}</span></strong>. <br> <span show=\"{project.brief.budget}\" class=\"summary--budget-container\">You have a budget of <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--budget\">{project.brief.budget}</span></strong></span> <span show=\"{project.brief.preferred_start}\" class=\"summary--start-date-container\">and would like to start <strong><span class=\"inline-block px1 mb1 border-bottom border-yellow summary--start-date\">{project.brief.preferred_start}</span></strong>.</span> </p> </div> <div class=\"right-align\"> <a class=\"btn btn-big mb4\" onclick=\"{prevStep}\">Back</a> <button class=\"btn btn-big btn-primary mb4 {busy: busy}\" __disabled=\"{busy}\" type=\"submit\">Correct! Make it happen</button> </div> </div> </section> </form>", "", "", function (opts) {
 	  var _this = this;
@@ -33723,7 +33732,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 134 */
+/* 135 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -33797,7 +33806,7 @@
 	};
 
 /***/ },
-/* 135 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33819,28 +33828,28 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 136 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
-	__webpack_require__(137);
 	
 	__webpack_require__(138);
 	
 	__webpack_require__(139);
 	
-	__webpack_require__(141);
+	__webpack_require__(140);
 	
 	__webpack_require__(142);
 	
-	__webpack_require__(144);
+	__webpack_require__(143);
 	
-	__webpack_require__(146);
+	__webpack_require__(145);
 	
 	__webpack_require__(147);
 	
-	__webpack_require__(151);
+	__webpack_require__(148);
+	
+	__webpack_require__(152);
 	
 	riot.tag2("r-projects-show", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container\"> <div class=\"py3 px2\"> <div class=\"clearfix mxn2\"> <r-subnav links=\"{subnavLinks}\" tab=\"{opts.tab}\" active_tab_name=\"{opts.activeTabName}\"></r-subnav> <div class=\"sm-col sm-col-9 sm-px2\"> <r-tabs tab=\"{opts.tab}\" api=\"{opts.api}\" content_opts=\"{opts.contentOpts}\"></r-tabs> </div> </div> </div> </div>", "", "", function (opts) {
 	
@@ -33852,7 +33861,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 137 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -33898,7 +33907,7 @@
 	// }
 
 /***/ },
-/* 138 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33909,14 +33918,14 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 139 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	var options = __webpack_require__(134);
+	var options = __webpack_require__(135);
 	
-	__webpack_require__(140);
+	__webpack_require__(141);
 	
 	riot.tag2("r-project-brief", "<form name=\"form\" class=\"edit_project\" action=\"/api/projects/{opts.id}\" onsubmit=\"{submit}\"> <section class=\"container clearfix\"> <h2 class=\"mt0\">Name of your project</h2> <input type=\"text\" id=\"name\" class=\"block col-12 mb2 field\" name=\"name\" placeholder=\"My Home, Swiss Cottage, Jenny's Flat ...\" value=\"{project.name}\"> <div class=\"right-align\"> <button class=\"btn btn-primary {busy: busy}\" type=\"submit\">Save</button> </div> </section> <section class=\"container clearfix\"> <h2>Mission</h2> <div class=\"clearfix border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === project.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === project.kind}\"> </a> </div> </div> <div class=\"mt2 right-align\"> <button class=\"btn btn-primary {busy: busy}\" type=\"submit\">Save</button> </div> </section> <section class=\"container clearfix\"> <h2>Helpful details</h2> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" oninput=\"{setValue}\">{project.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-4 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === project.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-4 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === project.brief.preferred_start}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-4 px2\"> <label for=\"brief[ownership]\">Owner</label> <select id=\"brief.ownership\" name=\"brief[ownership]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.ownership}\" value=\"{value}\" __selected=\"{value === project.brief.ownership}\">{value}</option> </select> </div> </div> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <r-option-group-input record=\"{project.brief}\" name=\"brief\" groups=\"{['plans', 'planning_permission']}\" options=\"{options.yesNo}\"> </r-option-group-input> </div> <div class=\"sm-col sm-col-6 px2\"> <r-option-group-input record=\"{project.brief}\" name=\"brief\" groups=\"{['structural_drawings', 'party_wall_agreement']}\" options=\"{options.yesNo}\"> </r-option-group-input> </div> </div> <div class=\"right-align\"> <button class=\"btn btn-primary {busy: busy}\" type=\"submit\">Save</button> </div> </section> <section class=\"container clearfix\"> <h2>Address</h2> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{project.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{project.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{project.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> <div class=\"right-align\"> <button class=\"btn btn-primary {busy: busy}\" type=\"submit\">Save</button> </div> </section> </form>", "", "", function (opts) {
 	  var _this = this;
@@ -33955,7 +33964,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 140 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33968,7 +33977,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 141 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33979,7 +33988,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 142 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -33988,7 +33997,7 @@
 	
 	var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; for (var _iterator = arr[Symbol.iterator](), _step; !(_step = _iterator.next()).done;) { _arr.push(_step.value); if (i && _arr.length === i) break; } return _arr; } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } };
 	
-	var Pikaday = _interopRequire(__webpack_require__(143));
+	var Pikaday = _interopRequire(__webpack_require__(144));
 	
 	riot.tag2("r-project-appointments", "<div class=\"sm-col-12 px2 border\"> <h3><i class=\"fa fa-calendar-o\"></i> Appointments</h3> <a class=\"h6 btn btn-small btn-primary mb2\" onclick=\"{openAppointmentModal}\"><i class=\"fa fa-calendar-check-o\"></i> Arrange Appointment</a> <dl each=\"{appointments}\" class=\"{gray: isPast(time)}\"> <dt class=\"left\"> <i class=\"fa fa-{'thumbs-o-up': isPast(time), 'hand-o-right': isFuture(time)}\"></i> </dt> <dd> <h4>At {formatTime(time)}</h4> <div><strong>Host:</strong> {host.profile.first_name} {host.profile.last_name}</div> <div><strong>Attendant:</strong> {attendant.profile.first_name} {attendant.profile.last_name}</div> <a if=\"{isFuture(time)}\" class=\"btn btn-small h6 bg-maroon white mt1\" onclick=\"{cancelAppointment}\"><i class=\"fa fa-ban\"></i> Cancel</a> </dd> </dl> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -34103,7 +34112,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 143 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*!
@@ -35372,12 +35381,12 @@
 
 
 /***/ },
-/* 144 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(145);
+	__webpack_require__(146);
 	
 	riot.tag2("r-project-team", "<h2 class=\"mt0\">Team</h2> <div if=\"{currentAccount.isAdministrator}\" class=\"bg-blue white\"> <r-typeahead-input resource=\"accounts\" api=\"{opts.api}\" datum_tokenizer=\"{['full_name', 'email', 'user_type']}\"></r-typeahead-input> </div> <p>Here is the team of your project. You can arrange site visits with professionals here or invite other members such as family members or your own builders. </p> <ul class=\"list-reset clearfix mxn1\"> <li each=\"{project.customers}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-lime navy right mt2\">Customer</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> </p> </div> <div if=\"{currentAccount.isAdministrator}\" class=\"bg-blue white p1\"> <a onclick=\"{removeCustomer}\" class=\"btn btn-small bg-red white\">Remove</a> <a onclick=\"{impersonate}\" class=\"btn btn-small bg-maroon white\">Impersonate</a> </div> </li> <li each=\"{project.professionals}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill bg-aqua blue white right mt2\">Professional *</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> <div if=\"{profile.website}\"><i class=\"fa fa-world\"></i><a href=\"{profile.website}\" target=\"_blank\">{profile.website}</a></div> </p> </div> <div if=\"{currentAccount.isAdministrator}\" class=\"bg-blue white p1\"> <a onclick=\"{removeProfessional}\" class=\"btn btn-small bg-red white\">Remove</a> <a onclick=\"{impersonate}\" class=\"btn btn-small bg-maroon white\">Impersonate</a> </div> </li> <li each=\"{project.administrators}\" class=\"sm-col sm-col-6 p1 align-top\"> <div class=\"px2 border\"> <h3 class=\"inline-block\">{getName()}</h3> <span class=\"inline-block align-middle h6 mb1 px1 border pill right mt2\">Admin</span> <p class=\"overflow-hidden\"> <div><i class=\"fa fa-phone\"></i> {profile.phone_number}</div> <div><i class=\"fa fa-envelope\"></i> {email}</div> </p> </div> <div if=\"{currentAccount.isAdministrator}\" class=\"bg-blue white p1\"> <a onclick=\"{removeAdministrator}\" class=\"btn btn-small bg-red white\">Remove</a> <a onclick=\"{impersonate}\" class=\"btn btn-small bg-maroon white\">Impersonate</a> </div> </li> </ul> <div class=\"clearfix mxn1\"> <div class=\"sm-col sm-col-12 px1 mb2\"> <form name=\"form\" class=\"sm-col-12 px2 border\" onsubmit=\"{submit}\"> <h3><i class=\"fa fa-paper-plane-o\"></i> Invite a new member</h3> <div class=\"clearfix\"> <label class=\"inline-block col col-6 mb2 truncate\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Customer\">Customer </label> <label class=\"inline-block col col-6 mb2 truncate\"> <input type=\"radio\" name=\"invitee_attributes[user_type]\" value=\"Professional\">Professional </label> </div> <span class=\"inline-error block\" if=\"{errors['invitee_attributes.user_type']}\">{errors['invitee_attributes.user_type']}</span> <input name=\"invitee_attributes[email]\" class=\"col-12 mb2 field\" placeholder=\"Email\" type=\"email\"> <span class=\"inline-error\" if=\"{errors['invitee_attributes.email']}\">{errors['invitee_attributes.email']}</span> <input type=\"hidden\" name=\"inviter_id\" value=\"{opts.api.currentAccount.id}\"> <input type=\"hidden\" name=\"project_id\" value=\"{opts.id}\"> <div class=\"right-align\"> <button type=\"submit\" class=\"btn btn-primary mb2 {busy: busy}\">Invite</button> </div> </form> </div> <div if=\"{project.professionals.length > 0}\" class=\"sm-col sm-col-6 px1 mb2\"> <r-project-appointments record=\"{project}\"></r-project-appointments> </div> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -35437,7 +35446,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 145 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -35486,14 +35495,14 @@
 	});
 
 /***/ },
-/* 146 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 	
-	var Pikaday = _interopRequire(__webpack_require__(143));
+	var Pikaday = _interopRequire(__webpack_require__(144));
 	
 	riot.tag2("r-payment-form", "<h2 class=\"center mt0 mb2\">Payment Form</h2> <form name=\"form\" class=\"sm-col-12 left-align\" action=\"/api/payments\" onsubmit=\"{submit}\"> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <input type=\"hidden\" name=\"quote_id\" value=\"{record.quote_id}\"> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <input class=\"block col-12 mb2 field\" name=\"amount\" value=\"{record.amount}\" placeholder=\"Amount\" type=\"{'number'}\"> <span if=\"{errors['amount']}\" class=\"inline-error\">{errors['amount']}</span> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"due_date\" value=\"{record.due_date}\" placeholder=\"Due Date\"> <span if=\"{errors['due_date']}\" class=\"inline-error\">{errors['due_date']}</span> <textarea class=\"block col-12 mb2 field\" type=\"text\" name=\"description\" placeholder=\"Description\">{record.description}</textarea> <span if=\"{errors['description']}\" class=\"inline-error\">{errors['description']}</span> <div if=\"{errors}\" id=\"error_explanation\"> <ul> <li each=\"{field, messages in errors}\">{field.humanize()} {messages.join(',')}</li> </ul> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Create</button> </form>", "", "", function (opts) {
 	  var _this = this;
@@ -35548,14 +35557,14 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 147 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(148);
+	__webpack_require__(149);
 	
-	__webpack_require__(150);
+	__webpack_require__(151);
 	
 	riot.tag2("r-project-quotes", "<h2 class=\"mt0\">Quotes</h2> <div if=\"{_.isEmpty(this.quotes) && !currentAccount.isCustomer}\" class=\"mt2\"> <p>There is no quote yet</p> <a class=\"btn btn-primary mb2\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> </div> <div if=\"{_.isEmpty(this.quotes) && currentAccount.isCustomer}\" class=\"mt2\"> <p>There is no quote submitted yet</p> </div> <a if=\"{!_.isEmpty(this.quotes) && currentAccount.isAdministrator}\" class=\"btn btn-primary mb2\" href=\"/app/projects/{opts.id}/quotes/new\">Create a Quote</a> <ul class=\"list-reset mxn1\"> <li each=\"{quotes}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border clearfix\"> <h2 class=\"inline-block sm-mb4\">{formatCurrency(total_amount)}</h2> <div class=\"inline-block mt2 p2 border sm-right mb2 sm-mb0\"> <span if=\"{submitted_at}\"> <i class=\"fa fa-clock-o mr1\"></i> Submitted at: {fromNow(submitted_at)}<br> </span> <span if=\"{accepted_at}\"> <i class=\"fa fa-clock-o mr1\"></i> Accepted at: {fromNow(accepted_at)}<br> </span> <span> <i class=\"fa fa-user mr1\"></i> Professional: <strong>{professional.profile.first_name} {professional.profile.last_name}</strong> </span> </div> <div class=\"tab-nav\"> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'summary'}\" onclick=\"{changeTab}\" rel=\"summary\">Summary</a> <a class=\"btn btn-narrow border-left border-top border-right {active: activeTab == 'payments'}\" onclick=\"{changeTab}\" rel=\"payments\">Payments</a> </div> <div class=\"tabs m0 mxn2 border-top\"> <div if=\"{activeTab == 'summary'}\" class=\"mt2\"> <r-tender-summary document=\"{document}\"></r-tender-summary> <div class=\"clearfix overflow-hidden p1 bg-yellow\"> <a class=\"btn btn-small bg-darken-2\" href=\"/app/projects/{parent.opts.id}/quotes/{id}\">Open</a> <a class=\"btn btn-small bg-darken-2\" if=\"{!currentAccount.isCustomer && !accepted_at}\" onclick=\"{delete}\">Delete</a> </div> </div> <div if=\"{activeTab == 'payments'}\" class=\"mt2\"> <r-project-payments api=\"{opts.api}\" quote=\"{this}\" payment_id=\"{parent.opts.payment_id}\"></r-project-payments> </div> </div> </div> </li> </ul>", "", "", function (opts) {
 	  var _this = this;
@@ -35615,12 +35624,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 148 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	var taskActions = __webpack_require__(149);
+	var taskActions = __webpack_require__(150);
 	
 	riot.tag2("r-tender-summary", "<table class=\"table-light\"> <tbody> <tr each=\"{name, amount in summary}\"> <td>{name}</td> <td>{formatCurrency(amount)}</td> </tr> </tbody> </table>", "", "", function (opts) {
 	  var _this = this;
@@ -35685,7 +35694,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 149 */
+/* 150 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -35705,7 +35714,7 @@
 	};
 
 /***/ },
-/* 150 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -35837,12 +35846,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 151 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-project-tender", "<h2 class=\"mt0\">Tender</h2> <p if=\"{_.isEmpty(project.tender)}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. <virtual if=\"{currentAccount.isCustomer}\"> You can speed up the process by creating a tender document and we will be notified about it. </virtual> <div if=\"{_.isEmpty(project.tender) && !currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> </p> <div if=\"{currentAccount.isAdministrator}\" class=\"bg-blue white p1\"> Apply tender template <r-typeahead-input resource=\"tender_templates\" api=\"{opts.api}\" datum_tokenizer=\"{['name']}\"></r-typeahead-input> </div> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <div class=\"m0 mxn2\"> <r-tender-summary document=\"{project.tender.document}\"></r-tender-summary> </div> <p class=\"overflow-hidden m0 mxn2 p1 border-top\"> <a class=\"btn btn-small\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Open</a> <a class=\"btn btn-small btn-primary\" if=\"{currentAccount.isProfessional}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> </ul>", "", "", function (opts) {
+	riot.tag2("r-project-tender", "<h2 class=\"mt0\">Tender</h2> <p if=\"{_.isEmpty(project.tender)}\"> Hmm, it seems we are still working on your tender and it will show up here when it's ready. <virtual if=\"{currentAccount.isCustomer}\"> You can speed up the process by creating a tender document and we will be notified about it. </virtual> <div if=\"{_.isEmpty(project.tender) && !currentAccount.isProfessional}\" class=\"mt2\"> <a class=\"btn btn-primary\" href=\"/app/projects/{opts.id}/tenders/new\">Create a Tender Document</a> </div> </p> <div if=\"{currentAccount.isAdministrator}\" class=\"bg-blue white p1\"> Apply tender template <r-typeahead-input resource=\"tender_templates\" api=\"{opts.api}\" datum_tokenizer=\"{['name']}\"></r-typeahead-input> </div> <ul class=\"list-reset mxn1\"> <li if=\"{project.tender}\" class=\"block p1 sm-col-12 align-top\"> <div class=\"px2 border\"> <h2 class=\"inline-block\">{formatCurrency(project.tender.total_amount)}</h2> <div class=\"m0 mxn2\"> <r-tender-summary document=\"{project.tender.document}\"></r-tender-summary> </div> <p class=\"overflow-hidden m0 mxn2 p1 border-top\"> <a class=\"btn btn-small btn-primary\" href=\"/app/projects/{opts.id}/tenders/{project.tender.id}\">Open</a> <a class=\"btn btn-small btn-primary\" if=\"{currentAccount.isProfessional}\" onclick=\"{clone}\">Clone</a> </p> </div> </li> </ul>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.clone = function (e) {
@@ -35872,24 +35881,24 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 152 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(153);
-	
 	__webpack_require__(154);
 	
-	__webpack_require__(156);
+	__webpack_require__(155);
 	
-	__webpack_require__(158);
+	__webpack_require__(157);
 	
 	__webpack_require__(159);
 	
 	__webpack_require__(160);
 	
-	__webpack_require__(188);
+	__webpack_require__(161);
+	
+	__webpack_require__(162);
 	
 	riot.tag2("r-tenders-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: opts.readonly}\"> <h1> {opts.id ? (opts.readonly ? 'Showing' : 'Editing') + ' Tender ' + opts.id : 'New Tender'}</h1> <a class=\"mb1 btn btn-small h6 btn-outline orange\" href=\"/app/projects/{project.id}\"> <i class=\"fa fa-chevron-left\"></i> Back to Project </a> <r-tender-filters record=\"{record}\"></r-tender-filters> <r-tender-section each=\"{section , i in sections()}\" no-reorder></r-tender-section> <div class=\"py3\"> <h2 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h2> <h1 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h2> </div> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button if=\"{!currentAccount.isProfessional}\" type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{currentAccount.isProfessional}\" onclick=\"{cloneTender}\" class=\"btn btn-primary btn-big {busy: busy}\">Clone</a> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -35983,7 +35992,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 153 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -36144,14 +36153,14 @@
 	// $('[name=searchable_names]').last()[0].focus()
 
 /***/ },
-/* 154 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 	
-	var Handlebars = _interopRequire(__webpack_require__(155));
+	var Handlebars = _interopRequire(__webpack_require__(156));
 	
 	riot.tag2("r-tender-item-input", "<div class=\"relative\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Start typing to add {opts.name}\" autocomplete=\"off\"> </form> <i class=\"fa fa-plus absolute right-0 top-0 p1\" onclick=\"{addDefaultItem}\"></i> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -36236,7 +36245,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 155 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*!
@@ -40849,14 +40858,14 @@
 	;
 
 /***/ },
-/* 156 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	var taskActions = __webpack_require__(149);
+	var taskActions = __webpack_require__(150);
 	
-	__webpack_require__(157);
+	__webpack_require__(158);
 	
 	riot.tag2("r-tender-item-action-group-dropdown", "<select onchange=\"{changeTaskAction}\"> <option each=\"{val, name in taskActions}\" value=\"{val}\" __selected=\"{val == 'Other'}\" no-reorder>{name}</option> </select>", "", "", function (opts) {
 	  var _this = this;
@@ -40989,7 +40998,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 157 */
+/* 158 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -41075,7 +41084,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 158 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -41150,12 +41159,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 159 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	var taskActions = __webpack_require__(149);
+	var taskActions = __webpack_require__(150);
 	
 	riot.tag2("r-tender-section", "<div> <div class=\"relative border-bottom mt2\"> <h3 class=\"block overflow-hidden mb0\"> <i class=\"cursor-pointer fa fa-{icon}\" onclick=\"{toggle}\"></i> <a if=\"{section.dimensions && section.dimensions.length > 0}\" class=\"h6 bg-teal gray rounded notification-badge\" onclick=\"{setActivity}\" rel=\"edit_dimensions_{section.id}\">{section.dimensions.join('x')}</a> <a if=\"{!parent.opts.readonly && (!section.dimensions || section.dimensions.length == 0)}\" onclick=\"{setActivity}\" rel=\"edit_dimensions_{section.id}\"><i class=\"fa fa-edit\"></i></a> <input type=\"text\" class=\"col-10 field border-none tender-section-name h3\" value=\"{section.name.humanize()}\" oninput=\"{renameSection}\"> </h3> <a class=\"absolute right-0 top-0 btn btn-small border-red red\" onclick=\"{removeSection}\"><i class=\"fa fa-trash-o\"></i></a> </div> <virtual if=\"{visible}\"> <r-tender-item-group name=\"task\" groupitems=\"{section.tasks_by_action}\" __readonly=\"{parent.parent.opts.readonly}\" each=\"{group, items in section.tasks_by_action}\" headers=\"{parent.headers.task}\" onitemremoved=\"{removeItem}\" no-reorder> </r-tender-item-group> <r-tender-item-group name=\"material\" if=\"{(filterAction == 'Materials' || !filterAction)}\" __readonly=\"{parent.parent.opts.readonly}\" groupitems=\"{section.materials_by_group}\" show=\"{section.materials && section.materials.length > 0}\" each=\"{group, items in section.materials_by_group}\" headers=\"{parent.headers.material}\" onitemremoved=\"{removeItem}\" no-reorder> </r-tender-item-group> </virtual> <div class=\"clearfix {'with-line': !visible}\"> <h3 class=\"right border p1 bg-white relative z2 section-total\">{visible ? section.name + ':' : ''} {sectionTotal}</h3> </div> <div if=\"{visible}\" class=\"clearfix mxn1 mt2 mb3\"> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"task\" auto_focus=\"{true}\" api=\"{parent.opts.api}\" icon=\"tasks\"></r-tender-item-input> </div> <div class=\"col col-6 px1\"> <r-tender-item-input name=\"material\" api=\"{parent.opts.api}\" icon=\"shopping-basket\"></r-tender-item-input> </div> </div> <r-dialog if=\"{opts.api.activity == ('edit_dimensions_' + section.id)}\" title=\"Edit Dimensions\"> <form class=\"p2\" onsubmit=\"{parent.updateDimensions}\"> <label>Section Dimensions</label> <r-area-calculator dimensions=\"{parent.section.dimensions}\" callback=\"{preventSubmit}\"></r-area-calculator> <div class=\"clearfix mt2 mxn2\"> <div class=\"col col-6 px2\"> <button class=\"block col-12 mb2 btn btn-primary\">Save</button> </div> </div> </form> </r-dialog> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -41270,7 +41279,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 160 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -41291,12 +41300,31 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 161 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(153);
+	riot.tag2("r-area-calculator", "<div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-4 px2\"> <label>Width</label> <input name=\"width\" min=\"0\" class=\"block col-12 mb2 field\" value=\"{opts.dimensions[0]}\" oninput=\"{update}\" type=\"{'number'}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Height</label> <input name=\"height\" min=\"0\" class=\"block col-12 mb2 field\" value=\"{opts.dimensions[1]}\" oninput=\"{update}\" type=\"{'number'}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Length</label> <input name=\"length\" min=\"0\" class=\"block col-12 mb2 field\" value=\"{opts.dimensions[2]}\" oninput=\"{update}\" type=\"{'number'}\"> </div> </div> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-4 px2\"> <label>Wall Area</label> <input type=\"submit\" class=\"block col-12 mb2 btn bg-blue white\" value=\"{wallArea(width.value, height.value, length.value)}\" onclick=\"{opts.callback}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Floor Area</label> <input type=\"submit\" class=\"block col-12 mb2 btn bg-blue white\" value=\"{floorArea(width.value, height.value, length.value)}\" onclick=\"{opts.callback}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Wall Length</label> <input type=\"submit\" class=\"block col-12 mb2 btn bg-blue white\" value=\"{wallLength(width.value, height.value, length.value)}\" onclick=\"{opts.callback}\"> </div> </div>", "", "", function (opts) {
+	  this.wallArea = function (w, h, l) {
+	    return 2 * w * h + 2 * l * h;
+	  };
+	  this.floorArea = function (w, h, l) {
+	    return w * h;
+	  };
+	  this.wallLength = function (w, h, l) {
+	    return 2 * w + 2 * l;
+	  };
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 163 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
+	
+	__webpack_require__(154);
 	
 	riot.tag2("r-quotes-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2 {readonly: isReadonly()} \"> <div class=\"clearfix\"> <div class=\"left mb4 overflow-hidden\"> <h1 class=\"mb0\">{opts.id ? getTitle() : 'New Quote'}</h1> <a class=\"btn btn-small h6 btn-outline orange\" href=\"/app/projects/{record.project_id}\"><i class=\"fa fa-chevron-left\"></i> Back to Project</a> </div> <div class=\"right h5 mt3 align-right\"> <div>Created at: {formatTime(record.created_at)}</div> <div if=\"{record.submitted_at}\">Submitted at: {formatTime(record.submitted_at)}</div> <div if=\"{record.accepted_at}\">Accepted at: {formatTime(record.accepted_at)}</div> </div> </div> <div if=\"{currentAccount.isAdministrator}\" class=\"p1 bg-blue white\"> <label for=\"project_id\">Professional</label> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" id=\"{record.professional_id}\" filters=\"{professionalFilters()}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"tender_id\">Tender</label> <input type=\"hidden\" name=\"tender_id\" value=\"{record.tender_id}\"> <r-typeahead-input resource=\"tenders\" api=\"{opts.api}\" id=\"{record.tender_id}\" filters=\"{tenderFilters()}\" datum_tokenizer=\"{['id', 'total_amount']}\"></r-typeahead-input> <span if=\"{errors.tender_id}\" class=\"inline-error\">{errors.tender_id}</span> </div> <div if=\"{record.id}\" class=\"clearfix mb4\"> <div class=\"sm-col sm-col-6\"> <h4>From</h4> <address> {record.professional.profile.first_name} {record.professional.profile.last_name}<br> <virtual if=\"{!isAllValuesEmpty(record.professional.address)}\"> {record.professional.address.street_address}<br> {record.professional.address.postcode}, {record.professional.address.city}<br> {record.professional.address.country} </virtual> </address> </div> </div> <r-tender-filters record=\"{record}\"></r-tender-filters> <r-tender-section __readonly=\"{opts.readonly}\" each=\"{section , i in sections()}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\"> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-6 px2\"> <label>Insurance Amount</label> <select name=\"insurance_amount\" class=\"block col-12 field mb2\" onchange=\"{setVal}\" if=\"{!currentAccount.isCustomer}\"> <option>Select</option> <option each=\"{_, i in new Array(19)}\" key=\"0\" value=\"{(i+1)}\" __selected=\"{record.insurance_amount == (i+1)}\">{(i+1) + ' Million'}</option> </select> <p if=\"{currentAccount.isCustomer}\">{record.insurance_amount ?  record.insurance_amount + ' Million' : 'N/A'}</p> </div> <div class=\"sm-col sm-col-6 px2\"> <label>Guarantee Length</label> <select name=\"guarantee_length\" class=\"block col-12 field mb2\" onchange=\"{setVal}\" if=\"{!currentAccount.isCustomer}\"> <option>Select</option> <option each=\"{_, i in new Array(19)}\" key=\"0\" value=\"{(i+1)}\" __selected=\"{record.guarantee_length == (i+1)}\">{(i+1) + (i > 0 ? ' Years' : ' Year')}</option> </select> <p if=\"{currentAccount.isCustomer}\">{record.guarantee_length ? record.guarantee_length + ' Years' : 'N/A'} </p> </div> </div> <label>Summary</label> <textarea type=\"text\" name=\"summary\" placeholder=\"Summary\" class=\"block col-12 field mb2\" oninput=\"{setVal}\" if=\"{!currentAccount.isCustomer}\">{record.summary}</textarea> <p if=\"{currentAccount.isCustomer}\">{record.summary ? record.summary : 'N/A'}</p> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <div class=\"right-align\"> <button if=\"{opts.id && !currentAccount.isProfessional && record.submitted_at}\" class=\"btn btn-primary btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </button> <virtual if=\"{!opts.readonly && !currentAccount.isCustomer}\"> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{opts.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\"> {record.submitted_at ? 'Submitted' : 'Submit'} <span if=\"{record.submitted_at}\">{fromNow(record.submitted_at)}</span> </a> </virtual> </div> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -41433,7 +41461,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 162 */
+/* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -41459,14 +41487,14 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 163 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 	
-	var Pikaday = _interopRequire(__webpack_require__(143));
+	var Pikaday = _interopRequire(__webpack_require__(144));
 	
 	riot.tag2("r-settings-notifications", "<h2 class=\"mt0\">Notifications</h2> <form name=\"form\" onsubmit=\"{submit}\"> <div each=\"{not, i in notifications}\"> <label> <input type=\"checkbox\" name=\"notifications[{not}]\" __checked=\"{currentAccount.notifications[not]}\"> {not.humanize()} </label> </div> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form>", "", "", function (opts) {
 	  var _this = this;
@@ -41634,14 +41662,10 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 164 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
-	__webpack_require__(165);
-	
-	__webpack_require__(166);
 	
 	__webpack_require__(167);
 	
@@ -41661,9 +41685,9 @@
 	
 	__webpack_require__(175);
 	
-	__webpack_require__(177);
+	__webpack_require__(176);
 	
-	__webpack_require__(178);
+	__webpack_require__(177);
 	
 	__webpack_require__(179);
 	
@@ -41683,6 +41707,10 @@
 	
 	__webpack_require__(187);
 	
+	__webpack_require__(188);
+	
+	__webpack_require__(189);
+	
 	riot.tag2("r-admin-index", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form onsubmit=\"{search}\"> <input type=\"text\" name=\"query\" class=\"block mb2 col-12 field\" placeholder=\"Search {opts.resource}\"> </form> <div class=\"overflow-auto\"> <a class=\"btn btn-primary\" onclick=\"{open}\">New</a> <table id=\"streamtable\" class=\"table-light bg-white\"> <thead class=\"bg-darken-1\"> <tr> <th each=\"{attr, i in headers}\" class=\"nowrap cursor-pointer\" onclick=\"{sort}\">{attr.humanize()} <i class=\"fa fa-sort\"></i></th> <th></th> </tr> </thead> <tbody> <tr each=\"{record, i in records}\"> <td each=\"{attr, i in headers}\"> {record[attr]} </td> <td class=\"nowrap\"> <button class=\"btn border btn-small mr1 mb1\" onclick=\"{open}\"> <i class=\"fa fa-pencil\"></i> </button> <button class=\"btn btn-small border-red red mb1\" onclick=\"{destroy}\"> <i class=\"fa fa-trash-o\"></i> </button> </td> </tr> <tbody> </table> </div> <r-pagination></r-pagination> </div>", "", "", function (opts) {
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
@@ -41690,7 +41718,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 165 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -41701,14 +41729,14 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 166 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(153);
+	__webpack_require__(154);
 	
-	riot.tag2("r-admin-tender-template-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <h1><input type=\"text\" name=\"name\" value=\"{record.name}\" class=\"block col-12 field\" placeholder=\"Name\" oninput=\"{setInputValue}\"></h1> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>When you apply a template to a project, if there isn't Tender on the project it clones itself to project, if Tender exists it apply changes to project's tender </p> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-tender-template-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <h1><input type=\"text\" name=\"name\" value=\"{record.name}\" class=\"block col-12 field\" placeholder=\"Name\" oninput=\"{setInputValue}\"></h1> <r-tender-filters record=\"{record}\"></r-tender-filters> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>When you apply a template to a project, if there isn't Tender on the project it clones itself to project, if Tender exists it apply changes to project's tender </p> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> </div> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.type = "TenderTemplate";
@@ -41792,14 +41820,14 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 167 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(153);
+	__webpack_require__(154);
 	
-	riot.tag2("r-admin-tender-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <label for=\"project_id\">Project</label> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" id=\"{record.project_id}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> <span if=\"{errors.project_id}\" class=\"inline-error\">{errors.project_id}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\" __disabled=\"{busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>Add a Professional to this Project by creating a Quote from this tender. Choosen pro will be added to project.</p> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-tender-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <label for=\"project_id\">Project</label> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" id=\"{record.project_id}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> <span if=\"{errors.project_id}\" class=\"inline-error\">{errors.project_id}</span> <r-tender-filters record=\"{record}\"></r-tender-filters> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Estimated total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\" __disabled=\"{busy}\">Save</button> </form> <div if=\"{record.id}\" class=\"mt4 clearfix\"> <p>Add a Professional to this Project by creating a Quote from this tender. Choosen pro will be added to project.</p> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> </div> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.type = "Tender";
@@ -41891,14 +41919,14 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 168 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	__webpack_require__(153);
+	__webpack_require__(154);
 	
-	riot.tag2("r-admin-quote-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <label for=\"project\">Project</label> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" id=\"{record.project_id}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> <span if=\"{errors.project}\" class=\"inline-error\">{errors.project}</span> <label for=\"project_id\">Professional</label> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" id=\"{record.professional_id}\" filters=\"{professionalFilters()}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"tender_id\">Tender</label> <input type=\"hidden\" name=\"tender_id\" value=\"{record.tender_id}\"> <r-typeahead-input resource=\"tenders\" api=\"{opts.api}\" id=\"{record.tender_id}\" filters=\"{tenderFilters()}\" datum_tokenizer=\"{['id', 'total_amount']}\"></r-typeahead-input> <span if=\"{errors.tender_id}\" class=\"inline-error\">{errors.project}</span> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{record.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> <button if=\"{record.id}\" class=\"btn bg-red btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </button> </form> </div>", "", "", function (opts) {
+	riot.tag2("r-admin-quote-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <label for=\"project\">Project</label> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" id=\"{record.project_id}\" datum_tokenizer=\"{['name', 'account_email']}\"></r-typeahead-input> <span if=\"{errors.project}\" class=\"inline-error\">{errors.project}</span> <label for=\"project_id\">Professional</label> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" id=\"{record.professional_id}\" filters=\"{professionalFilters()}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"tender_id\">Tender</label> <input type=\"hidden\" name=\"tender_id\" value=\"{record.tender_id}\"> <r-typeahead-input resource=\"tenders\" api=\"{opts.api}\" id=\"{record.tender_id}\" filters=\"{tenderFilters()}\" datum_tokenizer=\"{['id', 'total_amount']}\"></r-typeahead-input> <span if=\"{errors.tender_id}\" class=\"inline-error\">{errors.project}</span> <r-tender-filters record=\"{record}\"></r-tender-filters> <r-tender-section each=\"{section , i in record.document.sections}\"></r-tender-section> <form if=\"{!opts.readonly && record.document}\" onsubmit=\"{addSection}\" class=\"mt3 py3 clearfix mxn1 border-top\"> <div class=\"col col-8 px1\"> <input type=\"text\" name=\"sectionName\" placeholder=\"Section name\" class=\"block col-12 field\"> </div> <div class=\"col col-4 px1\"> <button type=\"submit\" class=\"block col-12 btn btn-primary\"><i class=\"fa fa-puzzle-piece\"></i> Add Section</button> </div> </form> <div class=\"py3\"> <h4 class=\"right-align m0\"><label><input type=\"checkbox\" onchange=\"{toggleVat}\" __checked=\"{record.document.include_vat}\" class=\"mr1\">VAT {tenderVat()}</label></h4> <h3 class=\"right-align m0\">Total{record.document.include_vat ? '(Inc. VAT)' : ''}: {tenderTotal}</h3> </div> <form name=\"form\" onsubmit=\"{submit}\" class=\"right-align\"> <div if=\"{errors}\" id=\"error_explanation\" class=\"left-align\"> <ul> <li each=\"{field, messsages in errors}\"> <strong>{field.humanize()}</strong> {messsages} </li> </ul> </div> <button type=\"submit\" class=\"btn btn-primary btn-big {busy: busy}\">Save</button> <a if=\"{record.id}\" class=\"btn bg-green white btn-big {busy: busy}\" onclick=\"{submitQuote}\">Submit</a> <button if=\"{record.id}\" class=\"btn bg-red btn-big {busy: busy}\" onclick=\"{acceptQuote}\" __disabled=\"{record.accepted_at}\"> {record.accepted_at ? 'Accepted' : 'Accept'} <span if=\"{record.accepted_at}\">{fromNow(record.accepted_at)}</span> </button> </form> </div>", "", "", function (opts) {
 	  var _this = this;
 	
 	  this.type = "Quote";
@@ -42009,14 +42037,14 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 169 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 	
-	var Pikaday = _interopRequire(__webpack_require__(143));
+	var Pikaday = _interopRequire(__webpack_require__(144));
 	
 	riot.tag2("r-admin-payment-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <h2 class=\"center mt0 mb2\">{opts.id ? 'Editing' : 'Creating'} {opts.resource.singular().humanize()}</h2> <form name=\"form\" class=\"sm-col-12 left-align\" onsubmit=\"{submit}\"> <label for=\"project_id\">Project</label> <input type=\"hidden\" name=\"project_id\" value=\"{record.project_id}\"> <r-typeahead-input resource=\"projects\" api=\"{opts.api}\" id=\"{record.project_id}\" datum_tokenizer=\"{['name', 'customers.0.full_name']}\"></r-typeahead-input> <span if=\"{errors.project_id}\" class=\"inline-error\">{errors.project_id}</span> <label for=\"professional_id\">Professional</label> <input type=\"hidden\" name=\"professional_id\" value=\"{record.professional_id}\"> <r-typeahead-input resource=\"professionals\" api=\"{opts.api}\" id=\"{record.professional_id}\" filters=\"{professionalFilters()}\" datum_tokenizer=\"{['full_name']}\"></r-typeahead-input> <span if=\"{errors.professional_id}\" class=\"inline-error\">{errors.professional_id}</span> <label for=\"quote_id\">Quote</label> <input type=\"hidden\" name=\"quote_id\" value=\"{record.quote_id}\"> <r-typeahead-input resource=\"quotes\" api=\"{opts.api}\" id=\"{record.quote_id}\" filters=\"{quoteFilters()}\" datum_tokenizer=\"{['id', 'status', 'amount']}\"></r-typeahead-input> <span if=\"{errors.quote_id}\" class=\"inline-error\">{errors.quote_id}</span> <div each=\"{attr, i in ['fee', 'amount']}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <input class=\"block col-12 mb2 field\" name=\"{attr}\" value=\"{parseInt(record[attr]) * 0.01}\" type=\"{'number'}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> <div each=\"{attr, i in ['due_date', 'description']}\"> <label for=\"{resource.singular()}[{attr}]\">{attr.humanize()}</label> <input class=\"block col-12 mb2 field\" type=\"text\" name=\"{attr}\" value=\"{record[attr]}\"> <span if=\"{errors[attr]}\" class=\"inline-error\">{errors[attr]}</span> </div> <div if=\"{!_.isEmpty(errors)}\" id=\"error_explanation\"> <ul> <li each=\"{field, messages in errors}\">{field.humanize()} {messages.join(', ')}</li> </ul> </div> <div class=\"right-align\"> <button type=\"submit\" class=\"mb2 btn btn-big btn-primary {busy: busy}\">Save</button> <a if=\"{record.id && !record.approved_at}\" onclick=\"{approve}\" class=\"mb2 btn btn-big bg-green white {busy: busy}\">Approve</a> <a if=\"{record.id && record.paid_at && !record.refunded_at}\" onclick=\"{refund}\" class=\"mb2 btn btn-big bg-red white {busy: busy}\">Refund</a> </div> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -42080,7 +42108,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 170 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42091,7 +42119,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 171 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42102,7 +42130,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 172 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42113,7 +42141,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 173 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42124,7 +42152,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 174 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42135,16 +42163,16 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 175 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	var options = __webpack_require__(134);
+	var options = __webpack_require__(135);
 	
-	__webpack_require__(176);
+	__webpack_require__(178);
 	
-	__webpack_require__(140);
+	__webpack_require__(141);
 	
 	riot.tag2("r-admin-project-form", "<yield to=\"header\"> <r-header api=\"{opts.api}\"></r-header> </yield> <div class=\"container p2\"> <form name=\"form\" class=\"edit_project\" onsubmit=\"{submit}\" autocomplete=\"off\"> <label for=\"account_id\">Account</label> <input type=\"hidden\" name=\"account_id\" value=\"{record.account_id}\"> <r-typeahead-input resource=\"accounts\" api=\"{opts.api}\" id=\"{record.account_id}\" datum_tokenizer=\"{['email']}\"></r-typeahead-input> <span if=\"{errors.account_id}\" class=\"inline-error\">{errors.account_id}</span> <label for=\"name\">Name</label> <input id=\"name\" class=\"block col-12 mb2 field\" type=\"text\" name=\"name\" value=\"{record.name}\" oninput=\"{setValue}\"> <section class=\"container clearfix\" data-step=\"1\"> <div class=\"container\"> <h2>Mission</h2> <div class=\"clearfix border\"> <div each=\"{options.kind}\" class=\"center col col-6 md-col-4\"> <a class=\"block p2 bg-lighten-4 black icon-radio--button {active: (name === record.kind)}\" onclick=\"{setProjectKind}\"> <img class=\"fixed-height\" riot-src=\"{icon}\" alt=\"{name}\"> <h4 class=\"m0 caps center truncate icon-radio--name\">{name}</h4> <input type=\"radio\" name=\"kind\" value=\"{value}\" class=\"hide\" __checked=\"{value === record.kind}\"> </a> </div> </div> </div> </section> <section class=\"container clearfix\" data-step=\"2\"> <div class=\"container\"> <h2>Helpful details</h2> <p class=\"h2\">Description *</p> <textarea id=\"brief.description\" name=\"brief[description]\" class=\"fixed-height block col-12 mb2 field\" placeholder=\"Please write outline of your project\" required=\"true\" autofocus=\"true\" oninput=\"{setValue}\">{record.brief.description}</textarea> <span if=\"{errors['brief.description']}\" class=\"inline-error\">{errors['brief.description']}</span> <div class=\"clearfix mxn2 mb2 left-align\"> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[budget]\">Budget</label> <select id=\"brief.budget\" name=\"brief[budget]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.budget}\" value=\"{value}\" __selected=\"{value === record.brief.budget}\">{value}</option> </select> </div> <div class=\"sm-col sm-col-6 px2\"> <label for=\"brief[preferred_start]\">Start</label> <select id=\"brief.preferred_start\" name=\"brief[preferred_start]\" class=\"block col-12 mb2 field\" onchange=\"{setValue}\"> <option each=\"{value, i in options.preferredStart}\" value=\"{value}\" __selected=\"{value === record.brief.preferred_start}\">{value}</option> </select> </div> </div> </div> </section> <section class=\"container clearfix\" data-step=\"4\"> <div class=\"container\"> <h2>Address</h2> <p class=\"h2\">Location of project</p> <div class=\"clearfix left-align\"> <label for=\"address[street_address]\">Street Address</label> <input id=\"address.street_address\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[street_address]\" value=\"{record.address.street_address}\" oninput=\"{setValue}\"> <div class=\"clearfix mxn2\"> <div class=\"col col-6 px2\"> <label for=\"address[city]\">City</label> <input id=\"address.city\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[city]\" value=\"{record.address.city}\" oninput=\"{setValue}\"> </div> <div class=\"col col-6 px2\"> <label for=\"address[postcode]\">Postcode</label> <input id=\"address.postcode\" class=\"block col-12 mb2 field\" type=\"text\" name=\"address[postcode]\" value=\"{record.address.postcode}\" oninput=\"{setValue}\"> </div> </div> </div> </div> </section> <button type=\"submit\" class=\"block col-12 mb2 btn btn-big btn-primary {busy: busy}\">Save</button> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -42215,14 +42243,14 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 176 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 	
-	var Handlebars = _interopRequire(__webpack_require__(155));
+	var Handlebars = _interopRequire(__webpack_require__(156));
 	
 	riot.tag2("r-typeahead-input", "<div class=\"relative inline-block\"> <form onsubmit=\"{preventSubmit}\"> <input name=\"query\" type=\"text\" class=\"block col-12 mb2 field\" oninput=\"{search}\" onkeyup=\"{onKey}\" placeholder=\"Start typing to search {opts.resource}\" autocomplete=\"off\"> </form> </div>", "", "", function (opts) {
 	  var _this = this;
@@ -42301,7 +42329,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 177 */
+/* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42313,7 +42341,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 178 */
+/* 180 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42330,7 +42358,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 179 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42348,7 +42376,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 180 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42369,7 +42397,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 181 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42381,7 +42409,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 182 */
+/* 184 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42393,7 +42421,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 183 */
+/* 185 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42405,7 +42433,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 184 */
+/* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42417,7 +42445,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 185 */
+/* 187 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42429,7 +42457,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 186 */
+/* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42441,7 +42469,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 187 */
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
@@ -42460,34 +42488,6 @@
 	  this.mixin("admin");
 	  this.mixin("adminIndex");
 	});
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ },
-/* 188 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
-	riot.tag2("r-area-calculator", "<div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-4 px2\"> <label>Width</label> <input name=\"width\" min=\"0\" class=\"block col-12 mb2 field\" value=\"{opts.dimensions[0]}\" oninput=\"{update}\" type=\"{'number'}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Height</label> <input name=\"height\" min=\"0\" class=\"block col-12 mb2 field\" value=\"{opts.dimensions[1]}\" oninput=\"{update}\" type=\"{'number'}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Length</label> <input name=\"length\" min=\"0\" class=\"block col-12 mb2 field\" value=\"{opts.dimensions[2]}\" oninput=\"{update}\" type=\"{'number'}\"> </div> </div> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-4 px2\"> <label>Wall Area</label> <input type=\"submit\" class=\"block col-12 mb2 btn bg-blue white\" value=\"{wallArea(width.value, height.value, length.value)}\" onclick=\"{opts.callback}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Floor Area</label> <input type=\"submit\" class=\"block col-12 mb2 btn bg-blue white\" value=\"{floorArea(width.value, height.value, length.value)}\" onclick=\"{opts.callback}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Wall Length</label> <input type=\"submit\" class=\"block col-12 mb2 btn bg-blue white\" value=\"{wallLength(width.value, height.value, length.value)}\" onclick=\"{opts.callback}\"> </div> </div>", "", "", function (opts) {
-	  this.wallArea = function (w, h, l) {
-	    return 2 * w * h + 2 * l * h;
-	  };
-	  this.floorArea = function (w, h, l) {
-	    return w * h;
-	  };
-	  this.wallLength = function (w, h, l) {
-	    return 2 * w + 2 * l;
-	  };
-	});
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ },
-/* 189 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
-	
-	riot.tag2("r-dialog", "<div class=\"fixed flex flex-center left-0 top-0 bottom-0 right-0 bg-darken-4 z30\"> <div class=\"relative clearfix mx-auto col-11 sm-col-6 md-col-5 lg-col-4 flex-center bg-white border border-darken-3 rounded shadow dialog\"> <div class=\"p1 bg-darken-2 gray\"> <h1 class=\"h4 m0 inline-block mr2\">{opts.title}</h1> <a class=\"center btn btn-small gray absolute right-0 top-0 mt1 mr1\" onclick=\"{unsetActivity}\"><i class=\"fa fa-times\"></i></a> </div> <yield></yield> </div> </div>", "", "", function (opts) {});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }

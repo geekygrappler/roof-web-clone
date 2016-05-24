@@ -12,6 +12,8 @@ import from '../../mixins/tender.js'
     <h1><input type="text" name="name" value="{ record.name }"
       class="block col-12 field" placeholder="Name" oninput="{setInputValue}"/></h1>
 
+    <r-tender-filters record="{record}"></r-tender-filters>
+
     <r-tender-section each="{ section , i in record.document.sections }" ></r-tender-section>
 
     <form if="{ !opts.readonly && record.document }" onsubmit="{ addSection }" class="mt3 py3 clearfix mxn1 border-top">

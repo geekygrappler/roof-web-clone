@@ -27,7 +27,7 @@
         </div>
 
         <p class="overflow-hidden m0 mxn2 p1 border-top">
-          <a class="btn btn-small" href="/app/projects/{opts.id}/tenders/{project.tender.id}">Open</a>
+          <a class="btn btn-small btn-primary" href="/app/projects/{opts.id}/tenders/{project.tender.id}">Open</a>
           <a class="btn btn-small btn-primary" if="{currentAccount.isProfessional}" onclick="{clone}">Clone</a>
         </p>
       </div>
