@@ -45,13 +45,19 @@
 
     this.update({busy: true, errors: null})
 
+    // set timeout 5second as a workaround for adblockers
+    var redirect = () => {
+      window.location.href = '/pages/thank-you'
+    }
+    setTimeout(redirect, 5000)
+
     opts.api.leads.create(data)
     .fail(this.errorHandler)
     .then(lead => {
       this.update({lead: lead, busy: false})
-      this.sendGALeadConfirmationConversion().then(function () {
-        window.location.href = '/pages/thank-you'
-      })
+      this.sendGALeadConfirmationConversion()
+      .fail(redirect)
+      .then(redirect)
     })
   }
   </script>

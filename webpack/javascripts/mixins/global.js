@@ -126,7 +126,8 @@ riot.mixin({
     var google_conversion_color = "ffffff";
     var google_conversion_label = "VbuCCK7d7WIQ17PZswM";
     var google_remarketing_only = false;
-    return $.getScript('//www.googleadservices.com/pagead/conversion.js').then( () => {
+    return $.getScript('//www.googleadservices.com/pagead/conversion.js')
+    .then( () => {
       var image = new Image()
       image.src = '//www.googleadservices.com/pagead/conversion/913725911/?label=VbuCCK7d7WIQ17PZswM&amp;guid=ON&amp;script=0'
       return image

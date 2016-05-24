@@ -286,11 +286,17 @@ import '../arrange_callback.tag'
 
   this.redirect = (project) => {
 
-    this.sendGALeadConfirmationConversion().then((image) => {
-      image.onload = () => {
-        this.update({busy:false})
-        riot.route(`/projects/${project.id}`)
-      }
+    // set timeout 5second as a workaround for adblockers
+    var redirect = () => {
+      this.update({busy:false})
+      riot.route(`/projects/${project.id}`)
+    }
+    setTimeout(redirect, 5000)
+
+    this.sendGALeadConfirmationConversion()
+    .fail( () => redirect)
+    .then((image) => {
+      image.onload = redirect
     })
   }
 

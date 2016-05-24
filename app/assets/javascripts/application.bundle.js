@@ -33716,11 +33716,17 @@
 	
 	  this.redirect = function (project) {
 	
-	    _this.sendGALeadConfirmationConversion().then(function (image) {
-	      image.onload = function () {
-	        _this.update({ busy: false });
-	        riot.route("/projects/" + project.id);
-	      };
+	    // set timeout 5second as a workaround for adblockers
+	    var redirect = function () {
+	      _this.update({ busy: false });
+	      riot.route("/projects/" + project.id);
+	    };
+	    setTimeout(redirect, 5000);
+	
+	    _this.sendGALeadConfirmationConversion().fail(function () {
+	      return redirect;
+	    }).then(function (image) {
+	      image.onload = redirect;
 	    });
 	  };
 	
@@ -41474,11 +41480,15 @@
 	
 	    _this.update({ busy: true, errors: null });
 	
+	    // set timeout 5second as a workaround for adblockers
+	    var redirect = function () {
+	      window.location.href = "/pages/thank-you";
+	    };
+	    setTimeout(redirect, 5000);
+	
 	    opts.api.leads.create(data).fail(_this.errorHandler).then(function (lead) {
 	      _this.update({ lead: lead, busy: false });
-	      _this.sendGALeadConfirmationConversion().then(function () {
-	        window.location.href = "/pages/thank-you";
-	      });
+	      _this.sendGALeadConfirmationConversion().fail(redirect).then(redirect);
 	    });
 	  };
 	});
