@@ -8,5 +8,4 @@
 //= require jquery.fileupload
 //= require jquery.animatecss
 //= require typeahead.bundle
-//= require streamtable
 //= require application.bundle
