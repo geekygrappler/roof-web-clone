@@ -30,7 +30,7 @@
   </div>
 
   <script>
-  this.wallArea = (w, h, l) => (2 * w * h) + (l + h * 2)
+  this.wallArea = (w, h, l) => (2 * w * h) + (2 * l * h)
   this.floorArea = (w, h, l) => w * l
   this.wallLength = (w, h, l) => (2 * w) + (2 * l)
   </script>
