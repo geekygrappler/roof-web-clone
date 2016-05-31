@@ -5,12 +5,12 @@
       <input type="number" name="width" min="0" step="0.1" class="block col-12 mb2 field" value="{opts.dimensions[0]}" oninput="{update}" >
     </div>
     <div class="sm-col sm-col-4 px2">
-      <label>Height</label>
-      <input type="number" name="height" min="0" step="0.1" class="block col-12 mb2 field" value="{opts.dimensions[1]}" oninput="{update}" >
-    </div>
-    <div class="sm-col sm-col-4 px2">
       <label>Length</label>
       <input type="number" name="length" min="0" step="0.1" class="block col-12 mb2 field" value="{opts.dimensions[2]}" oninput="{update}" >
+    </div>
+    <div class="sm-col sm-col-4 px2">
+      <label>Height</label>
+      <input type="number" name="height" min="0" step="0.1" class="block col-12 mb2 field" value="{opts.dimensions[1]}" oninput="{update}" >
     </div>
   </div>
 
