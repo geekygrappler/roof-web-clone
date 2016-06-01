@@ -23535,9 +23535,9 @@
 	    if (!cm.state.focused) { cm.display.input.focus(); onFocus(cm); }
 	  }
 	
-	  // This will be set to a {lineWise: bool, text: [string]} object, so
-	  // that, when pasting, we know what kind of selections the copied
-	  // text was made out of.
+	  // This will be set to an array of strings when copying, so that,
+	  // when pasting, we know what kind of selections the copied text
+	  // was made out of.
 	  var lastCopied = null;
 	
 	  function applyTextInput(cm, inserted, deleted, sel, origin) {
@@ -23546,14 +23546,14 @@
 	    if (!sel) sel = doc.sel;
 	
 	    var paste = cm.state.pasteIncoming || origin == "paste";
-	    var textLines = doc.splitLines(inserted), multiPaste = null
+	    var textLines = doc.splitLines(inserted), multiPaste = null;
 	    // When pasing N lines into N selections, insert one line per selection
 	    if (paste && sel.ranges.length > 1) {
-	      if (lastCopied && lastCopied.text.join("\n") == inserted) {
-	        if (sel.ranges.length % lastCopied.text.length == 0) {
+	      if (lastCopied && lastCopied.join("\n") == inserted) {
+	        if (sel.ranges.length % lastCopied.length == 0) {
 	          multiPaste = [];
-	          for (var i = 0; i < lastCopied.text.length; i++)
-	            multiPaste.push(doc.splitLines(lastCopied.text[i]));
+	          for (var i = 0; i < lastCopied.length; i++)
+	            multiPaste.push(doc.splitLines(lastCopied[i]));
 	        }
 	      } else if (textLines.length == sel.ranges.length) {
 	        multiPaste = map(textLines, function(l) { return [l]; });
@@ -23569,8 +23569,6 @@
 	          from = Pos(from.line, from.ch - deleted);
 	        else if (cm.state.overwrite && !paste) // Handle overwrite
 	          to = Pos(to.line, Math.min(getLine(doc, to.line).text.length, to.ch + lst(textLines).length));
-	        else if (lastCopied && lastCopied.lineWise && lastCopied.text.join("\n") == inserted)
-	          from = to = Pos(from.line, 0)
 	      }
 	      var updateInput = cm.curOp.updateInput;
 	      var changeEvent = {from: from, to: to, text: multiPaste ? multiPaste[i % multiPaste.length] : textLines,
@@ -23703,18 +23701,18 @@
 	      function prepareCopyCut(e) {
 	        if (signalDOMEvent(cm, e)) return
 	        if (cm.somethingSelected()) {
-	          lastCopied = {lineWise: false, text: cm.getSelections()};
+	          lastCopied = cm.getSelections();
 	          if (input.inaccurateSelection) {
 	            input.prevInput = "";
 	            input.inaccurateSelection = false;
-	            te.value = lastCopied.text.join("\n");
+	            te.value = lastCopied.join("\n");
 	            selectInput(te);
 	          }
 	        } else if (!cm.options.lineWiseCopyCut) {
 	          return;
 	        } else {
 	          var ranges = copyableRanges(cm);
-	          lastCopied = {lineWise: true, text: ranges.text};
+	          lastCopied = ranges.text;
 	          if (e.type == "cut") {
 	            cm.setSelections(ranges.ranges, null, sel_dontScroll);
 	          } else {
@@ -24062,13 +24060,13 @@
 	      function onCopyCut(e) {
 	        if (signalDOMEvent(cm, e)) return
 	        if (cm.somethingSelected()) {
-	          lastCopied = {lineWise: false, text: cm.getSelections()};
+	          lastCopied = cm.getSelections();
 	          if (e.type == "cut") cm.replaceSelection("", null, "cut");
 	        } else if (!cm.options.lineWiseCopyCut) {
 	          return;
 	        } else {
 	          var ranges = copyableRanges(cm);
-	          lastCopied = {lineWise: true, text: ranges.text};
+	          lastCopied = ranges.text;
 	          if (e.type == "cut") {
 	            cm.operation(function() {
 	              cm.setSelections(ranges.ranges, 0, sel_dontScroll);
@@ -24080,12 +24078,12 @@
 	        if (e.clipboardData && !ios) {
 	          e.preventDefault();
 	          e.clipboardData.clearData();
-	          e.clipboardData.setData("text/plain", lastCopied.text.join("\n"));
+	          e.clipboardData.setData("text/plain", lastCopied.join("\n"));
 	        } else {
 	          // Old-fashioned briefly-focus-a-textarea hack
 	          var kludge = hiddenTextarea(), te = kludge.firstChild;
 	          cm.display.lineSpace.insertBefore(kludge, cm.display.lineSpace.firstChild);
-	          te.value = lastCopied.text.join("\n");
+	          te.value = lastCopied.join("\n");
 	          var hadFocus = document.activeElement;
 	          selectInput(te);
 	          setTimeout(function() {
@@ -24104,9 +24102,9 @@
 	      return result;
 	    },
 	
-	    showSelection: function(info, takeFocus) {
+	    showSelection: function(info) {
 	      if (!info || !this.cm.display.view.length) return;
-	      if (info.focus || takeFocus) this.showPrimarySelection();
+	      if (info.focus) this.showPrimarySelection();
 	      this.showMultipleSelections(info);
 	    },
 	
@@ -25542,7 +25540,7 @@
 	    }
 	
 	    if (op.updatedDisplay || op.selectionChanged)
-	      op.preparedSelection = display.input.prepareSelection(op.focus);
+	      op.preparedSelection = display.input.prepareSelection();
 	  }
 	
 	  function endOperation_W2(op) {
@@ -25555,9 +25553,8 @@
 	      cm.display.maxLineChanged = false;
 	    }
 	
-	    var takeFocus = op.focus && op.focus == activeElt() && (!document.hasFocus || document.hasFocus())
 	    if (op.preparedSelection)
-	      cm.display.input.showSelection(op.preparedSelection, takeFocus);
+	      cm.display.input.showSelection(op.preparedSelection);
 	    if (op.updatedDisplay || op.startHeight != cm.doc.height)
 	      updateScrollbars(cm, op.barMeasure);
 	    if (op.updatedDisplay)
@@ -25567,7 +25564,8 @@
 	
 	    if (cm.state.focused && op.updateInput)
 	      cm.display.input.reset(op.typing);
-	    if (takeFocus) ensureFocus(op.cm);
+	    if (op.focus && op.focus == activeElt() && (!document.hasFocus || document.hasFocus()))
+	      ensureFocus(op.cm);
 	  }
 	
 	  function endOperation_finish(op) {
@@ -27833,7 +27831,7 @@
 	    for (var i = newBreaks.length - 1; i >= 0; i--)
 	      replaceRange(cm.doc, val, newBreaks[i], Pos(newBreaks[i].line, newBreaks[i].ch + val.length))
 	  });
-	  option("specialChars", /[\u0000-\u001f\u007f\u00ad\u200b-\u200f\u2028\u2029\ufeff]/g, function(cm, val, old) {
+	  option("specialChars", /[\t\u0000-\u0019\u00ad\u200b-\u200f\u2028\u2029\ufeff]/g, function(cm, val, old) {
 	    cm.state.specialChars = new RegExp(val.source + (val.test("\t") ? "" : "|\t"), "g");
 	    if (old != CodeMirror.Init) cm.refresh();
 	  });
@@ -28162,7 +28160,7 @@
 	      for (var i = 0; i < ranges.length; i++) {
 	        var pos = ranges[i].from();
 	        var col = countColumn(cm.getLine(pos.line), pos.ch, tabSize);
-	        spaces.push(spaceStr(tabSize - col % tabSize));
+	        spaces.push(new Array(tabSize - col % tabSize + 1).join(" "));
 	      }
 	      cm.replaceSelections(spaces);
 	    },
@@ -28205,7 +28203,6 @@
 	        ensureCursorVisible(cm);
 	      });
 	    },
-	    openLine: function(cm) {cm.replaceSelection("\n", "start")},
 	    toggleOverwrite: function(cm) {cm.toggleOverwrite();}
 	  };
 	
@@ -28240,8 +28237,7 @@
 	    "Ctrl-F": "goCharRight", "Ctrl-B": "goCharLeft", "Ctrl-P": "goLineUp", "Ctrl-N": "goLineDown",
 	    "Alt-F": "goWordRight", "Alt-B": "goWordLeft", "Ctrl-A": "goLineStart", "Ctrl-E": "goLineEnd",
 	    "Ctrl-V": "goPageDown", "Shift-Ctrl-V": "goPageUp", "Ctrl-D": "delCharAfter", "Ctrl-H": "delCharBefore",
-	    "Alt-D": "delWordAfter", "Alt-Backspace": "delWordBefore", "Ctrl-K": "killLine", "Ctrl-T": "transposeChars",
-	    "Ctrl-O": "openLine"
+	    "Alt-D": "delWordAfter", "Alt-Backspace": "delWordBefore", "Ctrl-K": "killLine", "Ctrl-T": "transposeChars"
 	  };
 	  keyMap.macDefault = {
 	    "Cmd-A": "selectAll", "Cmd-D": "deleteLine", "Cmd-Z": "undo", "Shift-Cmd-Z": "redo", "Cmd-Y": "redo",
@@ -29003,8 +28999,8 @@
 	      var fromCmp = cmp(found.from, from) || extraLeft(sp.marker) - extraLeft(marker);
 	      var toCmp = cmp(found.to, to) || extraRight(sp.marker) - extraRight(marker);
 	      if (fromCmp >= 0 && toCmp <= 0 || fromCmp <= 0 && toCmp >= 0) continue;
-	      if (fromCmp <= 0 && (sp.marker.inclusiveRight && marker.inclusiveLeft ? cmp(found.to, from) >= 0 : cmp(found.to, from) > 0) ||
-	          fromCmp >= 0 && (sp.marker.inclusiveRight && marker.inclusiveLeft ? cmp(found.from, to) <= 0 : cmp(found.from, to) < 0))
+	      if (fromCmp <= 0 && (cmp(found.to, from) > 0 || (sp.marker.inclusiveRight && marker.inclusiveLeft)) ||
+	          fromCmp >= 0 && (cmp(found.from, to) < 0 || (sp.marker.inclusiveLeft && marker.inclusiveRight)))
 	        return true;
 	    }
 	  }
@@ -29406,11 +29402,8 @@
 	    }
 	
 	    // See issue #2901
-	    if (webkit) {
-	      var last = builder.content.lastChild
-	      if (/\bcm-tab\b/.test(last.className) || (last.querySelector && last.querySelector(".cm-tab")))
-	        builder.content.className = "cm-tab-wrap-hack";
-	    }
+	    if (webkit && /\bcm-tab\b/.test(builder.content.lastChild.className))
+	      builder.content.className = "cm-tab-wrap-hack";
 	
 	    signal(cm, "renderLine", cm, lineView.line, builder.pre);
 	    if (builder.pre.className)
@@ -29762,16 +29755,13 @@
 	        if (at <= sz) {
 	          child.insertInner(at, lines, height);
 	          if (child.lines && child.lines.length > 50) {
-	            // To avoid memory thrashing when child.lines is huge (e.g. first view of a large file), it's never spliced.
-	            // Instead, small slices are taken. They're taken in order because sequential memory accesses are fastest.
-	            var remaining = child.lines.length % 25 + 25
-	            for (var pos = remaining; pos < child.lines.length;) {
-	              var leaf = new LeafChunk(child.lines.slice(pos, pos += 25));
-	              child.height -= leaf.height;
-	              this.children.splice(++i, 0, leaf);
-	              leaf.parent = this;
+	            while (child.lines.length > 50) {
+	              var spilled = child.lines.splice(child.lines.length - 25, 25);
+	              var newleaf = new LeafChunk(spilled);
+	              child.height -= newleaf.height;
+	              this.children.splice(i + 1, 0, newleaf);
+	              newleaf.parent = this;
 	            }
-	            child.lines = child.lines.slice(0, remaining);
 	            this.maybeSpill();
 	          }
 	          break;
@@ -29791,7 +29781,7 @@
 	          copy.parent = me;
 	          me.children = [copy, sibling];
 	          me = copy;
-	       } else {
+	        } else {
 	          me.size -= sibling.size;
 	          me.height -= sibling.height;
 	          var myIndex = indexOf(me.parent.children, me);
@@ -31341,7 +31331,7 @@
 	
 	  // THE END
 	
-	  CodeMirror.version = "5.15.2";
+	  CodeMirror.version = "5.14.2";
 	
 	  return CodeMirror;
 	});
@@ -31468,7 +31458,7 @@
 	
 	    return {
 	      startState: function () {
-	        var state = CodeMirror.startState(htmlMode);
+	        var state = htmlMode.startState();
 	        return {token: html, inTag: null, localMode: null, localState: null, htmlState: state};
 	      },
 	
@@ -31953,8 +31943,7 @@
 	      "in": operator, "typeof": operator, "instanceof": operator,
 	      "true": atom, "false": atom, "null": atom, "undefined": atom, "NaN": atom, "Infinity": atom,
 	      "this": kw("this"), "class": kw("class"), "super": kw("atom"),
-	      "yield": C, "export": kw("export"), "import": kw("import"), "extends": C,
-	      "await": C, "async": kw("async")
+	      "yield": C, "export": kw("export"), "import": kw("import"), "extends": C
 	    };
 	
 	    // Extend the 'normal' keywords with the TypeScript language extensions
@@ -32278,7 +32267,6 @@
 	    if (type == "export") return cont(pushlex("stat"), afterExport, poplex);
 	    if (type == "import") return cont(pushlex("stat"), afterImport, poplex);
 	    if (type == "module") return cont(pushlex("form"), pattern, pushlex("}"), expect("{"), block, poplex, poplex)
-	    if (type == "async") return cont(statement)
 	    return pass(pushlex("stat"), expression, expect(";"), poplex);
 	  }
 	  function expression(type) {
@@ -32401,17 +32389,17 @@
 	    if (type == "(") return pass(functiondef);
 	  }
 	  function commasep(what, end) {
-	    function proceed(type, value) {
+	    function proceed(type) {
 	      if (type == ",") {
 	        var lex = cx.state.lexical;
 	        if (lex.info == "call") lex.pos = (lex.pos || 0) + 1;
 	        return cont(what, proceed);
 	      }
-	      if (type == end || value == end) return cont();
+	      if (type == end) return cont();
 	      return cont(expect(end));
 	    }
-	    return function(type, value) {
-	      if (type == end || value == end) return cont();
+	    return function(type) {
+	      if (type == end) return cont();
 	      return pass(what, proceed);
 	    };
 	  }
@@ -32425,17 +32413,13 @@
 	    return pass(statement, block);
 	  }
 	  function maybetype(type) {
-	    if (isTS && type == ":") return cont(typeexpr);
+	    if (isTS && type == ":") return cont(typedef);
 	  }
 	  function maybedefault(_, value) {
 	    if (value == "=") return cont(expressionNoComma);
 	  }
-	  function typeexpr(type) {
-	    if (type == "variable") {cx.marked = "variable-3"; return cont(afterType);}
-	  }
-	  function afterType(type, value) {
-	    if (value == "<") return cont(commasep(typeexpr, ">"), afterType)
-	    if (type == "[") return cont(expect("]"), afterType)
+	  function typedef(type) {
+	    if (type == "variable") {cx.marked = "variable-3"; return cont();}
 	  }
 	  function vardef() {
 	    return pass(pattern, maybetype, maybeAssign, vardefCont);
@@ -32490,7 +32474,7 @@
 	  function functiondef(type, value) {
 	    if (value == "*") {cx.marked = "keyword"; return cont(functiondef);}
 	    if (type == "variable") {register(value); return cont(functiondef);}
-	    if (type == "(") return cont(pushcontext, pushlex(")"), commasep(funarg, ")"), poplex, maybetype, statement, popcontext);
+	    if (type == "(") return cont(pushcontext, pushlex(")"), commasep(funarg, ")"), poplex, statement, popcontext);
 	  }
 	  function funarg(type) {
 	    if (type == "spread") return cont(funarg);
@@ -33149,9 +33133,9 @@
 	    "font-variant-alternates", "font-variant-caps", "font-variant-east-asian",
 	    "font-variant-ligatures", "font-variant-numeric", "font-variant-position",
 	    "font-weight", "grid", "grid-area", "grid-auto-columns", "grid-auto-flow",
-	    "grid-auto-rows", "grid-column", "grid-column-end", "grid-column-gap",
-	    "grid-column-start", "grid-gap", "grid-row", "grid-row-end", "grid-row-gap",
-	    "grid-row-start", "grid-template", "grid-template-areas", "grid-template-columns",
+	    "grid-auto-position", "grid-auto-rows", "grid-column", "grid-column-end",
+	    "grid-column-start", "grid-row", "grid-row-end", "grid-row-start",
+	    "grid-template", "grid-template-areas", "grid-template-columns",
 	    "grid-template-rows", "hanging-punctuation", "height", "hyphens",
 	    "icon", "image-orientation", "image-rendering", "image-resolution",
 	    "inline-box-align", "justify-content", "left", "letter-spacing",
@@ -33266,7 +33250,7 @@
 	    "compact", "condensed", "contain", "content",
 	    "content-box", "context-menu", "continuous", "copy", "counter", "counters", "cover", "crop",
 	    "cross", "crosshair", "currentcolor", "cursive", "cyclic", "darken", "dashed", "decimal",
-	    "decimal-leading-zero", "default", "default-button", "dense", "destination-atop",
+	    "decimal-leading-zero", "default", "default-button", "destination-atop",
 	    "destination-in", "destination-out", "destination-over", "devanagari", "difference",
 	    "disc", "discard", "disclosure-closed", "disclosure-open", "document",
 	    "dot-dash", "dot-dot-dash",
@@ -33280,13 +33264,13 @@
 	    "ethiopic-halehame-ti-er", "ethiopic-halehame-ti-et", "ethiopic-halehame-tig",
 	    "ethiopic-numeric", "ew-resize", "exclusion", "expanded", "extends", "extra-condensed",
 	    "extra-expanded", "fantasy", "fast", "fill", "fixed", "flat", "flex", "flex-end", "flex-start", "footnotes",
-	    "forwards", "from", "geometricPrecision", "georgian", "graytext", "grid", "groove",
+	    "forwards", "from", "geometricPrecision", "georgian", "graytext", "groove",
 	    "gujarati", "gurmukhi", "hand", "hangul", "hangul-consonant", "hard-light", "hebrew",
 	    "help", "hidden", "hide", "higher", "highlight", "highlighttext",
 	    "hiragana", "hiragana-iroha", "horizontal", "hsl", "hsla", "hue", "icon", "ignore",
 	    "inactiveborder", "inactivecaption", "inactivecaptiontext", "infinite",
 	    "infobackground", "infotext", "inherit", "initial", "inline", "inline-axis",
-	    "inline-block", "inline-flex", "inline-grid", "inline-table", "inset", "inside", "intrinsic", "invert",
+	    "inline-block", "inline-flex", "inline-table", "inset", "inside", "intrinsic", "invert",
 	    "italic", "japanese-formal", "japanese-informal", "justify", "kannada",
 	    "katakana", "katakana-iroha", "keep-all", "khmer",
 	    "korean-hangul-formal", "korean-hanja-formal", "korean-hanja-informal",
@@ -42112,9 +42096,9 @@
 
 	/* WEBPACK VAR INJECTION */(function(riot) {"use strict";
 	
-	riot.tag2("r-area-calculator", "<div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-4 px2\"> <label>Width</label> <input name=\"width\" min=\"0\" step=\"0.1\" class=\"block col-12 mb2 field\" value=\"{opts.dimensions[0]}\" oninput=\"{update}\" type=\"{'number'}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Height</label> <input name=\"height\" min=\"0\" step=\"0.1\" class=\"block col-12 mb2 field\" value=\"{opts.dimensions[1]}\" oninput=\"{update}\" type=\"{'number'}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Length</label> <input name=\"length\" min=\"0\" step=\"0.1\" class=\"block col-12 mb2 field\" value=\"{opts.dimensions[2]}\" oninput=\"{update}\" type=\"{'number'}\"> </div> </div> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-4 px2\"> <label>Wall Area</label> <input type=\"submit\" class=\"block col-12 mb2 btn bg-blue white\" value=\"{wallArea(width.value, height.value, length.value)}\" onclick=\"{opts.callback}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Floor Area</label> <input type=\"submit\" class=\"block col-12 mb2 btn bg-blue white\" value=\"{floorArea(width.value, height.value, length.value)}\" onclick=\"{opts.callback}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Wall Length</label> <input type=\"submit\" class=\"block col-12 mb2 btn bg-blue white\" value=\"{wallLength(width.value, height.value, length.value)}\" onclick=\"{opts.callback}\"> </div> </div>", "", "", function (opts) {
+	riot.tag2("r-area-calculator", "<div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-4 px2\"> <label>Width</label> <input name=\"width\" min=\"0\" step=\"0.1\" class=\"block col-12 mb2 field\" value=\"{opts.dimensions[0]}\" oninput=\"{update}\" type=\"{'number'}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Length</label> <input name=\"length\" min=\"0\" step=\"0.1\" class=\"block col-12 mb2 field\" value=\"{opts.dimensions[2]}\" oninput=\"{update}\" type=\"{'number'}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Height</label> <input name=\"height\" min=\"0\" step=\"0.1\" class=\"block col-12 mb2 field\" value=\"{opts.dimensions[1]}\" oninput=\"{update}\" type=\"{'number'}\"> </div> </div> <div class=\"clearfix mxn2\"> <div class=\"sm-col sm-col-4 px2\"> <label>Wall Area</label> <input type=\"submit\" class=\"block col-12 mb2 btn bg-blue white\" value=\"{wallArea(width.value, height.value, length.value)}\" onclick=\"{opts.callback}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Floor Area</label> <input type=\"submit\" class=\"block col-12 mb2 btn bg-blue white\" value=\"{floorArea(width.value, height.value, length.value)}\" onclick=\"{opts.callback}\"> </div> <div class=\"sm-col sm-col-4 px2\"> <label>Wall Length</label> <input type=\"submit\" class=\"block col-12 mb2 btn bg-blue white\" value=\"{wallLength(width.value, height.value, length.value)}\" onclick=\"{opts.callback}\"> </div> </div>", "", "", function (opts) {
 	  this.wallArea = function (w, h, l) {
-	    return 2 * w * h + (l + h * 2);
+	    return 2 * w * h + 2 * l * h;
 	  };
 	  this.floorArea = function (w, h, l) {
 	    return w * l;
