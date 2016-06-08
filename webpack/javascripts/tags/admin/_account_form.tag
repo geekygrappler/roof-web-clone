@@ -20,7 +20,7 @@
 
       <label for="user_attributes[type]">Type</label>
       <select class="block col-12 mb2 field"
-      type="text" name="user_attributes[type]" value="{record['user']['type']}">
+      type="text" name="user_attributes[type]" value="{record['user']['type']}" readonly="{record.id}" disabled="{record.id}">
       <option></option>
       <option value="Customer" selected="{record['user_type'] == 'Customer'}">Customer</option>
       <option value="Professional" selected="{record['user_type'] == 'Professional'}">Professional</option>
