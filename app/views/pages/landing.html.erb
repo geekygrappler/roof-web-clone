@@ -19,28 +19,69 @@
   </div>
 </section>
 
-
-<section>
+<!-- project Section -->
+<section class="center">
+  <a name="perfect_for"></a>
+  <h1 class="h1-responsive px2 py4">Specialists for every project</h1>
   <div class="clearfix">
     <%= render partial: 'pages/landing/components/example_projects', locals: {
       image: 'recommendations/bathroom1.jpg',
-      name: 'Nigel - Kensal Rise',
+      name: 'Bathroom fittings',
       project_type: 'New bathroom',
       comment: "A quality finnish from an efficent team"
     }%>
     <%= render partial: 'pages/landing/components/example_projects', locals: {
       image: 'recommendations/mews.jpg',
-      name: 'Sophia - Notting Hill',
+      name: 'Full refurbs',
       project_type: 'Redecoration',
       comment: "The house feels brand new again thanks to Tom and his team"
     }%>
     <%= render partial: 'pages/landing/components/example_projects', locals: {
-      image: 'recommendations/living.jpg',
-      name: 'Angus - Fulham',
-      project_type: 'Flat renovation',
+      image: 'recommendations/kitchen.jpg',
+      name: 'Kitchen renovations',
+      project_type: 'Kitchen',
       comment: "1ROOF made it so easy to get the project of to the perfect start"
     }%>
   </div>
+</section>
+
+<!-- pros Section -->
+<section class="center">
+  <a name="recommendations"></a>
+  <h1 class="h1-responsive px2 py4">Meet our pros</h1>
+  <div class="clearfix">
+    <a href="/pages/pros/clinton_may">
+      <%= render partial: 'pages/landing/components/our_pros', locals: {
+      image: 'pros_homepage/clinton_may_h.jpg',
+      name: 'Clinton May',
+      comment: "Originally from Devon, Clinton now has been working in south-east London for over 10 years. Him and his team have specialised in loft conversions and extensions."
+    }%>
+    </a>
+    <a href="/pages/pros/ben_barnard">
+      <%= render partial: 'pages/landing/components/our_pros', locals: {
+        image: 'pros_homepage/ben_barnard_h.jpg',
+        name: 'Ben Barnard',
+        comment: "Ben and his team specialise in supplying and fitting bespoke kitchens. They do the majority of their work south-west and central London"
+      }%>
+    </a>
+    <a href="/pages/pros/sandel_muscat">
+      <%= render partial: 'pages/landing/components/our_pros', locals: {
+        image: 'pros_homepage/sandel_muscat_h.jpg',
+        name: 'Sandel Muscat',
+        comment: "Sandel is based in North East london and specialises in renovations. With over 10 years hands on experiece he now focuses on running his teams and keeping customers happy."
+      }%>
+    </a>
+  </div>
+</section>
+
+<section class="center">
+  <h1 class="h2-responsive px2 py4">Example quote</h1>
+    <div class="clearfix">
+      <%= image_tag src="/images/quote_screenshot.png" %>
+    </div>
+
+
+
 </section>
 
 
