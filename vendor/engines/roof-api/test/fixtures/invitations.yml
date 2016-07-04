@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  project_id: 
+  inviter_id: 
+  data: 
+
+two:
+  project_id: 
+  inviter_id: 
+  data: 

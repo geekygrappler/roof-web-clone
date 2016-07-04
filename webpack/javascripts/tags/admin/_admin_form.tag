@@ -25,6 +25,9 @@
   </div>
 
   <script>
+  this.on('updated', function() {
+    jQuery('[name=price]').priceFormat({prefix: 'GBP £ '})
+  })
   this.mixin('adminForm')
   </script>
 

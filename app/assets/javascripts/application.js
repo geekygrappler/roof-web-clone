@@ -8,4 +8,5 @@
 //= require jquery.fileupload
 //= require jquery.animatecss
 //= require typeahead.bundle
+//= require price_format
 //= require application.bundle

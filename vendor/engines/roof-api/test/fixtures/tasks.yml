@@ -1,0 +1,27 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+skirting:
+  data:
+    action: Install
+    group: Skirts
+    name: Skirting
+    quantity: 1,
+    unit: unitless
+    price: 200
+    searchable: true
+    tags:
+      - Skirting
+      - Skirts
+      - Install
+
+strip:
+  data:
+    action: 'Strip'
+    group: 'Strip'
+    name: 'Strip'
+    quantity: 2
+    unit: 'unitless'
+    price: 100
+    searchable: true
+    tags:
+      - Strip

@@ -1,0 +1,62 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+custom:
+  type: Customer
+  account: acc_custom
+  data:
+    profile_attributes:
+      first_name: one
+      last_name: one
+      phone_number: one
+custom2:
+  type: Customer
+  account: acc_custom2
+  data:
+    profile_attributes:
+      first_name: one
+      last_name: one
+      phone_number: one
+
+pro:
+  type: Professional
+  account: acc_pro
+  data:
+    profile_attributes:
+      first_name: one
+      last_name: one
+      phone_number: one
+pro2:
+  type: Professional
+  account: acc_pro2
+  data:
+    profile_attributes:
+      first_name: one
+      last_name: one
+      phone_number: one
+
+pro3:
+  type: Professional
+  account: acc_pro3
+  data:
+    profile_attributes:
+      first_name: one
+      last_name: one
+      phone_number: one
+
+admin:
+  type: Administrator
+  account: acc_admin
+  data:
+    profile_attributes:
+      first_name: one
+      last_name: one
+      phone_number: one
+
+admin2:
+  type: Administrator
+  account: acc_admin2
+  data:
+    profile_attributes:
+      first_name: one
+      last_name: one
+      phone_number: one
