@@ -6,8 +6,7 @@ import './_tender_section.tag'
 import './_tender_filters.tag'
 import './_area_calculator.tag'
 
-<r-tenders-form>
-
+<r-tenders-form class='tenders-form'>
   <yield to="header">
     <r-header api="{opts.api}"></r-header>
   </yield>
@@ -20,6 +19,11 @@ import './_area_calculator.tag'
     </a>
 
     <r-tender-filters record="{record}"></r-tender-filters>
+    <div class='section-category-affix-holder'>
+        <div class='section-category-affix' show='{affixPointShow}'>
+            <h3>{currentScrolledSection.section.name} - <span>{currentScrolledSectionTask.group}</span></h3>
+        </div>
+    </div>
 
     <r-tender-section each="{ section , i in sections() }" no-reorder></r-tender-section>
 
@@ -28,8 +32,24 @@ import './_area_calculator.tag'
     <h1 class="right-align m0">Estimated total{ record.document.include_vat ? '(Inc. VAT)' : ''}: { tenderTotal }</h2>
     </div>
 
-    <form if="{ !opts.readonly && record.document }" onsubmit="{ addSection }" class="mt3 py3 clearfix mxn1 border-top">
-      <div class="col col-8 px1">
+    <div class='locked-task-bar py3 clearfix mxn1 border-top'>
+        <form>
+              <div class="col col-4 px1">
+                  <r-tender-item-input name="task" auto_focus="{ true }" api="{ opts.api }" icon="tasks" ></r-tender-item-input>
+              </div>
+              <select class="col col-4 px1">
+                  <option each="{ section , i in sections() }" attr='{section.name}'
+                        selected='{currentScrolledSection.section.name == section.name}'>{section.name}</option>
+              </select>
+              <div class="col col-4 px1">
+                <button type="button" onclick='{addTask}' class="block col-12 btn btn-primary"><i class="fa fa-puzzle-piece"></i> Add Item</button>
+              </div>
+
+        </form>
+    </div>
+
+    <form if="{ !opts.readonly && record.document }" onsubmit="{ addSection }" class="py3 clearfix mxn1 border-top">
+      <div class="col col-8 px1 locked-task-form-inputs">
         <input type="text" name="sectionName" placeholder="Section name" class="block col-12 field" />
       </div>
       <div class="col col-4 px1">
@@ -50,6 +70,7 @@ import './_area_calculator.tag'
     </form>
   </div>
   <script>
+
   this.type = 'Tender'
 
     this.headers = {
@@ -120,6 +141,11 @@ import './_area_calculator.tag'
       }
     }
 
+    this.addTask = function() {
+        this.currentScrolledSection.section.tasks.push(this.tags['task'].currentTask)
+        this.update()
+    }
+
     this.updateTenderFromProject = (project) => {
       this.update({record: project.tender})
     }
@@ -136,6 +162,48 @@ import './_area_calculator.tag'
       .then((quote) => {
         riot.route(`/projects/${this.record.project_id}/quotes/${quote.id}`)
       })
+    }
+
+    var _this = this
+
+    this.on('mount', function () {
+        this.root.addEventListener('scroll', function (e) {
+            _this.handleScroll.call(_this, e)
+        })
+        return this.update();
+    });
+
+    this.on('unmount', function (e) {
+        return this.root.removeEventListener('scroll', function (e) {
+            _this.handleScroll.call(_this, e)
+        });
+    });
+
+    this.findSection = function(tagName) {
+        var sections = this.tags[tagName]
+        var smallest = sections[0]
+        for (var i = 0, ii = sections.length; i < ii; i++) {
+            var section = sections[i]
+            section.offset = section.root.childNodes[0].getBoundingClientRect()
+            var top = section.offset.top
+            if (top > -800 && top < 1) {
+                section.top = top
+                if (smallest && smallest.top <= section.top) var smallest = section
+            }
+        }
+        return smallest
+
+    }
+
+    this.affixPoint = this.tags['r-tender-filters'].root
+    this.affixPointShow = false
+
+    this.handleScroll = function (e) {
+        var offset = this.affixPoint.getBoundingClientRect()
+        this.affixPointShow = offset.bottom < 0 ? true : false
+        this.currentScrolledSection = this.findSection.call(this, 'r-tender-section')
+        this.currentScrolledSectionTask = this.findSection.call(this.currentScrolledSection, 'task')
+        return this.update();
     }
 
     this.mixin('tenderMixin')

@@ -2,6 +2,7 @@ let taskActions = require("json!../../data/task_actions.json")
 
 <r-tender-section>
   <div>
+
     <div class="relative border-bottom mt2">
       <h3 class="block overflow-hidden mb0">
 
@@ -125,16 +126,22 @@ let taskActions = require("json!../../data/task_actions.json")
     }
   })
 
+  this.itemselectedFn = function(item) {
+      var sec = this.parent.currentScrolledSection.section
+      sec.tasks = sec.tasks || []
+      let index = _.findIndex(sec.tasks, task => task.id == item.id )
+      if (index < 0 || typeof item.id === 'undefined') {
+        sec.tasks.push(item)
+        this.update()
+        this.updateSectionTotal()
+        this.opts.api.tenders.trigger('update')
+      }
+  }
+
   this.tags.task.on('itemselected', (item) => {
-    this.section.tasks = this.section.tasks || []
-    let index = _.findIndex(this.section.tasks, task => task.id == item.id )
-    if (index < 0 || typeof item.id === 'undefined') {
-      this.section.tasks.push(item)
-      this.update()
-      this.updateSectionTotal()
-      this.opts.api.tenders.trigger('update')
-    }
+    this.itemselectedFn(item)
   })
+
   this.tags.material.on('itemselected', (item) => {
     this.section.materials = this.section.materials || []
     let index = _.findIndex(this.section.materials, mat => mat.id == mat.id )
