@@ -7,12 +7,10 @@ import Handlebars from 'handlebars/dist/handlebars'
       oninput="{ search }" onkeyup="{ onKey }"
       placeholder="Start typing to add {opts.name}" autocomplete="off" />
     </form>
-    <i class="fa fa-plus absolute right-0 top-0 p1" onclick="{addDefaultItem}"></i>
   </div>
   <script>
 
   //this.request({url: `/api/${this.opts.name.plural()}`}).then((data) => {
-
     let source = new Bloodhound({
       datumTokenizer:  function (d) {
         return Bloodhound.tokenizers.whitespace(`${d.action} ${d.group} ${d.name} ${d.tags && d.tags.join(' ')}`)
@@ -65,8 +63,8 @@ import Handlebars from 'handlebars/dist/handlebars'
   }
 
   this.selectItem =  (item) => {
-    $(this.query).typeahead('val', null)
-    this.trigger('itemselected', item)
+    $(this.query).typeahead('val', item.name)
+    this.currentTask = item
   }
 
   this.getDefaultItem = (name) => {
