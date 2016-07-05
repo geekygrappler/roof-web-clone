@@ -37,8 +37,8 @@ import './_area_calculator.tag'
               <div class="col col-4 px1">
                   <r-tender-item-input name="task" auto_focus="{ true }" api="{ opts.api }" icon="tasks" ></r-tender-item-input>
               </div>
-              <select class="col col-4 px1">
-                  <option each="{ section , i in sections() }" attr='{section.name}'
+              <select class="col col-4 px1" onchange='{changeCurrentSection}'>
+                  <option each="{ section , i in sections() }" attr='{section.id}'
                         selected='{currentScrolledSection.section.name == section.name}'>{section.name}</option>
               </select>
               <div class="col col-4 px1">
@@ -142,8 +142,22 @@ import './_area_calculator.tag'
     }
 
     this.addTask = function() {
-        this.currentScrolledSection.section.tasks.push(this.tags['task'].currentTask)
-        this.update()
+        var taskClass = this.tags['task']
+        if (!this.currentScrolledSection ) this.currentScrolledSection = this.tags['r-tender-section'][0]
+        if (!taskClass.currentTask) {
+            var value = $(taskClass.query).typeahead('val')
+            if (value) {
+                taskClass.currentTask = taskClass.getDefaultItem(value)
+            }
+        }
+
+        if (taskClass.currentTask) {
+            this.currentScrolledSection.section.tasks.push(taskClass.currentTask)
+            this.update()
+            $('html, body').animate({
+                scrollTop: $(this.currentScrolledSection.root).offset().top
+            }, 300);
+        }
     }
 
     this.updateTenderFromProject = (project) => {
@@ -167,7 +181,7 @@ import './_area_calculator.tag'
     var _this = this
 
     this.on('mount', function () {
-        this.root.addEventListener('scroll', function (e) {
+        document.addEventListener('scroll', function (e) {
             _this.handleScroll.call(_this, e)
         })
         return this.update();
@@ -195,6 +209,13 @@ import './_area_calculator.tag'
 
     }
 
+    this.changeCurrentSection = function(e){
+        if (!this.currentScrolledSection) this.currentScrolledSection = this.tags['r-tender-section'][0]
+        var sections = this.tags['r-tender-section']
+        var id = +$(e.srcElement).find(":selected").attr('attr')
+        this.currentScrolledSection = sections[e.srcElement.selectedIndex]
+    }
+
     this.affixPoint = this.tags['r-tender-filters'].root
     this.affixPointShow = false
 
@@ -203,6 +224,7 @@ import './_area_calculator.tag'
         this.affixPointShow = offset.bottom < 0 ? true : false
         this.currentScrolledSection = this.findSection.call(this, 'r-tender-section')
         this.currentScrolledSectionTask = this.findSection.call(this.currentScrolledSection, 'task')
+        this.currentScrolledSectionMaterial = this.findSection.call(this.currentScrolledSection, 'material')
         return this.update();
     }
 

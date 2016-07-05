@@ -32,6 +32,9 @@ import Handlebars from 'handlebars/dist/handlebars'
     .on('typeahead:notfound', (e) => {
       this.addDefaultItem()
     })
+    .on('typeahead:render', (e, suggestions) => {
+        delete this['currentTask']
+    })
     .on('typeahead:select', (e, suggestion) => {
       this.selectItem(suggestion)
     })
@@ -78,6 +81,7 @@ import Handlebars from 'handlebars/dist/handlebars'
         price: 0,
         unit: 'unitless'
       }
+      this.currentTask = item
     } else if (opts.name === 'material') {
       item = {
         name: name,

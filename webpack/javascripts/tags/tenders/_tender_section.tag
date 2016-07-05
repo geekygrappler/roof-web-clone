@@ -106,7 +106,6 @@ let taskActions = require("json!../../data/task_actions.json")
       this.filterAction = this.parent.tags['r-tender-filters'].action
 
       var tasks = _.isString(this.filterAction) ? _.filter(this.section.tasks, task => task.action == this.filterAction) : this.section.tasks
-
       var tasksWithDescription = _.map(tasks, (item) => {
         item.description = item.description ? item.description : ''
         return item
