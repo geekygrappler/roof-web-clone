@@ -42,7 +42,7 @@ let taskActions = require("json!../../data/task_actions.json")
       <h3 class="right border p1 bg-white relative z2 section-total">{visible ? section.name + ':' : ''} { sectionTotal }</h3>
     </div>
 
-    <div if="{visible}" class="clearfix mxn1 mt2 mb3">
+    <div if="false" class="clearfix mxn1 mt2 mb3 hide">
       <div class="col col-6 px1">
         <r-tender-item-input name="task" auto_focus="{ true }" api="{ parent.opts.api }" icon="tasks" ></r-tender-item-input>
       </div>

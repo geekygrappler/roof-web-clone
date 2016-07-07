@@ -53,21 +53,40 @@ riot.mixin('tenderMixin', {
       return filterSection ? _.filter(this.record.document.sections, (section) => section.id == filterSection): this.record.document.sections
     }
 
+    this.findSectionsInTemplate = (id) => {
+      for (var i = 0, ii = this.tenderTemplates; i < ii; i++) {
+        if (this.tenderTemplates[i].id = id) {
+          return this.tenderTemplates[i]
+        }
+      }
+    }
+
     this.addSection = (e) => {
+      var selectedTemplateIndex = +this.sectionTemplate.value
       e.preventDefault()
-      if (_.isEmpty(this.sectionName.value)) {
+      if (_.isEmpty(this.sectionName.value) && selectedTemplateIndex === -1) {
         return $(e.currentTarget).animateCss('shake')
       }
-      let section = {
-        id: this.record.document.sections.length + 1,
-        name: this.sectionName.value,
-        tasks: [],
-        materials: []
+      if (selectedTemplateIndex === -1) {
+        var sections = [{
+          id: this.record.document.sections.length + 1,
+          name: this.sectionName.value,
+          tasks: []
+        }]
+      } else {
+        var sections = this.tenderTemplates[selectedTemplateIndex].document.sections
       }
-      this.record.document.sections.push(section)
+      this.record.document.sections = this.record.document.sections.concat(sections)
+      if (!_.isEmpty(this.sectionName.value) && sections.length > 1) {
+        this.record.document.sections[this.record.document.sections.length - 1].name = this.sectionName.value
+      }
       this.sectionName.value = null
       this.update()
       this.submit()
+      this.currentScrolledSection = this.tags['r-tender-section'][this.tags['r-tender-section'].length - 1]
+      $('html, body').animate({
+        scrollTop: $(this.currentScrolledSection.root).offset().top
+      }, 300);
       // $('[name=searchable_names]').last()[0].focus()
     }
     this.removeSection = (e) => {

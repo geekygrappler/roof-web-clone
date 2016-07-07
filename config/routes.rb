@@ -5,4 +5,5 @@ Rails.application.routes.draw do
   get 'pages/*path' => 'pages#show'
   root to: 'pages#show', pathname: 'landing'
   get "*path" => "pages#show", pathname: '404'
+  patch '/api/tender_templates/:id/toggle_searchable', to: 'tender_templates#toggle_searchable'
 end

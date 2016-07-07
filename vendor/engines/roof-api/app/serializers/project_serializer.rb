@@ -7,5 +7,5 @@ class ProjectSerializer < ActiveModel::Serializer
   has_many :customers, serializer: AccountSerializer
   has_many :professionals, serializer: AccountSerializer
   has_many :administrators, serializer: AccountSerializer
-
+  has_many :tender_templates, serializer: TenderTemplateSerializer
 end

@@ -17,7 +17,6 @@ import './_area_calculator.tag'
     <a class="mb1 btn btn-small h6 btn-outline orange" href="/app/projects/{project.id}">
       <i class="fa fa-chevron-left"></i> Back to Project
     </a>
-
     <r-tender-filters record="{record}"></r-tender-filters>
     <div class='section-category-affix-holder'>
         <div class='section-category-affix' show='{affixPointShow}'>
@@ -33,32 +32,50 @@ import './_area_calculator.tag'
     </div>
 
     <div class='locked-task-bar py3 clearfix mxn1 border-top'>
-        <form>
-              <div class="col col-4 px1">
-                  <r-tender-item-input name="task" auto_focus="{ true }" api="{ opts.api }" icon="tasks" ></r-tender-item-input>
-              </div>
-              <select class="col col-4 px1" onchange='{changeCurrentSection}'>
-                  <option each="{ section , i in sections() }" attr='{section.id}'
-                        selected='{currentScrolledSection.section.name == section.name}'>{section.name}</option>
+      <div class='container'>
+        <form class='col col-6'>
+          <div class="col col-12 px1">
+            <r-tender-item-input name="task" auto_focus="{ true }" api="{ opts.api }" icon="tasks"></r-tender-item-input>
+          </div>
+          <div class="col col-8 px1 locked-form-margin-top">
+            <div class='container'>
+              <select onchange='{changeCurrentSection}' name="sectionSelect">
+                <option each="{ section , i in sections() }" value='{i}'
+                        selected='{currentScrolledSection.section.name == section.name}'>{section.name}
+                </option>
               </select>
-              <div class="col col-4 px1">
-                <button type="button" onclick='{addTask}' class="block col-12 btn btn-primary"><i class="fa fa-puzzle-piece"></i> Add Item</button>
-              </div>
+            </div>
+          </div>
+          <div class="col col-4 px1 locked-form-margin-top">
+            <button type="button" onclick='{addTask}' class="block col-12 btn btn-primary">
+              <i class="fa fa-puzzle-piece"></i> Add Item
+            </button>
+          </div>
+        </form>
+        <form class='col col-6' onsubmit="{ addSection }">
+          <div class="col col-12 px1">
+            <input type="text" name="sectionName" placeholder="Section name" class="block col-12 field" />
+          </div>
+          <div class="col col-8 px1 locked-form-margin-top">
+            <div class='container'>
+              <select name="sectionTemplate">
+                <option value='-1'>Blank template</option>
+                <option each="{ template, i in tenderTemplates }" value='{i}'>{template.name}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col col-4 px1 locked-form-margin-top">
+            <button type="submit" class="block col-12 btn btn-primary">
+              <i class="fa fa-puzzle-piece"></i> Add Section
+            </button>
+          </div>
+        </form>
 
         </form>
+      </div>
     </div>
 
-    <form if="{ !opts.readonly && record.document }" onsubmit="{ addSection }" class="py3 clearfix mxn1 border-top">
-      <div class="col col-8 px1 locked-task-form-inputs">
-        <input type="text" name="sectionName" placeholder="Section name" class="block col-12 field" />
-      </div>
-      <div class="col col-4 px1">
-        <button type="submit" class="block col-12 btn btn-primary"><i class="fa fa-puzzle-piece"></i> Add Section</button>
-      </div>
-    </form>
-
     <form name="form" onsubmit="{ submit }" class="right-align">
-
       <div if="{errors}" id="error_explanation" class="left-align">
         <ul>
           <li each="{field, messsages in errors}"> <strong>{field.humanize()}</strong> {messsages} </li>
@@ -112,19 +129,13 @@ import './_area_calculator.tag'
 
       this.update({busy: true, errors: null})
 
-
       _.map(this.record.document.sections, (sec) => {
-        if (_.isEmpty(sec.materials)) {
-          sec.materials = null
-          delete sec.materials
-        }
         if (_.isEmpty(sec.tasks)) {
           sec.tasks = null
           delete sec.tasks
         }
         return sec
       })
-
 
       if (this.opts.id) {
         this.opts.api.tenders.update(opts.id, this.record)
@@ -152,6 +163,7 @@ import './_area_calculator.tag'
         }
 
         if (taskClass.currentTask) {
+            if (!this.currentScrolledSection.section.tasks) this.currentScrolledSection.section.tasks = []
             this.currentScrolledSection.section.tasks.push(taskClass.currentTask)
             this.update()
             $('html, body').animate({
@@ -161,6 +173,7 @@ import './_area_calculator.tag'
     }
 
     this.updateTenderFromProject = (project) => {
+      this.tenderTemplates = project.tender_templates
       this.update({record: project.tender})
     }
     this.updateRecord = (record) => {
@@ -212,8 +225,8 @@ import './_area_calculator.tag'
     this.changeCurrentSection = function(e){
         if (!this.currentScrolledSection) this.currentScrolledSection = this.tags['r-tender-section'][0]
         var sections = this.tags['r-tender-section']
-        var id = +$(e.srcElement).find(":selected").attr('attr')
-        this.currentScrolledSection = sections[e.srcElement.selectedIndex]
+        this.currentScrolledSection = sections[+this.sectionSelect.value]
+        this.currentScrolledSection
     }
 
     this.affixPoint = this.tags['r-tender-filters'].root

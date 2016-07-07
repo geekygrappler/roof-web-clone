@@ -45,5 +45,6 @@ module RoofApi
     config.to_prepare do
       ActiveRecord::Base.public_send :include, Watcher
     end
+
   end
 end

@@ -142,6 +142,26 @@ riot.mixin('adminIndex', {
       var id = e.item && (e.item.id || e.item.record && e.item.record.id)
       riot.route(`/admin/${this.opts.resource}/${id ? id + '/edit' : 'new'}`)
     }
+
+    this.updateRecord = this.updateRecord || (record) => {
+      this.update({record: record, attributes: _.keys(record)})
+    }
+
+    this.toggleSearchable = (e) => {
+      var record = e.item.record
+      var strToBol = (record.searchable === 'true')
+      var _this = this
+      record.searchable = !strToBol
+      $.ajax({
+        url: "/api/tender_templates/" + record.id + '/toggle_searchable',
+        data: {tender_template: {data: {searchable: true}}},
+        dataType: 'JSON',
+        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+        method: 'PATCH',
+        success: function(result) {
+        }
+      })
+    }
     this.destroy = (e) => {
       if (window.confirm(this.ERRORS.CONFIRM_DELETE)) {
         this.opts.api[this.opts.resource].delete(e.item.record.id)
@@ -186,13 +206,13 @@ riot.mixin('adminForm', {
       //window.onpopstate =  null
     })
 
+
     this.updateRecord = this.updateRecord || (record) => {
       this.update({record: record, attributes: _.keys(record)})
     }
 
     this.submit = this.submit || (e) => {
       if (e) e.preventDefault()
-
       let data = this.serializeForm(this.form)
 
       if (_.isEmpty(data)) {

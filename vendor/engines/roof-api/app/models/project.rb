@@ -42,6 +42,11 @@ class Project < ActiveRecord::Base
   has_many :quotes, dependent: :destroy
   has_many :payments, dependent: :nullify
 
+  #hack
+  def tender_templates
+    TenderTemplate.is_searchable
+  end
+
   after_save :notify_members
 
   scope :search, ->(query) {

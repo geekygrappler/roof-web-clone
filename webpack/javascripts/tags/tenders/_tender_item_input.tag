@@ -4,7 +4,7 @@ import Handlebars from 'handlebars/dist/handlebars'
   <div class="relative">
     <form onsubmit="{ preventSubmit }">
       <input name="query" type="text" class="block col-12 field"
-      oninput="{ search }" onkeyup="{ onKey }"
+      oninput="{ search }" onkeyup="{ keykey }"
       placeholder="Start typing to add {opts.name}" autocomplete="off" />
     </form>
   </div>
@@ -57,6 +57,13 @@ import Handlebars from 'handlebars/dist/handlebars'
       }
     });
   //})
+
+  this.keykey  = (e) => {
+    if (e.keyCode === 13) {
+        this.addDefaultItem()
+        $(this.query).typeahead('val', '')
+    }
+  }
 
   this.addDefaultItem = () => {
     var val = $(this.query).typeahead('val')

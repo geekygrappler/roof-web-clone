@@ -36,6 +36,10 @@
               {formatTime(record.updated_at)}
             </td>
             <td class="nowrap">
+                <div class='btn btn-primary' onclick='{toggleSearchable}' if='{record.searchable}'><span class='fa fa-check-circle'></span></div>
+                <div class='btn btn-primary' onclick='{toggleSearchable}' if='{!record.searchable}'><span class='fa fa-remove'></span></div>
+            </td>
+            <td class="nowrap">
               <button class="btn border btn-small mr1 mb1" onclick="{open}">
                 <i class="fa fa-pencil"></i>
               </button>
