@@ -4,7 +4,7 @@ import Handlebars from 'handlebars/dist/handlebars'
   <div class="relative">
     <form onsubmit="{ preventSubmit }">
       <input name="query" type="text" class="block col-12 field"
-      oninput="{ search }" onkeyup="{ keykey }"
+      oninput="{ search }" onkeyup="{ onkey }"
       placeholder="Start typing to add {opts.name}" autocomplete="off" />
     </form>
   </div>
@@ -33,7 +33,20 @@ import Handlebars from 'handlebars/dist/handlebars'
       this.addDefaultItem()
     })
     .on('typeahead:render', (e, suggestions) => {
+
         delete this['currentTask']
+
+        // reversing the list too so that it starts at the bottom when typeahead is above input,
+        // unfortunately this doesnt work due to the typeahead:select method adding the wrong data to the element
+        // var lis = document.querySelectorAll('.tt-dataset > .tt-suggestion');
+        // var contents = [].map.call(lis, function (li) {
+        //     return li.innerHTML;
+        // }).reverse().forEach(function (content, i) {
+        //     lis[i].innerHTML = content;
+        // });
+
+        $('.tt-menu').css('top', '').css('bottom', '100%')
+        // .scrollTop(400)
     })
     .on('typeahead:select', (e, suggestion) => {
       this.selectItem(suggestion)
@@ -58,9 +71,10 @@ import Handlebars from 'handlebars/dist/handlebars'
     });
   //})
 
-  this.keykey  = (e) => {
+  this.onkey  = (e) => {
     if (e.keyCode === 13) {
         this.addDefaultItem()
+        this.opts.enter.apply(this.opts.tender)
         $(this.query).typeahead('val', '')
     }
   }

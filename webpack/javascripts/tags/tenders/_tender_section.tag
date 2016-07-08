@@ -6,7 +6,6 @@ let taskActions = require("json!../../data/task_actions.json")
     <div class="relative border-bottom mt2">
       <h3 class="block overflow-hidden mb0">
 
-        <i class="cursor-pointer fa fa-{ icon }" onclick="{toggle}"></i>
         <a if="{section.dimensions && section.dimensions.length > 0}" class="h6 bg-teal gray rounded notification-badge" onclick="{setActivity}" rel="edit_dimensions_{section.id}">{section.dimensions.join('x')}</a>
         <a if="{!parent.opts.readonly && (!section.dimensions || section.dimensions.length == 0)}" onclick="{setActivity}" rel="edit_dimensions_{section.id}"><i class="fa fa-edit"></i></a>
 
@@ -68,14 +67,7 @@ let taskActions = require("json!../../data/task_actions.json")
   <script>
   this.taskActions = _.omit(taskActions, 'Materials', 'VAT')
   //this.showDisclosures = true
-  this.visible = this.parent.opts.id ? false : true
-  this.icon = this.visible ? 'minus-square-o' : 'plus-square-o'
-
-  this.toggle = (e) => {
-    e.preventDefault()
-    this.visible = !this.visible
-    this.icon = this.visible ? 'minus-square-o' : 'plus-square-o'
-  }
+  this.visible = true
 
   this.updateDimensions = (e) => {
     this.section.dimensions = _.compact([parseInt(e.target.width.value), parseInt(e.target.height.value), parseInt(e.target.length.value)])

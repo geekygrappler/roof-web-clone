@@ -35,7 +35,7 @@ import './_area_calculator.tag'
       <div class='container'>
         <form class='col col-6'>
           <div class="col col-12 px1">
-            <r-tender-item-input name="task" auto_focus="{ true }" api="{ opts.api }" icon="tasks"></r-tender-item-input>
+            <r-tender-item-input name="task" auto_focus="{ true }" api="{ opts.api }" icon="tasks" enter='{addTask}' tender='{this}'></r-tender-item-input>
           </div>
           <div class="col col-8 px1 locked-form-margin-top">
             <div class='container'>
@@ -65,7 +65,7 @@ import './_area_calculator.tag'
             </div>
           </div>
           <div class="col col-4 px1 locked-form-margin-top">
-            <button type="submit" class="block col-12 btn btn-primary">
+            <button type="submit" class="block col-12 btn btn-primary" name='addSectionBtn'>
               <i class="fa fa-puzzle-piece"></i> Add Section
             </button>
           </div>
