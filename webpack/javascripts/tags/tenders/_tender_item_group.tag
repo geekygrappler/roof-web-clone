@@ -5,7 +5,7 @@
       <h4 class="block mb0 mt1 p1 border-bottom border-right group-title">
 
         <a onclick="{toggle}" class="cursor-pointer">
-          <i class="fa fa-{ icon } mr1"></i> { group.humanize() }
+          <i class="fa fa-{ icon } mr1 hide"></i> { group.humanize() }
         </a>
       </h4>
       <ul class="list-reset ml2 border-left mb0" if="{visible}">

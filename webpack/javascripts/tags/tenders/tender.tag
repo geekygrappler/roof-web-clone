@@ -31,50 +31,6 @@ import './_area_calculator.tag'
     <h1 class="right-align m0">Estimated total{ record.document.include_vat ? '(Inc. VAT)' : ''}: { tenderTotal }</h2>
     </div>
 
-    <div class='locked-task-bar py3 clearfix mxn1 border-top'>
-      <div class='container'>
-        <form class='col col-6'>
-          <div class="col col-12 px1">
-            <r-tender-item-input name="task" auto_focus="{ true }" api="{ opts.api }" icon="tasks" enter='{addTask}' tender='{this}'></r-tender-item-input>
-          </div>
-          <div class="col col-8 px1 locked-form-margin-top">
-            <div class='container'>
-              <select onchange='{changeCurrentSection}' name="sectionSelect">
-                <option each="{ section , i in sections() }" value='{i}'
-                        selected='{currentScrolledSection.section.name == section.name}'>{section.name}
-                </option>
-              </select>
-            </div>
-          </div>
-          <div class="col col-4 px1 locked-form-margin-top">
-            <button type="button" onclick='{addTask}' class="block col-12 btn btn-primary">
-              <i class="fa fa-puzzle-piece"></i> Add Item
-            </button>
-          </div>
-        </form>
-        <form class='col col-6' onsubmit="{ addSection }">
-          <div class="col col-12 px1">
-            <input type="text" name="sectionName" placeholder="Section name" class="block col-12 field" />
-          </div>
-          <div class="col col-8 px1 locked-form-margin-top">
-            <div class='container'>
-              <select name="sectionTemplate">
-                <option value='-1'>Blank template</option>
-                <option each="{ template, i in tenderTemplates }" value='{i}'>{template.name}</option>
-              </select>
-            </div>
-          </div>
-          <div class="col col-4 px1 locked-form-margin-top">
-            <button type="submit" class="block col-12 btn btn-primary" name='addSectionBtn'>
-              <i class="fa fa-puzzle-piece"></i> Add Section
-            </button>
-          </div>
-        </form>
-
-        </form>
-      </div>
-    </div>
-
     <form name="form" onsubmit="{ submit }" class="right-align">
       <div if="{errors}" id="error_explanation" class="left-align">
         <ul>

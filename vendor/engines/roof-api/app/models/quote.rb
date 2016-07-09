@@ -54,6 +54,10 @@ class Quote < ActiveRecord::Base
     end
   end
 
+  def tender_templates
+    TenderTemplate.is_searchable
+  end
+
   private
 
   # def aggregate_prices

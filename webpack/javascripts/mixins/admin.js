@@ -149,8 +149,7 @@ riot.mixin('adminIndex', {
 
     this.toggleSearchable = (e) => {
       var record = e.item.record
-      var strToBol = (record.searchable === 'true')
-      var _this = this
+      var strToBol = record.searchable == 'true' ? true : false
       record.searchable = !strToBol
       $.ajax({
         url: "/api/tender_templates/" + record.id + '/toggle_searchable',

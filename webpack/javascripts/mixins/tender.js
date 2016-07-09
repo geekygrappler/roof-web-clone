@@ -74,7 +74,7 @@ riot.mixin('tenderMixin', {
           tasks: []
         }]
       } else {
-        var sections = this.tenderTemplates[selectedTemplateIndex].document.sections
+        var sections = this.record.tender_templates[selectedTemplateIndex].document.sections
       }
       this.record.document.sections = this.record.document.sections.concat(sections)
       if (!_.isEmpty(this.sectionName.value) && sections.length > 1) {
@@ -87,6 +87,8 @@ riot.mixin('tenderMixin', {
       $('html, body').animate({
         scrollTop: $(this.currentScrolledSection.root).offset().top
       }, 300);
+      this.setSectionOffsets('r-tender-section')
+      this.updateTenderTotal()
       // $('[name=searchable_names]').last()[0].focus()
     }
     this.removeSection = (e) => {
@@ -99,6 +101,8 @@ riot.mixin('tenderMixin', {
           this.submit()
         }
       }
+      this.setSectionOffsets('r-tender-section')
+      this.updateTenderTotal()
     }
     this.calcSectionTotal = (section, formatted = false) => {
 

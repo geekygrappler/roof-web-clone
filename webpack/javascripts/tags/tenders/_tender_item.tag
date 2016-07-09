@@ -141,9 +141,12 @@ import './_comments.tag'
   this.removeItem = (e) => {
     e.preventDefault()
     if (window.confirm(this.ERRORS.CONFIRM_DELETE)) {
-    // $('.animate', this.root).one($.animationEnd, () => {
-      this.parent.opts.onitemremoved(e, this.parent.opts.name)
-    // } ).animateCss('bounceOut')
+        // $('.animate', this.root).one($.animationEnd, () => {
+        this.parent.opts.onitemremoved(e, this.parent.opts.name)
+        // } ).animateCss('bounceOut')
+        this.opts.quote.setSectionOffsets()
+        this.opts.quote.updateTenderTotal()
+
     }
   }
 

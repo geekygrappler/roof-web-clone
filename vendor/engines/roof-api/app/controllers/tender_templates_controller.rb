@@ -1,10 +1,10 @@
 class TenderTemplatesController < ResourceController
 
   def toggle_searchable
-    searchable = params['tender_template']['data']['searchable']
-    @record.data['searchable'] = searchable == 'true'
+    searchable = ActiveRecord::ConnectionAdapters::Column::TRUE_VALUES.include?(params['tender_template']['data']['searchable'])
+    @record.data['searchable'] = !searchable
     @record.save
-    render json: {response: true}
+    render json: {response: @record.data['searchable']}
   end
 
   include PermittedTenderDocumentParams

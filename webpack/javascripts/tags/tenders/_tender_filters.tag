@@ -6,7 +6,7 @@
   </div>
   <div class="overflow-auto nowrap">
     <a class="btn btn-small {'btn-primary': action == null}" onclick="{setActionFilter}">All</a>
-    <a each="{name in actions()}" class="btn btn-small {'btn-primary': action == name}" onclick="{setActionFilter}">{name}</a>
+    <a each="{name in actions()}" if='{name}' class="btn btn-small {'btn-primary': action == name}" onclick="{setActionFilter}">{name}</a>
   </div>
   <script>
   this.actions = () => {
@@ -18,5 +18,6 @@
   this.setActionFilter = (e) => {
     this.update({action: e.item ? e.item.name : null})
   }
+  window.t = this
   </script>
 </r-tender-filters>

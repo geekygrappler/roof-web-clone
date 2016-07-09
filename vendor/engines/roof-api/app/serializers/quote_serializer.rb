@@ -7,6 +7,8 @@ class QuoteSerializer < ActiveModel::Serializer
 
   belongs_to :professional, serializer: QuoteProfessionalSerializer
 
+  has_many :tender_templates, serializer: TenderTemplateSerializer
+
   has_many :payments do
     if scope.customer?
       object.payments.is_approved

@@ -6,7 +6,7 @@ import from '../../mixins/tender.js'
     <r-header api="{opts.api}"></r-header>
   </yield>
 
-  <div class="container p2 {readonly: isReadonly()} ">
+  <div class="container p2 {readonly: isReadonly()} quote-container">
     <div class="clearfix">
       <div class="left mb4 overflow-hidden">
         <h1 class="mb0">{ opts.id ? getTitle() : 'New Quote' }</h1>
@@ -48,21 +48,60 @@ import from '../../mixins/tender.js'
 
     <r-tender-filters record="{record}"></r-tender-filters>
 
-    <r-tender-section readonly="{opts.readonly}" each="{ section , i in sections() }"></r-tender-section>
+    <div class='section-category-affix-holder'>
+        <div class='section-category-affix' show='{showFloatingSectionHeader}' if='{currentScrolledSection}'>
+            <h3>{currentScrolledSection.section.name}<span if='{currentScrolledSection.currentTask}'> - {currentScrolledSection.currentTask.group}</span></h3>
+        </div>
+    </div>
 
-    <form if="{ !opts.readonly && record.document }" onsubmit="{ addSection }" class="mt3 py3 clearfix mxn1 border-top">
-      <div class="col col-8 px1">
-        <input type="text" name="sectionName" placeholder="Section name" class="block col-12 field" />
-      </div>
-      <div class="col col-4 px1">
-        <button type="submit" class="block col-12 btn btn-primary"><i class="fa fa-puzzle-piece"></i> Add Section</button>
-      </div>
-    </form>
+    <r-tender-section readonly="{opts.readonly}" each="{ section , i in sections() }" quote='{this}'></r-tender-section>
 
     <div class="py3">
     <h4 class="right-align m0"><label><input type="checkbox" onchange="{toggleVat}" checked="{record.document.include_vat}" class="mr1">VAT {tenderVat()}</label></h4>
     <h3 class="right-align m0">Total{ record.document.include_vat ? '(Inc. VAT)' : ''}: { tenderTotal }</h3>
     </div>
+
+        <div class='locked-task-bar py3 clearfix mxn1 border-top'>
+          <div class='container'>
+            <form class='col col-6'>
+              <div class="col col-12 px1">
+                <r-tender-item-input name="task" auto_focus="{ true }" api="{ opts.api }" icon="tasks" enter='{addTask}' tender='{this}'></r-tender-item-input>
+              </div>
+              <div class="col col-8 px1 locked-form-margin-top">
+                <div class='container'>
+                  <select onchange='{changeCurrentSection}' name="sectionSelect">
+                    <option each="{ section , i in sections() }" value='{i}'
+                            selected='{currentScrolledSection.section.name == section.name}'>{section.name}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col col-4 px1 locked-form-margin-top">
+                <button type="button" onclick='{addTask}' class="block col-12 btn btn-primary">
+                  <i class="fa fa-puzzle-piece"></i> Add Item
+                </button>
+              </div>
+            </form>
+            <form class='col col-6' onsubmit="{ addSection }">
+              <div class="col col-12 px1">
+                <input type="text" name="sectionName" placeholder="Section name" class="block col-12 field" />
+              </div>
+              <div class="col col-8 px1 locked-form-margin-top">
+                <div class='container'>
+                  <select name="sectionTemplate">
+                    <option value='-1'>Blank template</option>
+                    <option each="{ template, i in record.tender_templates }" value='{i}'>{template.name}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col col-4 px1 locked-form-margin-top">
+                <button type="submit" class="block col-12 btn btn-primary" name='addSectionBtn'>
+                  <i class="fa fa-puzzle-piece"></i> Add Section
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
 
     <form name="form" onsubmit="{ submit }">
 
@@ -203,10 +242,38 @@ import from '../../mixins/tender.js'
       }
     }
 
+    this.setSectionOffsets = function(tagName) {
+        var sections = this.tags[tagName]
+        this.sectionOffsets = {}
+        for (var i = 0, ii = sections.length; i < ii; i++) {
+            var section = sections[i]
+            section.offsetTop = section.root.offsetTop
+            this.sectionOffsets[section.offsetTop] = section
+            if (tagName === 'r-tender-section') {
+                section.sectionOffsets = {}
+                this.setSectionOffsets.call(section, 'task')
+            }
+        }
+    }
+
+    this.floatingSectionHeader = this.tags['r-tender-filters'].root
+    this.showFloatingSectionHeader = false
+
+    this.on('update', function() {
+      if (!this.hasInitSectionOffsets && this.record && this.record.document.sections.length && this.tags['r-tender-section'].length === this.record.document.sections.length) {
+        this.setSectionOffsets('r-tender-section')
+        this.hasInitSectionOffsets = true
+      }
+      if (!this.floatingSectionHeaderPosition) {
+        this.floatingSectionHeaderPosition = this.floatingSectionHeader.offsetTop
+      }
+    })
+
     this.updateQuote = (record) => {
       if(!this.currentAccount.isAdministrator && record.accepted_at) {
         this.opts.readonly = true
       }
+      this.record = record
       this.update({record: record})
     }
 
@@ -246,6 +313,81 @@ import from '../../mixins/tender.js'
     }
     this.tenderFilters = () => {
       return [{name: 'project_id', value: this.record.project_id}]
+    }
+
+    this.addTask = function() {
+        var taskClass = this.tags['task']
+        if (!this.currentScrolledSection ) this.currentScrolledSection = this.tags['r-tender-section'][0]
+        if (!taskClass.currentTask) {
+            var value = $(taskClass.query).typeahead('val')
+            if (value) {
+                taskClass.currentScrolledTask = taskClass.getDefaultItem(value)
+            }
+        }
+
+        if (taskClass.currentTask) {
+            if (!this.currentScrolledSection.section.tasks) this.currentScrolledSection.section.tasks = []
+            this.currentScrolledSection.section.tasks.push(taskClass.currentTask)
+            this.update()
+            this.opts.api.quotes.update(178, this.record)
+            $('html, body').animate({
+                scrollTop: $(this.currentScrolledSection.root).offset().top
+            }, 300);
+        }
+        this.setSectionOffsets('r-tender-section')
+        this.updateTenderTotal()
+    }
+
+    var _this = this
+
+    this.on('mount', function () {
+        document.addEventListener('scroll', function (e) {
+            _this.handleScroll.call(_this, e)
+        })
+        return this.update();
+    });
+
+    this.on('unmount', function (e) {
+        return this.root.removeEventListener('scroll', function (e) {
+            _this.handleScroll.call(_this, e)
+        });
+    });
+
+    this.findSectionByOffset = function() {
+        var current
+        for (var key in this.sectionOffsets) {
+            if (window.scrollY >= key) {
+                current = this.sectionOffsets[key]
+            } else {
+                break
+            }
+        }
+        return current
+    }
+
+    this.findSection = function() {
+        if (!this.floatingSectionHeaderPosition) return false
+        this.showFloatingSectionHeader = window.scrollY > this.floatingSectionHeaderPosition
+
+        if (this.showFloatingSectionHeader && !( 'key1' in this.sectionOffsets)) {
+            var current = this.findSectionByOffset()
+            if (current) {
+                current.currentTask = this.findSectionByOffset.call(current)
+                return current
+            }
+        }
+    }
+
+    this.handleScroll = function (e) {
+        this.currentScrolledSection = this.findSection()
+        return this.update();
+    }
+
+    this.changeCurrentSection = function(e){
+        if (!this.currentScrolledSection) this.currentScrolledSection = this.tags['r-tender-section'][0]
+        var sections = this.tags['r-tender-section']
+        this.currentScrolledSection = sections[+this.sectionSelect.value]
+        this.currentScrolledSection
     }
 
     this.mixin('tenderMixin')

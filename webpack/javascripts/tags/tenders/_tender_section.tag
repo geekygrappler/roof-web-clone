@@ -22,6 +22,7 @@ let taskActions = require("json!../../data/task_actions.json")
         readonly="{parent.parent.opts.readonly}"
         each="{ group, items in section.tasks_by_action }"
         headers="{ parent.headers.task }"
+        quote='{opts.quote}'
         onitemremoved="{ removeItem }" no-reorder>
       </r-tender-item-group>
 
@@ -33,6 +34,7 @@ let taskActions = require("json!../../data/task_actions.json")
         show="{ section.materials && section.materials.length > 0 }"
         each="{ group, items in section.materials_by_group }"
         headers="{ parent.headers.material }"
+        quote='{opts.quote}'
         onitemremoved="{ removeItem }" no-reorder>
       </r-tender-item-group>
 
