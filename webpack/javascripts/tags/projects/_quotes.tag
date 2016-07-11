@@ -37,16 +37,29 @@ import './_project_payments.tag'
         </div>
 
         <div class="tab-nav">
+          <a class="btn btn-narrow border-left border-top border-right {active: activeTab == 'section'}"
+          onclick="{changeTab}" rel="section">Section Breakdown </a>
           <a class="btn btn-narrow border-left border-top border-right {active: activeTab == 'summary'}"
-          onclick="{changeTab}" rel="summary">Summary</a>
+          onclick="{changeTab}" rel="summary">Trade Breakdown</a>
           <a class="btn btn-narrow border-left border-top border-right {active: activeTab == 'payments'}"
           onclick="{changeTab}" rel="payments">Payments</a>
         </div>
         <div class="tabs m0 mxn2 border-top">
 
+          <div if="{activeTab == 'section'}" class="mt2">
+
+            <r-tender-summary document="{document}" type='sections'></r-tender-summary>
+
+            <div class="clearfix overflow-hidden p1 bg-yellow">
+              <a class="btn btn-small bg-darken-2" href="/app/projects/{parent.opts.id}/quotes/{id}">Open</a>
+              <a class="btn btn-small bg-darken-2" if="{!currentAccount.isCustomer && !accepted_at}" onclick="{delete}">Delete</a>
+            </div>
+
+          </div>
+
           <div if="{activeTab == 'summary'}" class="mt2">
 
-            <r-tender-summary document="{document}"></r-tender-summary>
+            <r-tender-summary document="{document}" type='trade'></r-tender-summary>
 
             <div class="clearfix overflow-hidden p1 bg-yellow">
               <a class="btn btn-small bg-darken-2" href="/app/projects/{parent.opts.id}/quotes/{id}">Open</a>
@@ -67,13 +80,13 @@ import './_project_payments.tag'
 
   <script>
 
-  this.activeTab = this.opts.tab || 'summary'
+  this.activeTab = this.opts.tab || 'section'
 
   this.changeTab = (e) => {
     e.preventDefault()
     this.update({activeTab: e.target.rel})
     history.pushState(null,null,
-      this.activeTab == 'summary' ? window.location.href.replace('payments', 'quotes') :
+      _.contains(['summary', 'sections'], this.activeTab) ? window.location.href.replace('payments', 'quotes') :
       window.location.href.replace('quotes','payments')
     )
   }

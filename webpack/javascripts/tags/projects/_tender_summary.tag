@@ -13,7 +13,13 @@ let taskActions = require("json!../../data/task_actions.json")
   this.on('mount', () => {
     var summary = _.reduce(
       _.map(this.opts.document.sections, (section)  => {
-        var tasks = _.mapObject(_.groupBy(section.tasks, 'action'), function (val, key) {
+        if (this.opts.type === 'sections') {
+            var obj = {}
+            obj[section.name] = section.tasks
+        } else {
+            var obj = _.groupBy(section.tasks, 'action')
+        }
+        var tasks = _.mapObject(obj, function (val, key) {
           return itemsTotal(val, key)
         })
         var materials = itemsTotal(section.materials, 'materials')
@@ -30,6 +36,7 @@ let taskActions = require("json!../../data/task_actions.json")
       })
       return memo
     }, {})
+
     summary = sortObject(summary)
     this.update({summary})
   })
