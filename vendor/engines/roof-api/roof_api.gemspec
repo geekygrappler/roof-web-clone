@@ -34,6 +34,8 @@ Gem::Specification.new do |s|
   s.add_dependency 'slack-notifier'
   s.add_dependency 'money'
   s.add_dependency 'monetize'
+  s.add_dependency 'wicked_pdf'
+  s.add_dependency 'wkhtmltopdf-heroku'
 
   s.add_development_dependency 'rails_12factor'
   s.add_development_dependency 'letter_opener'

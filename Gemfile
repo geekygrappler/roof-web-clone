@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-source 'https://Urx7-1GrXUKKC-1LnfGi@gem.fury.io/onurroof/'
+#source 'https://Urx7-1GrXUKKC-1LnfGi@gem.fury.io/onurroof/'
 #source 'https://repo.fury.io/Urx7-1GrXUKKC-1LnfGi/onurroof/'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'

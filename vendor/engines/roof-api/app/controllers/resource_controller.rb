@@ -117,7 +117,11 @@ class ResourceController < ApiController
   end
 
   def serializer
-    "#{self.class.model_name}#{params[:action].to_s.classify}Serializer".constantize rescue self.class.serializer
+    if params[:serializer]
+      [params[:serializer].capitalize, 'Serializer'].join.constantize rescue self.class.serializer
+    else
+      "#{self.class.model_name}#{params[:action].to_s.classify}Serializer".constantize rescue self.class.serializer
+    end
   end
 
 end

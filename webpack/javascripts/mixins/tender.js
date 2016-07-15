@@ -23,7 +23,7 @@ riot.mixin('tenderMixin', {
 
     this.on('mount', () => {
       this.saved = true
-      this.opts.api.tenders.on('update', this.updateTenderTotal)
+      this.opts.api[this.opts.type_underscore].on('update', this.updateTenderTotal)
       window.onbeforeunload = this.warnUnsavedChanges
       $('a[href*="/app/"]', this.root).off('click').on('click',  this.preventUnsaved)
       this.submit = _.wrap(this.submit, (_submit, e) => {
@@ -32,11 +32,13 @@ riot.mixin('tenderMixin', {
       })
 
       $(this.root).bind('input', 'input', this.setUnsaved)
-    })
+
+  })
+
 
     this.on('unmount', () => {
       $('a[href*="/app/"]', this.root).off('click',  this.preventUnsaved)
-      this.opts.api.tenders.off('update', this.updateTenderTotal)
+      this.opts.api[this.opts.type_underscore].off('update', this.updateTenderTotal)
       window.onbeforeunload = null
       $(this.root).unbind('input', 'input', this.setUnsaved)
 
@@ -74,7 +76,7 @@ riot.mixin('tenderMixin', {
           tasks: []
         }]
       } else {
-        var sections = this.record.tender_templates[selectedTemplateIndex].document.sections
+        var sections = this.tender_templates[selectedTemplateIndex].document.sections
       }
       this.record.document.sections = this.record.document.sections.concat(sections)
       if (!_.isEmpty(this.sectionName.value) && sections.length > 1) {
@@ -154,7 +156,7 @@ riot.mixin('tenderMixin', {
       this.tenderTotal = this.calcTenderTotal()
     }
     // let's try autosave
-    this.opts.api.tenders.on('update', () => {
+    this.opts.api[this.opts.type_underscore].on('update', () => {
       this.submit()
     })
   }

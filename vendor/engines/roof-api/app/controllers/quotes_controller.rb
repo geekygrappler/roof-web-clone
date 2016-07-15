@@ -1,3 +1,4 @@
+require 'wicked_pdf'
 class QuotesController < ResourceController
   include PermittedTenderDocumentParams
 
@@ -35,6 +36,27 @@ class QuotesController < ResourceController
     else
       render(errors_response)
     end
+  end
+
+  def pdf
+    #wip
+    # quote = Quote.find(178)
+    #
+    # views = Rails::Application::Configuration.new(Rails.root).paths["app/views"]
+    # views_helper = ActionView::Base.new views
+    # view = views_helper.render partial: "quotes/pdf", locals: {yo: "eeeeee"}
+    #
+    # pdf = WickedPdf.new.pdf_from_string(view)
+    # save_path = Rails.root.join('pdfs','filename.pdf')
+    # File.open(save_path, 'wb') do |file|
+    #   file << pdf
+    # end
+    # respond_to do |format|
+    #   format.html
+    #   format.pdf do
+    #     render pdf: "quote #{quote.id}"
+    #   end
+    # end
   end
 
   protected

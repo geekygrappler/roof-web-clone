@@ -11,6 +11,7 @@ class Ability
 
     if account.administrator?
       can :manage, :all
+      can [:index], TenderTemplate
     elsif account.customer?
       can [:manage], Project, ["account_id = ? OR data->'customers_ids' @> ?", account.id, account.id.to_json] do |project|
         project.account_id == account.id || project.customers_member?(account)
@@ -60,7 +61,7 @@ class Ability
 
       can [:invite], Invitation, inviter_id: account.id
       can :manage, Comment
-
+      can [:index], TenderTemplate
     end
   end
 end

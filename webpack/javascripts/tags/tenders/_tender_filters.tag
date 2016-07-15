@@ -18,6 +18,5 @@
   this.setActionFilter = (e) => {
     this.update({action: e.item ? e.item.name : null})
   }
-  window.t = this
   </script>
 </r-tender-filters>

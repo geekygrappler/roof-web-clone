@@ -126,7 +126,6 @@
         this.update({busy: true})
         $.getScript('https://checkout.stripe.com/checkout.js')
         .then(() => {
-
           this.stripeHandler = StripeCheckout.configure({
             key: $('meta[name=stripe-key]').attr('content'),
             //image: '/img/documentation/checkout/marketplace.png',

@@ -3,7 +3,7 @@ class QuoteSerializer < ActiveModel::Serializer
 
   attributes :id, :document, :project_id, :professional_id, :accepted_at, :submitted_at, :total_amount, :tender_id,
   :approved_amount, :paid_amount, :refunded_amount, :declined_amount, :status,
-  :insurance_amount, :guarantee_length, :summary, :comments_counts
+  :insurance_amount, :guarantee_length, :summary, :comments_counts, :tender_templates
 
   belongs_to :professional, serializer: QuoteProfessionalSerializer
 
