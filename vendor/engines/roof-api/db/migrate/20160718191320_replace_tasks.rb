@@ -1,5 +1,6 @@
 class ReplaceTasks < ActiveRecord::Migration
   def up
+    require 'csv'
     Task.destroy_all
     CSV.foreach(Rails.root.join("task_db.csv"), :headers => true) do |row|
       # 0 display in search
