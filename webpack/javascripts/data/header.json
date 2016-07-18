@@ -34,6 +34,7 @@
     {"href": "/app/admin/appointments", "title": "Appointments"},
     {"href": "/app/admin/assets", "title": "Assets"},
     {"href": "/app/admin/content/templates", "title": "Content::Templates"},
-    {"href": "/app/admin/content/pages", "title": "Content::Pages"}
+    {"href": "/app/admin/content/pages", "title": "Content::Pages"},
+    {"href": "/app/admin/failed_payments", "title": "Failed Payments"}
   ]
 }

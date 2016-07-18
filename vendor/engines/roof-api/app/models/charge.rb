@@ -23,11 +23,16 @@ class Charge < Composable::Model
       )
     end
     if error.nil?
-      self.id = object.id
+      self.id = @object.id
     else
+      FailedPayment.create(data: error, message: error, payment_id: payment.id)
       errors.add(:id, error)
     end
     self
+  rescue Stripe::CardError => e
+    FailedPayment.create(data: e, message: e, payment_id: payment.id)
+  rescue => e
+    FailedPayment.create(data: e, message: e, payment_id: payment.id)
   end
 
   def attributes
