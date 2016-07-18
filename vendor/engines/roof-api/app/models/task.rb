@@ -1,4 +1,4 @@
-require 'CSV'
+require 'csv'
 class Task < ActiveRecord::Base
   store_accessor :data,
     :action,
@@ -50,7 +50,7 @@ class Task < ActiveRecord::Base
   def searchable?
     public_send(:searchable)
   end
-
+  
   def self.reset_all
     Task.destroy_all
     CSV.foreach(Rails.root.join("task_db.csv"), :headers => true) do |row|
