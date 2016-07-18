@@ -1,3 +1,4 @@
+require 'CSV'
 class Task < ActiveRecord::Base
   store_accessor :data,
     :action,
