@@ -168,7 +168,7 @@ class TenderDocument < Composable::Model
   end
 
   def create_all_new_items
-    create_new_items 'tasks'
+    news = create_new_items 'tasks'
     create_new_items 'materials'
   end
 

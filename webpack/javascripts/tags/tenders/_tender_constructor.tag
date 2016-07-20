@@ -63,7 +63,8 @@
         </div>
     </div>
 
-    <r-tender-section readonly="{opts.readonly}" each="{ section , i in sections() }" quote='{this}'></r-tender-section>
+    <r-tender-section readonly="{opts.readonly}" each="{ section , i in sections() }" quote={'this'}>
+    </r-tender-section>
 
     <div class="py3">
     <h4 class="right-align m0"><label><input type="checkbox" onchange="{toggleVat}" checked="{record.document.include_vat}" class="mr1">VAT {tenderVat()}</label></h4>
@@ -389,25 +390,26 @@
 
     this.addTask = function() {
         var taskClass = this.tags['task']
-        if (!this.currentScrolledSection ) this.currentScrolledSection = this.tags['r-tender-section'][0]
+        this.currentScrolledSection = this.currentScrolledSection || this.tags['r-tender-section'][0]
         if (!taskClass.currentTask) {
             var value = $(taskClass.query).typeahead('val')
             if (value) {
-                taskClass.currentScrolledTask = taskClass.getDefaultItem(value)
+                taskClass.currentTask = taskClass.getDefaultItem(value)
             }
         }
 
         if (taskClass.currentTask) {
-            if (!this.currentScrolledSection.section.tasks) this.currentScrolledSection.section.tasks = []
-            this.currentScrolledSection.section.tasks.push(taskClass.currentTask)
-            this.update()
+            var section = this.currentScrolledSection.section
+            section.tasks = section.tasks || []
+            delete taskClass.currentTask['tags']
+            section.tasks.push(taskClass.currentTask)
             this.opts.api[this.opts.type_underscore].update(this.record.id, this.record)
             $('html, body').animate({
                 scrollTop: $(this.currentScrolledSection.root).offset().top
             }, 300);
         }
         this.setSectionOffsets('r-tender-section')
-        this.updateTenderTotal()
+        this.currentScrolledSection.updateSectionTotal()
     }
 
     var timer

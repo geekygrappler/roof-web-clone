@@ -50,7 +50,7 @@ class Task < ActiveRecord::Base
   def searchable?
     public_send(:searchable)
   end
-  
+
   def self.reset_all
     Task.destroy_all
     CSV.foreach(Rails.root.join("task_db.csv"), :headers => true) do |row|
@@ -90,8 +90,8 @@ class Task < ActiveRecord::Base
   end
 
   def set_defaults
-    self.action ||= 'Other'
-    self.group ||= 'Other'
+    self.action ||= 'General'
+    self.group ||= 'General'
     self.quantity ||= 0
     self.unit ||= 'unitless'
     self.price ||= 0

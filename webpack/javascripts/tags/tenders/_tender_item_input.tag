@@ -33,7 +33,6 @@ import Handlebars from 'handlebars/dist/handlebars'
       this.addDefaultItem()
     })
     .on('typeahead:render', (e, suggestions) => {
-
         delete this['currentTask']
 
         // reversing the list too so that it starts at the bottom when typeahead is above input,

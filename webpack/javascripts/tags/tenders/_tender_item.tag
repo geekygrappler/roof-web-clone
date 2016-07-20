@@ -139,14 +139,15 @@ import './_comments.tag'
   }
 
   this.removeItem = (e) => {
+    var ancestorModel = this.parent.parent.parent.parent
     e.preventDefault()
     if (window.confirm(this.ERRORS.CONFIRM_DELETE)) {
         // $('.animate', this.root).one($.animationEnd, () => {
         this.parent.opts.onitemremoved(e, this.parent.opts.name)
         // } ).animateCss('bounceOut')
-        this.opts.quote.setSectionOffsets()
-        this.opts.quote.updateTenderTotal()
-
+        ancestorModel.setSectionOffsets('r-tender-section')
+        ancestorModel.updateTenderTotal()
+        ancestorModel.opts.api[ancestorModel.opts.type_underscore].update(ancestorModel.record.id, ancestorModel.record)
     }
   }
 
