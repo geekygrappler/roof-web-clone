@@ -65,6 +65,7 @@ class Task < ActiveRecord::Base
       # 8 rate
       searchable = row[7] == 'Yes' ? true : false
       unit = row[6].nil? ? 'unitless' : row[6]
+      price = row[8] ? row[8] * 100 : 0
       data = {
           search_name: row[0],
           name: row[1],
@@ -74,7 +75,7 @@ class Task < ActiveRecord::Base
           quantity: row[5],
           unit: unit,
           searchable: searchable,
-          price: row[8] * 100
+          price: price
       }
       Task.create(data: data)
     end
