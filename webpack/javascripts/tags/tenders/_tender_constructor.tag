@@ -410,6 +410,7 @@
         }
         this.setSectionOffsets('r-tender-section')
         this.currentScrolledSection.updateSectionTotal()
+        delete taskClass['currentTask']
     }
 
     var timer

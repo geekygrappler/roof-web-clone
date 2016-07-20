@@ -74,7 +74,7 @@ class Task < ActiveRecord::Base
           quantity: row[5],
           unit: unit,
           searchable: searchable,
-          price: row[8]
+          price: row[8] * 100
       }
       Task.create(data: data)
     end

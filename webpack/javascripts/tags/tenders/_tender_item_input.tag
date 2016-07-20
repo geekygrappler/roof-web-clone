@@ -34,18 +34,7 @@ import Handlebars from 'handlebars/dist/handlebars'
     })
     .on('typeahead:render', (e, suggestions) => {
         delete this['currentTask']
-
-        // reversing the list too so that it starts at the bottom when typeahead is above input,
-        // unfortunately this doesnt work due to the typeahead:select method adding the wrong data to the element
-        // var lis = document.querySelectorAll('.tt-dataset > .tt-suggestion');
-        // var contents = [].map.call(lis, function (li) {
-        //     return li.innerHTML;
-        // }).reverse().forEach(function (content, i) {
-        //     lis[i].innerHTML = content;
-        // });
-
         $('.tt-menu').css('top', '').css('bottom', '100%')
-        // .scrollTop(400)
     })
     .on('typeahead:select', (e, suggestion) => {
       this.selectItem(suggestion)
@@ -95,8 +84,8 @@ import Handlebars from 'handlebars/dist/handlebars'
     if (opts.name === 'task') {
       item = {
         name: name,
-        action: 'Other',
-        group: 'Other',
+        action: 'General',
+        group: 'General',
         quantity: 1,
         price: 0,
         unit: 'unitless'
