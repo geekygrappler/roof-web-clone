@@ -10,6 +10,8 @@ import Handlebars from 'handlebars/dist/handlebars'
   </div>
   <script>
 
+  var _this = this
+
   //this.request({url: `/api/${this.opts.name.plural()}`}).then((data) => {
     let source = new Bloodhound({
       datumTokenizer:  function (d) {
@@ -27,17 +29,23 @@ import Handlebars from 'handlebars/dist/handlebars'
       }
     })
 
+    if (!$typeahead) {
+        var $typeahead = $(this.query)
+        $(this.root).delegate('.tt-suggestion', 'mouseenter', function(e) {
+            var data = $(e.currentTarget).data('ttSelectableObject')
+            if (data) _this.currentTask = data
+        })
+    }
 
-    $(this.query)
-    .on('typeahead:notfound', (e) => {
-      this.addDefaultItem()
-    })
-    .on('typeahead:render', (e, suggestions) => {
+    $typeahead.on('typeahead:render', (e, suggestions) => {
         delete this['currentTask']
         $('.tt-menu').css('top', '').css('bottom', '100%')
     })
     .on('typeahead:select', (e, suggestion) => {
-      this.selectItem(suggestion)
+        this.selectItem(suggestion)
+    })
+    .on('typeahead:cursorchange', (e, suggestion) => {
+        if (suggestion) _this.currentTask = suggestion
     })
     .typeahead(null, {
       name: this.opts.name.plural(),
@@ -61,9 +69,8 @@ import Handlebars from 'handlebars/dist/handlebars'
 
   this.onkey  = (e) => {
     if (e.keyCode === 13) {
-        this.addDefaultItem()
-        this.opts.enter.apply(this.opts.tender)
-        $(this.query).typeahead('val', '')
+        var item = this.currentTask || this.addDefaultItem()
+        this.selectItem(item)
     }
   }
 
@@ -74,9 +81,11 @@ import Handlebars from 'handlebars/dist/handlebars'
     }
   }
 
-  this.selectItem =  (item) => {
+  this.selectItem = (item) => {
     $(this.query).typeahead('val', item.name)
     this.currentTask = item
+    $(this.query).typeahead('val', '')
+    this.opts.enter.apply(this.opts.tender)
   }
 
   this.getDefaultItem = (name) => {
