@@ -3,7 +3,7 @@ import './_comments.tag'
 
 <r-tender-item-action-group-dropdown>
   <select onchange="{changeTaskAction}">
-    <option each="{val, name in item.taskActions}" value="{val}" selected="{val == 'Other'}" no-reorder>{name}</option>
+    <option each="{val, name in taskActions}" value="{val}" selected="{val == 'Other'}" no-reorder>{name}</option>
   </select>
   <script>
   this.taskActions = _.omit(taskActions, 'Materials', 'VAT')
@@ -22,12 +22,12 @@ import './_comments.tag'
       <div if="{ parent.headers.name }" class="sm-col sm-col-{ parent.headers.name } mb1 sm-mb0">
         <input if="{this.parent.parent.type == 'Tender' || this.parent.parent.type == 'TenderTemplate'}" type="text" name="name" value="{ display_name || name }"
         class="fit field inline-input align-left col-12" oninput="{ inputname }"  />
-        <label if="{this.parent.parent.type == 'Quote'}">{ item.display_name || item.name }</label>
+        <label if="{this.parent.parent.type == 'Quote'}">{ display_name || name }</label>
         <br class="sm-hide">
       </div>
 
       <div if="{ parent.headers.description }" class="sm-col sm-col-{ parent.headers.description } mb1 sm-mb0">
-        <input type="text" name="description" value="{ item.description }" placeholder="Description"
+        <input type="text" name="description" value="{ description }" placeholder="Description"
         class="fit field inline-input align-left col-12" oninput="{ inputdesc }" />
         <br class="sm-hide">
       </div>
@@ -39,22 +39,22 @@ import './_comments.tag'
 
       <div if="{ parent.headers.quantity }" class="col sm-col-{ parent.headers.quantity } col-3 center relative">
         <a if="{!parent.opts.readonly && ['Decorating','Lay'].indexOf(action) > -1}" rel="edit_dimensions_task_{item.id}_{item.name}" onclick="{setActivity}"><i class="fa fa-edit absolute left-0 top-0 z1 mt1 mr1 bg-white" ></i></a>
-        <input type="number" name="quantity" value="{ item.quantity }" step="1" min="0"
+        <input type="number" name="quantity" value="{ quantity }" step="1" min="0"
         class="fit field inline-input center" oninput="{ input }" />
       </div>
 
       <div if="{ parent.headers.price }" class="col sm-col-{ parent.headers.price } col-{parent.opts.name == 'task' ? 3 : 2} center relative">
         <i if="{!parent.opts.readonly}" class="fa fa-gbp task-item absolute left-0 top-0 z1 mt1 mr1 bg-white"></i>
-        <input if="{!parent.opts.readonly}" type="number" name="price" value="{ parent.opts.name == 'task' ? item.price / 100 : (supplied ? item.price / 100 : 0) }"
+        <input if="{!parent.opts.readonly}" type="number" name="price" value="{ parent.opts.name == 'task' ? price / 100 : (supplied ? price / 100 : 0) }"
         disabled="{ parent.opts.name == 'material' && !supplied }" step="1" min="0" class="fit field inline-input price task-item-input" oninput="{ input }" />
-        <label if="{parent.opts.readonly}">{ formatCurrency(parent.opts.name == 'task' ? item.price : (item.supplied ? item.price : 0)) }</label>
+        <label if="{parent.opts.readonly}">{ formatCurrency(parent.opts.name == 'task' ? item.price : (supplied ? price : 0)) }</label>
       </div>
 
       <div if="{ parent.headers.total_cost }" class="col sm-col-{ parent.headers.total_cost } col-3 center relative">
         <i if="{!parent.opts.readonly}" class="fa fa-gbp task-item absolute left-0 top-0 z1 mt1 mr1 bg-white"></i>
-        <input if="{!parent.opts.readonly}" type="number" value="{parent.opts.name == 'task' ? (item.price / 100 * item.quantity) : (item.supplied ? item.price / 100 * item.quantity : '0')}"
+        <input if="{!parent.opts.readonly}" type="number" value="{parent.opts.name == 'task' ? (price / 100 * quantity) : (supplied ? price / 100 * quantity : '0')}"
         step="1" min="0" class="fit field inline-input price task-item-input" oninput="{ inputTotalCost }" >
-        <label if="{parent.opts.readonly}">{ formatCurrency(parent.opts.name == 'task' ? (item.price * item.quantity) : (item.supplied ? item.price * item.quantity : '0'))}</label>
+        <label if="{parent.opts.readonly}">{ formatCurrency(parent.opts.name == 'task' ? (price * quantity) : (supplied ? price * quantity : '0'))}</label>
       </div>
 
       <div if="{ parent.headers.actions }" class="col sm-col-{ parent.headers.actions } col-2 center">
@@ -65,14 +65,14 @@ import './_comments.tag'
                 <i class="fa fa-edit"></i>
             </a>
             <div data-details class="absolute left-0 nowrap bg-white rounded large-z">
-                <a each="{ category in this.categories }" class="h5 btn block btn-outline mb1 black" onclick='{changeTaskAction}' category-name='{category}' task-index="{i}">{category}</a>
+                <a each="{ category in this.categories }" class="h5 btn block btn-outline mb1 black" onclick='{changeTaskAction}' category-name='{category}'>{category}</a>
             </div>
         </div>
       </div>
     </div>
   </li>
 
-  <r-dialog if="{opts.api.activity == ('edit_dimensions_task_' + item.id + '_' + item.name)}" title="Edit Dimensions" >
+  <r-dialog if="{opts.api.activity == ('edit_dimensions_task_' + id + '_' + name)}" title="Edit Dimensions" >
     <form class="p2" onsubmit="{parent.updateDimensions}">
       <label>Dimensions</label>
       <r-area-calculator dimensions="{parent.parent.parent.section.dimensions}" callback="{parent.setQuantity}"></r-area-calculator>
@@ -197,10 +197,10 @@ import './_comments.tag'
 
   this.changeTaskAction = (e) => {
     //e.preventUpdate=true
-    this.parent.parent.section.tasks[+e.target.getAttribute('task-index')].action = e.target.getAttribute('category-name')
+    this._item.action = e.target.getAttribute('category-name')
     //this.update()
     //this.parent.update()
-    this.parent.parent.parent.update()
+    this.update()
     this.opts.api.tenders.trigger('update')
   }
 

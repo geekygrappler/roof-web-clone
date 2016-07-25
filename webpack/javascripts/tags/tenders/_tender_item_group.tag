@@ -17,7 +17,7 @@
           </div>
         </li>
 
-        <r-tender-item each="{item, i in items}" border_cleaner="{last}" readonly="{opts.readonly}" no-reorder></r-tender-item>
+        <r-tender-item each="{items}" border_cleaner="{last}" readonly="{opts.readonly}" no-reorder></r-tender-item>
 
       </ul>
     </li>
