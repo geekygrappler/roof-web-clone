@@ -154,7 +154,7 @@
             {record.accepted_at ? 'Accepted' : 'Accept'} <span if="{record.accepted_at}">{fromNow(record.accepted_at)}</span>
             </button>
 
-            <virtual if="{!opts.readonly && !currentAccount.isCustomer}">
+            <virtual if="{!currentAccount.isCustomer}">
               <button type="submit" class="btn btn-primary btn-big {busy: busy}">Save</button>
               <a if="{opts.id}" class="btn bg-green white btn-big {busy: busy}" onclick="{submitQuote}">
                 {record.submitted_at ? 'Submitted' : 'Submit'} <span if="{record.submitted_at}">{fromNow(record.submitted_at)}</span>
@@ -402,7 +402,7 @@
             var section = this.currentScrolledSection.section
             section.tasks = section.tasks || []
             delete taskClass.currentTask['tags']
-            section.tasks.push(taskClass.currentTask)
+            section.tasks.push(this.newTaskReference(taskClass.currentTask))
             this.opts.api[this.opts.type_underscore].update(this.record.id, this.record)
             $('html, body').animate({
                 scrollTop: $(this.currentScrolledSection.root).offset().top
@@ -411,6 +411,20 @@
         this.setSectionOffsets('r-tender-section')
         this.currentScrolledSection.updateSectionTotal()
         delete taskClass['currentTask']
+    }
+
+    this.newTaskReference = function(item) {
+        // this function unbinds the object from previously binded task objects, creating a new object thats individually mutable 
+        return {
+            action: item.action,
+            description: item.description,
+            group: item.group,
+            id: item.id,
+            name: item.name,
+            price: +item.price,
+            quantity: +item.quantity,
+            unit : item.unit
+        }
     }
 
     var timer
