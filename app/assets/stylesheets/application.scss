@@ -147,12 +147,23 @@ nav a:hover {
   }
   &.price {
     text-indent: 0.75rem;
-    text-align: left;
   }
 }
-.fa-gbp.absolute{
+.fa-gbp.task-item{
   margin-top: 0.25rem;
   color: $teal;
+  left: -0.7rem;
+}
+
+.large-z {
+  z-index: 1200;
+  a {
+    padding: 0.2rem 0.5rem;
+  }
+}
+
+.task-item-input {
+  text-align: left;
 }
 
 @-webkit-keyframes busy {

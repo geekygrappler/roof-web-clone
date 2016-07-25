@@ -414,7 +414,7 @@
     }
 
     this.newTaskReference = function(item) {
-        // this function unbinds the object from previously binded task objects, creating a new object thats individually mutable 
+        // this function unbinds the object from previously binded task objects, creating a new object thats individually mutable
         return {
             action: item.action,
             description: item.description,
