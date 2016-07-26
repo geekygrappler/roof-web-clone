@@ -189,7 +189,7 @@
   var _this = this
 
   this.tags['r-tender-filters'].on('update', this.update)
-    this.getTitle = () => {
+  this.getTitle = () => {
       // (opts.readonly ? 'Showing' : 'Editing') + ' Quote ' + opts.id
       if (this.opts.type_underscore === 'tender_templates') this.title = this.record.name
       if(this.title) {
@@ -207,7 +207,7 @@
             })
         }
       }
-    }
+   }
 
     this.headers = {
       task: {name: 3, description: 3, quantity: 1, price: 1, total_cost: 2, actions: 2},
@@ -346,28 +346,28 @@
     }
 
 
-        this.submitQuote = (e) => {
-          if (this.opts.id) {
-            if (e) e.preventDefault()
-            this.update({busy: true})
-            this.opts.api[this.opts.type_underscore].submit(this.opts.id, this.record)
-            .fail(this.errorHandler)
-            .then(id => {
-              this.record.submitted_at = new Date()
-              this.update({busy:false})
-            })
-          }
-        }
+    this.submitQuote = (e) => {
+      if (this.opts.id) {
+        if (e) e.preventDefault()
+        this.update({busy: true})
+        this.opts.api[this.opts.type_underscore].submit(this.opts.id, this.record)
+        .fail(this.errorHandler)
+        .then(id => {
+          this.record.submitted_at = new Date()
+          this.update({busy:false})
+        })
+      }
+    }
 
-        this.acceptQuote = (e) => {
-          if (this.opts.id) {
-            if (e) e.preventDefault()
-            this.update({busy: true})
-            this.opts.api[this.opts.type_underscore].accept(this.opts.id)
-            .fail(this.errorHandler)
-            .then(id => this.update({busy:false}))
-          }
-        }
+    this.acceptQuote = (e) => {
+      if (this.opts.id) {
+        if (e) e.preventDefault()
+        this.update({busy: true})
+        this.opts.api[this.opts.type_underscore].accept(this.opts.id)
+        .fail(this.errorHandler)
+        .then(id => this.update({busy:false}))
+      }
+    }
 
     this.tags['r-typeahead-input'][0].on('itemselected', (item) => {
       this.record.professional_id = item.id
@@ -387,6 +387,12 @@
         }
 
     }
+
+    this.on('update', function() {
+        if (!this.uniqueIdentifiers && this.record && this.record.document && this.record.document.sections) {
+            this.createNewIdentifiersForSections(this.record.document.sections)
+        }
+    })
 
     this.addTask = function() {
         var taskClass = this.tags['task']

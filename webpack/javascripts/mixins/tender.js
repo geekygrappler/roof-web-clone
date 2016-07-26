@@ -52,7 +52,7 @@ riot.mixin('tenderMixin', {
 
     this.sections = () => {
       var filterSection = this.tags['r-tender-filters'].section
-      return filterSection ? _.filter(this.record.document.sections, (section) => section.id == filterSection): this.record.document.sections
+      return filterSection ? _.filter(this.record.document.sections, (section) => section.uniqueIdentifier == filterSection): this.record.document.sections
     }
 
     this.findSectionsInTemplate = (id) => {
@@ -60,6 +60,24 @@ riot.mixin('tenderMixin', {
         if (this.tenderTemplates[i].id = id) {
           return this.tenderTemplates[i]
         }
+      }
+    }
+
+    this.createNewIdentifier = (e) => {
+      var newIdentifier = this.lastIdentifier + 1
+      if (this.uniqueIdentifiers[newIdentifier]) {
+        this.lastIdentifier = this.lastIdentifier + 1
+        var newIdentifier = this.createNewIdentifier()
+      }
+      this.lastIdentifier = newIdentifier
+      return newIdentifier;
+    }
+
+    this.createNewIdentifiersForSections = (sections) => {
+      this.uniqueIdentifiers = this.uniqueIdentifiers || {}
+      this.lastIdentifier = this.lastIdentifier || 0;
+      for (var i = 0, ii = sections.length; i < ii; i++) {
+        sections[i].uniqueIdentifier = this.createNewIdentifier()
       }
     }
 
@@ -77,6 +95,7 @@ riot.mixin('tenderMixin', {
         }]
       } else {
         var sections = this.tender_templates[selectedTemplateIndex].document.sections
+        this.createNewIdentifiersForSections(sections);
       }
       this.record.document.sections = this.record.document.sections.concat(sections)
       if (!_.isEmpty(this.sectionName.value) && sections.length > 1) {
@@ -96,7 +115,7 @@ riot.mixin('tenderMixin', {
     this.removeSection = (e) => {
       e.preventDefault()
       if (window.confirm(this.ERRORS.CONFIRM_DELETE)) {
-        var index = _.findIndex(this.record.document.sections, s => s.id == e.item.section.id)
+        var index = _.findIndex(this.record.document.sections, s => s.uniqueIdentifier == e.item.section.uniqueIdentifier)
         if (index > -1) {
           this.record.document.sections.splice(index, 1)
           this.update()
