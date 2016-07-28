@@ -106,9 +106,24 @@ let taskActions = require("json!../../data/task_actions.json")
       })
 
       var grouped = _.groupBy(tasksWithDescription, (item) => item.action)
-      this.section.tasks_by_action = _.groupBy(_.flatten(_.sortBy(grouped, (list, group) => {
-        return _.indexOf(_.keys(this.taskActions), group)
-      })),(item) => item.action)
+      this.section.tasks_by_action = _.groupBy(_.flatten(
+        _.sortBy(grouped, (list, group) => {
+                return _.indexOf(_.keys(this.taskActions), group)
+            }
+        )
+      ), (item) => item.action)
+
+      this.section.tasks_by_action_ordered = {}
+
+      for(var i = 0, ii = this.parent.categories.length; i < ii; i++) {
+        var cat = this.parent.categories[i]
+        var items = this.section.tasks_by_action[cat]
+        if (items) this.section.tasks_by_action_ordered[cat] = items
+      }
+
+      this.section.tasks_by_action = this.section.tasks_by_action_ordered
+
+      delete this.section['tasks_by_action_ordered']
 
       var materialsWithDescription = _.map(this.section.materials, (item) => {
         item.description = item.description ? item.description : ''
@@ -117,22 +132,6 @@ let taskActions = require("json!../../data/task_actions.json")
       this.section.materials_by_group = {materials: materialsWithDescription}
       if (!this.sectionTotal) this.updateSectionTotal()
     }
-  })
-
-  this.itemselectedFn = function(item) {
-      var sec = this.parent.currentScrolledSection.section
-      sec.tasks = sec.tasks || []
-      let index = _.findIndex(sec.tasks, task => task.id == item.id )
-      if (index < 0 || typeof item.id === 'undefined') {
-        sec.tasks.push(item)
-        this.update()
-        this.updateSectionTotal()
-        this.opts.api.tenders.trigger('update')
-      }
-  }
-
-  this.tags.task.on('itemselected', (item) => {
-    this.itemselectedFn(item)
   })
 
   this.tags.material.on('itemselected', (item) => {

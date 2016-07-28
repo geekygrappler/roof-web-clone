@@ -86,7 +86,7 @@ import './_comments.tag'
 
   <script>
 
-  this.categories = ['Preparation', 'Structural', 'Plumbing', 'Electrics', 'Carpentry', 'Bespoke carpentry', 'Plastering', 'Decorating', 'Flooring', 'General']
+  this.categories = this.parent.parent.categories
 
   this.commentsCount = 0
   this.on('mount', () => {

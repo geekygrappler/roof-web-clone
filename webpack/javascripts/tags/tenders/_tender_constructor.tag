@@ -186,6 +186,8 @@
 
   this.type = 'Quote'
 
+  this.categories = ['Preparation', 'Structural', 'Plumbing', 'Electrics', 'Carpentry', 'Bespoke carpentry', 'Plastering', 'Decorating', 'Flooring', 'General']
+
   var _this = this
 
   this.tags['r-tender-filters'].on('update', this.update)
