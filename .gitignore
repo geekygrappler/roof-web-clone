@@ -15,3 +15,5 @@
 /public/uploads
 /app/assets/javascripts/*.bundle.js
 /app/assets/javascripts/*.bundle.js.map
+
+Gemfile.lock
