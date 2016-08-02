@@ -59,9 +59,10 @@ class Auth::RegistrationsController < Devise::RegistrationsController
     unless params[:account].try(:[], :user).try(:[], :type)
       params[:account] && params[:account][:user] && params[:account][:user][:type] = 'Customer'
     end
-    devise_parameter_sanitizer.for(:sign_up) << {
+    keys = [
       user: [:type, {profile: params[:account].try(:[],:user).try(:[],:type).try(:constantize).try(:required_profile_attributes)}]
-    }
+    ]
+    devise_parameter_sanitizer.permit(:sign_up, keys: keys)
   end
 
 
