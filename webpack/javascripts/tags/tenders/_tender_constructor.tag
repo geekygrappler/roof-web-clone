@@ -17,7 +17,7 @@
         <div class="clearfix">
           <div class="left mb4 overflow-hidden">
             <h1 class="mb0">{ opts.id ? getTitle() : 'New ' + opts.type_class }</h1>
-            <a class="btn btn-small h6 btn-outline orange" href="/app/projects/{record.project_id}"><i class="fa fa-chevron-left"></i> Back to Project</a>
+            <a class="btn btn-small h6 btn-outline orange back-to-project" href="/app/projects/{record.project_id}"><i class="fa fa-chevron-left"></i> Back to Project</a>
           </div>
           <div class="right h5 mt3 align-right">
             <div>Created at: {formatTime(record.created_at)}</div>

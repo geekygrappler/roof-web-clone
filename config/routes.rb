@@ -6,4 +6,5 @@ Rails.application.routes.draw do
   root to: 'pages#show', pathname: 'landing'
   get "*path" => "pages#show", pathname: '404'
   patch '/api/tender_templates/:id/toggle_searchable', to: 'tender_templates#toggle_searchable'
+  post '/api/pdf/upload_pdf', to: 'pdf#upload_pdf'
 end

@@ -7,6 +7,60 @@ riot.mixin('tenderMixin', {
     if (!this.saved) return this.ERRORS.CONFIRM_UNSAVED_CHANGES
   },
   init: function () {
+    var _this = this;
+    window.createPDF = function() {
+      var content = _this.dismantal();
+      var json = _this.rootToJSON(content);
+      var file = _this.sendHTMLToServer(json);
+      // return _this.downloadFile('dddd', 'Quote.pdf', 'application/pdf');
+    };
+
+    this.dismantal = function() {
+      var dom = $('html').clone();
+      dom.find('script').remove();
+      dom.find('r-modal').remove()
+      dom.find('r-tender-constructor').children('yield').remove();
+      dom.find('form[name=form]').remove();
+      dom.find('.locked-task-bar').remove();
+      dom.find('r-tender-filters').remove();
+      dom.find('.back-to-project').remove();
+      dom.find('.item-actions').remove();
+      dom.find('.fa-trash-o').parent().remove();
+      dom.find('r-dialog').remove();
+      dom.find('.fa-edit').remove();
+      dom.find('.actions-header').parent().remove();
+      dom.find('.section-category-affix-holder').remove();
+      dom.find('.fa-minus-square-o').remove();
+      return dom.find('r-app');
+    };
+
+    this.rootToJSON = function(dom) {
+      var stringArray = $(dom).html();
+      return JSON.stringify(dom[0].innerHTML);
+    };
+
+    this.wrapChildren = function(el, vdom) {
+
+    };
+
+    this.sendHTMLToServer = function(json) {
+      $.ajax({
+        url: "/api/pdf/upload_pdf",
+        type: 'POST',
+        data: {content: json, css_link: 'eee'},
+        success: function(result){
+          console.log(result);
+        }
+      })
+    };
+
+    this.downloadFile = function(text, name, type) {
+      var a = document.createElement("a");
+      var file = new Blob([text], {type: type});
+      a.href = URL.createObjectURL(file);
+      a.download = name;
+      a.click();
+    };
 
     this.includeVat = false
 
