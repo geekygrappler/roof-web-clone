@@ -53,25 +53,29 @@ class PdfController < ApplicationController
   def all(sections, data)
     room_overview= data['room_overview'] = {}
     trade_overview = data['trade_overview'] = {}
-    sections.each do |section|
-      name = section['name']
-      # save name to rooms overview section['name']
-      room_overview[name] = 0 if !room_overview[name]
-      tasks_by_action = section['tasks_by_action'] = {}
-      section_total = 0
-      section['tasks'].each do |task|
-        action = task['action']
-        # save to trade overview
-        trade_overview[action] = 0 if !trade_overview[action]
-        task_total = task['total'] = task['price'] * task['quantity']
-        trade_overview[action] = trade_overview[action] + task_total
-        # save to tasks_by_action
-        tasks_by_action[action] = {total: 0, tasks: []} if !tasks_by_action[action]
-        tasks_by_action[action][:tasks].push(task)
-        tasks_by_action[action][:total] = tasks_by_action[action][:total] + task['total']
-        section_total = section_total + task_total
+    if sections.present?
+      sections.each do |section|
+        name = section['name']
+        # save name to rooms overview section['name']
+        room_overview[name] = 0 if !room_overview[name]
+        tasks_by_action = section['tasks_by_action'] = {}
+        section_total = 0
+        if section['tasks'].present?
+          section['tasks'].each do |task|
+            action = task['action']
+            # save to trade overview
+            trade_overview[action] = 0 if !trade_overview[action]
+            task_total = task['total'] = task['price'] * task['quantity']
+            trade_overview[action] = trade_overview[action] + task_total
+            # save to tasks_by_action
+            tasks_by_action[action] = {total: 0, tasks: []} if !tasks_by_action[action]
+            tasks_by_action[action][:tasks].push(task)
+            tasks_by_action[action][:total] = tasks_by_action[action][:total] + task['total']
+            section_total = section_total + task_total
+          end
+          section['total'] = room_overview[name] = section_total
+        end
       end
-      section['total'] = room_overview[name] = section_total
     end
   end
 end

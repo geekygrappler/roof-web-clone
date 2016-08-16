@@ -77,12 +77,14 @@
     <div style='width: 45%;float:left;'>
       <h3 style='color:#616161'>ROOM OVERVIEW</h3>
       <table style='border-collapse:collapse;width:100%;color:#616161'>
-        <% room_overview.each_with_index do |(name, price), index| %>
-            <% grey_background = index.odd? ? 'background:#f5f5f5;-webkit-print-color-adjust:exact;' : '' %>
-            <tr style=<%= grey_background %>>
-              <td style='padding: 7px 0px;'><%= name %></td>
-              <td style="text-align:right;"><%= number_to_currency(price.to_f / 100, unit: "£", precision: 0) %></td>
-            </tr>
+        <% if room_overview.present? %>
+            <% room_overview.each_with_index do |(name, price), index| %>
+                <% grey_background = index.odd? ? 'background:#f5f5f5;-webkit-print-color-adjust:exact;' : '' %>
+                <tr style=<%= grey_background %>>
+                  <td style='padding: 7px 0px;'><%= name %></td>
+                  <td style="text-align:right;"><%= number_to_currency(price.to_f / 100, unit: "£", precision: 0) %></td>
+                </tr>
+            <% end %>
         <% end %>
       </table>
 
@@ -91,12 +93,14 @@
     <div style='width: 45%;float:right;'>
       <h3 style='color:#616161'>TRADE OVERVIEW</h3>
       <table style='border-collapse:collapse;width:100%;color:#616161'>
-        <% trade_overview.each_with_index do |(name, price), index| %>
+        <% if room_overview.present? %>
+          <% trade_overview.each_with_index do |(name, price), index| %>
             <% grey_background = index.odd? ? 'background:#f5f5f5;-webkit-print-color-adjust:exact;' : '' %>
             <tr style=<%= grey_background %>>
               <td style='padding: 7px 0px;'><%= name %></td>
               <td style="text-align:right;"><%= number_to_currency(price.to_f / 100, unit: "£", precision: 0) %></td>
             </tr>
+          <% end %>
         <% end %>
       </table>
       <br/>
@@ -123,35 +127,37 @@
   <div style="margin-top:20px">
     <h3>QUOTE</h3>
     <div>
-      <% sections.each do |section| %>
-        <div style="margin-top:20px;margin-bottom:10px">
-          <span style='font-size: 1.2em;font-weight:900;'><%= section['name'] %></span>
-          <!-- <span>Floor Area 20m2 - Wall Area 43.2m2 | L:4m x W:5m x H:2.4m</span> -->
-          <span style='float: right'><%= number_to_currency(section['total'].to_f / 100, unit: "£", precision: 0) %></span>
-          <div style='clear:both'></div>
-          <table style='width:100%;font-size:0.8em;'>
-            <th style='color:#999;font-size:0.9em;font-weight:400;text-align: left;padding: 4px 8px;'>Item</th>
-            <th style='color:#999;font-size:0.9em;font-weight:400;padding: 4px 8px;'>Qty</th>
-            <th style='color:#999;font-size:0.9em;font-weight:400;padding: 4px 8px;'>Rate</th>
-            <th style='color:#999;font-size:0.9em;font-weight:400;padding: 4px 8px;'>Total</th>
-            <% section['tasks_by_action'].each do |action, info| %>
-                <tr style='background:#f5f5f5;-webkit-print-color-adjust: exact;'>
-                  <td style='padding: 10px 8px;'><%= action %></td>
-                  <td style='padding: 10px 8px;text-align: center;'></td>
-                  <td style='padding: 10px 8px;text-align: center;'></td>
-                  <td style='padding: 10px 8px;text-align: center;'><%= number_to_currency(info[:total].to_f / 100, unit: "£", precision: 0) %></td>
-                </tr>
-              <% info[:tasks].each do |task| %>
-                  <tr>
-                    <td style='padding: 10px 8px;'>&bull; <%= task['name'] %></td>
-                    <td style='padding: 10px 8px;text-align: center;'><%= task['quantity'] %></td>
-                    <td style='padding: 10px 8px;text-align: center;'><%= number_to_currency(task['price'].to_f / 100, unit: "£", precision: 0) %></td>
-                    <td style='padding: 10px 8px;text-align: center;'><%= number_to_currency(task['total'].to_f / 100, unit: "£", precision: 0) %></td>
+      <% if sections.present? %>
+        <% sections.each do |section| %>
+          <div style="margin-top:20px;margin-bottom:10px">
+            <span style='font-size: 1.2em;font-weight:900;'><%= section['name'] %></span>
+            <!-- <span>Floor Area 20m2 - Wall Area 43.2m2 | L:4m x W:5m x H:2.4m</span> -->
+            <span style='float: right'><%= number_to_currency(section['total'].to_f / 100, unit: "£", precision: 0) %></span>
+            <div style='clear:both'></div>
+            <table style='width:100%;font-size:0.8em;'>
+              <th style='color:#999;font-size:0.9em;font-weight:400;text-align: left;padding: 4px 8px;'>Item</th>
+              <th style='color:#999;font-size:0.9em;font-weight:400;padding: 4px 8px;'>Qty</th>
+              <th style='color:#999;font-size:0.9em;font-weight:400;padding: 4px 8px;'>Rate</th>
+              <th style='color:#999;font-size:0.9em;font-weight:400;padding: 4px 8px;'>Total</th>
+              <% section['tasks_by_action'].each do |action, info| %>
+                  <tr style='background:#f5f5f5;-webkit-print-color-adjust: exact;'>
+                    <td style='padding: 10px 8px;'><%= action %></td>
+                    <td style='padding: 10px 8px;text-align: center;'></td>
+                    <td style='padding: 10px 8px;text-align: center;'></td>
+                    <td style='padding: 10px 8px;text-align: center;'><%= number_to_currency(info[:total].to_f / 100, unit: "£", precision: 0) %></td>
                   </tr>
+                <% info[:tasks].each do |task| %>
+                    <tr>
+                      <td style='padding: 10px 8px;'>&bull; <%= task['name'] %></td>
+                      <td style='padding: 10px 8px;text-align: center;'><%= task['quantity'] %></td>
+                      <td style='padding: 10px 8px;text-align: center;'><%= number_to_currency(task['price'].to_f / 100, unit: "£", precision: 0) %></td>
+                      <td style='padding: 10px 8px;text-align: center;'><%= number_to_currency(task['total'].to_f / 100, unit: "£", precision: 0) %></td>
+                    </tr>
+                <% end %>
               <% end %>
-            <% end %>
-          </table>
-        </div>
+            </table>
+          </div>
+        <% end %>
       <% end %>
     </div>
     <div style='clear:both'></div>
