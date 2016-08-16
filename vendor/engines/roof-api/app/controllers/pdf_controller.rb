@@ -35,10 +35,11 @@ class PdfController < ApplicationController
 
     pdf = WickedPdf.new.pdf_from_string(view)
     s3 = Aws::S3::Resource.new
+    puts "quote-pdf-#{Rails.env}"
     bucket = s3.bucket("quote-pdf-#{Rails.env}")
-    file_name = "quote-#{params[:id]}"
-    save_path = Rails.root.join('public', 'tmp', file_name)
-    file = File.open(save_path, "w+")
+    file_name = "quote-#{params[:id]}.pdf"
+    save_path = Rails.root.join('tmp', file_name)
+    file = File.new(save_path, "w+")
     file.write(pdf.force_encoding("UTF-8"))
     file.close
     obj = bucket.object(file_name)

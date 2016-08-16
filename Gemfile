@@ -27,15 +27,13 @@ gem 'clockwork'
 # gem 'asset_sync'
 
 gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary', '~> 0.12.3'
 
 gem 'aws-sdk', '~> 2'
 
-group :production do
-  gem 'wkhtmltopdf-heroku'
-end
+
 
 group :development, :test do
-  gem 'wkhtmltopdf-binary', '~> 0.12.3'
   gem 'byebug'
   gem "letter_opener"
 end
