@@ -14,6 +14,8 @@
 
 
     <div if='{opts.type_class === "Quote"}'>
+        <div class='btn btn-primary relative right' onclick='{createPDF}'>Download PDF</div>
+        <div class="clearfix"></div>
         <div class="clearfix">
           <div class="left mb4 overflow-hidden">
             <h1 class="mb0">{ opts.id ? getTitle() : 'New ' + opts.type_class }</h1>

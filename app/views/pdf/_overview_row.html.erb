@@ -1,0 +1,7 @@
+<% overview.each_with_index do |(name, price), index| %>
+    <% grey_background = index.odd? ? 'background:#f5f5f5;-webkit-print-color-adjust:exact;' : '' %>
+    <tr style=<%= grey_background %>>
+      <td style='padding: 7px 0px;'><%= name %></td>
+      <td style="text-align:right;"><%= number_to_currency(price.to_f / 100, unit: "£", precision: 0) %></td>
+    </tr>
+<% end %>

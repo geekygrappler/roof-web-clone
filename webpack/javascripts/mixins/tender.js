@@ -8,75 +8,46 @@ riot.mixin('tenderMixin', {
   },
   init: function () {
     var _this = this;
-    window.createPDF = function() {
-      var content = _this.dismantal();
-      var json = _this.rootToJSON(content);
-      var file = _this.sendHTMLToServer(json);
-      // return _this.downloadFile('dddd', 'Quote.pdf', 'application/pdf');
+    this.createPDF = function(e) {
+      this.sendHTMLToServer(this.id, e.srcElement);
+      return 'submitted';
     };
 
-    this.dismantal = function() {
-      var dom = $('html').clone();
-      dom.find('script').remove();
-      dom.find('r-modal').remove()
-      dom.find('r-tender-constructor').children('yield').remove();
-      dom.find('form[name=form]').remove();
-      dom.find('.locked-task-bar').remove();
-      dom.find('r-tender-filters').remove();
-      dom.find('.back-to-project').remove();
-      dom.find('.item-actions').remove();
-      dom.find('.fa-trash-o').parent().remove();
-      dom.find('r-dialog').remove();
-      dom.find('.fa-edit').remove();
-      dom.find('.actions-header').parent().remove();
-      dom.find('.section-category-affix-holder').remove();
-      dom.find('.fa-minus-square-o').remove();
-      return dom.find('r-app');
-    };
-
-    this.rootToJSON = function(dom) {
-      var stringArray = $(dom).html();
-      return JSON.stringify(dom[0].innerHTML);
-    };
-
-    this.wrapChildren = function(el, vdom) {
-
-    };
-
-    this.sendHTMLToServer = function(json) {
+    this.sendHTMLToServer = function(id, el) {
+      el.textContent = 'Loading..'
       $.ajax({
         url: "/api/pdf/upload_pdf",
         type: 'POST',
-        data: {content: json, css_link: 'eee'},
+        data: {id: id},
         success: function(result){
-          console.log(result);
+          _this.downloadFile(result.pdf, 'download');
+          el.textContent = 'Download PDF';
         }
       })
     };
 
-    this.downloadFile = function(text, name, type) {
+    this.downloadFile = function(text, name) {
       var a = document.createElement("a");
-      var file = new Blob([text], {type: type});
-      a.href = URL.createObjectURL(file);
+      a.href = text;
       a.download = name;
       a.click();
     };
 
-    this.includeVat = false
+    this.includeVat = false;
 
     this.preventUnsaved = (e) => {
       e.preventDefault()
       if( this.saved || (!this.saved && window.confirm(this.ERRORS.CONFIRM_UNSAVED_CHANGES)) ) {
         riot.route($(e.currentTarget).attr('href').substr(5), e.currentTarget.title, true)
       }
-    }
+    };
 
     this.setUnsaved = () => {
       this.saved = false
-    }
+    };
 
     this.on('mount', () => {
-      this.saved = true
+      this.saved = true;
       this.opts.api[this.opts.type_underscore].on('update', this.updateTenderTotal)
       window.onbeforeunload = this.warnUnsavedChanges
       $('a[href*="/app/"]', this.root).off('click').on('click',  this.preventUnsaved)
