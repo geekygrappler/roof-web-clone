@@ -24,18 +24,13 @@ class PdfController < ApplicationController
 
     views = Rails::Application::Configuration.new(Rails.root).paths["app/views"]
     views_helper = ActionView::Base.new views
-    view = views_helper.render partial: "pdf/pdf", locals: {total: data['total_amount'].to_f / 100,
-                                                               sections: sections,
-                                                               room_overview: data['room_overview'],
-                                                               summary: quote.data['summary'],
-                                                               trade_overview: data['trade_overview'],
-                                                               vat: vat.to_f / 100,
-                                                               professional: professional_attributes,
-                                                               client: client_attributes, helper: views_helper}
+    locals = {total: data['total_amount'].to_f / 100, sections: sections, room_overview: data['room_overview'],
+              summary: quote.data['summary'], trade_overview: data['trade_overview'], vat: vat.to_f / 100,
+              professional: professional_attributes, client: client_attributes, helper: views_helper}
+    view = views_helper.render partial: "pdf/pdf", locals: locals
 
     pdf = WickedPdf.new.pdf_from_string(view)
     s3 = Aws::S3::Resource.new
-    puts "quote-pdf-#{Rails.env}"
     bucket = s3.bucket("quote-pdf-#{Rails.env}")
     file_name = "quote-#{params[:id]}.pdf"
     save_path = Rails.root.join('tmp', file_name)
