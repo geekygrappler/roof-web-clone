@@ -1,0 +1,168 @@
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+<div style='width: 842px;font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;padding: 40px;'>
+  <div style='float:left;display: block;color: #cecece'>
+    <span style='margin-right:20px;'>REFERENCE: 33453</span>
+
+    <span>ISSUED: 21/06/2033</span>
+  </div>
+  <div style='clear:both'></div>
+  <div style='float:left;display: block;width:25%; '>
+    <img src=<%= professional['profile']['image_url'] %> style='width: 100px; height: 100px;margin:50px 0px' />
+    <br/>
+    <div>
+      <h2>RECIPIENT</h2>
+      <div>
+        <h3 style='color:#616161'>
+          <%= client['profile']['first_name'].upcase %> <%= client['profile']['last_name'].upcase %>
+        </h3>
+
+        <div style="color:#616161;">
+          <%= client['address']['street_address'] if client['address']['street_address'].present? %>
+          <br>
+          <%= client['address']['city'] if client['address']['city'].present? %>
+          <br>
+          <%= client['address']['postcode'] if client['address']['postcode'].present? %>
+          <br>
+          <%= client['address']['country'] if client['address']['country'].present? %>
+        </div>
+        <br/>
+        <div style="color:#616161;">
+          <%= client['profile']['email'] if client['profile']['email'].present? %>
+          <br/>
+          <%= client['profile']['phone_number'] if client['profile']['phone_number'].present? %>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style='float:right;display: block;width:75%'>
+    <div style='width: 25%;float:right;text-align: right'>
+      <h3 style='color:#616161'>
+        <%= professional['profile']['first_name'].upcase %> <%= professional['profile']['last_name'].upcase %>
+      </h3>
+      <div style="color:#616161;">
+        <%= professional['profile']['company_name'] if professional['profile']['company_name'].present? %>
+        <br/>
+        <%= professional['address']['address_1'] if professional['address']['address_1'].present? %>
+        <br/>
+        <%= professional['address']['address_2'] if professional['address']['address_2'].present? %>
+        <br/>
+        <%= professional['address']['city'] if professional['address']['city'].present? %>
+        <br/>
+        <%= professional['address']['postcode'] if professional['address']['postcode'].present? %>
+        <br/>
+        <%= "VAT: #{professional['profile']['company_vat_number']}" if professional['profile']['company_vat_number'].present? %>
+      </div>
+      <br/><br/>
+      <div style="color:#616161;text-align: right">
+        <%= professional['profile']['email'] %>
+        <br/>
+        <%= professional['profile']['phone_number'] %>
+      </div>
+
+    </div>
+
+    <br/>
+    <div style='clear:both';></div>
+    <div style='float: right;width:80%;margin:20px;color:#616161;margin-top: 50px'>
+      <%= summary %>
+    </div>
+  </div>
+  <div style='clear: both'></div>
+  <div>
+    <h2>OVERVIEW</h2>
+
+    <div style='width: 45%;float:left;'>
+      <h3 style='color:#616161'>ROOM OVERVIEW</h3>
+      <table style='border-collapse:collapse;width:100%;color:#616161'>
+        <% room_overview.each_with_index do |(name, price), index| %>
+            <% grey_background = index.odd? ? 'background:#f5f5f5;-webkit-print-color-adjust:exact;' : '' %>
+            <tr style=<%= grey_background %>>
+              <td style='padding: 7px 0px;'><%= name %></td>
+              <td style="text-align:right;"><%= number_to_currency(price.to_f / 100, unit: "£", precision: 0) %></td>
+            </tr>
+        <% end %>
+      </table>
+
+    </div>
+
+    <div style='width: 45%;float:right;'>
+      <h3 style='color:#616161'>TRADE OVERVIEW</h3>
+      <table style='border-collapse:collapse;width:100%;color:#616161'>
+        <% trade_overview.each_with_index do |(name, price), index| %>
+            <% grey_background = index.odd? ? 'background:#f5f5f5;-webkit-print-color-adjust:exact;' : '' %>
+            <tr style=<%= grey_background %>>
+              <td style='padding: 7px 0px;'><%= name %></td>
+              <td style="text-align:right;"><%= number_to_currency(price.to_f / 100, unit: "£", precision: 0) %></td>
+            </tr>
+        <% end %>
+      </table>
+      <br/>
+    </div>
+
+  </div>
+  <div style='clear:both'></div>
+  <div style="float: right;text-align: right; margin-top: 20px">
+    <div style="padding:3px 0px;">Total: <%= number_to_currency(total, unit: "£", precision: 0) %></div>
+    <div style="padding:3px 0px;">VAT(20%): <%= number_to_currency((vat), unit: "£", precision: 0) %></div>
+    <div style="font-size: 1.2em;padding:3px 0px;font-weight:900;">
+      Total inc VAT: <%= number_to_currency((total + vat), unit: "£", precision: 0) %>
+    </div>
+  </div>
+  <div style='clear:both'></div>
+  <div style='clear:both'></div>
+  <div>
+    Guarretees
+    Insurance
+    Payment
+    Deposit
+  </div>
+
+  <div style="margin-top:20px">
+    <h3>QUOTE</h3>
+    <div>
+      <% sections.each do |section| %>
+        <div style="margin-top:20px;margin-bottom:10px">
+          <span style='font-size: 1.2em;font-weight:900;'><%= section['name'] %></span>
+          <!-- <span>Floor Area 20m2 - Wall Area 43.2m2 | L:4m x W:5m x H:2.4m</span> -->
+          <span style='float: right'><%= number_to_currency(section['total'].to_f / 100, unit: "£", precision: 0) %></span>
+          <div style='clear:both'></div>
+          <table style='width:100%;font-size:0.8em;'>
+            <th style='color:#999;font-size:0.9em;font-weight:400;text-align: left;padding: 4px 8px;'>Item</th>
+            <th style='color:#999;font-size:0.9em;font-weight:400;padding: 4px 8px;'>Qty</th>
+            <th style='color:#999;font-size:0.9em;font-weight:400;padding: 4px 8px;'>Rate</th>
+            <th style='color:#999;font-size:0.9em;font-weight:400;padding: 4px 8px;'>Total</th>
+            <% section['tasks_by_action'].each do |action, info| %>
+                <tr style='background:#f5f5f5;-webkit-print-color-adjust: exact;'>
+                  <td style='padding: 10px 8px;'><%= action %></td>
+                  <td style='padding: 10px 8px;text-align: center;'></td>
+                  <td style='padding: 10px 8px;text-align: center;'></td>
+                  <td style='padding: 10px 8px;text-align: center;'><%= number_to_currency(info[:total].to_f / 100, unit: "£", precision: 0) %></td>
+                </tr>
+              <% info[:tasks].each do |task| %>
+                  <tr>
+                    <td style='padding: 10px 8px;'>&bull; <%= task['name'] %></td>
+                    <td style='padding: 10px 8px;text-align: center;'><%= task['quantity'] %></td>
+                    <td style='padding: 10px 8px;text-align: center;'><%= number_to_currency(task['price'].to_f / 100, unit: "£", precision: 0) %></td>
+                    <td style='padding: 10px 8px;text-align: center;'><%= number_to_currency(task['total'].to_f / 100, unit: "£", precision: 0) %></td>
+                  </tr>
+              <% end %>
+            <% end %>
+          </table>
+        </div>
+      <% end %>
+    </div>
+    <div style='clear:both'></div>
+    <div style="float: right;text-align: right; margin-top: 20px">
+      <div style="padding:3px 0px;">Total: <%= number_to_currency(total, unit: "£", precision: 0) %></div>
+      <div style="padding:3px 0px;">VAT(20%): <%= number_to_currency((vat), unit: "£", precision: 0) %></div>
+      <div style="font-size: 1.2em;padding:3px 0px;font-weight:900;">
+        Total inc VAT: <%= number_to_currency((total + vat), unit: "£", precision: 0) %>
+      </div>
+    </div>
+    <div style='clear:both'></div>
+  </div>
+
+</div>

@@ -7,22 +7,47 @@ riot.mixin('tenderMixin', {
     if (!this.saved) return this.ERRORS.CONFIRM_UNSAVED_CHANGES
   },
   init: function () {
+    var _this = this;
+    this.createPDF = function(e) {
+      this.sendHTMLToServer(this.id, e.srcElement);
+      return 'submitted';
+    };
 
-    this.includeVat = false
+    this.sendHTMLToServer = function(id, el) {
+      el.textContent = 'Loading..'
+      $.ajax({
+        url: "/api/pdf/upload_pdf",
+        type: 'POST',
+        data: {id: id},
+        success: function(result){
+          _this.downloadFile(result.pdf, 'download');
+          el.textContent = 'Download PDF';
+        }
+      })
+    };
+
+    this.downloadFile = function(text, name) {
+      var a = document.createElement("a");
+      a.href = text;
+      a.download = name;
+      a.click();
+    };
+
+    this.includeVat = false;
 
     this.preventUnsaved = (e) => {
       e.preventDefault()
       if( this.saved || (!this.saved && window.confirm(this.ERRORS.CONFIRM_UNSAVED_CHANGES)) ) {
         riot.route($(e.currentTarget).attr('href').substr(5), e.currentTarget.title, true)
       }
-    }
+    };
 
     this.setUnsaved = () => {
       this.saved = false
-    }
+    };
 
     this.on('mount', () => {
-      this.saved = true
+      this.saved = true;
       this.opts.api[this.opts.type_underscore].on('update', this.updateTenderTotal)
       window.onbeforeunload = this.warnUnsavedChanges
       $('a[href*="/app/"]', this.root).off('click').on('click',  this.preventUnsaved)

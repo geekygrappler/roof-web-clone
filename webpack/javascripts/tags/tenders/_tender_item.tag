@@ -1,20 +1,6 @@
 let taskActions = require("json!../../data/task_actions.json")
 import './_comments.tag'
 
-<r-tender-item-action-group-dropdown>
-  <select onchange="{changeTaskAction}">
-    <option each="{val, name in taskActions}" value="{val}" selected="{val == 'Other'}" no-reorder>{name}</option>
-  </select>
-  <script>
-  this.taskActions = _.omit(taskActions, 'Materials', 'VAT')
-  this.changeTaskAction = (e) => {
-    e.item = this.opts.item
-    this.opts.changeTaskAction(e)
-    this.closeModal()
-  }
-  </script>
-</r-tender-item-action-group-dropdown>
-
 <r-tender-item>
   <li class="relative border-right">
     <!--<div if="{opts.border_cleaner}" class="border-cleaner absolute"></div>-->
@@ -57,7 +43,7 @@ import './_comments.tag'
         <label if="{parent.opts.readonly}">{ formatCurrency(parent.opts.name == 'task' ? (price * quantity) : (supplied ? price * quantity : '0'))}</label>
       </div>
 
-      <div if="{ parent.headers.actions }" class="col sm-col-{ parent.headers.actions } col-2 center">
+      <div if="{ parent.headers.actions }" class="col sm-col-{ parent.headers.actions } col-2 center item-actions">
         <a href="#" class="btn btn-small border-red red mb1 sm-mb0" onclick="{ removeItem }" title="Delete"><i class="fa fa-trash-o"></i></a>
         <a href="#" if="{parent && parent.parent && parent.parent.record.id && this.parent.parent.type != 'TenderTemplate'}" class="btn btn-small border mb1 sm-mb0" onclick="{ openComments }" title="Comments"><i class="fa fa-comment-o"></i> [{getCommentsCount()}]</a>
         <div class="relative inline-block" data-disclosure>
