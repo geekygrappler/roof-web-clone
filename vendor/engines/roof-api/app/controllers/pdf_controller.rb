@@ -12,7 +12,7 @@ class PdfController < ApplicationController
     professional_attributes['address'] = professional.data['migration']
     professional_attributes['profile'] = professional.data['profile_attributes']
     professional_attributes['profile']['email'] = professional.account.email
-    professional_attributes['profile']['image_url'] = professional_attributes['profile']['image_url'] || professional.data['migration']['header_photo']
+    professional_attributes['profile']['image_url'] = professional.data['profile_attributes']['image_url'] || professional.data['migration']['header_photo']
 
     client_attributes = {}
     client_attributes['address'] = project.data['address_attributes']
@@ -90,8 +90,9 @@ class PdfController < ApplicationController
   end
 
   def format_phone_number(number)
+    return nil if !number
     number = number.to_i.floor.to_s
-    number.prepend('0') if number.split('').first == '7'
+    number.prepend('0') if number.split('')[0] == '7'
     number
   end
 
