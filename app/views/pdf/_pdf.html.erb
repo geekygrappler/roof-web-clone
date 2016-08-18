@@ -1,20 +1,38 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 
-<div style='width: 842px;font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;padding: 40px;'>
-  <div style='float:left;display: block;color: #cecece'>
-    <span style='margin-right:20px;'>REFERENCE: 33453</span>
+<style>
+  @media print
+  {
+    .page-break  { display:block; page-break-before:always; }
+    .page-break-after { display:block; clear:both; page-break-after:always; }
+  }
+</style>
 
-    <span>ISSUED: 21/06/2033</span>
+<div style='width: 842px;font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;padding: 40px;'>
+  <div class="page-break-after">
+  <div style='float:left;display: block;color: #cecece; position: relative;'>
+    <div>
+      <span style='margin-right:20px;float:left;display: inline-block'>REFERENCE: <%= reference %></span>
+      <% if submitted %>
+          <span style="margin-right:20px;float:left;display: inline-block">ISSUED: <%= submitted %></span>
+      <% end %>
+    </div>
   </div>
   <div style='clear:both'></div>
   <div style='float:left;display: block;width:25%; '>
-    <img src=<%= professional['profile']['image_url'] %> style='width: 100px; height: 100px;margin:50px 0px' />
+    <img src=<%= professional['profile']['image_url'] %> style='height:100px;margin:50px 0px' />
     <br/>
     <div>
       <h2>RECIPIENT</h2>
       <div>
         <h3 style='color:#616161'>
-          <%= client['profile']['first_name'].upcase %> <%= client['profile']['last_name'].upcase %>
+          <% if client['profile']['first_name'] %>
+              <%= client['profile']['first_name'].upcase %>
+          <% end %>
+
+          <% if client['profile']['last_name'] %>
+              <%= client['profile']['last_name'].upcase %>
+          <% end %>
         </h3>
 
         <div style="color:#616161;">
@@ -108,7 +126,7 @@
 
   </div>
   <div style='clear:both'></div>
-  <div style="float: right;text-align: right; margin-top: 20px">
+  <div style="float: right;text-align: right; margin-top: 20px;margin-bottom:30px">
     <div style="padding:3px 0px;">Total: <%= number_to_currency(total, unit: "£", precision: 0) %></div>
     <div style="padding:3px 0px;">VAT(20%): <%= number_to_currency((vat), unit: "£", precision: 0) %></div>
     <div style="font-size: 1.2em;padding:3px 0px;font-weight:900;">
@@ -118,18 +136,34 @@
   <div style='clear:both'></div>
   <div style='clear:both'></div>
   <div>
-    Guarretees
-    Insurance
-    Payment
-    Deposit
+    <% if guarantee %>
+      <span>
+        <span style="font-weight: 900">
+          Guarretee Length
+        </span>
+        - <%= pluralize(guarantee, 'million') %>
+      </span>
+    <% end %>
+    <% if insurance %>
+      <span style="margin-left: 30px">
+        <span style="font-weight: 900">
+          Insurance Amount
+        </span>
+        - <%= pluralize(insurance, 'year') %>
+      </span>
+    <% end %>
+    <!---Payment--->
+    <!---Deposit--->
   </div>
-
-  <div style="margin-top:20px">
+  </div>
+  <p style='page-break-after:always;'></p>
+  <div class="page-break"></div>
+  <div style="margin-top:40px">
     <h3>QUOTE</h3>
     <div>
       <% if sections.present? %>
         <% sections.each do |section| %>
-          <div style="margin-top:20px;margin-bottom:10px">
+          <div style="margin-top:40px;margin-bottom:10px">
             <span style='font-size: 1.2em;font-weight:900;'><%= section['name'] %></span>
             <!-- <span>Floor Area 20m2 - Wall Area 43.2m2 | L:4m x W:5m x H:2.4m</span> -->
             <span style='float: right'><%= number_to_currency(section['total'].to_f / 100, unit: "£", precision: 0) %></span>
@@ -140,15 +174,15 @@
               <th style='color:#999;font-size:0.9em;font-weight:400;padding: 4px 8px;'>Rate</th>
               <th style='color:#999;font-size:0.9em;font-weight:400;padding: 4px 8px;'>Total</th>
               <% section['tasks_by_action'].each do |action, info| %>
-                  <tr style='background:#f5f5f5;-webkit-print-color-adjust: exact;'>
+                  <tr style='background:#dadada;-webkit-print-color-adjust: exact;'>
                     <td style='padding: 10px 8px;'><%= action %></td>
                     <td style='padding: 10px 8px;text-align: center;'></td>
                     <td style='padding: 10px 8px;text-align: center;'></td>
-                    <td style='padding: 10px 8px;text-align: center;'><%= number_to_currency(info[:total].to_f / 100, unit: "£", precision: 0) %></td>
+                    <td style='padding: 10px 8px;text-align: center;'><%= number_to_currency(info['total'].to_f / 100, unit: "£", precision: 0) %></td>
                   </tr>
                 <% info[:tasks].each do |task| %>
                     <tr>
-                      <td style='padding: 10px 8px;'>&bull; <%= task['name'] %></td>
+                      <td style='padding: 10px 8px;width: 70%'>&bull; <%= task['name'] %></td>
                       <td style='padding: 10px 8px;text-align: center;'><%= task['quantity'] %></td>
                       <td style='padding: 10px 8px;text-align: center;'><%= number_to_currency(task['price'].to_f / 100, unit: "£", precision: 0) %></td>
                       <td style='padding: 10px 8px;text-align: center;'><%= number_to_currency(task['total'].to_f / 100, unit: "£", precision: 0) %></td>
@@ -161,7 +195,7 @@
       <% end %>
     </div>
     <div style='clear:both'></div>
-    <div style="float: right;text-align: right; margin-top: 20px">
+    <div style="float: right;text-align: right; margin-top: 20px;margin-bottom:30px">
       <div style="padding:3px 0px;">Total: <%= number_to_currency(total, unit: "£", precision: 0) %></div>
       <div style="padding:3px 0px;">VAT(20%): <%= number_to_currency((vat), unit: "£", precision: 0) %></div>
       <div style="font-size: 1.2em;padding:3px 0px;font-weight:900;">

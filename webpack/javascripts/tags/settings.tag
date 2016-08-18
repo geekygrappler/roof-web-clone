@@ -634,6 +634,11 @@ import Pikaday from 'pikaday-time/pikaday'
         type="text" name="profile[dob]" value="{currentAccount.profile.dob}"/>
         <span if="{errors['profile.dob']}" class="inline-error">{errors['profile.dob']}</span>
 
+        <label for="profile[image_url]">Profile Image</label>
+        <input class="block col-12 mb2 field"
+        type="text" name="profile[image_url]" value="{currentAccount.profile.image_url}"/>
+        <span if="{errors['profile.image_url']}" class="inline-error">{errors['profile.image_url']}</span>
+
         <div each="{field, i in proFields}">
           <label for="profile[{field}]">{field.humanize()}</label>
           <input class="block col-12 mb2 field"

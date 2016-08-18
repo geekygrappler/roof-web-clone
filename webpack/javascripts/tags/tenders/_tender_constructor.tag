@@ -448,6 +448,9 @@
                 _this.handleScroll.call(_this, e)
             }, 100);
         })
+        for (var i = 0, ii = this.tags['r-tender-section'].length; i < ii; i++) {
+            this.tags['r-tender-section'][0].update()
+        }
         return this.update();
     });
 
@@ -483,6 +486,7 @@
             }
         }
     }
+
 
     this.handleScroll = function (e) {
         this.currentScrolledSection = this.findSection()

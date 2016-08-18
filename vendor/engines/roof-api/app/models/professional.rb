@@ -3,7 +3,7 @@ class Professional < User
 
   class Profile < Composable::Model
     attr_accessor :first_name, :last_name, :phone_number,
-    :info, :dob, :website,
+    :info, :dob, :website, :image_url,
     :company_name, :company_info, :company_registration_number, :company_vat_number,
     :insurance_number, :insurance_amount,
     :guarantee_duration
@@ -21,6 +21,7 @@ class Professional < User
         :phone_number => nil,
         :info => nil,
         :dob => nil,
+        :image_url => nil,
         :website => nil,
         :company_name => nil,
         :company_info => nil,

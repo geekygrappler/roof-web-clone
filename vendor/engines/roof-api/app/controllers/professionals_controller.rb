@@ -24,7 +24,7 @@ class ProfessionalsController < ResourceController
       {
         profile: [
           :first_name, :last_name, :phone_number,
-          :info, :dob, :website,
+          :info, :dob, :website, :image_url,
           :company_name, :company_info, :company_registration_number, :company_vat_number,
           :insurance_number, :insurance_amount,
           :guarantee_duration

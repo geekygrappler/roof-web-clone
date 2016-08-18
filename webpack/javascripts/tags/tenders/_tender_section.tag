@@ -114,10 +114,15 @@ let taskActions = require("json!../../data/task_actions.json")
       ), (item) => item.action)
 
       this.section.tasks_by_action_ordered = {}
+      var oldCategories = {Plumbing: 'Plumb', Carpentry: 'Build', Plastering: 'Plaster', Decorating: 'Decorate', Flooring: 'Lay', Decorating: 'Tile', Preparation: 'Strip out', Electrics: 'Wire and connect', General: 'Other'}
 
       for(var i = 0, ii = this.parent.categories.length; i < ii; i++) {
         var cat = this.parent.categories[i]
         var items = this.section.tasks_by_action[cat]
+        if (!items) {
+            var old = oldCategories[cat]
+            items = this.section.tasks_by_action[old]
+        }
         if (items) this.section.tasks_by_action_ordered[cat] = items
       }
 

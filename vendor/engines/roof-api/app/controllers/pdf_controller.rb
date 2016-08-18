@@ -12,7 +12,7 @@ class PdfController < ApplicationController
     professional_attributes['address'] = professional.data['migration']
     professional_attributes['profile'] = professional.data['profile_attributes']
     professional_attributes['profile']['email'] = professional.account.email
-    professional_attributes['profile']['image_url'] = professional.data['migration']['header_photo']
+    professional_attributes['profile']['image_url'] = professional_attributes['profile']['image_url'] || professional.data['migration']['header_photo']
 
     client_attributes = {}
     client_attributes['address'] = project.data['address_attributes']
@@ -22,11 +22,18 @@ class PdfController < ApplicationController
     sections = all(sections, quote.data)
     vat = data['total_amount'].to_i * 0.2
 
+    professional_attributes['profile']['phone_number'] = format_phone_number(professional_attributes['profile']['phone_number'])
+    client_attributes['profile']['phone_number'] = format_phone_number(client_attributes['profile']['phone_number'])
+
     views = Rails::Application::Configuration.new(Rails.root).paths["app/views"]
     views_helper = ActionView::Base.new views
+
     locals = {total: data['total_amount'].to_f / 100, sections: sections, room_overview: data['room_overview'],
               summary: quote.data['summary'], trade_overview: data['trade_overview'], vat: vat.to_f / 100,
-              professional: professional_attributes, client: client_attributes, helper: views_helper}
+              professional: professional_attributes, client: client_attributes, helper: views_helper,
+              submitted: parse_submitted(data), guarantee: data['guarantee_length'],
+              insurance: data['insurance_amount'], reference: quote.id}
+
     view = views_helper.render partial: "pdf/pdf", locals: locals
 
     pdf = WickedPdf.new.pdf_from_string(view)
@@ -69,9 +76,37 @@ class PdfController < ApplicationController
             tasks_by_action[action][:total] = tasks_by_action[action][:total] + task['total']
             section_total = section_total + task_total
           end
+          order_categories(section)
           section['total'] = room_overview[name] = section_total
         end
       end
     end
+  end
+
+  def parse_submitted(data)
+    DateTime.parse(data['submitted_at']).strftime('%d/%m/%Y')
+  rescue
+    return nil
+  end
+
+  def format_phone_number(number)
+    number = number.to_i.floor.to_s
+    number.prepend('0') if number.split('').first == '7'
+    number
+  end
+
+  def order_categories(section)
+    categories = ['Preparation', 'Structural', 'Plumbing', 'Electrics', 'Carpentry', 'Bespoke carpentry', 'Plastering', 'Decorating', 'Flooring', 'General']
+    tasks_by_action_ordered = {}
+    oldCategories = {Plumbing: 'Plumb', Carpentry: 'Build', Plastering: 'Plaster', Decorating: 'Decorate', Flooring: 'Lay', Decorating: 'Tile', Preparation: 'Strip out', Electrics: 'Wire and connect', General: 'Other'}
+    categories.each do |cat|
+      items = section['tasks_by_action'][cat]
+      if !items
+        old = oldCategories[cat.to_sym]
+        items = section['tasks_by_action'][old]
+      end
+      tasks_by_action_ordered[cat] = items if items
+    end
+    section['tasks_by_action'] = tasks_by_action_ordered
   end
 end
