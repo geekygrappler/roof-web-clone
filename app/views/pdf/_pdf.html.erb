@@ -20,35 +20,41 @@
   </div>
   <div style='clear:both'></div>
   <div style='float:left;display: block;width:25%; '>
-    <img src=<%= professional['profile']['image_url'] %> style='height:100px;margin:50px 0px' />
+    <% if professional['profile']['image_url'] %>
+      <img src=<%= professional['profile']['image_url'] %> style='height:100px;margin:50px 0px' />
+    <% end %>
     <br/>
     <div>
       <h2>RECIPIENT</h2>
       <div>
         <h3 style='color:#616161'>
-          <% if client['profile']['first_name'] %>
-              <%= client['profile']['first_name'].upcase %>
-          <% end %>
+          <% if client['profile'] %>
+              <% if client['profile']['first_name'] %>
+                  <%= client['profile']['first_name'].upcase %>
+              <% end %>
 
-          <% if client['profile']['last_name'] %>
-              <%= client['profile']['last_name'].upcase %>
+              <% if client['profile']['last_name'] %>
+                  <%= client['profile']['last_name'].upcase %>
+              <% end %>
           <% end %>
         </h3>
 
         <div style="color:#616161;">
-          <%= client['address']['street_address'] if client['address']['street_address'].present? %>
-          <br>
-          <%= client['address']['city'] if client['address']['city'].present? %>
-          <br>
-          <%= client['address']['postcode'] if client['address']['postcode'].present? %>
-          <br>
-          <%= client['address']['country'] if client['address']['country'].present? %>
+          <% if client['address'] %>
+            <%= client['address']['street_address'] if client['address']['street_address'].present? %>
+            <br>
+            <%= client['address']['city'] if client['address']['city'].present? %>
+            <br>
+            <%= client['address']['postcode'] if client['address']['postcode'].present? %>
+            <br>
+            <%= client['address']['country'] if client['address']['country'].present? %>
+          <% end %>
         </div>
         <br/>
         <div style="color:#616161;">
           <%= client['profile']['email'] if client['profile']['email'].present? %>
           <br/>
-          <%= client['profile']['phone_number'] if client['profile']['phone_number'].present? %>
+          <%= client['profile']['phone_number'] if client['profile']['phone_number'].present? && client['profile']['phone_number'].length > 5 %>
         </div>
       </div>
     </div>
@@ -61,23 +67,29 @@
         <%= professional['profile']['first_name'].upcase %> <%= professional['profile']['last_name'].upcase %>
       </h3>
       <div style="color:#616161;">
-        <%= professional['profile']['company_name'] if professional['profile']['company_name'].present? %>
-        <br/>
-        <%= professional['address']['address_1'] if professional['address']['address_1'].present? %>
-        <br/>
-        <%= professional['address']['address_2'] if professional['address']['address_2'].present? %>
-        <br/>
-        <%= professional['address']['city'] if professional['address']['city'].present? %>
-        <br/>
-        <%= professional['address']['postcode'] if professional['address']['postcode'].present? %>
-        <br/>
-        <%= "VAT: #{professional['profile']['company_vat_number']}" if professional['profile']['company_vat_number'].present? %>
+          <%= professional['profile']['company_name'] if professional['profile']['company_name'].present? %>
+          <br/>
+        <% if professional['address'] %>
+
+          <%= professional['address']['address_1'] if professional['address']['address_1'].present? %>
+          <br/>
+          <%= professional['address']['address_2'] if professional['address']['address_2'].present? %>
+          <br/>
+          <%= professional['address']['city'] if professional['address']['city'].present? %>
+          <br/>
+          <%= professional['address']['postcode'] if professional['address']['postcode'].present? %>
+          <br/>
+        <% end %>
+
+      <%= "VAT: #{professional['profile']['company_vat_number']}" if professional['profile']['company_vat_number'].present? %>
       </div>
       <br/><br/>
       <div style="color:#616161;text-align: right">
-        <%= professional['profile']['email'] %>
-        <br/>
-        <%= professional['profile']['phone_number'] %>
+        <% if professional['profile'] %>
+          <%= professional['profile']['email'] if professional['profile']['email'].present? %>
+          <br/>
+          <%= professional['profile']['phone_number'] if professional['profile']['phone_number'].present? && professional['profile']['phone_number'].length > 5 %>
+        <% end %>
       </div>
 
     </div>
