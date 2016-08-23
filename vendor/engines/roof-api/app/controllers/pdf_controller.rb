@@ -12,7 +12,14 @@ class PdfController < ApplicationController
     migration = professional.data['migration']
     profile = professional_attributes['profile'] = professional.data['profile_attributes']
     profile['email'] = professional.account.email
-    profile['image_url'] = professional.data['profile_attributes']['image_url'] || professional.data['migration']['header_photo'] || nil
+
+    profile['image_url'] = if professional.data['profile_attributes'] && professional.data['profile_attributes']['image_url']
+      professional.data['profile_attributes']['image_url']
+    elsif professional.data['migration'] && professional.data['migration']['header_photo']
+      professional.data['migration']['header_photo']
+    else
+      nil
+    end
 
     if professional.data['migration'] && migration['city'].present? && migration['postcode'].present? && migration['address_1'].present?
       professional_attributes['address'] = professional.data['migration']
