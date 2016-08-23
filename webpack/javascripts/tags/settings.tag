@@ -299,6 +299,7 @@ import Pikaday from 'pikaday-time/pikaday'
         value="{record.stripe_account.object.legal_entity.business_vat_id}"
         name="stripe_account[updates][legal_entity][business_vat_id]">
       </virtual>
+    </fieldset>
 
       <fieldset class="mb2 p1 border" if="{fieldsNeeded('legal_entity.address')}">
         <legend><h4>Address</h4></legend>
@@ -645,6 +646,46 @@ import Pikaday from 'pikaday-time/pikaday'
           type="text" name="profile[{field}]" value="{currentAccount.profile[field]}"/>
           <span if="{errors['profile.' + field]}" class="inline-error">{errors['profile.'+field]}</span>
         </div>
+          <fieldset class="mb2 p1 border">
+            <legend><h4>Quote Address</h4></legend>
+
+            <label>Line1 *</label>
+            <input class="block col-12 mb2 field" type="text"
+            value="{currentAccount.profile.quote_address.address_1}"
+            name="profile[quote_address][address_1]">
+
+            <label>Line2</label>
+            <input class="block col-12 mb2 field" type="text"
+            value="{currentAccount.profile.quote_address.address_2}"
+            name="profile[quote_address][address_2]">
+
+            <div class="clearfix mxn1">
+              <div class="sm-col sm-col-3 px1">
+                <label>City *</label>
+                <input class="block col-12 mb2 field" type="text"
+                value="{currentAccount.profile.quote_address.city}"
+                name="profile[quote_address][city]">
+              </div>
+              <div class="sm-col sm-col-3 px1">
+                <label>Country *</label>
+                <input class="block col-12 mb2 field" type="text"
+                value="{currentAccount.profile.quote_address.country}"
+                name="profile[quote_address][country]">
+              </div>
+              <div class="sm-col sm-col-3 px1">
+                <label>Postcode *</label>
+                <input class="block col-12 mb2 field" type="text"
+                value="{currentAccount.profile.quote_address.postal_code}"
+                name="profile[quote_address][postal_code]">
+              </div>
+              <div class="sm-col sm-col-3 px1">
+                <label>State *</label>
+                <input class="block col-12 mb2 field" type="text"
+                value="{currentAccount.profile.quote_address.state}"
+                name="profile[quote_address][state]">
+              </div>
+            </div>
+          </fieldset>
       </div>
 
       <button type="submit" class="block col-12 mb2 btn btn-big btn-primary {busy: busy}">Save</button>

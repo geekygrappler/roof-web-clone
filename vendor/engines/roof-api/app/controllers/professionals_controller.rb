@@ -27,7 +27,15 @@ class ProfessionalsController < ResourceController
           :info, :dob, :website, :image_url,
           :company_name, :company_info, :company_registration_number, :company_vat_number,
           :insurance_number, :insurance_amount,
-          :guarantee_duration
+          :guarantee_duration,
+          quote_address: [
+              :city,
+              :country,
+              :address_1,
+              :address_2,
+              :postal_code,
+              :state
+          ]
         ]
       },
       {
