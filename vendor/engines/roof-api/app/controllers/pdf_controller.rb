@@ -25,9 +25,11 @@ class PdfController < ApplicationController
       professional_attributes['address'] = professional.data['migration']
     end
 
-    if profile && profile['quote_address'] && quote_address = profile['quote_address']
-      if quote_address['city'].present? && quote_address['postcode'].present? && quote_address['address_1'].present?
+    if profile && profile['quote_address']
+      quote_address = profile['quote_address']
+      if quote_address['city'].present? && quote_address['postal_code'].present?
         professional_attributes['address'] = quote_address
+        professional_attributes['address']['postcode'] = quote_address['postal_code']
       end
     end
 
