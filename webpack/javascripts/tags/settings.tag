@@ -678,12 +678,6 @@ import Pikaday from 'pikaday-time/pikaday'
                 value="{currentAccount.profile.quote_address.postal_code}"
                 name="profile[quote_address][postal_code]">
               </div>
-              <div class="sm-col sm-col-3 px1">
-                <label>State *</label>
-                <input class="block col-12 mb2 field" type="text"
-                value="{currentAccount.profile.quote_address.state}"
-                name="profile[quote_address][state]">
-              </div>
             </div>
           </fieldset>
       </div>
