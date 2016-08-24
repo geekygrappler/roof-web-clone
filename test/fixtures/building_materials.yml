@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  material_id: 
+  section_id: 
+  room_id: 
+  supplied: false
+
+two:
+  name: MyString
+  material_id: 
+  section_id: 
+  room_id: 
+  supplied: false

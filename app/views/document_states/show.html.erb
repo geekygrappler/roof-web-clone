@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @document_state.name %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @document_state.description %>
+</p>
+
+<%= link_to 'Edit', edit_document_state_path(@document_state) %> |
+<%= link_to 'Back', document_states_path %>

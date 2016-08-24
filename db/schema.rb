@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160718191320) do
+ActiveRecord::Schema.define(version: 20160824164909) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -80,6 +80,38 @@ ActiveRecord::Schema.define(version: 20160718191320) do
   add_index "assets", ["content_type"], name: "index_assets_on_content_type", using: :btree
   add_index "assets", ["project_id"], name: "index_assets_on_project_id", using: :btree
 
+  create_table "backup_types", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "backups", force: :cascade do |t|
+    t.string   "s3_url"
+    t.integer  "document_id"
+    t.integer  "backup_type_id"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  add_index "backups", ["backup_type_id"], name: "index_backups_on_backup_type_id", using: :btree
+  add_index "backups", ["document_id"], name: "index_backups_on_document_id", using: :btree
+
+  create_table "building_materials", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "price"
+    t.integer  "building_material_id"
+    t.integer  "section_id"
+    t.integer  "location_id"
+    t.boolean  "supplied"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "building_materials", ["building_material_id"], name: "index_building_materials_on_building_material_id", using: :btree
+  add_index "building_materials", ["location_id"], name: "index_building_materials_on_location_id", using: :btree
+  add_index "building_materials", ["section_id"], name: "index_building_materials_on_section_id", using: :btree
+
   create_table "comments", force: :cascade do |t|
     t.integer  "account_id"
     t.integer  "commentable_id"
@@ -130,6 +162,32 @@ ActiveRecord::Schema.define(version: 20160718191320) do
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
 
+  create_table "document_states", force: :cascade do |t|
+    t.string   "name"
+    t.text     "description"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  create_table "documents", force: :cascade do |t|
+    t.integer  "document_id"
+    t.integer  "document_state_id"
+    t.string   "name"
+    t.integer  "user_id"
+    t.integer  "total_cost_line_items"
+    t.integer  "total_cost_supplied_materials"
+    t.integer  "total_cost_supplied_by_pro_materials"
+    t.integer  "total_cost"
+    t.boolean  "vat"
+    t.text     "notes"
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+  end
+
+  add_index "documents", ["document_id"], name: "index_documents_on_document_id", using: :btree
+  add_index "documents", ["document_state_id"], name: "index_documents_on_document_state_id", using: :btree
+  add_index "documents", ["user_id"], name: "index_documents_on_user_id", using: :btree
+
   create_table "failed_payments", force: :cascade do |t|
     t.jsonb    "data"
     t.string   "message"
@@ -153,6 +211,28 @@ ActiveRecord::Schema.define(version: 20160718191320) do
 
   create_table "leads", force: :cascade do |t|
     t.jsonb    "data"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "line_items", force: :cascade do |t|
+    t.integer  "line_item_id"
+    t.integer  "location_id"
+    t.string   "name"
+    t.string   "description"
+    t.integer  "quantity"
+    t.integer  "rate"
+    t.integer  "total"
+    t.boolean  "admin_verified"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  add_index "line_items", ["line_item_id"], name: "index_line_items_on_line_item_id", using: :btree
+  add_index "line_items", ["location_id"], name: "index_line_items_on_location_id", using: :btree
+
+  create_table "locations", force: :cascade do |t|
+    t.string   "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -200,6 +280,73 @@ ActiveRecord::Schema.define(version: 20160718191320) do
   add_index "quotes", ["project_id"], name: "index_quotes_on_project_id", using: :btree
   add_index "quotes", ["tender_id"], name: "index_quotes_on_tender_id", using: :btree
 
+  create_table "sections", force: :cascade do |t|
+    t.integer  "document_id"
+    t.string   "name"
+    t.text     "notes"
+    t.integer  "total_cost_line_items"
+    t.integer  "total_cost_supplied_materials"
+    t.integer  "total_cost_supplied_by_pro_materials"
+    t.integer  "total_cost"
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+  end
+
+  add_index "sections", ["document_id"], name: "index_sections_on_document_id", using: :btree
+
+  create_table "stat_decimals", force: :cascade do |t|
+    t.integer  "stat_id"
+    t.decimal  "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "stat_decimals", ["stat_id"], name: "index_stat_decimals_on_stat_id", using: :btree
+
+  create_table "stat_floats", force: :cascade do |t|
+    t.integer  "stat_id"
+    t.float    "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "stat_floats", ["stat_id"], name: "index_stat_floats_on_stat_id", using: :btree
+
+  create_table "stat_integers", force: :cascade do |t|
+    t.integer  "stat_id"
+    t.integer  "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "stat_integers", ["stat_id"], name: "index_stat_integers_on_stat_id", using: :btree
+
+  create_table "stat_types", force: :cascade do |t|
+    t.string   "name"
+    t.string   "metric"
+    t.string   "calculation"
+    t.text     "description"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  create_table "stats", force: :cascade do |t|
+    t.integer  "enumerable_id"
+    t.string   "enumerable_type"
+    t.integer  "stat_type_id"
+    t.integer  "statable_id"
+    t.string   "statable_type"
+    t.integer  "referenceable_id"
+    t.string   "referenceable_type"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  add_index "stats", ["enumerable_type", "enumerable_id"], name: "index_stats_on_enumerable_type_and_enumerable_id", using: :btree
+  add_index "stats", ["referenceable_type", "referenceable_id"], name: "index_stats_on_referenceable_type_and_referenceable_id", using: :btree
+  add_index "stats", ["stat_type_id"], name: "index_stats_on_stat_type_id", using: :btree
+  add_index "stats", ["statable_type", "statable_id"], name: "index_stats_on_statable_type_and_statable_id", using: :btree
+
   create_table "tasks", force: :cascade do |t|
     t.jsonb    "data",       default: {}
     t.datetime "created_at",              null: false
@@ -236,13 +383,28 @@ ActiveRecord::Schema.define(version: 20160718191320) do
 
   add_foreign_key "appointments", "projects"
   add_foreign_key "assets", "projects"
+  add_foreign_key "backups", "backup_types"
+  add_foreign_key "backups", "documents"
+  add_foreign_key "building_materials", "building_materials"
+  add_foreign_key "building_materials", "locations"
+  add_foreign_key "building_materials", "sections"
   add_foreign_key "comments", "accounts"
+  add_foreign_key "documents", "document_states"
+  add_foreign_key "documents", "documents"
+  add_foreign_key "documents", "users"
   add_foreign_key "invitations", "projects"
+  add_foreign_key "line_items", "line_items"
+  add_foreign_key "line_items", "locations"
   add_foreign_key "payments", "projects"
   add_foreign_key "payments", "quotes"
   add_foreign_key "projects", "accounts"
   add_foreign_key "quotes", "projects"
   add_foreign_key "quotes", "tenders"
+  add_foreign_key "sections", "documents"
+  add_foreign_key "stat_decimals", "stats"
+  add_foreign_key "stat_floats", "stats"
+  add_foreign_key "stat_integers", "stats"
+  add_foreign_key "stats", "stat_types"
   add_foreign_key "tenders", "projects"
   add_foreign_key "tenders", "tender_templates"
   add_foreign_key "users", "accounts"

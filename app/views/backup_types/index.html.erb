@@ -1,0 +1,27 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Backup Types</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @backup_types.each do |backup_type| %>
+      <tr>
+        <td><%= backup_type.name %></td>
+        <td><%= link_to 'Show', backup_type %></td>
+        <td><%= link_to 'Edit', edit_backup_type_path(backup_type) %></td>
+        <td><%= link_to 'Destroy', backup_type, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Backup Type', new_backup_type_path %>

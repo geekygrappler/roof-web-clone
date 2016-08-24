@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  stat_type_id: 
+  val: 1
+  statable_id: 
+  statable_type: Statable
+
+two:
+  stat_type_id: 
+  val: 1
+  statable_id: 
+  statable_type: Statable

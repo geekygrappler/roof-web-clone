@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @state_type.name %>
+</p>
+
+<p>
+  <strong>Metric:</strong>
+  <%= @state_type.metric %>
+</p>
+
+<p>
+  <strong>Calculation:</strong>
+  <%= @state_type.calculation %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @state_type.description %>
+</p>
+
+<%= link_to 'Edit', edit_state_type_path(@state_type) %> |
+<%= link_to 'Back', state_types_path %>

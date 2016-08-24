@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  s3_url: MyString
+  document_id: 
+  backup_type_id: 
+
+two:
+  s3_url: MyString
+  document_id: 
+  backup_type_id: 
