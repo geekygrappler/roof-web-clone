@@ -14,6 +14,8 @@ gem 'puma'
 gem 'font-awesome-rails'
 gem 'active_model_serializers', github: "rails-api/active_model_serializers"
 
+gem 'react-rails', '~> 1.0'
+
 #gem 'roof_api', '0.0.6.fix6'
 #gem 'roof_api', path: '../roof-api'
 gem 'roof_api', path: 'vendor/engines/roof-api'

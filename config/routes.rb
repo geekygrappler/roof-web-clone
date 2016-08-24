@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  resources :documents, except: [:new, :edit, :show]
+  get '/documents/new', to: 'documents#new'
+  resources :sections, except: [:new, :edit]
   mount RoofApi::Engine => "/api", as: :api
   get 'app' => 'pages#app'
   get 'app/*path' => 'pages#app'
