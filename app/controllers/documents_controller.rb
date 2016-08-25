@@ -6,8 +6,8 @@ class DocumentsController < ApplicationController
             name: "This is a doc"
         )
         @default_sections.each do |section|
-            @document.sections.create(name: section)
+            @document.sections.create(name: section, notes: "#{section} Notes")
         end
-        render json: @document
+        @document = ::DocumentSerializer.new(@document)
     end
 end
