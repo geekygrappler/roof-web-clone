@@ -11,7 +11,6 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-
 ActiveRecord::Schema.define(version: 20160824164909) do
 
   # These are extensions that must be enabled in order to support this database
@@ -189,14 +188,6 @@ ActiveRecord::Schema.define(version: 20160824164909) do
   add_index "documents", ["document_state_id"], name: "index_documents_on_document_state_id", using: :btree
   add_index "documents", ["user_id"], name: "index_documents_on_user_id", using: :btree
 
-=======
-  create_table "documents", force: :cascade do |t|
-    t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
->>>>>>> 25a74d1... Add basic react integration
   create_table "failed_payments", force: :cascade do |t|
     t.jsonb    "data"
     t.string   "message"
@@ -225,10 +216,15 @@ ActiveRecord::Schema.define(version: 20160824164909) do
   end
 
   create_table "line_items", force: :cascade do |t|
+<<<<<<< HEAD
     t.integer  "line_item_id"
     t.integer  "location_id"
     t.string   "name"
     t.string   "description"
+=======
+    t.string   "name"
+    t.string   "specification"
+>>>>>>> 530ecfa... WIP
     t.integer  "quantity"
     t.integer  "rate"
     t.integer  "total"
@@ -237,6 +233,7 @@ ActiveRecord::Schema.define(version: 20160824164909) do
     t.datetime "updated_at",     null: false
   end
 
+<<<<<<< HEAD
   add_index "line_items", ["line_item_id"], name: "index_line_items_on_line_item_id", using: :btree
   add_index "line_items", ["location_id"], name: "index_line_items_on_location_id", using: :btree
 
@@ -246,6 +243,8 @@ ActiveRecord::Schema.define(version: 20160824164909) do
     t.datetime "updated_at", null: false
   end
 
+=======
+>>>>>>> 530ecfa... WIP
   create_table "materials", force: :cascade do |t|
     t.jsonb    "data",       default: {}
     t.datetime "created_at",              null: false
@@ -289,7 +288,6 @@ ActiveRecord::Schema.define(version: 20160824164909) do
   add_index "quotes", ["project_id"], name: "index_quotes_on_project_id", using: :btree
   add_index "quotes", ["tender_id"], name: "index_quotes_on_tender_id", using: :btree
 
-<<<<<<< HEAD
   create_table "sections", force: :cascade do |t|
     t.integer  "document_id"
     t.string   "name"
@@ -316,17 +314,10 @@ ActiveRecord::Schema.define(version: 20160824164909) do
   create_table "stat_floats", force: :cascade do |t|
     t.integer  "stat_id"
     t.float    "value"
-=======
-  create_table "records", force: :cascade do |t|
-    t.string   "title"
-    t.date     "date"
-    t.float    "amount"
->>>>>>> 25a74d1... Add basic react integration
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-<<<<<<< HEAD
   add_index "stat_floats", ["stat_id"], name: "index_stat_floats_on_stat_id", using: :btree
 
   create_table "stat_integers", force: :cascade do |t|

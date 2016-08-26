@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :line_items, except: [:new, :edit]
   resources :documents, except: [:new, :edit, :show]
   get '/documents/new', to: 'documents#new'
   resources :sections, except: [:new, :edit]

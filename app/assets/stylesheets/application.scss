@@ -10,6 +10,9 @@
 @import "codemirror";
 @import "styles/quote-builder";
 
+@import "components/document";
+@import "components/section";
+
 @import "bootstrap-sprockets";
 @import "bootstrap";
 
@@ -23,6 +26,12 @@ body{
 
 body.no-transition{
   transition: none;
+}
+
+.vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
 }
 
 .appcontainer {

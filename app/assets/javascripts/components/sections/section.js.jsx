@@ -12,25 +12,23 @@ class Section extends React.Component {
 
     render() {
         return (
-            <div className="row">
+            <div className="row section">
                 <div className="col-sm-12">
                     <h2>
                         {this.props.data.name}
                     </h2>
                     <textarea onChange={this.updateNotes.bind(this)} value={this.state.notes}>
                     </textarea>
-                    <textarea onChange={this.updateNotes.bind(this)} value={this.state.notes}>
-                    </textarea>
                     <h3>
                         Labour
                     </h3>
-                    {/*this.state.section.lineItems.map((lineItem) => {
-                        return(
-                            <LineItem
-                                data={lineItem}
-                                />
-                        )
-                    })*/}
+                    <LineItems
+                        lineItems = {this.props.data.lineItems}
+                        addLineItem = {this.props.addLineItem}
+                        />
+                    <h3>
+                        Materials
+                    </h3>
                 </div>
             </div>
         );
