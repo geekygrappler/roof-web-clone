@@ -8,9 +8,10 @@ class Document extends React.Component {
         this.setState({name: e.target.value})
     }
 
-    swapDocument(e) {
+    swapDocument(newAttributes) {
         let currentState = this.state;
         debugger;
+        this.setState(currentState);
     }
 
     render() {
@@ -45,7 +46,17 @@ class Document extends React.Component {
                         return(
                             <Section
                                 key={section.id}
-                                data={section}
+                                section={section}
+                                document={this.props.data}
+                                swapDocument={this.swapDocument.bind(this)}
+                                />
+                        );
+                    })}
+                    {this.props.data.sections.map((section) => {
+                        return(
+                            <Section
+                                key={section.id + 100}
+                                section={section}
                                 document={this.props.data}
                                 swapDocument={this.swapDocument.bind(this)}
                                 />

@@ -1,7 +1,7 @@
 class DocumentsController < ApplicationController
 
     def new
-        default_sections = ["Preliminary", "Plumbing", "Electrics", "Carpentry", "Decorating", "Flooring", "General"]
+        default_sections = ["Preliminary"]
         @document = Document.create(
             name: "Flat 44b Rennovation"
         )

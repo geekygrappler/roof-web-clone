@@ -1,13 +1,18 @@
 class Section extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            notes: this.props.data.notes
-        };
+        this.state = {name: this.props.section.name, notes: this.props.section.notes}
     }
 
-    updateNotes(e) {
-        this.setState({ notes: e.target.value});
+    editTitle(e) {
+        this.setState({name: e.target.value});
+    }
+
+    updateTitle(e) {
+        let newSection = this.props.section;
+        newSection.name = e.target.value;
+        debugger;
+        this.props.swapDocument(newSection);
     }
 
     render() {
@@ -15,15 +20,14 @@ class Section extends React.Component {
             <div className="row section">
                 <div className="col-sm-12">
                     <h2>
-                        {this.props.data.name}
+                        <input type="text" value={this.state.name} onChange={this.editTitle.bind(this)} onBlur={this.updateTitle.bind(this)} />
                     </h2>
-                    <textarea onChange={this.updateNotes.bind(this)} value={this.state.notes}>
-                    </textarea>
+                    <textarea />
                     <h3>
                         Labour
                     </h3>
                     <LineItems
-                        lineItems = {this.props.data.lineItems}
+                        lineItems = {this.props.section.lineItems}
                         document = {this.props.document}
                         swapDocument = {this.props.swapDocument}
                         />

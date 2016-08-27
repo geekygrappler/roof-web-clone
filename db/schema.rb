@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160824164909) do
+ActiveRecord::Schema.define(version: 20160826082253) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -279,6 +279,14 @@ ActiveRecord::Schema.define(version: 20160824164909) do
   add_index "quotes", ["professional_id"], name: "index_quotes_on_professional_id", using: :btree
   add_index "quotes", ["project_id"], name: "index_quotes_on_project_id", using: :btree
   add_index "quotes", ["tender_id"], name: "index_quotes_on_tender_id", using: :btree
+
+  create_table "records", force: :cascade do |t|
+    t.string   "title"
+    t.date     "date"
+    t.float    "amount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "sections", force: :cascade do |t|
     t.integer  "document_id"
