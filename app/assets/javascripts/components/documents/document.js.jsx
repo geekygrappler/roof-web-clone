@@ -21,8 +21,24 @@ class Document extends React.Component {
             return section.id === sectionId;
         });
         section.name = title;
-        this.setState(this.state);
-
+        let myHeaders = new Headers({
+            "Content-Type": "application/json",
+        });
+        fetch(`/sections/${sectionId}`, {
+            method: "PATCH",
+            headers: myHeaders,
+            body: {
+                "section": {
+                    "name": "Does this work?"
+                }
+            }
+        }).then((response) => {
+            if (response.ok) {
+                this.setState(this.state);
+            } else {
+                console.log("Response not OK")
+            }
+        })
     }
 
     render() {
