@@ -18,7 +18,8 @@ class LineItems extends React.Component {
                 </thead>
                 <tbody>
                     <LineItemForm
-                        addLineItem = {this.props.addLineItem}
+                        document = {this.props.document}
+                        swapDocument = {this.props.swapDocument}
                         />
                 </tbody>
             </table>

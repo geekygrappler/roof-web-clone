@@ -8,7 +8,7 @@ class Document extends React.Component {
         this.setState({name: e.target.value})
     }
 
-    addLineItem(lineItemId) {
+    swapDocument(e) {
         let currentState = this.state;
         debugger;
     }
@@ -46,7 +46,8 @@ class Document extends React.Component {
                             <Section
                                 key={section.id}
                                 data={section}
-                                addLineItem={this.addLineItem}
+                                document={this.props.data}
+                                swapDocument={this.swapDocument.bind(this)}
                                 />
                         );
                     })}

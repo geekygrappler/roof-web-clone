@@ -24,7 +24,8 @@ class Section extends React.Component {
                     </h3>
                     <LineItems
                         lineItems = {this.props.data.lineItems}
-                        addLineItem = {this.props.addLineItem}
+                        document = {this.props.document}
+                        swapDocument = {this.props.swapDocument}
                         />
                     <h3>
                         Materials
