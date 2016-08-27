@@ -216,15 +216,10 @@ ActiveRecord::Schema.define(version: 20160824164909) do
   end
 
   create_table "line_items", force: :cascade do |t|
-<<<<<<< HEAD
     t.integer  "line_item_id"
     t.integer  "location_id"
     t.string   "name"
     t.string   "description"
-=======
-    t.string   "name"
-    t.string   "specification"
->>>>>>> 530ecfa... WIP
     t.integer  "quantity"
     t.integer  "rate"
     t.integer  "total"
@@ -233,7 +228,6 @@ ActiveRecord::Schema.define(version: 20160824164909) do
     t.datetime "updated_at",     null: false
   end
 
-<<<<<<< HEAD
   add_index "line_items", ["line_item_id"], name: "index_line_items_on_line_item_id", using: :btree
   add_index "line_items", ["location_id"], name: "index_line_items_on_location_id", using: :btree
 
@@ -243,8 +237,6 @@ ActiveRecord::Schema.define(version: 20160824164909) do
     t.datetime "updated_at", null: false
   end
 
-=======
->>>>>>> 530ecfa... WIP
   create_table "materials", force: :cascade do |t|
     t.jsonb    "data",       default: {}
     t.datetime "created_at",              null: false
