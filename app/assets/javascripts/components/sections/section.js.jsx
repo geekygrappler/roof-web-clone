@@ -1,18 +1,14 @@
 class Section extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {name: this.props.section.name, notes: this.props.section.notes}
     }
 
-    editTitle(e) {
-        this.setState({name: e.target.value});
-    }
 
     updateTitle(e) {
-        let newSection = this.props.section;
-        newSection.name = e.target.value;
+        let sectionId = this.props.section.id;
+        let newTitle = e.target.value;
         debugger;
-        this.props.swapDocument(newSection);
+        this.props.updateSectionTitle(sectionId, newTitle);
     }
 
     render() {
@@ -20,7 +16,7 @@ class Section extends React.Component {
             <div className="row section">
                 <div className="col-sm-12">
                     <h2>
-                        <input type="text" value={this.state.name} onChange={this.editTitle.bind(this)} onBlur={this.updateTitle.bind(this)} />
+                        <input type="text" defaultValue={this.props.section.name} onBlur={this.updateTitle.bind(this)} />
                     </h2>
                     <textarea />
                     <h3>

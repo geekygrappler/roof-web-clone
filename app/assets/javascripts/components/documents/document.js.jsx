@@ -14,6 +14,17 @@ class Document extends React.Component {
         this.setState(currentState);
     }
 
+    updateSectionTitle(sectionId, title) {
+        debugger;
+        let sections = this.state.sections;
+        let section = sections.find((section) => {
+            return section.id === sectionId;
+        });
+        section.name = title;
+        this.setState(this.state);
+
+    }
+
     render() {
         return (
             <div>
@@ -49,16 +60,7 @@ class Document extends React.Component {
                                 section={section}
                                 document={this.props.data}
                                 swapDocument={this.swapDocument.bind(this)}
-                                />
-                        );
-                    })}
-                    {this.props.data.sections.map((section) => {
-                        return(
-                            <Section
-                                key={section.id + 100}
-                                section={section}
-                                document={this.props.data}
-                                swapDocument={this.swapDocument.bind(this)}
+                                updateSectionTitle={this.updateSectionTitle.bind(this)}
                                 />
                         );
                     })}
