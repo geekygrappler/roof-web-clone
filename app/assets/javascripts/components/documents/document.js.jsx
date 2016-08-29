@@ -1,44 +1,43 @@
 class Document extends React.Component {
     constructor(props) {
         super(props);
-        this.state = this.props.data
+        this.state = this.props.data;
     }
 
     updateTitle(e) {
-        this.setState({name: e.target.value})
+        this.setState({name: e.target.value});
     }
 
-    swapDocument(newAttributes) {
-        let currentState = this.state;
-        debugger;
-        this.setState(currentState);
-    }
+    // swapDocument(newAttributes) {
+    //     let currentState = this.state;
+    //     this.setState(currentState);
+    // }
 
-    updateSectionTitle(sectionId, title) {
-        debugger;
+    updateSection(sectionId, attributes) {
         let sections = this.state.sections;
         let section = sections.find((section) => {
             return section.id === sectionId;
         });
-        section.name = title;
-        let myHeaders = new Headers({
-            "Content-Type": "application/json",
-        });
+        let newSection = Object.assign(section, attributes);
         fetch(`/sections/${sectionId}`, {
             method: "PATCH",
-            headers: myHeaders,
-            body: {
-                "section": {
-                    "name": "Does this work?"
-                }
-            }
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                section: newSection
+            })
         }).then((response) => {
             if (response.ok) {
                 this.setState(this.state);
             } else {
-                console.log("Response not OK")
+                console.log("Response not OK");
             }
-        })
+        });
+    }
+
+    newLineItem(lineItem) {
+        debugger;
     }
 
     render() {
@@ -75,8 +74,8 @@ class Document extends React.Component {
                                 key={section.id}
                                 section={section}
                                 document={this.props.data}
-                                swapDocument={this.swapDocument.bind(this)}
-                                updateSectionTitle={this.updateSectionTitle.bind(this)}
+                                updateSection={this.updateSection.bind(this)}
+                                newLineItem={this.newLineItem.bind(this)}
                                 />
                         );
                     })}

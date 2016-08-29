@@ -19,10 +19,11 @@ class LineItems extends React.Component {
                 <tbody>
                     <LineItemForm
                         document = {this.props.document}
-                        swapDocument = {this.props.swapDocument}
+                        newLineItem = {this.props.newLineItem}
+                        sectionId = {this.props.sectionId}
                         />
                 </tbody>
             </table>
-        )
+        );
     }
 }

@@ -1,3 +1,3 @@
-class StatType < ActiveRecord::Base
-  has_many :stats
+class StateType < ActiveRecord::Base
+    has_many :stats
 end

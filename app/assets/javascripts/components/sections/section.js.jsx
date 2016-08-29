@@ -3,12 +3,11 @@ class Section extends React.Component {
         super(props);
     }
 
-
-    updateTitle(e) {
+    update(attribute, e) {
         let sectionId = this.props.section.id;
-        let newTitle = e.target.value;
-        debugger;
-        this.props.updateSectionTitle(sectionId, newTitle);
+        let attributes = {};
+        attributes[attribute] = e.target.value;
+        this.props.updateSection(sectionId, attributes);
     }
 
     render() {
@@ -16,16 +15,17 @@ class Section extends React.Component {
             <div className="row section">
                 <div className="col-sm-12">
                     <h2>
-                        <input type="text" defaultValue={this.props.section.name} onBlur={this.updateTitle.bind(this)} />
+                        <input type="text" defaultValue={this.props.section.name} onBlur={this.update.bind(this, "name")} />
                     </h2>
-                    <textarea />
+                    <textarea defaultValue={this.props.section.notes} onBlur={this.update.bind(this, "notes")} />
                     <h3>
                         Labour
                     </h3>
                     <LineItems
                         lineItems = {this.props.section.lineItems}
                         document = {this.props.document}
-                        swapDocument = {this.props.swapDocument}
+                        newLineItem = {this.props.newLineItem}
+                        sectionId = {this.props.section.id}
                         />
                     <h3>
                         Materials
