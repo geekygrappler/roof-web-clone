@@ -1,6 +1,9 @@
 class LineItemsController < ApplicationController
     respond_to :json
 
+    #TODO remove this
+    skip_before_filter :verify_authenticity_token, only: [:create]
+
     # POST /line_items
     # POST /line_items.json
     def create
@@ -17,6 +20,6 @@ class LineItemsController < ApplicationController
     private
 
     def line_item_params
-        params.require(:line_item).permit(:name)
+        params.require(:line_item).permit(:name, :section_id)
     end
 end

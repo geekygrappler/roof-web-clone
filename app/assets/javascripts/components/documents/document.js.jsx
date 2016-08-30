@@ -36,8 +36,38 @@ class Document extends React.Component {
         });
     }
 
-    newLineItem(lineItem) {
-        debugger;
+    createLineItem(lineItem, sectionId) {
+        console.log("Hi");
+        lineItem["section_id"] = sectionId
+        // Add line_item to the database
+        fetch("/line_items", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                "line_item": lineItem
+            })
+        }).then((response) => {
+            if (response.ok) {
+                // If we have successfully added a line_item, lets get the document again
+                // with updated sections, line_items and totals
+                fetch(`/documents/${this.state.id}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                }).then((response) => {
+                    if (response.ok) {
+                        response.json().then((document) => {
+                            this.setState(document);
+                        });
+                    } else {
+                        console.log("Saved Line_item, but failed to fetch document");
+                    }
+                });
+            }
+        });
     }
 
     render() {
@@ -75,7 +105,7 @@ class Document extends React.Component {
                                 section={section}
                                 document={this.props.data}
                                 updateSection={this.updateSection.bind(this)}
-                                newLineItem={this.newLineItem.bind(this)}
+                                createLineItem={this.createLineItem.bind(this)}
                                 />
                         );
                     })}

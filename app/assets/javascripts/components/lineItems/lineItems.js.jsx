@@ -19,7 +19,7 @@ class LineItems extends React.Component {
                 <tbody>
                     <LineItemForm
                         document = {this.props.document}
-                        newLineItem = {this.props.newLineItem}
+                        createLineItem = {this.props.createLineItem}
                         sectionId = {this.props.sectionId}
                         />
                 </tbody>
