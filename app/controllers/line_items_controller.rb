@@ -4,14 +4,19 @@ class LineItemsController < ApplicationController
     # POST /line_items
     # POST /line_items.json
     def create
-        parent_line_item = LineItem.where(name: line_item_params["name"])
-        @line_item = LineItem.create(line_item_params);
+        parent_line_item = LineItem.where(name: line_item_params["name"]).first
+        @line_item = LineItem.new(line_item_params);
         @line_item.line_item = parent_line_item
+        if @line_item.save
+            render json: @line_item, location: @line_item
+        else
+            render nothing: true, status: :bad_request
+        end
     end
 
     private
 
     def line_item_params
-        params.require(:lineItem).permit(:name)
+        params.require(:line_item).permit(:name)
     end
 end
