@@ -37,8 +37,7 @@ class Document extends React.Component {
     }
 
     createLineItem(lineItem, sectionId) {
-        console.log("Hi");
-        lineItem["section_id"] = sectionId
+        lineItem["section_id"] = sectionId;
         // Add line_item to the database
         fetch("/line_items", {
             method: "POST",
@@ -93,12 +92,12 @@ class Document extends React.Component {
                 <div className="document-sections-list">
                     <div className="container">
                         <SectionList
-                            sections={this.props.data.sections}
+                            sections={this.state.sections}
                             />
                     </div>
                 </div>
                 <div className="container">
-                    {this.props.data.sections.map((section) => {
+                    {this.state.sections.map((section) => {
                         return(
                             <Section
                                 key={section.id}

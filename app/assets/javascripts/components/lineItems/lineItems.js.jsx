@@ -17,6 +17,14 @@ class LineItems extends React.Component {
                     </tr>
                 </thead>
                 <tbody>
+                    {this.props.lineItems.map((lineItem) => {
+                        return(
+                            <LineItem
+                                key={lineItem.id}
+                                lineItem={lineItem}
+                                />
+                        );
+                    })}
                     <LineItemForm
                         document = {this.props.document}
                         createLineItem = {this.props.createLineItem}
@@ -27,3 +35,7 @@ class LineItems extends React.Component {
         );
     }
 }
+
+LineItems.defaultProps = {
+    lineItems: []
+};

@@ -19,7 +19,8 @@ class LineItemForm extends React.Component {
         let lineItem = {
             name: e.target.value
         };
-        this.props.createLineItem(lineItem, sectionId);
+        e.target.value = "";
+        this.props.createLineItem(lineItem, sectionId)
     }
 
 }

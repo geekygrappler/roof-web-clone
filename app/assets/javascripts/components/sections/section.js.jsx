@@ -22,7 +22,7 @@ class Section extends React.Component {
                         Labour
                     </h3>
                     <LineItems
-                        lineItems = {this.props.section.lineItems}
+                        lineItems = {this.props.section.line_items}
                         document = {this.props.document}
                         createLineItem = {this.props.createLineItem}
                         sectionId = {this.props.section.id}
