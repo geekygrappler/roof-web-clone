@@ -1,0 +1,21 @@
+.document-header {
+    background: #495258;
+    color: white;
+    padding: 20px;
+    input {
+        background: transparent;
+    }
+    .heading-total {
+        display: inline-block;
+        font-size: 30px;
+    }
+    button {
+        margin-left: 20px;
+        font-size: 20px;
+    }
+}
+
+.document-sections-list {
+    background: #3F474D;
+    padding: 20px;
+}

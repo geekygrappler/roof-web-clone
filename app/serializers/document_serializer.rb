@@ -3,4 +3,5 @@ class DocumentSerializer < ActiveModel::Serializer
   has_one :document
   has_one :document_state
   has_one :user
+  has_many :sections
 end

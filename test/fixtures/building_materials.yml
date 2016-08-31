@@ -2,14 +2,14 @@
 
 one:
   name: MyString
-  material_id: 
-  section_id: 
-  room_id: 
+  building_material_id:
+  section_id:
+  location_id:
   supplied: false
 
 two:
   name: MyString
-  material_id: 
-  section_id: 
-  room_id: 
+  building_material_id:
+  section_id:
+  location_id:
   supplied: false

@@ -10,3 +10,7 @@
 //= require typeahead.bundle
 //= require price_format
 //= require application.bundle
+//= require react
+//= require react_ujs
+//= require components
+////= require bootstrap-sprockets
