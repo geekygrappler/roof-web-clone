@@ -70,6 +70,7 @@ class Document extends React.Component {
     }
 
     render() {
+        debugger;
         return (
             <div>
                 <div className="document-header">

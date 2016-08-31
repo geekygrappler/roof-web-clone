@@ -1,26 +1,51 @@
 class LineItemForm extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            newLineItem: ""
+        }
     }
 
     render() {
         return(
             <tr>
                 <td>
-                    <input type="text" onBlur={this.addLineItem.bind(this, this.props.sectionId)} placeholder="Search for an item..." />
+                    <input type="text"
+                        onChange={this.handleChange.bind(this)}
+                        onKeyDown={this.handleKeyDown.bind(this)}
+                        value={this.state.newLineItem}
+                        placeholder="Search for an item..."
+                        autoFocus={true}
+                        />
                 </td>
             </tr>
         );
     }
 
-    addLineItem(sectionId, e) {
-        // Add line item to db as promise
-        // take return value and then swap project with it
-        let lineItem = {
-            name: e.target.value
-        };
-        e.target.value = "";
-        this.props.createLineItem(lineItem, sectionId)
+    handleChange(e) {
+        this.setState({newLineItem: event.target.value});
     }
 
+    handleKeyDown(e) {
+        if (e.keyCode === this.props.ENTER_KEY_CODE || e.keyCode === this.props.TAB_KEY_CODE) {
+            e.preventDefault();
+
+            let name = e.target.value.trim();
+
+            if (name) {
+                let lineItem = {
+                    name: name
+                };
+                this.props.createLineItem(lineItem, this.props.sectionId)
+                this.setState({newLineItem: ""})
+            }
+        } else {
+            return;
+        }
+    }
+}
+
+LineItemForm.defaultProps = {
+    ENTER_KEY_CODE: 13,
+    TAB_KEY_CODE: 9
 }
