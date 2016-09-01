@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160824164909) do
+ActiveRecord::Schema.define(version: 20160901082235) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -106,6 +106,7 @@ ActiveRecord::Schema.define(version: 20160824164909) do
     t.boolean  "supplied"
     t.datetime "created_at",           null: false
     t.datetime "updated_at",           null: false
+    t.integer  "total"
   end
 
   add_index "building_materials", ["building_material_id"], name: "index_building_materials_on_building_material_id", using: :btree
@@ -178,10 +179,12 @@ ActiveRecord::Schema.define(version: 20160824164909) do
     t.integer  "total_cost_supplied_materials"
     t.integer  "total_cost_supplied_by_pro_materials"
     t.integer  "total_cost"
-    t.boolean  "vat"
     t.text     "notes"
     t.datetime "created_at",                           null: false
     t.datetime "updated_at",                           null: false
+    t.integer  "total_pro_costs"
+    t.integer  "vat_amount"
+    t.integer  "handling_fee_amount"
   end
 
   add_index "documents", ["document_id"], name: "index_documents_on_document_id", using: :btree
@@ -224,12 +227,16 @@ ActiveRecord::Schema.define(version: 20160824164909) do
     t.integer  "rate"
     t.integer  "total"
     t.boolean  "admin_verified"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+    t.integer  "section_id"
+    t.integer  "unit_id"
+    t.boolean  "searchable",     default: false
   end
 
   add_index "line_items", ["line_item_id"], name: "index_line_items_on_line_item_id", using: :btree
   add_index "line_items", ["location_id"], name: "index_line_items_on_location_id", using: :btree
+  add_index "line_items", ["section_id"], name: "index_line_items_on_section_id", using: :btree
 
   create_table "locations", force: :cascade do |t|
     t.string   "name"
@@ -290,6 +297,7 @@ ActiveRecord::Schema.define(version: 20160824164909) do
     t.integer  "total_cost"
     t.datetime "created_at",                           null: false
     t.datetime "updated_at",                           null: false
+    t.integer  "total_pro_costs"
   end
 
   add_index "sections", ["document_id"], name: "index_sections_on_document_id", using: :btree
@@ -370,6 +378,12 @@ ActiveRecord::Schema.define(version: 20160824164909) do
   add_index "tenders", ["project_id"], name: "index_tenders_on_project_id", using: :btree
   add_index "tenders", ["tender_template_id"], name: "index_tenders_on_tender_template_id", using: :btree
 
+  create_table "units", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "users", force: :cascade do |t|
     t.integer  "account_id"
     t.string   "type"
@@ -395,6 +409,7 @@ ActiveRecord::Schema.define(version: 20160824164909) do
   add_foreign_key "invitations", "projects"
   add_foreign_key "line_items", "line_items"
   add_foreign_key "line_items", "locations"
+  add_foreign_key "line_items", "sections"
   add_foreign_key "payments", "projects"
   add_foreign_key "payments", "quotes"
   add_foreign_key "projects", "accounts"
