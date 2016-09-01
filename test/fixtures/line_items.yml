@@ -1,19 +1,10 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  line_item_id: 
-  location_id: 
-  name: MyString
-  description: MyString
-  rate: 1
-  price: 1
-  admin_verified: false
-
-two:
-  line_item_id: 
-  location_id: 
-  name: MyString
-  description: MyString
-  rate: 1
-  price: 1
-  admin_verified: false
+    line_item_id:
+    location_id:
+    name: "Boiler Installation"
+    description: A master item
+    rate: 1
+    total: 1
+    admin_verified: false

@@ -6,6 +6,7 @@ source 'https://rubygems.org'
 gem 'rails', '4.2.5.1'
 gem 'pg', '~> 0.15'
 gem 'sass-rails', '~> 5.0'
+gem 'bootstrap-sass', '~> 3.3.6'
 gem 'uglifier', '>= 1.3.0'
 gem 'jquery-rails'
 gem 'turbolinks'
@@ -13,6 +14,8 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'puma'
 gem 'font-awesome-rails'
 gem 'active_model_serializers', github: "rails-api/active_model_serializers"
+
+gem 'react-rails', '~> 1.0'
 
 #gem 'roof_api', '0.0.6.fix6'
 #gem 'roof_api', path: '../roof-api'
