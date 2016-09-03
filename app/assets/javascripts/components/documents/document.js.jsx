@@ -1,4 +1,6 @@
-class Document extends React.Component {
+import { Component } from "react";
+
+class Document extends Component {
     constructor(props) {
         super(props);
         this.state = this.props.document;
@@ -53,11 +55,6 @@ class Document extends React.Component {
     updateTitle(e) {
         this.setState({name: e.target.value});
     }
-
-    // swapDocument(newAttributes) {
-    //     let currentState = this.state;
-    //     this.setState(currentState);
-    // }
 
     updateSection(sectionId, attributes) {
         let sections = this.state.sections;

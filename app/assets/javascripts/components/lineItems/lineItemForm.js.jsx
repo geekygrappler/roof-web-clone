@@ -1,4 +1,6 @@
-class LineItemForm extends React.Component {
+import { Component } from "react";
+
+class LineItemForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -38,6 +40,7 @@ class LineItemForm extends React.Component {
                 };
                 this.props.createLineItem(lineItem, this.props.sectionId);
                 this.setState({newLineItem: ""});
+                e.target.value = "";
             }
         } else {
             return;
