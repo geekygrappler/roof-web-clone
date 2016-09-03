@@ -25,6 +25,7 @@ class Section extends React.Component {
                         lineItems = {this.props.section.line_items}
                         document = {this.props.document}
                         createLineItem = {this.props.createLineItem}
+                        updateLineItem = {this.props.updateLineItem}
                         sectionId = {this.props.section.id}
                         />
                     <h3>

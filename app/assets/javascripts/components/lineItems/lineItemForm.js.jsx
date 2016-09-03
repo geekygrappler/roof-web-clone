@@ -1,6 +1,4 @@
-import { Component } from "react";
-
-class LineItemForm extends Component {
+class LineItemForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {

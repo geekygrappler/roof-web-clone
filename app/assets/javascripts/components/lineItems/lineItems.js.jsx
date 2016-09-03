@@ -22,6 +22,7 @@ class LineItems extends React.Component {
                             <LineItem
                                 key={lineItem.id}
                                 lineItem={lineItem}
+                                updateLineItem = {this.props.updateLineItem}
                                 />
                         );
                     })}
