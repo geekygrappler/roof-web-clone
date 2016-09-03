@@ -1,6 +1,4 @@
-import { Component } from "react";
-
-class Document extends Component {
+class Document extends React.Component {
     constructor(props) {
         super(props);
         this.state = this.props.document;
@@ -50,7 +48,6 @@ class Document extends Component {
             </div>
         )
     }
-
 
     updateTitle(e) {
         this.setState({name: e.target.value});
