@@ -1,4 +1,6 @@
-class Document extends React.Component {
+import { Component } from "react";
+
+class Document extends Component {
     constructor(props) {
         super(props);
         this.state = this.props.data;

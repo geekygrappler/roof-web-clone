@@ -1,9 +1,11 @@
-class LineItemForm extends React.Component {
+import { Component } from "react";
+
+class LineItemForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
             newLineItem: ""
-        }
+        };
     }
 
     render() {
@@ -23,7 +25,7 @@ class LineItemForm extends React.Component {
     }
 
     handleChange(e) {
-        this.setState({newLineItem: event.target.value});
+        this.setState({newLineItem: e.target.value});
     }
 
     handleKeyDown(e) {
@@ -36,8 +38,8 @@ class LineItemForm extends React.Component {
                 let lineItem = {
                     name: name
                 };
-                this.props.createLineItem(lineItem, this.props.sectionId)
-                this.setState({newLineItem: ""})
+                this.props.createLineItem(lineItem, this.props.sectionId);
+                this.setState({newLineItem: ""});
             }
         } else {
             return;
@@ -48,4 +50,4 @@ class LineItemForm extends React.Component {
 LineItemForm.defaultProps = {
     ENTER_KEY_CODE: 13,
     TAB_KEY_CODE: 9
-}
+};
