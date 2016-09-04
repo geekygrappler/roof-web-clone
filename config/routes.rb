@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  get 'search/line_items', to: 'search#line_items'
+
   resources :line_items, except: [:new, :edit]
   resources :documents, except: [:edit]
   resources :sections, except: [:new, :edit]
@@ -17,7 +19,5 @@ Rails.application.routes.draw do
   resources :locations, except: [:new, :edit]
   resources :document_states, except: [:new, :edit]
   resources :documents, except: [:new, :edit]
-
-  get 'search/line_items', to: 'search#line_items'
 
 end
