@@ -1,4 +1,5 @@
 class LineItem < ActiveRecord::Base
+  include PgSearch
   include CsvReset
   belongs_to :line_item
   belongs_to :location
@@ -7,6 +8,8 @@ class LineItem < ActiveRecord::Base
 
   before_save :calculate_total
   after_save :calculate_section_totals
+
+  pg_search_scope :full_text_search, :against => :name
 
   private
 

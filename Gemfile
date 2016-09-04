@@ -34,7 +34,7 @@ gem 'wkhtmltopdf-binary', '~> 0.12.3'
 
 gem 'aws-sdk', '~> 2'
 
-
+gem 'pg_search'
 
 group :development, :test do
   gem 'byebug'
