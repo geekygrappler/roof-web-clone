@@ -6,7 +6,7 @@ class LineItem extends React.Component {
                     <input type="text" defaultValue={this.props.lineItem.name} />
                 </td>
                 <td>
-                    {this.props.lineItem.description}
+                    <input type="text" defaultValue={this.props.lineItem.description} onBlur={this.update.bind(this, "description")} />
                 </td>
                 <td>
                     Location placeholder
@@ -31,7 +31,7 @@ class LineItem extends React.Component {
     update(attribute, e) {
         let lineItemId = this.props.lineItem.id;
         let attributes = {};
-        attributes[attribute] = e.target.value;
+        attributes[attribute] = e.target.value.trim();
         this.props.updateLineItem(lineItemId, attributes)
     }
 }

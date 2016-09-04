@@ -1,7 +1,7 @@
 class Document extends React.Component {
     constructor(props) {
         super(props);
-        this.state = this.props.data;
+        this.state = this.props.document;
     }
 
     render() {
@@ -17,7 +17,7 @@ class Document extends React.Component {
                             </div>
                             <div className="col-md-6  text-right">
                                 <h2 className="heading-total">
-                                    Estimated Total: £2,342
+                                    Estimated Total: £{this.state.total_cost}
                                 </h2>
                                 <button className="btn btn-warning btn-lg">Request Quotes</button>
                             </div>
@@ -37,7 +37,7 @@ class Document extends React.Component {
                             <Section
                                 key={section.id}
                                 section={section}
-                                document={this.props.data}
+                                document={this.props.document}
                                 updateSection={this.updateSection.bind(this)}
                                 createLineItem={this.createLineItem.bind(this)}
                                 updateLineItem={this.updateLineItem.bind(this)}
@@ -68,7 +68,7 @@ class Document extends React.Component {
         fetch(`/sections/${sectionId}`, {
             method: "PATCH",
             headers: {
-                "Content-Type": "application/json",
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 section: newSection
@@ -80,11 +80,12 @@ class Document extends React.Component {
 
     createLineItem(lineItem, sectionId) {
         lineItem["section_id"] = sectionId;
+        debugger;
         // Add line_item to the database
         fetch("/line_items", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 "line_item": lineItem
@@ -100,9 +101,9 @@ class Document extends React.Component {
 
     updateLineItem(lineItemId, attributes) {
         fetch(`/line_items/${lineItemId}`, {
-            "method": "PATCH",
+            method: "PATCH",
             headers: {
-                "Content-Type": "application/json",
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 line_item: attributes
