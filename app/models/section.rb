@@ -1,6 +1,6 @@
 class Section < ActiveRecord::Base
   belongs_to :document
-  has_many :line_items
+  has_many :line_items, -> { order(created_at: :asc) }
   has_many :building_materials
   has_many :supplied_materials, -> { where(supplied: true) }, through: :building_materials, source: :building_materials
   has_many :materials_supplied_by_pro, -> { where(supplied: false) }, through: :building_materials, source: :building_materials

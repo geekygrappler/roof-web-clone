@@ -4,22 +4,41 @@ class LineItemForm extends React.Component {
         this.state = {
             newLineItem: ""
         };
+        this.masterLineItems = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            remote: {
+                url: '/search/line_items?query=%QUERY',
+                wildcard: '%QUERY',
+                transform: (data) => {
+                    return data.results
+                }
+            }
+        });
     }
 
     render() {
         return(
             <tr>
                 <td>
-                    <input type="text"
+                    <input className={`line-item-search-${this.props.sectionId}`}
                         onChange={this.handleChange.bind(this)}
-                        onKeyDown={this.handleKeyDown.bind(this)}
                         value={this.state.newLineItem}
+                        onKeyDown={this.handleKeyDown.bind(this)}
                         placeholder="Search for an item..."
                         autoFocus={true}
                         />
                 </td>
             </tr>
         );
+    }
+
+    componentDidMount() {
+        $(`.line-item-search-${this.props.sectionId}`).typeahead(null, {
+            name: "lineItems",
+            source: this.masterLineItems,
+            display: 'name'
+        });
     }
 
     handleChange(e) {

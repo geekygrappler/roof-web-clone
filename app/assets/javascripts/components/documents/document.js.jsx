@@ -74,7 +74,6 @@ class Document extends React.Component {
 
     createLineItem(lineItem, sectionId) {
         lineItem["section_id"] = sectionId;
-        debugger;
         // Add line_item to the database
         fetch("/line_items", {
             method: "POST",

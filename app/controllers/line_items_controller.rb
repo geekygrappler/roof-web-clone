@@ -13,6 +13,7 @@ class LineItemsController < ApplicationController
             @line_item = parent_line_item.dup
             @line_item.line_item = parent_line_item
             @line_item.searchable = false
+            @line_item.admin_verified = false
             @line_item.section_id = line_item_params["section_id"]
         else
             @line_item = LineItem.new(line_item_params);
