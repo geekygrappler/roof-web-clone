@@ -9,7 +9,16 @@ class LineItem < ActiveRecord::Base
   before_save :calculate_total
   after_save :calculate_section_totals
 
-  pg_search_scope :full_text_search, :against => :name
+  pg_search_scope :full_text_search,
+                  :against => :name,
+                  :using => {
+                      :tsearch => {
+                          :any_word => true,
+                          :dictionary => 'english',
+                          :prefix => true,
+                          :highlight => true
+                      }
+                  }
 
   private
 

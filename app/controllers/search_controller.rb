@@ -4,10 +4,8 @@ class SearchController < ApplicationController
   def line_items
     render json: {
         results:
-            ActiveModel::Serializer::CollectionSerializer.new(
-              LineItem.full_text_search(params[:query]),
-              each_serializer: LineItemSerializer
-          )
+            LineItem.full_text_search(params[:query])
+                .with_pg_search_highlight.map {|item| LineItemSearchSerializer.new(item)}
     }
   end
 end
