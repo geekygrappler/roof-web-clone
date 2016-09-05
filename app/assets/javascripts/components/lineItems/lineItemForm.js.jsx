@@ -37,7 +37,7 @@ class LineItemForm extends React.Component {
         $(`.line-item-search-${this.props.sectionId}`).typeahead(null, {
             name: "lineItems",
             source: this.masterLineItems,
-            display: 'name'
+            display: 'text'
         });
     }
 
