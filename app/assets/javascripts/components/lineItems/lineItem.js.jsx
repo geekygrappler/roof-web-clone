@@ -4,12 +4,15 @@ class LineItem extends React.Component {
             <tr>
                 <td>
                     <p>
-                        <input type="text" defaultValue={this.props.lineItem.name} />
+                        <input type="text"
+                            defaultValue={this.props.lineItem.name}
+                            onKeyDown={this.update.bind(this, "name")}
+                            />
                     </p>
                     <small>
                         <input type="text"
                             defaultValue={this.props.lineItem.description}
-                            onBlur={this.update.bind(this, "description")}
+                            onKeyDown={this.update.bind(this, "description")}
                             placeholder="Add specification"
                             />
                         </small>
@@ -35,9 +38,24 @@ class LineItem extends React.Component {
     }
 
     update(attribute, e) {
-        let lineItemId = this.props.lineItem.id;
-        let attributes = {};
-        attributes[attribute] = e.target.value.trim();
-        this.props.updateLineItem(lineItemId, attributes)
+        if (e.keyCode === this.props.ENTER_KEY_CODE || e.keyCode === this.props.TAB_KEY_CODE) {
+            e.preventDefault()
+
+            let inputs = $(':input').not(':button,:hidden,[readonly]');
+            let nextInput = inputs.get(inputs.index(e.target) + 1);
+            if (nextInput) {
+                nextInput.focus();
+            }
+
+            let lineItemId = this.props.lineItem.id;
+            let attributes = {};
+            attributes[attribute] = e.target.value.trim();
+            this.props.updateLineItem(lineItemId, attributes)
+        }
     }
+}
+
+LineItem.defaultProps = {
+    ENTER_KEY_CODE: 13,
+    TAB_KEY_CODE: 9
 }

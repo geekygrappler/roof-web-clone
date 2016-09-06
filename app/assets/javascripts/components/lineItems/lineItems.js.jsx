@@ -19,7 +19,7 @@ class LineItems extends React.Component {
                     {this.props.lineItems.map((lineItem) => {
                         return(
                             <LineItem
-                                key={lineItem.id}
+                                key={`lineItem-${lineItem.id}`}
                                 lineItem={lineItem}
                                 updateLineItem = {this.props.updateLineItem}
                                 />

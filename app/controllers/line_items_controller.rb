@@ -20,18 +20,19 @@ class LineItemsController < ApplicationController
         end
 
         if @line_item.save
-            render json: @line_item, location: @line_item
+            render json: @line_item, status: :created, location: @line_item
         else
             render nothing: true, status: :bad_request
         end
     end
 
+    # PATCH /line_items/:id
     def update
         @line_item.assign_attributes(line_item_params)
         if @line_item.save
-            render json: @line_item
+            render json: @line_item, status: :ok, location: @line_item
         else
-            render nothing: true, status: :bad_request
+            render json: @line_item.errors, status: :unprocessable_entity
         end
     end
 

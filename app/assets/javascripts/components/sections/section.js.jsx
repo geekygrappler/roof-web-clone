@@ -38,6 +38,14 @@ class Section extends React.Component {
                     <h3>
                         Materials
                     </h3>
+                    <small>Add any special materials for the project</small>
+                    <BuildingMaterials
+                        buildingMaterials={this.props.section.building_materials}
+                        document={this.props.document}
+                        sectionId={this.props.section.id}
+                        createBuildingMaterial={this.props.createBuildingMaterial}
+                        updateBuildingMaterial={this.props.updateBuildingMaterial}
+                        />
                 </div>
             </div>
         );
@@ -45,8 +53,8 @@ class Section extends React.Component {
 
     update(attribute, e) {
         if (e.keyCode === this.props.ENTER_KEY_CODE || e.keyCode === this.props.TAB_KEY_CODE) {
-            let inputs = $(':input').not(':button,:hidden,[readonly]');
             e.preventDefault();
+            let inputs = $(':input').not(':button,:hidden,[readonly]');
             let nextInput = inputs.get(inputs.index(e.target) + 1);
             if (nextInput) {
                 nextInput.focus();

@@ -53,9 +53,10 @@ class LineItemForm extends React.Component {
 
             if (name) {
                 let lineItem = {
-                    name: name
+                    name: name,
+                    section_id: this.props.sectionId
                 };
-                this.props.createLineItem(lineItem, this.props.sectionId);
+                this.props.createLineItem(lineItem);
                 this.setState({newLineItem: ""});
                 e.target.value = "";
             }

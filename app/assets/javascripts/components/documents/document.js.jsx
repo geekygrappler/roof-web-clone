@@ -42,6 +42,8 @@ class Document extends React.Component {
                                 deleteSection={this.deleteSection.bind(this)}
                                 createLineItem={this.createLineItem.bind(this)}
                                 updateLineItem={this.updateLineItem.bind(this)}
+                                createBuildingMaterial={this.createBuildingMaterial.bind(this)}
+                                updateBuildingMaterial={this.updateBuildingMaterial.bind(this)}
                                 />
                         );
                     })}
@@ -116,8 +118,7 @@ class Document extends React.Component {
         });
     }
 
-    createLineItem(lineItem, sectionId) {
-        lineItem["section_id"] = sectionId;
+    createLineItem(lineItem) {
         // Add line_item to the database
         fetch("/line_items", {
             method: "POST",
@@ -150,6 +151,32 @@ class Document extends React.Component {
                 this.fetchDocument();
             }
         })
+    }
+
+    createBuildingMaterial(buildingMaterial) {
+        $.ajax({
+            url: "/building_materials",
+            method: "POST",
+            dataType: "json",
+            data: {
+                building_material: buildingMaterial
+            }
+        }).done((data) => {
+            this.fetchDocument();
+        });
+    }
+
+    updateBuildingMaterial(buildingMaterialId, attributes) {
+        $.ajax({
+            url: `/building_materials/${buildingMaterialId}`,
+            method: "PATCH",
+            dataType: "json",
+            data: {
+                building_material: attributes
+            }
+        }).done((data) => {
+            this.fetchDocument();
+        });
     }
 
     fetchDocument() {
