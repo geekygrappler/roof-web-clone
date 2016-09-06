@@ -39,11 +39,24 @@ class Document extends React.Component {
                                 section={section}
                                 document={this.props.document}
                                 updateSection={this.updateSection.bind(this)}
+                                deleteSection={this.deleteSection.bind(this)}
                                 createLineItem={this.createLineItem.bind(this)}
                                 updateLineItem={this.updateLineItem.bind(this)}
                                 />
                         );
                     })}
+                    <div className="row document-add-section">
+                        <form className="form-inline" onSubmit={this.addSection.bind(this)}>
+                            <div className="form-group">
+                                <input type="text"
+                                    className="form-control"
+                                    name="name"
+                                    placeholder="Enter your section name"
+                                    />
+                            </div>
+                            <button type="submit" className="btn btn-warning">Add Section</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         )
@@ -51,6 +64,25 @@ class Document extends React.Component {
 
     updateTitle(e) {
         this.setState({name: e.target.value});
+    }
+
+    addSection(e) {
+        e.preventDefault();
+        let data = {
+            section: {
+                name: e.target.name.value,
+                document_id: this.props.document.id
+            }
+        };
+        e.target.name.value = "";
+        $.ajax({
+            url: "/sections",
+            method: "POST",
+            dataType: "json",
+            data: data
+        }).done((data) => {
+            this.fetchDocument();
+        });
     }
 
     updateSection(sectionId, attributes) {
@@ -68,6 +100,18 @@ class Document extends React.Component {
                 section: newSection
             })
         }).then((response) => {
+            if (response.ok) {
+                this.fetchDocument();
+            }
+        });
+    }
+
+    deleteSection(sectionId) {
+        $.ajax({
+            url: `/sections/${sectionId}`,
+            method: "DELETE",
+            dataType: "json"
+        }).done((data) => {
             this.fetchDocument();
         });
     }

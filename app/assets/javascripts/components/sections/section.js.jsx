@@ -10,16 +10,21 @@ class Section extends React.Component {
                     <div className="row">
                         <div className="col-sm-8">
                             <h2>
-                                <input type="text" defaultValue={this.props.section.name} onBlur={this.update.bind(this, "name")} />
+                                <input type="text"
+                                    defaultValue={this.props.section.name}
+                                    onKeyDown={this.update.bind(this, "name")}
+                                    />
                             </h2>
                         </div>
                         <div className="col-sm-4 text-right">
                             <h2>
                                 £{this.calculateTotal()}
                             </h2>
+                            <button className="btn btn-danger" onClick={this.delete.bind(this)}>Delete</button>
                         </div>
                     </div>
-                    <textarea defaultValue={this.props.section.notes} onBlur={this.update.bind(this, "notes")} />
+                    <textarea defaultValue={this.props.section.notes}
+                        onKeyDown={this.update.bind(this, "notes")} />
                     <h3>
                         Labour
                     </h3>
@@ -39,10 +44,23 @@ class Section extends React.Component {
     }
 
     update(attribute, e) {
-        let sectionId = this.props.section.id;
-        let attributes = {};
-        attributes[attribute] = e.target.value;
-        this.props.updateSection(sectionId, attributes);
+        if (e.keyCode === this.props.ENTER_KEY_CODE || e.keyCode === this.props.TAB_KEY_CODE) {
+            let inputs = $(':input').not(':button,:hidden,[readonly]');
+            e.preventDefault();
+            let nextInput = inputs.get(inputs.index(e.target) + 1);
+            if (nextInput) {
+                nextInput.focus();
+            }
+
+            let sectionId = this.props.section.id;
+            let attributes = {};
+            attributes[attribute] = e.target.value;
+            this.props.updateSection(sectionId, attributes);
+        }
+    }
+
+    delete() {
+        this.props.deleteSection(this.props.section.id);
     }
 
     calculateTotal() {
@@ -51,3 +69,8 @@ class Section extends React.Component {
         }, 0);
     }
 }
+
+Section.defaultProps = {
+    ENTER_KEY_CODE: 13,
+    TAB_KEY_CODE: 9
+};

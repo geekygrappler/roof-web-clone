@@ -9,7 +9,6 @@ class LineItems extends React.Component {
                 <thead>
                     <tr>
                         <th>Item</th>
-                        <th>Specification</th>
                         <th>Location</th>
                         <th>Quantity</th>
                         <th>Est. Rate</th>

@@ -3,10 +3,16 @@ class LineItem extends React.Component {
         return (
             <tr>
                 <td>
-                    <input type="text" defaultValue={this.props.lineItem.name} />
-                </td>
-                <td>
-                    <input type="text" defaultValue={this.props.lineItem.description} onBlur={this.update.bind(this, "description")} />
+                    <p>
+                        <input type="text" defaultValue={this.props.lineItem.name} />
+                    </p>
+                    <small>
+                        <input type="text"
+                            defaultValue={this.props.lineItem.description}
+                            onBlur={this.update.bind(this, "description")}
+                            placeholder="Add specification"
+                            />
+                        </small>
                 </td>
                 <td>
                     Location placeholder
