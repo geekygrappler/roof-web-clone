@@ -1,3 +1,12 @@
 .line-item-search {
     width: 100%;
 }
+
+.tt-suggestion {
+  padding: 5px;
+  cursor: pointer;
+  &:hover {
+    background: $dark-blue;
+    color: white;
+  }
+}

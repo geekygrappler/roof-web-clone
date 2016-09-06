@@ -34,10 +34,22 @@ class LineItemForm extends React.Component {
     }
 
     componentDidMount() {
-        $(`.line-item-search-${this.props.sectionId}`).typeahead(null, {
+        var typea = $(`.line-item-search-${this.props.sectionId}`);
+        typea.typeahead(null, {
             name: "lineItems",
             source: this.masterLineItems,
-            display: 'text'
+            display: 'text',
+            templates: {
+                empty: [
+                    '<div class="empty-message">', 'No Results..', '</div>'
+                ].join('\n'),
+                suggestion: function(suggestions) {
+                    return '<div>' + suggestions.text + '</div>'
+                }
+            },
+
+        }).bind('typeahead:select', function(obj, data, name) {
+            typea.typeahead('val', data.text.replace(/<b>/g, '').replace(/<\/b>/g, ''))
         });
     }
 
