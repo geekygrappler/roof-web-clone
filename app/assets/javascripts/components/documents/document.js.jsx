@@ -64,6 +64,10 @@ class Document extends React.Component {
         )
     }
 
+    componentDidMount() {
+        window.scrollTo(0, 0)
+    }
+
     updateTitle(e) {
         this.setState({name: e.target.value});
     }
