@@ -16,7 +16,7 @@ class DocumentsController < ApplicationController
         default_sections.each do |section|
             @document.sections.create(name: section, notes: "#{section} Notes")
         end
-        @document = ::DocumentSerializer.new(@document)
+        redirect_to @document
     end
 
     private
