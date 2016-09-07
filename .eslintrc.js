@@ -3,7 +3,6 @@ module.exports = {
         "browser": true,
         "es6": true
     },
-    "extends": "eslint:recommended",
     "parserOptions": {
         "ecmaFeatures": {
             "experimentalObjectRestSpread": true,
@@ -14,6 +13,7 @@ module.exports = {
     "plugins": [
         "react"
     ],
+     "extends": ["eslint:recommended", "plugin:react/recommended"],
     "rules": {
         "indent": [
             "error",
@@ -30,7 +30,6 @@ module.exports = {
         "semi": [
             "error",
             "always"
-        ],
-        "prefer-es6-class": [2, "always"]
+        ]
     }
 };

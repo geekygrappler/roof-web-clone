@@ -16,6 +16,13 @@
 }
 
 .document-sections-list {
-    background: #3F474D;
+    background: $dark-blue;
     padding: 20px;
+}
+
+.document-add-section {
+    text-align: right;
+    button {
+        margin-left: 10px;
+    }
 }

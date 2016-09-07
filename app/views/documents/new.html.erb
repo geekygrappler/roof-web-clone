@@ -1,5 +1,4 @@
-<% content_for :header do -%>
+<% content_for :head do %>
   <%= stylesheet_link_tag 'document_builder_react', media: 'all' %>
-<% end -%>
-
-<%= react_component 'Document', { data: @document, sections: @sections } %>
+<% end %>
+<%= react_component 'Document', { document: @document } %>

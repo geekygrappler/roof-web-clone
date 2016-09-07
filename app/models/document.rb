@@ -3,7 +3,7 @@ class Document < ActiveRecord::Base
   belongs_to :document_state
   belongs_to :user
   has_many :documents
-  has_many :sections
+  has_many :sections, -> { order(created_at: :asc) }
 
   before_save :calculate_totals
 
