@@ -5,11 +5,10 @@ class BuildingMaterials extends React.Component {
 
     render() {
         return (
-            <table>
+            <table className="table table-striped">
                 <thead>
                     <tr>
-                        <th>Material</th>
-                        <th>Location</th>
+                        <th>Item</th>
                         <th>Supplied by Contractor</th>
                         <th>Price</th>
                     </tr>

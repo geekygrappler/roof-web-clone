@@ -34,7 +34,7 @@ class BuildingMaterialsController < ApplicationController
     private
 
     def building_material_params
-        params.require(:building_material).permit(:name, :section_id, :description)
+        params.require(:building_material).permit(:name, :section_id, :description, :supplied, :price)
     end
 
     def set_building_material

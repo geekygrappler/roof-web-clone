@@ -10,7 +10,8 @@ class Section extends React.Component {
                     <div className="row">
                         <div className="col-sm-8">
                             <h2>
-                                <input type="text"
+                                <input
+                                    type="text"
                                     defaultValue={this.props.section.name}
                                     onKeyDown={this.update.bind(this, "name")}
                                     />

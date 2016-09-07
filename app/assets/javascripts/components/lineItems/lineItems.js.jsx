@@ -5,11 +5,10 @@ class LineItems extends React.Component {
 
     render() {
         return (
-            <table>
+            <table className="table table-striped line-items-table">
                 <thead>
                     <tr>
-                        <th>Item</th>
-                        <th>Location</th>
+                        <th className="line-item-name-header">Item</th>
                         <th>Quantity</th>
                         <th>Est. Rate</th>
                         <th>Price</th>
