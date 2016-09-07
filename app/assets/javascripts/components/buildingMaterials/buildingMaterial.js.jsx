@@ -2,7 +2,7 @@ class BuildingMaterial extends React.Component {
 
     render() {
         return (
-            <tr>
+            <tr className="building-material-row">
                 <td>
                     <p>
                         <input type="text"
@@ -23,6 +23,7 @@ class BuildingMaterial extends React.Component {
                 </td>
                 <td>
                     {this.renderMaterialCost()}
+                    <a className="glyphicon glyphicon-trash" onClick={this.props.deleteBuildingMaterial.bind(this, this.props.buildingMaterial.id)} />
                 </td>
             </tr>
         )
@@ -47,7 +48,7 @@ class BuildingMaterial extends React.Component {
         this.props.updateBuildingMaterial(buildingMaterialId, attributes)
     }
 
-    renderMaterialCost() {
+renderMaterialCost() {
         if (this.props.buildingMaterial.supplied) {
             return (
                 <div>
@@ -61,9 +62,9 @@ class BuildingMaterial extends React.Component {
             );
         } else {
             return (
-                <p>
+                <span>
                     To be quoted
-                </p>
+                </span>
             )
         }
     }

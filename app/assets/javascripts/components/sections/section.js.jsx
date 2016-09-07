@@ -12,6 +12,7 @@ class Section extends React.Component {
                             <h2>
                                 <input
                                     type="text"
+                                    className="section-name"
                                     defaultValue={this.props.section.name}
                                     onKeyDown={this.update.bind(this, "name")}
                                     />
@@ -24,8 +25,15 @@ class Section extends React.Component {
                             <button className="btn btn-danger" onClick={this.delete.bind(this)}>Delete</button>
                         </div>
                     </div>
-                    <textarea defaultValue={this.props.section.notes}
-                        onKeyDown={this.update.bind(this, "notes")} />
+                    <div className="row">
+                        <div className="col-xs-12">
+                            <textarea
+                                className="section-notes form-control"
+                                defaultValue={this.props.section.notes}
+                                placeholder={`Add ${this.props.section.name} notes`}
+                                onKeyDown={this.update.bind(this, "notes")} />
+                        </div>
+                    </div>
                     <h3>
                         Labour
                     </h3>
@@ -34,6 +42,7 @@ class Section extends React.Component {
                         document = {this.props.document}
                         createLineItem = {this.props.createLineItem}
                         updateLineItem = {this.props.updateLineItem}
+                        deleteLineItem={this.props.deleteLineItem}
                         sectionId = {this.props.section.id}
                         />
                     <h3>
@@ -46,6 +55,7 @@ class Section extends React.Component {
                         sectionId={this.props.section.id}
                         createBuildingMaterial={this.props.createBuildingMaterial}
                         updateBuildingMaterial={this.props.updateBuildingMaterial}
+                        deleteBuildingMaterial={this.props.deleteBuildingMaterial}
                         />
                 </div>
             </div>

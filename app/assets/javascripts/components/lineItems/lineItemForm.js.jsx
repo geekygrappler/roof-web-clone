@@ -19,17 +19,16 @@ class LineItemForm extends React.Component {
 
     render() {
         return(
-            <tr>
-                <td>
-                    <input className={`line-item-search-${this.props.sectionId}`}
-                        onChange={this.handleChange.bind(this)}
-                        value={this.state.newLineItem}
-                        onKeyDown={this.handleKeyDown.bind(this)}
-                        placeholder="Search for an item..."
-                        autoFocus={true}
-                        />
-                </td>
-            </tr>
+            <div>
+                <span className="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                <input className={`line-item-search-${this.props.sectionId} form-control`}
+                    onChange={this.handleChange.bind(this)}
+                    value={this.state.newLineItem}
+                    onKeyDown={this.handleKeyDown.bind(this)}
+                    placeholder="Search for an item..."
+                    autoFocus={true}
+                    />
+            </div>
         );
     }
 
@@ -47,6 +46,9 @@ class LineItemForm extends React.Component {
 
     handleKeyDown(e) {
         if (e.keyCode === this.props.ENTER_KEY_CODE || e.keyCode === this.props.TAB_KEY_CODE) {
+            if (e.target.value.length === 0) {
+                return;
+            }
             e.preventDefault();
 
             let name = e.target.value.trim();

@@ -1,5 +1,5 @@
 class LineItemsController < ApplicationController
-    before_action :set_line_item, only: [:update]
+    before_action :set_line_item, only: [:update, :destroy]
     respond_to :json
 
     #TODO remove this
@@ -36,6 +36,11 @@ class LineItemsController < ApplicationController
         end
     end
 
+    # DELETE /line_items/:id
+    def destroy
+        @line_item.destroy
+        render json: @line_item, status: :ok
+    end
     private
 
     def line_item_params

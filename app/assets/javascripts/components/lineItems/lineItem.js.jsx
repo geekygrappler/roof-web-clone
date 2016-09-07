@@ -1,7 +1,7 @@
 class LineItem extends React.Component {
     render() {
         return (
-            <tr>
+            <tr className="line-item-row">
                 <td>
                     <p>
                         <input
@@ -34,6 +34,7 @@ class LineItem extends React.Component {
                 </td>
                 <td>
                     £{this.calculateLineItemTotal()}
+                    <a className="glyphicon glyphicon-trash" onClick={this.props.deleteLineItem.bind(this, this.props.lineItem.id)} />
                 </td>
             </tr>
         );

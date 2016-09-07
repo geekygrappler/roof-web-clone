@@ -1,5 +1,5 @@
 class BuildingMaterialsController < ApplicationController
-    before_action :set_building_material, only: [:update]
+    before_action :set_building_material, only: [:update, :destroy]
     respond_to :json
 
     # POST /building_materials
@@ -29,6 +29,12 @@ class BuildingMaterialsController < ApplicationController
         else
             render json: @building_material.errors, status: :unprocessable_entity
         end
+    end
+
+    # DELETE /building_materials/:id
+    def destroy
+        @building_material.destroy
+        render json: @building_material, status: :ok
     end
 
     private
