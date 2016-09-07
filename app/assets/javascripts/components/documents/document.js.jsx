@@ -124,20 +124,13 @@ class Document extends React.Component {
 
     createLineItem(lineItem) {
         // Add line_item to the database
-        fetch("/line_items", {
+        $.ajax({
+            url: "/line_items",
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                "line_item": lineItem
-            })
-        }).then((response) => {
-            if (response.ok) {
-                // If we have successfully added a line_item, lets get the document again
-                // with updated sections, line_items and totals
-                this.fetchDocument();
-            }
+            dataTyep: "json",
+            data: { line_item: lineItem }
+        }).done((data) => {
+            this.fetchDocument();
         });
     }
 

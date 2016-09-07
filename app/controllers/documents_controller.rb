@@ -4,11 +4,10 @@ class DocumentsController < ApplicationController
     # GET /document_states/1
     # GET /document_states/1.json
     def show
-        render json: @document
-    end
-
-    def index
-
+        respond_to do |format|
+            format.json { render json: DocumentSerializer.new(@document).to_json }
+            format.html { @document = DocumentSerializer.new(@document) }
+        end
     end
 
     # GET /documents/new
@@ -20,7 +19,8 @@ class DocumentsController < ApplicationController
         default_sections.each do |section|
             @document.sections.create(name: section, notes: "#{section} Notes")
         end
-        @document = ::DocumentSerializer.new(@document)
+        # @document.user_id = current_user.id if current_user.present?
+        redirect_to @document
     end
 
     private

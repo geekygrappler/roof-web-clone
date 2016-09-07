@@ -21,7 +21,7 @@ class LineItem extends React.Component {
                     Location placeholder
                 </td>
                 <td>
-                    <input type="text" defaultValue={this.props.lineItem.quantity} onBlur={this.update.bind(this, "quantity")} />
+                    <input type="text" defaultValue={this.props.lineItem.quantity} onKeyDown={this.update.bind(this, "quantity")} />
                 </td>
                 <td>
                     £{this.props.lineItem.rate}
