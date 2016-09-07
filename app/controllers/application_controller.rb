@@ -7,6 +7,10 @@ class ApplicationController < ActionController::Base
 
   private
 
+  def after_sign_in_path_for(resource)
+    documents_path(resource)
+  end
+
   def ssl_configured?
    Rails.env.production?
   end

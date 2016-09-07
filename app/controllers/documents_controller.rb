@@ -7,6 +7,10 @@ class DocumentsController < ApplicationController
         render json: @document
     end
 
+    def index
+
+    end
+
     # GET /documents/new
     def new
         default_sections = ["Preliminary", "Plumbing", "Electrics", "Carpentry", "Decorating", "Flooring", "General"]
