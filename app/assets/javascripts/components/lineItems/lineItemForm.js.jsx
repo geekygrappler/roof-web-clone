@@ -3,17 +3,28 @@ class LineItemForm extends React.Component {
         super(props);
         this.state = {
             newLineItem: ""
-        }
+        };
+        this.masterLineItems = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            remote: {
+                url: '/search/line_items?query=%QUERY',
+                wildcard: '%QUERY',
+                transform: (data) => {
+                    return data.results
+                }
+            }
+        });
     }
 
     render() {
         return(
             <tr>
                 <td>
-                    <input type="text"
+                    <input className={`line-item-search-${this.props.sectionId}`}
                         onChange={this.handleChange.bind(this)}
-                        onKeyDown={this.handleKeyDown.bind(this)}
                         value={this.state.newLineItem}
+                        onKeyDown={this.handleKeyDown.bind(this)}
                         placeholder="Search for an item..."
                         autoFocus={true}
                         />
@@ -22,8 +33,16 @@ class LineItemForm extends React.Component {
         );
     }
 
+    componentDidMount() {
+        $(`.line-item-search-${this.props.sectionId}`).typeahead({highlight: true}, {
+            name: "lineItems",
+            source: this.masterLineItems,
+            display: 'name'
+        });
+    }
+
     handleChange(e) {
-        this.setState({newLineItem: event.target.value});
+        this.setState({newLineItem: e.target.value});
     }
 
     handleKeyDown(e) {
@@ -34,10 +53,12 @@ class LineItemForm extends React.Component {
 
             if (name) {
                 let lineItem = {
-                    name: name
+                    name: name,
+                    section_id: this.props.sectionId
                 };
-                this.props.createLineItem(lineItem, this.props.sectionId)
-                this.setState({newLineItem: ""})
+                this.props.createLineItem(lineItem);
+                this.setState({newLineItem: ""});
+                e.target.value = "";
             }
         } else {
             return;
@@ -48,4 +69,4 @@ class LineItemForm extends React.Component {
 LineItemForm.defaultProps = {
     ENTER_KEY_CODE: 13,
     TAB_KEY_CODE: 9
-}
+};

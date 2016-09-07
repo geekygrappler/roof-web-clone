@@ -3,6 +3,7 @@
 <head>
   <%= render partial: 'shared/head' %>
   <%= stylesheet_link_tag 'application', media: 'all'%>
+  <%= content_for :head %>
 </head>
 <body>
   <%= yield %>

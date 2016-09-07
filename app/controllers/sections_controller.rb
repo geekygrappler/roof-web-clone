@@ -1,6 +1,6 @@
 class SectionsController < ApplicationController
     respond_to :json
-    before_filter :find_section, only: [:show, :update]
+    before_filter :find_section, only: [:show, :update, :destroy]
 
 
     #TODO remove this
@@ -8,6 +8,18 @@ class SectionsController < ApplicationController
 
     def show
         render json: @section
+    end
+
+    def create
+        @section = Section.new(section_params)
+        if @section.notes.nil?
+            @section.notes = "#{@section.name} notes"
+        end
+        if @section.save
+            render json: @section, status: :created, location: @section
+        else
+            render json: @section.errors, status: :unprocessable_entity
+        end
     end
 
     def update
@@ -19,6 +31,11 @@ class SectionsController < ApplicationController
         end
     end
 
+    def destroy
+        @section.destroy
+        render json: @section, status: :ok
+    end
+
     private
 
     def find_section
@@ -26,6 +43,6 @@ class SectionsController < ApplicationController
     end
 
     def section_params
-        params.require(:section).permit(:name, :notes)
+        params.require(:section).permit(:name, :notes, :document_id)
     end
 end
