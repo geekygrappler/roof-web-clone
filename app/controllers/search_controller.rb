@@ -5,7 +5,15 @@ class SearchController < ApplicationController
     render json: {
         results:
             LineItem.full_text_search(params[:query])
-                .with_pg_search_highlight.map {|item| LineItemSearchSerializer.new(item)}
+                .map {|item| LineItemSearchSerializer.new(item)}
+    }
+  end
+
+  def building_materials
+    render json: {
+        results:
+            BuildingMaterial.full_text_search(params[:query])
+                .map {|item| BuildingMaterialSearchSerializer.new(item)}
     }
   end
 end

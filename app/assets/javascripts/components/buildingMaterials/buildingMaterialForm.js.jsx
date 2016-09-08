@@ -4,6 +4,17 @@ class BuildingMaterialForm extends React.Component {
         this.state = {
             newBuildingMaterial: ""
         };
+        this.masterBuildingMaterials = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            remote: {
+                url: '/search/building_materials?query=%QUERY',
+                wildcard: '%QUERY',
+                transform: (data) => {
+                    return data.results
+                }
+            }
+        });
     }
 
     render() {
@@ -20,6 +31,14 @@ class BuildingMaterialForm extends React.Component {
                 </td>
             </tr>
         );
+    }
+
+    componentDidMount() {
+        $(`.building-material-search-${this.props.sectionId}`).typeahead({highlight: true}, {
+            name: "buildingMaterials",
+            source: this.masterBuildingMaterials,
+            display: 'name'
+        });
     }
 
     handleChange(e) {

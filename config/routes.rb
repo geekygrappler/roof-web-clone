@@ -1,16 +1,19 @@
 Rails.application.routes.draw do
 
-  get 'sessions/new'
-
   get 'search/line_items', to: 'search#line_items'
+  get 'search/building_materials', to: 'search#building_materials'
 
-  devise_for :accounts, path: '/users'
+  get 'spec/new', to: 'spec#new', as: :new_spec
+  get 'spec/create', to: 'spec#create', as: :create_spec
+  get 'spec/invite', to: 'spec#invite', as: :invite_spec
+  get 'spec/thanks', to: 'spec#thanks', as: :thanks_spec
 
-  devise_scope :account do
-    get '/sign_in', to: 'sessions#new', as: :sign_in
-    post '/sign_in', to: 'sessions#create', as: :sign_in_post
-
-  end
+  #devise_for :accounts, path: '/users'
+  #
+  #devise_scope :account do
+  #  get '/sign_in', to: 'sessions#new', as: :sign_in
+  #  post '/sign_in', to: 'sessions#create', as: :sign_in_post
+  #end
 
   resources :line_items, except: [:new, :edit]
   resources :building_materials, except: [:new, :edit]
