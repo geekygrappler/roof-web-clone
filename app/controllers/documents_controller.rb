@@ -17,7 +17,7 @@ class DocumentsController < ApplicationController
             name: "Name your project..."
         )
         default_sections.each do |section|
-            @document.sections.create(name: section, notes: "#{section} Notes")
+            @document.sections.create(name: section)
         end
         # @document.user_id = current_user.id if current_user.present?
         redirect_to @document
