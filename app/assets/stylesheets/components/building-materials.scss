@@ -1,0 +1,13 @@
+table.building-materials-table {
+    width: 100%;
+    table-layout: fixed;
+    th.building-material-name-header {
+        width: 60%;
+    }
+    th.building-material-supplied-header {
+        width: 25%;
+    }
+    th.building-material-price-header {
+        width: 15%;
+    }
+}

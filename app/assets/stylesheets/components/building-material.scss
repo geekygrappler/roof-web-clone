@@ -3,4 +3,24 @@
         float: right;
         margin-left: 10px;
     }
+
+    .price-input {
+        padding: 0;
+    }
+
+    .form-inline {
+        width: 100%;
+    }
+
+    .form-group {
+        width: 100%;
+        label {
+            font-weight: normal;
+            margin-bottom: 0;
+            margin-right: 2px;
+        }
+        input {
+            width: 75%;
+        }
+    }
 }

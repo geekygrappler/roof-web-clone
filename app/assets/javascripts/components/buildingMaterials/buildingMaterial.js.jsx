@@ -5,7 +5,9 @@ class BuildingMaterial extends React.Component {
             <tr className="building-material-row">
                 <td>
                     <p>
-                        <input type="text"
+                        <input
+                            type="text"
+                            className="form-control item-input"
                             defaultValue={this.props.buildingMaterial.name}
                             onKeyDown={this.handleKeyDown.bind(this, "name")}
                             onBlur={this.update.bind(this, "name")}
@@ -51,13 +53,21 @@ class BuildingMaterial extends React.Component {
 renderMaterialCost() {
         if (this.props.buildingMaterial.supplied) {
             return (
-                <div>
-                    £
-                    <input type="text"
-                        defaultValue={this.props.buildingMaterial.price || 0}
-                        onKeyDown={this.handleKeyDown.bind(this, "price")}
-                        onBlur={this.update.bind(this, "price")}
-                        />
+                <div className="col-xs-9 price-input">
+                    <div className="form-inline">
+                        <div className="form-group">
+                            <label htmlFor={`buildng-materail-${this.props.buildingMaterial.id}`}>£</label>
+                            <input
+                                type="text"
+                                id={`buildng-materail-${this.props.buildingMaterial.id}`}
+                                className="form-control"
+                                defaultValue={this.props.buildingMaterial.price}
+                                placeholder="0"
+                                onKeyDown={this.handleKeyDown.bind(this, "price")}
+                                onBlur={this.update.bind(this, "price")}
+                                />
+                        </div>
+                    </div>
                 </div>
             );
         } else {
