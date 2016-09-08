@@ -19,10 +19,10 @@ class Section extends React.Component {
                             </h2>
                         </div>
                         <div className="col-sm-4 text-right">
-                            <h2>
-                                £{this.calculateTotal()}
-                            </h2>
-                            <button className="btn btn-danger" onClick={this.delete.bind(this)}>Delete</button>
+                            <a className="glyphicon glyphicon-trash" onClick={this.props.deleteSection.bind(this, this.props.section.id)} />
+                            <span className="section-total">
+                                Section Total: £{this.calculateTotal()}
+                            </span>
                         </div>
                     </div>
                     <div className="row">
@@ -37,6 +37,7 @@ class Section extends React.Component {
                     <h3>
                         Labour
                     </h3>
+                    <small>Add tasks that you need a contractor to quote on.</small>
                     <LineItems
                         lineItems = {this.props.section.line_items}
                         document = {this.props.document}
@@ -57,6 +58,13 @@ class Section extends React.Component {
                         updateBuildingMaterial={this.props.updateBuildingMaterial}
                         deleteBuildingMaterial={this.props.deleteBuildingMaterial}
                         />
+                    <div className="row">
+                        <div className="col-xs-4 col-xs-push-8 text-right">
+                            <span className="section-total">
+                                Section Total: £{this.calculateTotal()}
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
@@ -76,10 +84,6 @@ class Section extends React.Component {
             attributes[attribute] = e.target.value;
             this.props.updateSection(sectionId, attributes);
         }
-    }
-
-    delete() {
-        this.props.deleteSection(this.props.section.id);
     }
 
     calculateTotal() {

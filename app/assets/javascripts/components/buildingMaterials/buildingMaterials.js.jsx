@@ -24,12 +24,12 @@ class BuildingMaterials extends React.Component {
 
     renderTable() {
         return (
-            <table className="table table-striped">
+            <table className="table table-striped building-materials-table">
                 <thead>
                     <tr>
-                        <th>Item</th>
-                        <th>Supplied by Contractor</th>
-                        <th>Price</th>
+                        <th className="building-material-name-header">Item</th>
+                        <th className="building-material-supplied-header">Supplied by Contractor</th>
+                        <th className="building-material-price-header">Price</th>
                     </tr>
                 </thead>
                 <tbody>

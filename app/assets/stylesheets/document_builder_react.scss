@@ -1,3 +1,6 @@
+@import "bootstrap-sprockets";
+@import "bootstrap";
+
 @import "styles/roof-variables";
 @import "components/document";
 @import "components/section";
@@ -5,6 +8,4 @@
 @import "components/line-items";
 @import "components/line-item";
 @import "components/building-material";
-
-@import "bootstrap-sprockets";
-@import "bootstrap";
+@import "components/building-materials";
