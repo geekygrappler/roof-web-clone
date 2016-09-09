@@ -1,4 +1,5 @@
 class AdminSpecController < ApplicationController
+  before_action :redirect_to_home
   def specs
     @architects = Architect.all
   end
