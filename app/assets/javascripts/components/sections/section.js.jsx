@@ -12,28 +12,38 @@ class Section extends React.Component {
                             <h2>
                                 <input
                                     type="text"
+                                    className="section-name"
                                     defaultValue={this.props.section.name}
                                     onKeyDown={this.update.bind(this, "name")}
                                     />
                             </h2>
                         </div>
                         <div className="col-sm-4 text-right">
-                            <h2>
-                                £{this.calculateTotal()}
-                            </h2>
-                            <button className="btn btn-danger" onClick={this.delete.bind(this)}>Delete</button>
+                            <a className="glyphicon glyphicon-trash" onClick={this.props.deleteSection.bind(this, this.props.section.id)} />
+                            <span className="section-total">
+                                Section Total: £{this.calculateTotal()}
+                            </span>
                         </div>
                     </div>
-                    <textarea defaultValue={this.props.section.notes}
-                        onKeyDown={this.update.bind(this, "notes")} />
+                    <div className="row">
+                        <div className="col-xs-12">
+                            <textarea
+                                className="section-notes form-control"
+                                defaultValue={this.props.section.notes}
+                                placeholder={`Add ${this.props.section.name} notes`}
+                                onKeyDown={this.update.bind(this, "notes")} />
+                        </div>
+                    </div>
                     <h3>
                         Labour
                     </h3>
+                    <small>Add tasks that you need a contractor to quote on.</small>
                     <LineItems
                         lineItems = {this.props.section.line_items}
                         document = {this.props.document}
                         createLineItem = {this.props.createLineItem}
                         updateLineItem = {this.props.updateLineItem}
+                        deleteLineItem={this.props.deleteLineItem}
                         sectionId = {this.props.section.id}
                         />
                     <h3>
@@ -46,7 +56,15 @@ class Section extends React.Component {
                         sectionId={this.props.section.id}
                         createBuildingMaterial={this.props.createBuildingMaterial}
                         updateBuildingMaterial={this.props.updateBuildingMaterial}
+                        deleteBuildingMaterial={this.props.deleteBuildingMaterial}
                         />
+                    <div className="row">
+                        <div className="col-xs-4 col-xs-push-8 text-right">
+                            <span className="section-total">
+                                Section Total: £{this.calculateTotal()}
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
@@ -66,10 +84,6 @@ class Section extends React.Component {
             attributes[attribute] = e.target.value;
             this.props.updateSection(sectionId, attributes);
         }
-    }
-
-    delete() {
-        this.props.deleteSection(this.props.section.id);
     }
 
     calculateTotal() {

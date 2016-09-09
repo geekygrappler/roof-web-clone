@@ -1,12 +1,12 @@
 class LineItem extends React.Component {
     render() {
         return (
-            <tr>
+            <tr className="line-item-row">
                 <td>
                     <p>
                         <input
                             type="text"
-                            className="form-control"
+                            className="form-control item-input"
                             defaultValue={this.props.lineItem.name}
                             onKeyDown={this.handleKeyDown.bind(this, "name")}
                             onBlur={this.update.bind(this, "name")}
@@ -15,7 +15,7 @@ class LineItem extends React.Component {
                     <small>
                         <input
                             type="text"
-                            className="form-control"
+                            className="form-control description-input"
                             defaultValue={this.props.lineItem.description}
                             onKeyDown={this.handleKeyDown.bind(this, "description")}
                             onBlur={this.update.bind(this, "description")}
@@ -24,16 +24,20 @@ class LineItem extends React.Component {
                     </small>
                 </td>
                 <td>
-                    <input type="text" defaultValue={this.props.lineItem.quantity}
+                    <input
+                        type="text"
+                        className="form-control"
+                        defaultValue={this.props.lineItem.quantity}
                         onKeyDown={this.handleKeyDown.bind(this, "quantity")}
                         onBlur={this.update.bind(this, "quantity")}
                         />
                 </td>
                 <td>
-                    £{this.props.lineItem.rate}
+                    {this.renderEstimatedRate()}
                 </td>
                 <td>
-                    £{this.calculateLineItemTotal()}
+                    {this.renderPrice()}
+                    <a className="glyphicon glyphicon-trash" onClick={this.props.deleteLineItem.bind(this, this.props.lineItem.id)} />
                 </td>
             </tr>
         );
@@ -41,6 +45,30 @@ class LineItem extends React.Component {
 
     calculateLineItemTotal() {
         return this.props.lineItem.rate * this.props.lineItem.quantity
+    }
+
+    renderEstimatedRate() {
+        if (this.props.lineItem.rate === null) {
+            return (
+                <span> To be quoted </span>
+            );
+        } else {
+            return (
+                <span>£{this.props.lineItem.rate}</span>
+            );
+        }
+    }
+
+    renderPrice() {
+        if (this.props.lineItem.rate === null) {
+            return (
+                <span> N/A </span>
+            );
+        } else {
+            return (
+                <span>£{this.props.lineItem.total}</span>
+            );
+        }
     }
 
     handleKeyDown(attribute, e) {

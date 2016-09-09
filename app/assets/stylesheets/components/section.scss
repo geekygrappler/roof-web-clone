@@ -2,4 +2,19 @@
     border: 1px solid #D5D5D5;
     margin-top: 10px;
     margin-bottom: 10px;
+    padding: 10px;
+    .section-name{
+        height: 36px;
+        width: 100%;
+    }
+
+    .section-total {
+        font-size: 20px;
+    }
+
+    .glyphicon-trash {
+        margin-bottom: 10px;
+        display: block;
+    }
+
 }

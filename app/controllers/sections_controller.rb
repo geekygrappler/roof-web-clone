@@ -12,9 +12,6 @@ class SectionsController < ApplicationController
 
     def create
         @section = Section.new(section_params)
-        if @section.notes.nil?
-            @section.notes = "#{@section.name} notes"
-        end
         if @section.save
             render json: @section, status: :created, location: @section
         else

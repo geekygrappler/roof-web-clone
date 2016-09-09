@@ -10,18 +10,18 @@ class Document extends React.Component {
                 <div className="document-header">
                     <div className="container">
                         <div className="row">
-                            <div className="col-md-6 ">
+                            <div className="col-md-7">
                                 <h1 className="title">
                                     <input value={this.state.name} onChange={this.updateTitle.bind(this)}/>
                                 </h1>
                             </div>
-                            <div className="col-md-6  text-right">
-                                <h2 className="heading-total">
-                                    Estimated Total: £{this.state.total_cost}
-                                </h2>
+                            <div className="col-md-5 text-right">
                                 <a href={this.props.invite_path}>
-                                    <button className="btn btn-warning btn-lg">Request Quotes</button>
+                                    <button className="btn btn-warning">Request Quotes</button>
                                 </a>
+                                <h3 className="heading-total">
+                                    Estimated Total: {this.state.total_cost}
+                                </h3>
                             </div>
                         </div>
                     </div>
@@ -44,8 +44,10 @@ class Document extends React.Component {
                                 deleteSection={this.deleteSection.bind(this)}
                                 createLineItem={this.createLineItem.bind(this)}
                                 updateLineItem={this.updateLineItem.bind(this)}
+                                deleteLineItem={this.deleteLineItem.bind(this)}
                                 createBuildingMaterial={this.createBuildingMaterial.bind(this)}
                                 updateBuildingMaterial={this.updateBuildingMaterial.bind(this)}
+                                deleteBuildingMaterial={this.deleteBuildingMaterial.bind(this)}
                                 />
                         );
                     })}
@@ -152,6 +154,16 @@ class Document extends React.Component {
         })
     }
 
+    deleteLineItem(lineItemId) {
+        $.ajax({
+            url: `/line_items/${lineItemId}`,
+            method: "DELETE",
+            dataType: "json"
+        }).done((data) => {
+            this.fetchDocument();
+        });
+    }
+
     createBuildingMaterial(buildingMaterial) {
         $.ajax({
             url: "/building_materials",
@@ -173,6 +185,16 @@ class Document extends React.Component {
             data: {
                 building_material: attributes
             }
+        }).done((data) => {
+            this.fetchDocument();
+        });
+    }
+
+    deleteBuildingMaterial(buildingMaterialId) {
+        $.ajax({
+            url: `/building_materials/${buildingMaterialId}`,
+            method: "DELETE",
+            dataType: "json"
         }).done((data) => {
             this.fetchDocument();
         });
