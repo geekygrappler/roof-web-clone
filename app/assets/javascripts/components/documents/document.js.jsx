@@ -10,16 +10,16 @@ class Document extends React.Component {
                 <div className="document-header">
                     <div className="container">
                         <div className="row">
-                            <div className="col-md-6 ">
+                            <div className="col-md-7">
                                 <h1 className="title">
                                     <input value={this.state.name} onChange={this.updateTitle.bind(this)}/>
                                 </h1>
                             </div>
-                            <div className="col-md-6  text-right">
-                                <h2 className="heading-total">
-                                    Estimated Total: £{this.state.total_cost}
-                                </h2>
-                                <button className="btn btn-warning btn-lg">Request Quotes</button>
+                            <div className="col-md-5 text-right">
+                                <button className="btn btn-warning">Request Quotes</button>
+                                <h3 className="heading-total">
+                                    Estimated Total: {this.state.total_cost}
+                                </h3>
                             </div>
                         </div>
                     </div>
