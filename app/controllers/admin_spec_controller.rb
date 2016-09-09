@@ -1,4 +1,5 @@
 class AdminSpecController < ApplicationController
+  before_action :redirect_to_home
   def specs
     @architects = Architect.all
   end
@@ -25,5 +26,11 @@ class AdminSpecController < ApplicationController
 
   def send_pro_email
 
+  end
+
+  private
+
+  def redirect_to_home
+    redirect_to root_url unless current_account && current_account.administrator?
   end
 end
