@@ -1,11 +1,18 @@
 Rails.application.routes.draw do
 
+  get 'admin/specs', to: 'admin_spec#specs'
+  get '/admin/document/:id', to: 'admin_spec#document', as: :admin_document
+  delete '/admin/architect/:id', to: 'admin_spec#destroy_architect', as: :destroy_architect
+  delete '/admin/invite/:id', to: 'admin_spec#destroy_invite', as: :destroy_invite
+  post '/admin/invite/:id', to: 'admin_spec#send_pro_email', as: :send_pro_email
+
   get 'search/line_items', to: 'search#line_items'
   get 'search/building_materials', to: 'search#building_materials'
 
   get 'spec/new', to: 'spec#new', as: :new_spec
-  get 'spec/create', to: 'spec#create', as: :create_spec
+  post 'spec/create', to: 'spec#create', as: :create_spec
   get 'spec/invite', to: 'spec#invite', as: :invite_spec
+  post 'spec/create_invites', to: 'spec#create_invites', as: :create_spec_invites
   get 'spec/thanks', to: 'spec#thanks', as: :thanks_spec
 
   #devise_for :accounts, path: '/users'

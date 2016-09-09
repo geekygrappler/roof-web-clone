@@ -19,7 +19,9 @@ class Document extends React.Component {
                                 <h2 className="heading-total">
                                     Estimated Total: £{this.state.total_cost}
                                 </h2>
-                                <button className="btn btn-warning btn-lg">Request Quotes</button>
+                                <a href={this.props.invite_path}>
+                                    <button className="btn btn-warning btn-lg">Request Quotes</button>
+                                </a>
                             </div>
                         </div>
                     </div>

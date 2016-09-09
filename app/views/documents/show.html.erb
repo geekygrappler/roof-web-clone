@@ -1,4 +1,4 @@
 <% content_for :head do %>
   <%= stylesheet_link_tag 'document_builder_react', media: 'all' %>
 <% end %>
-<%= react_component 'Document', { document: @document } %>
+<%= react_component 'Document', { document: @document, invite_path: invite_spec_path(document_id: @document.object.id) } %>

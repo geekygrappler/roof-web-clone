@@ -1,0 +1,41 @@
+<div class="blue-notice">
+  You are 1 step away from getting quotes
+</div>
+
+<div class="spec-wrapper">
+  <div class="speca-loader">Loading...</div>
+  <%= form_tag create_spec_invites_path, class: 'create-spec-form',  enctype: "multipart/form-data" do %>
+      <div class="spec-form-section">
+        <div class="spec-number">Do you have any plans or docunents to accompany your spec?</div>
+        <div class="spec-form-inputs text-align-left">
+          <span>Please upload any plans of photos:</span>
+          <%= react_component 'ProfessionalsFileUploadForm', {} %>
+        </div>
+      </div>
+      <div class="spec-form-section">
+        <div class="spec-number">Do you know the details of the professionals you want to quote?</div>
+        <div class="spec-form-inputs text-align-left invite-decider">
+          <span class="radio">
+            <input type="radio" selected name="invite" value="no" />No
+          </span>
+          <span class="radio">
+            <input type="radio" name="invite" value="yes" />Yes
+          </span>
+          <div class="clr"></div>
+          <span class="text-align-left">If you don't we will request quotes from pros who have done similar projects </span>
+        </div>
+        <div class="spec-form-inputs text-align-left spec-pro-fields">
+          <%= react_component 'ProfessionalsInviteForm', {} %>
+        </div>
+      </div>
+
+      <div class="spec-form-section">
+        <div class="spec-number">Send a message with your request to quote</div>
+        <div class="spec-form-inputs text-align-left">
+          <span class="full-width"><%= text_area_tag :message, nil, class: 'form-control'  %></span>
+        </div>
+      </div>
+      <%= hidden_field_tag :document_id, params[:document_id]  %>
+      <%= submit_tag 'Get Me Quotes Now', class: "one-roof-new-btn full-width" %>
+  <% end %>
+</div>

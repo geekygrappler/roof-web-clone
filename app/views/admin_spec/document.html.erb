@@ -1,0 +1,90 @@
+<div class="admin-spec-wrapper">
+  <h2>Document Invites</h2>
+  <table class="table-light bg-white">
+    <thead class="bg-darken-1">
+      <tr>
+        <td>Name</td>
+        <td>Email</td>
+        <td>Phone</td>
+        <td>Sent</td>
+        <td></td>
+        <td></td>
+      </tr>
+    </thead>
+    <tbody>
+      <% if @document_invitations.present? %>
+        <% @document_invitations.each do |invite| %>
+            <tr>
+              <td><%= invite.name %></td>
+              <td><%= invite.email %></td>
+              <td><%= invite.phone %></td>
+              <td><%= invite.sent_email %></td>
+              <td><%= link_to 'Send Mandril Email', destroy_invite_path(invite) %></td>
+              <td><%= link_to 'Send Mandril Email', send_pro_email_path(invite) %></td>
+            </tr>
+        <% end %>
+      <% else %>
+        <tr>
+          <td><h4>No invites.... ?</h4></td>
+        </tr>
+      <% end %>
+    </tbody>
+
+  </table>
+
+
+  <h2>Uploaded Files</h2>
+  <table class="table-light bg-white">
+    <thead class="bg-darken-1">
+    <tr>
+      <td>Link</td>
+    </tr>
+    </thead>
+    <tbody>
+    <% if @document_files.present? %>
+        <% @document_files.each do |file| %>
+            <tr>
+              <% obj = @file_bucket.object(file.s3_url) %>
+              <% if obj.present? %>
+                  <td><%= link_to file.s3_url, obj.presigned_url(:get, expires_in: 3600), target: '_new' %></td>
+            <% end %>
+            </tr>
+        <% end %>
+    <% else %>
+        <tr>
+          <td><h4>No Files.... !</h4></td>
+        </tr>
+    <% end %>
+    </tbody>
+
+  </table>
+
+
+  <h2>Backups (CSVs, PDFs, JSON)</h2>
+  <table class="table-light bg-white">
+    <thead class="bg-darken-1">
+    <tr>
+      <td>Link</td>
+      <td>Backup Type</td>
+    </tr>
+    </thead>
+    <tbody>
+    <% if @document_backups.present? %>
+        <% @document_backups.each do |backup| %>
+            <% obj = @backup_bucket.object(backup.s3_url) %>
+            <% if obj.present? %>
+              <tr>
+                  <td><%= link_to backup.s3_url, obj.presigned_url(:get, expires_in: 3600), download: '' %></td>
+                  <td><%= backup.backup_type.name %></td>
+              </tr>
+            <% end %>
+    <% end %>
+    <% else %>
+        <tr>
+          <td><h4>No CSVs.... !</h4></td>
+        </tr>
+    <% end %>
+    </tbody>
+
+  </table>
+</div>

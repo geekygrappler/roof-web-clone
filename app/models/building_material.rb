@@ -3,7 +3,11 @@ class BuildingMaterial < ActiveRecord::Base
   belongs_to :building_material
   belongs_to :section
   belongs_to :location
+  belongs_to :unit
   has_many :building_materials
+
+  delegate :name, to: :unit, prefix: true, allow_nil: true
+  delegate :name, to: :location, prefix: true, allow_nil: true
 
   before_save :check_supplied
   before_save :calculate_total

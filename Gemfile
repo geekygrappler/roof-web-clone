@@ -33,6 +33,10 @@ gem 'wicked_pdf'
 gem 'wkhtmltopdf-binary', '~> 0.12.3'
 
 gem 'aws-sdk', '~> 2'
+gem 'google_drive'
+
+gem 'mandrill-rails'
+
 
 gem 'pg_search'
 

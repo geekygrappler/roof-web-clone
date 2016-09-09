@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160908073030) do
+ActiveRecord::Schema.define(version: 20160909163344) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -65,6 +65,18 @@ ActiveRecord::Schema.define(version: 20160908073030) do
   add_index "appointments", ["host_type", "host_id"], name: "index_appointments_on_host_type_and_host_id", using: :btree
   add_index "appointments", ["project_id"], name: "index_appointments_on_project_id", using: :btree
 
+  create_table "architects", force: :cascade do |t|
+    t.string   "address_1"
+    t.string   "address_2"
+    t.string   "city"
+    t.string   "postcode"
+    t.string   "name"
+    t.string   "email"
+    t.string   "phone"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "assets", force: :cascade do |t|
     t.integer  "project_id"
     t.string   "file"
@@ -99,20 +111,22 @@ ActiveRecord::Schema.define(version: 20160908073030) do
 
   create_table "building_materials", force: :cascade do |t|
     t.string   "name"
-    t.integer  "price"
+    t.integer  "price",                default: 0
     t.integer  "building_material_id"
     t.integer  "section_id"
     t.integer  "location_id"
     t.boolean  "supplied"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
-    t.integer  "total"
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+    t.integer  "total",                default: 0
     t.text     "description"
+    t.integer  "unit_id"
   end
 
   add_index "building_materials", ["building_material_id"], name: "index_building_materials_on_building_material_id", using: :btree
   add_index "building_materials", ["location_id"], name: "index_building_materials_on_location_id", using: :btree
   add_index "building_materials", ["section_id"], name: "index_building_materials_on_section_id", using: :btree
+  add_index "building_materials", ["unit_id"], name: "index_building_materials_on_unit_id", using: :btree
 
   create_table "comments", force: :cascade do |t|
     t.integer  "account_id"
@@ -148,6 +162,17 @@ ActiveRecord::Schema.define(version: 20160908073030) do
 
   add_index "content_templates", ["path", "locale", "format", "handler", "partial"], name: "index_content_templates", unique: true, using: :btree
 
+  create_table "csv_references", force: :cascade do |t|
+    t.string   "key"
+    t.integer  "database_objectable_id"
+    t.string   "database_objectable_type"
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
+  add_index "csv_references", ["database_objectable_type", "database_objectable_id"], name: "csv_ref_poly_index", using: :btree
+  add_index "csv_references", ["key"], name: "index_csv_references_on_key", using: :btree
+
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   default: 0, null: false
     t.integer  "attempts",   default: 0, null: false
@@ -164,6 +189,18 @@ ActiveRecord::Schema.define(version: 20160908073030) do
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
 
+  create_table "document_invitations", force: :cascade do |t|
+    t.string   "name"
+    t.string   "email"
+    t.string   "phone"
+    t.boolean  "sent_email",  default: false
+    t.integer  "document_id"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
+  add_index "document_invitations", ["document_id"], name: "index_document_invitations_on_document_id", using: :btree
+
   create_table "document_states", force: :cascade do |t|
     t.string   "name"
     t.text     "description"
@@ -171,26 +208,34 @@ ActiveRecord::Schema.define(version: 20160908073030) do
     t.datetime "updated_at",  null: false
   end
 
+  create_table "document_uploads", force: :cascade do |t|
+    t.integer  "document_id"
+    t.string   "s3_url"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "document_uploads", ["document_id"], name: "index_document_uploads_on_document_id", using: :btree
+
   create_table "documents", force: :cascade do |t|
     t.integer  "document_id"
     t.integer  "document_state_id"
     t.string   "name"
-    t.integer  "user_id"
-    t.integer  "total_cost_line_items"
-    t.integer  "total_cost_supplied_materials"
-    t.integer  "total_cost_supplied_by_pro_materials"
-    t.integer  "total_cost"
+    t.integer  "total_cost_line_items",                default: 0
+    t.integer  "total_cost_supplied_materials",        default: 0
+    t.integer  "total_cost_supplied_by_pro_materials", default: 0
+    t.integer  "total_cost",                           default: 0
     t.text     "notes"
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
-    t.integer  "total_pro_costs"
+    t.datetime "created_at",                                       null: false
+    t.datetime "updated_at",                                       null: false
+    t.integer  "total_pro_costs",                      default: 0
     t.integer  "vat_amount"
     t.integer  "handling_fee_amount"
+    t.integer  "architect_id"
   end
 
   add_index "documents", ["document_id"], name: "index_documents_on_document_id", using: :btree
   add_index "documents", ["document_state_id"], name: "index_documents_on_document_state_id", using: :btree
-  add_index "documents", ["user_id"], name: "index_documents_on_user_id", using: :btree
 
   create_table "failed_payments", force: :cascade do |t|
     t.jsonb    "data"
@@ -224,9 +269,9 @@ ActiveRecord::Schema.define(version: 20160908073030) do
     t.integer  "location_id"
     t.string   "name"
     t.string   "description"
-    t.integer  "quantity"
-    t.integer  "rate"
-    t.integer  "total"
+    t.integer  "quantity",       default: 0
+    t.integer  "rate",           default: 0
+    t.integer  "total",          default: 0
     t.boolean  "admin_verified"
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
@@ -292,13 +337,13 @@ ActiveRecord::Schema.define(version: 20160908073030) do
     t.integer  "document_id"
     t.string   "name"
     t.text     "notes"
-    t.integer  "total_cost_line_items"
-    t.integer  "total_cost_supplied_materials"
-    t.integer  "total_cost_supplied_by_pro_materials"
-    t.integer  "total_cost"
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
-    t.integer  "total_pro_costs"
+    t.integer  "total_cost_line_items",                default: 0
+    t.integer  "total_cost_supplied_materials",        default: 0
+    t.integer  "total_cost_supplied_by_pro_materials", default: 0
+    t.integer  "total_cost",                           default: 0
+    t.datetime "created_at",                                       null: false
+    t.datetime "updated_at",                                       null: false
+    t.integer  "total_pro_costs",                      default: 0
   end
 
   add_index "sections", ["document_id"], name: "index_sections_on_document_id", using: :btree
@@ -403,10 +448,12 @@ ActiveRecord::Schema.define(version: 20160908073030) do
   add_foreign_key "building_materials", "building_materials"
   add_foreign_key "building_materials", "locations"
   add_foreign_key "building_materials", "sections"
+  add_foreign_key "building_materials", "units"
   add_foreign_key "comments", "accounts"
+  add_foreign_key "document_invitations", "documents"
+  add_foreign_key "document_uploads", "documents"
   add_foreign_key "documents", "document_states"
   add_foreign_key "documents", "documents"
-  add_foreign_key "documents", "users"
   add_foreign_key "invitations", "projects"
   add_foreign_key "line_items", "line_items"
   add_foreign_key "line_items", "locations"

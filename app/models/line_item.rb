@@ -4,7 +4,11 @@ class LineItem < ActiveRecord::Base
   belongs_to :line_item
   belongs_to :location
   belongs_to :section
+  belongs_to :unit
   has_many :line_items
+
+  delegate :name, to: :unit, prefix: true, allow_nil: true
+  delegate :name, to: :location, prefix: true, allow_nil: true
 
   before_save :calculate_total
   after_save :calculate_section_totals

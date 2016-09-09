@@ -1,0 +1,47 @@
+<div class="blue-notice">
+  Before you create your spec please let us know some more details about your project and where to send quotes
+</div>
+
+<div class="spec-wrapper">
+  <%= form_tag create_spec_path do %>
+    <div class="spec-form-section">
+      <div class="spec-number">1. Project Address</div>
+      <div class="spec-form-inputs">
+        <span>Line 1 address:*</span>
+        <span><%= text_field_tag :address_1, nil, placeholder: 'E.g. Flat 1'  %></span>
+      </div>
+      <div class="spec-form-inputs">
+        <span>Line 2 address:*</span>
+        <span><%= text_field_tag :address_2, nil, placeholder: 'E.g. 55 Vauxhaul Way'  %></span>
+      </div>
+      <div class="spec-form-inputs">
+        <span>City town:*</span>
+        <span><%= text_field_tag :city, nil, placeholder: 'E.g. London' %></span>
+      </div>
+      <div class="spec-form-inputs">
+        <span>Post Code:*</span>
+        <span><%= text_field_tag :postcode, nil, placeholder: 'E.g. SW1A 2AA'  %></span>
+      </div>
+    </div>
+    <div class="spec-form-section">
+      <div class="spec-number">2. Your Details</div>
+      <div class="spec-form-inputs">
+        <span>Name/Company Name:*</span>
+        <span><%= text_field_tag :name, nil, placeholder: 'E.g. Ard Architects Ltd'  %></span>
+      </div>
+      <div class="spec-form-inputs">
+        <span>Contact email address:*</span>
+        <span><%= text_field_tag :email_address, nil, placeholder: 'E.g. john@example.com'  %></span>
+      </div>
+      <div class="spec-form-inputs">
+        <span>Contact phone number:*</span>
+        <span><%= text_field_tag :phone_number, nil, placeholder: 'E.g. 07837532623'  %></span>
+      </div>
+    </div>
+    <%= submit_tag :submit, class: "one-roof-new-btn full-width" %>
+  <% end %>
+</div>
+
+<div>
+
+</div>
