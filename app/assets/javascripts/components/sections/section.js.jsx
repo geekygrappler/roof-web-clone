@@ -21,7 +21,7 @@ class Section extends React.Component {
                         <div className="col-sm-4 text-right">
                             <a className="glyphicon glyphicon-trash" onClick={this.props.deleteSection.bind(this, this.props.section.id)} />
                             <span className="section-total">
-                                Section Total: £{this.calculateTotal()}
+                                Section Total: {this.props.section.total_cost}
                             </span>
                         </div>
                     </div>
@@ -61,7 +61,7 @@ class Section extends React.Component {
                     <div className="row">
                         <div className="col-xs-4 col-xs-push-8 text-right">
                             <span className="section-total">
-                                Section Total: £{this.calculateTotal()}
+                                Section Total: {this.props.section.total_cost}
                             </span>
                         </div>
                     </div>

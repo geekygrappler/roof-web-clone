@@ -1,8 +1,7 @@
 class LineItemSerializer < ActiveModel::Serializer
-    attributes :id
+    attributes :id, :name, :description, :quantity, :rate, :total, :admin_verified, :location
 
     def location
-        byebug
         "Hello"
     end
 end

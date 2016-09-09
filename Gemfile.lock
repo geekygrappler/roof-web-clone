@@ -389,6 +389,7 @@ DEPENDENCIES
   jquery-rails
   letter_opener
   mandrill-rails
+  money
   pg (~> 0.15)
   pg_search
   puma
