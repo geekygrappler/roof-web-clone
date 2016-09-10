@@ -5,13 +5,16 @@ class SectionList extends React.Component {
 
     render() {
         return (
-            <div className="btn-group">
+            <ul className="nav navbar btn-group">
                 {this.props.sections.map((section) => {
                     return (
-                        <button key={section.id} className="btn btn-default">{section.name}</button>
+                        <li key={section.id} className="btn btn-default navbar-btn">
+                            <a href={`#section-${section.id}`} className='hide'></a>
+                            {section.name}
+                        </li>
                     )
                 })}
-            </div>
+            </ul>
         );
     }
 }

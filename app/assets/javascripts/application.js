@@ -8,6 +8,7 @@
 //= require jquery.fileupload
 //= require jquery.animatecss
 //= require typeahead.bundle
+//= require bootstrap.scrollSpy.min
 //= require price_format
 //= require application.bundle
 //= require react

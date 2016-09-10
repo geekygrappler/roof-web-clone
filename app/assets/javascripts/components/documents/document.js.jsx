@@ -27,13 +27,15 @@ class Document extends React.Component {
                     </div>
                 </div>
                 <div className="document-sections-list">
-                    <div className="container">
-                        <SectionList
-                            sections={this.state.sections}
+                    <div className="container" id="document-sections-menu">
+                        <ul>
+                            <SectionList
+                                sections={this.state.sections}
                             />
+                        </ul>
                     </div>
                 </div>
-                <div className="container">
+                <div className="container document-section-containers">
                     {this.state.sections.map((section) => {
                         return(
                             <Section
@@ -70,6 +72,9 @@ class Document extends React.Component {
 
     componentDidMount() {
         window.scrollTo(0, 0)
+        $("body").scrollspy({
+            target: "#document-sections-menu"
+        })
     }
 
     updateTitle(e) {

@@ -16,5 +16,6 @@
             jQuery('.speca-loader').show();
         });
     };
-
 })();
+
+

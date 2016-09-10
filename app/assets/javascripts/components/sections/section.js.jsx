@@ -5,7 +5,7 @@ class Section extends React.Component {
 
     render() {
         return (
-            <div className="row section">
+            <div className="row section" id={`section-${this.props.section.id}`}>
                 <div className="col-sm-12">
                     <div className="row">
                         <div className="col-sm-8">
