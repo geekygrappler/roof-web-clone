@@ -20,9 +20,9 @@ class Section extends React.Component {
                         </div>
                         <div className="col-sm-4 text-right">
                             <a className="glyphicon glyphicon-trash" onClick={this.props.deleteSection.bind(this, this.props.section.id)} />
-                            <span className="section-total">
-                                Section Total: £{this.calculateTotal()}
-                            </span>
+                            <h2 className="section-total">
+                                Section Total: {this.props.section.total_cost}
+                            </h2>
                         </div>
                     </div>
                     <div className="row">
@@ -34,9 +34,16 @@ class Section extends React.Component {
                                 onKeyDown={this.update.bind(this, "notes")} />
                         </div>
                     </div>
-                    <h3>
-                        Labour
-                    </h3>
+                    <div className="row">
+                        <div className="col-xs-6">
+                            <h3>
+                                Labour
+                            </h3>
+                        </div>
+                        <div className="col-xs-6 text-right">
+                            <h3>{this.props.section.total_cost_line_items}</h3>
+                        </div>
+                    </div>
                     <small>Add tasks that you need a contractor to quote on.</small>
                     <LineItems
                         lineItems = {this.props.section.line_items}
@@ -61,7 +68,7 @@ class Section extends React.Component {
                     <div className="row">
                         <div className="col-xs-4 col-xs-push-8 text-right">
                             <span className="section-total">
-                                Section Total: £{this.calculateTotal()}
+                                Section Total: {this.props.section.total_cost}
                             </span>
                         </div>
                     </div>

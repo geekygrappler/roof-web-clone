@@ -1,3 +1,3 @@
-class BuildingMaterialSearchSerializer < ActiveModel::Serializer
-  attributes :id, :name
+class BuildingMaterialSerializer < ActiveModel::Serializer
+  attributes :id
 end

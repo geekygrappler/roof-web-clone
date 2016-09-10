@@ -16,8 +16,8 @@ class Document < ActiveRecord::Base
     def self.create_default_document(architect)
         default_sections = ["Preliminary", "Plumbing", "Electrics", "Carpentry", "Decorating", "Flooring", "General"]
         document = Document.create(
-        name: architect.address_1 || "Name your project...",
-        architect_id: architect.id || nil
+            name: architect.address_1 || "Name your project...",
+            architect_id: architect.id || nil
         )
         default_sections.each do |section|
             document.sections.create(name: section)

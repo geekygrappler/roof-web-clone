@@ -13,6 +13,16 @@ class BuildingMaterial extends React.Component {
                             onBlur={this.update.bind(this, "name")}
                             />
                     </p>
+                    <small>
+                        <input
+                            type="text"
+                            className="form-control description-input"
+                            defaultValue={this.props.buildingMaterial.description}
+                            onKeyDown={this.handleKeyDown.bind(this, "description")}
+                            onBlur={this.update.bind(this, "description")}
+                            placeholder="Add specification"
+                            />
+                    </small>
                 </td>
                 <td>
                     <select className="form-control"
