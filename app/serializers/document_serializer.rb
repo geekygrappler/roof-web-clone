@@ -5,6 +5,7 @@ class DocumentSerializer < ActiveModel::Serializer
   has_one :architect
   has_many :sections
   has_many :sections, serializer: SectionSerializer
+  self.root = false
 
   def convert_totals(data)
       totals = [:total_cost, :total_cost_line_items, :total_cost_supplied_materials, :total_cost_supplied_by_pro_materials]
