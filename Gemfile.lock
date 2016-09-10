@@ -1,13 +1,4 @@
 GIT
-  remote: git://github.com/rails-api/active_model_serializers.git
-  revision: db87f8d85e7a46ef195a555cb7e2509f1affc622
-  specs:
-    active_model_serializers (0.10.0.rc4)
-      actionpack (>= 4.0)
-      activemodel (>= 4.0)
-      railties (>= 4.0)
-
-GIT
   remote: https://github.com/carrierwaveuploader/carrierwave.git
   revision: a2c93fe1a9d3a3f60d1662e5ec34fdba7bf2b304
   specs:
@@ -68,6 +59,8 @@ GEM
       erubis (~> 2.7.0)
       rails-dom-testing (~> 1.0, >= 1.0.5)
       rails-html-sanitizer (~> 1.0, >= 1.0.2)
+    active_model_serializers (0.9.5)
+      activemodel (>= 3.2)
     activejob (4.2.5.1)
       activesupport (= 4.2.5.1)
       globalid (>= 0.3.0)
@@ -375,7 +368,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  active_model_serializers!
+  active_model_serializers (~> 0.9.0)
   aws-sdk (~> 2)
   bootstrap-sass (~> 3.3.6)
   byebug

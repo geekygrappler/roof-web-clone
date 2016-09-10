@@ -1,8 +1,7 @@
 class LineItemSerializer < ActiveModel::Serializer
-    attributes :id
+    attributes :id, :location
 
     def location
-        byebug
         "Hello"
     end
 end

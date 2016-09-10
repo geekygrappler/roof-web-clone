@@ -3,5 +3,5 @@ class DocumentSerializer < ActiveModel::Serializer
   has_one :document
   has_one :document_state
   has_one :architect
-  has_many :sections
+  has_many :sections, serializer: SectionSerializer
 end

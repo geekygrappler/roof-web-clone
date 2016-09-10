@@ -13,7 +13,7 @@ gem 'turbolinks'
 gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'puma'
 gem 'font-awesome-rails'
-gem 'active_model_serializers', github: "rails-api/active_model_serializers"
+gem 'active_model_serializers', '~> 0.9.0'
 
 gem 'react-rails', '~> 1.0'
 
