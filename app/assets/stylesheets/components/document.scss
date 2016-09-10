@@ -1,3 +1,14 @@
+.fixed-document-header {
+  position: fixed;
+  top: 0px;
+  width: 100%;
+  z-index: 1300;
+}
+
+body {
+  padding-top: 260px;
+}
+
 .document-header {
     background: #495258;
     color: white;

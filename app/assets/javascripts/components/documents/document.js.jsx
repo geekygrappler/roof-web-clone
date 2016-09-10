@@ -7,32 +7,34 @@ class Document extends React.Component {
     render() {
         return (
             <div>
-                <div className="document-header">
-                    <div className="container">
-                        <div className="row">
-                            <div className="col-md-7">
-                                <h1 className="title">
-                                    <input value={this.state.name} onChange={this.updateTitle.bind(this)}/>
-                                </h1>
-                            </div>
-                            <div className="col-md-5 text-right">
-                                <a href={this.props.invite_path}>
-                                    <button className="btn btn-warning">Request Quotes</button>
-                                </a>
-                                <h3 className="heading-total">
-                                    Estimated Total: {this.state.total_cost}
-                                </h3>
+                <div className='fixed-document-header'>
+                    <div className="document-header">
+                        <div className="container">
+                            <div className="row">
+                                <div className="col-md-7">
+                                    <h1 className="title">
+                                        <input value={this.state.name} onChange={this.updateTitle.bind(this)}/>
+                                    </h1>
+                                </div>
+                                <div className="col-md-5 text-right">
+                                    <a href={this.props.invite_path}>
+                                        <button className="btn btn-warning">Request Quotes</button>
+                                    </a>
+                                    <h3 className="heading-total">
+                                        Estimated Total: {this.state.total_cost}
+                                    </h3>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="document-sections-list">
-                    <div className="container" id="document-sections-menu">
-                        <ul>
-                            <SectionList
-                                sections={this.state.sections}
-                            />
-                        </ul>
+                    <div className="document-sections-list">
+                        <div className="container" id="document-sections-menu">
+                            <ul>
+                                <SectionList
+                                    sections={this.state.sections}
+                                />
+                            </ul>
+                        </div>
                     </div>
                 </div>
                 <div className="container document-section-containers">
