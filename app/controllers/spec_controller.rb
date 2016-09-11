@@ -19,7 +19,7 @@ class SpecController < ApplicationController
     inform_admin()
     invite_users(document)
     write_csv(document)
-    upload_documents(params[:plans], document.id)
+    upload_documents(params[:plans], document.id) if params[:plans].present?
     redirect_to thanks_spec_path
   end
 
