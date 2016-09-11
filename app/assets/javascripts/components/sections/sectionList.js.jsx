@@ -8,7 +8,7 @@ class SectionList extends React.Component {
             <ul className="nav navbar btn-group">
                 {this.props.sections.map((section) => {
                     return (
-                        <li key={section.id} className="btn btn-default navbar-btn">
+                        <li key={section.id} className="btn btn-default navbar-btn sections-list-li">
                             <a href={`#section-${section.id}`} className='hide'></a>
                             {section.name}
                         </li>

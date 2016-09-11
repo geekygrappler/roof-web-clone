@@ -29,11 +29,9 @@ class Document extends React.Component {
                     </div>
                     <div className="document-sections-list">
                         <div className="container" id="document-sections-menu">
-                            <ul>
-                                <SectionList
-                                    sections={this.state.sections}
-                                />
-                            </ul>
+                            <SectionList
+                                sections={this.state.sections}
+                            />
                         </div>
                     </div>
                 </div>
@@ -75,8 +73,18 @@ class Document extends React.Component {
     componentDidMount() {
         window.scrollTo(0, 0)
         $("body").scrollspy({
-            target: "#document-sections-menu"
+            target: "#document-sections-menu",
+            offset: 260
         })
+
+        let offset = $(".document-header").height;
+
+        $('.navbar li a').click(function(event) {
+            debugger;
+            event.preventDefault();
+            $($(this).attr('href'))[0].scrollIntoView();
+            scrollBy(0, -offset);
+        });
     }
 
     updateTitle(e) {
