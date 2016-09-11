@@ -1,8 +1,30 @@
-<div class="blue-notice">
-  Thanks
-</div>
+<%= render 'layouts/header_centered' %>
 
-<div class="spec-wrapper">
-  <%= image_tag "spec/ic-thank-you.png" %>
-  <h3>Thanks for Submitting your Spec</h3>
+<div class="spec-wrapper-thanks">
+  <div class='spec-thanks-section'>
+    <%= image_tag 'spec/ic-thank-you.png' %>
+    <p>Thanks for submitting your spec.</p>
+    <p class='thanks-next-description'>
+      If you would like to get in touch with us directly with any further questions
+      or information regarding your project then please feel free to email us directly on
+      <a href='mailto:support@1roof.com'>support@1roof.com</a>
+    </p>
+  </div>
+
+  <div class='spec-thanks-section'>
+    <p>What happens next?</p>
+    <%= image_tag 'spec/ic-thank-you.png' %>
+    <p>Hugo is making sure that quotes are completed by the pros as soon as possible</p>
+    <p>Within a day or two...</p>
+    <div class='centered-elems'>
+      <div class='thanks-options'>
+        <div class='thanks-option'>You will receive your initial quotes</div>
+        <div class='thanks-or'>
+          <div class='text'>OR</div>
+        </div>
+        <div class='thanks-option'>We'll call or email you to get more information</div>
+      </div>
+    </div>
+  </div>
+
 </div>
