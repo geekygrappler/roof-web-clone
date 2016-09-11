@@ -76,15 +76,6 @@ class Document extends React.Component {
             target: "#document-sections-menu",
             offset: 260
         })
-
-        let offset = $(".document-header").height;
-
-        $('.navbar li a').click(function(event) {
-            debugger;
-            event.preventDefault();
-            $($(this).attr('href'))[0].scrollIntoView();
-            scrollBy(0, -offset);
-        });
     }
 
     updateTitle(e) {
