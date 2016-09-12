@@ -54,7 +54,7 @@ class LineItem extends React.Component {
             );
         } else {
             return (
-                <span>£{this.props.lineItem.rate}</span>
+                <span>{this.props.lineItem.rate}</span>
             );
         }
     }
@@ -66,7 +66,7 @@ class LineItem extends React.Component {
             );
         } else {
             return (
-                <span>£{this.props.lineItem.total}</span>
+                <span>{this.props.lineItem.total}</span>
             );
         }
     }
