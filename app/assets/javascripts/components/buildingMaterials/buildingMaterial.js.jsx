@@ -11,7 +11,7 @@ class BuildingMaterial extends React.Component {
                             defaultValue={this.props.buildingMaterial.name}
                             onKeyDown={this.handleKeyDown.bind(this, "name")}
                             onBlur={this.update.bind(this, "name")}
-                            />
+                        />
                     </p>
                     <small>
                         <input
@@ -21,13 +21,13 @@ class BuildingMaterial extends React.Component {
                             onKeyDown={this.handleKeyDown.bind(this, "description")}
                             onBlur={this.update.bind(this, "description")}
                             placeholder="Add specification"
-                            />
+                        />
                     </small>
                 </td>
                 <td>
                     <select className="form-control"
-                        defaultValue={this.props.buildingMaterial.supplied || ""}
-                        onChange={this.update.bind(this, "supplied")}>
+                            defaultValue={this.props.buildingMaterial.supplied || ""}
+                            onChange={this.update.bind(this, "supplied")}>
                         <option value="" disabled>Who will supply this material?</option>
                         <option value="true">Client</option>
                         <option value="false">Contractor</option>
@@ -35,7 +35,8 @@ class BuildingMaterial extends React.Component {
                 </td>
                 <td>
                     {this.renderMaterialCost()}
-                    <a className="glyphicon glyphicon-trash" onClick={this.props.deleteBuildingMaterial.bind(this, this.props.buildingMaterial.id)} />
+                    <a className="glyphicon glyphicon-trash"
+                       onClick={this.props.deleteBuildingMaterial.bind(this, this.props.buildingMaterial.id)}/>
                 </td>
             </tr>
         )
@@ -60,7 +61,7 @@ class BuildingMaterial extends React.Component {
         this.props.updateBuildingMaterial(buildingMaterialId, attributes)
     }
 
-renderMaterialCost() {
+    renderMaterialCost() {
         if (this.props.buildingMaterial.supplied) {
             return (
                 <div className="col-xs-9 price-input">
@@ -75,7 +76,7 @@ renderMaterialCost() {
                                 placeholder="0"
                                 onKeyDown={this.handleKeyDown.bind(this, "price")}
                                 onBlur={this.update.bind(this, "price")}
-                                />
+                            />
                         </div>
                     </div>
                 </div>

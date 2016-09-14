@@ -1,5 +1,5 @@
 class BuildingMaterialSerializer < ActiveModel::Serializer
-  attributes :id, :total, :price
+  attributes :id, :name, :total, :price
 
   def convert_totals(data)
     totals = [:total, :price]

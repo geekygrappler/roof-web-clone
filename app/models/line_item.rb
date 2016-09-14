@@ -1,6 +1,6 @@
 class LineItem < ActiveRecord::Base
   include PgSearch
-  include CsvReset
+  include TaskCsvReset
   belongs_to :line_item
   belongs_to :location
   belongs_to :section

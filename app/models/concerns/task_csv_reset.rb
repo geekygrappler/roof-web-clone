@@ -1,4 +1,4 @@
-module CsvReset
+module TaskCsvReset
   extend ActiveSupport::Concern
 
   included do
@@ -6,7 +6,7 @@ module CsvReset
 
   module ClassMethods
     def reset_master
-        CSV.foreach(Rails.root.join("task_db.csv"), :headers => true) do |row|
+        CSV.foreach(Rails.root.join('db', 'tasks.csv'), :headers => true) do |row|
           # 0 display in search
           # 1 display in quote - name
           # 2 group

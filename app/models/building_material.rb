@@ -1,5 +1,6 @@
 class BuildingMaterial < ActiveRecord::Base
   include PgSearch
+  include MaterialsCsvReset
   belongs_to :building_material
   belongs_to :section
   belongs_to :location
@@ -28,7 +29,7 @@ class BuildingMaterial < ActiveRecord::Base
   # If this is a tender (second conditional), then non-supplied materials
   # can't have a price
   def check_supplied
-    if !self.supplied? && self.section.document.document == nil
+    if !self.supplied? && self.section && self.section.document.document == nil
       self.price = nil
     end
   end
