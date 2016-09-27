@@ -1,5 +1,5 @@
 class LineItemSerializer < ActiveModel::Serializer
-  attributes :id, :name, :description, :quantity, :rate, :total, :admin_verified, :location
+  attributes :id, :name, :description, :quantity, :rate, :total, :admin_verified, :location, :material_cost
 
   def location
     object.location_name
@@ -7,6 +7,10 @@ class LineItemSerializer < ActiveModel::Serializer
 
   def rate
     Money.new(object.rate, "GBP").format
+  end
+
+  def material_cost
+    Money.new(object.material_cost, "GBP")
   end
 
   def total

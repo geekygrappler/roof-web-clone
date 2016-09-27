@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160914213330) do
+ActiveRecord::Schema.define(version: 20160927075241) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -278,6 +278,7 @@ ActiveRecord::Schema.define(version: 20160914213330) do
     t.integer  "section_id"
     t.integer  "unit_id"
     t.boolean  "searchable",     default: false
+    t.float    "material_cost"
   end
 
   add_index "line_items", ["line_item_id"], name: "index_line_items_on_line_item_id", using: :btree

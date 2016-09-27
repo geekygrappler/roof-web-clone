@@ -4,7 +4,6 @@ one:
   document_id:
   document_state_id:
   name: MyString
-  user_id:
   total_cost_line_items: 1
   total_cost_supplied_materials: 1
   total_cost_supplied_by_pro_materials: 1
@@ -15,7 +14,6 @@ two:
   document_id:
   document_state_id:
   name: MyString
-  user_id:
   total_cost_line_items: 1
   total_cost_supplied_materials: 1
   total_cost_supplied_by_pro_materials: 1

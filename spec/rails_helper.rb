@@ -5,7 +5,7 @@ require "active_record"
 require "devise"
 
 #Dir["/Users/alexdollery/projects/roof-web/vendor/engines/roof-api/app/models/*"].each { |f| require f }
-require File.expand_path('/Users/alexdollery/projects/roof-web/vendor/engines/roof-api/lib/roof_api', __FILE__)
+require File.expand_path('../../vendor/engines/roof-api/lib/roof_api', __FILE__)
 
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../config/environment', __FILE__)
