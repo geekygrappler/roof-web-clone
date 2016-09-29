@@ -10,7 +10,8 @@ class LineItemSerializer < ActiveModel::Serializer
   end
 
   def material_cost
-    Money.new(object.material_cost, "GBP")
+    material_cost
+    Money.new(object.material_cost, "GBP").format
   end
 
   def total
