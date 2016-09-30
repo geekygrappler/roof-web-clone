@@ -10,7 +10,8 @@ class LineItemSerializer < ActiveModel::Serializer
   end
 
   def material_cost
-    Money.new(object.material_cost, "GBP").format
+    # Return 2 decimal place float of the cost.
+    '%.2f' % Money.new(object.material_cost, "GBP")
   end
 
   def total

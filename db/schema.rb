@@ -278,7 +278,7 @@ ActiveRecord::Schema.define(version: 20160927075241) do
     t.integer  "section_id"
     t.integer  "unit_id"
     t.boolean  "searchable",     default: false
-    t.float    "material_cost"
+    t.integer  "material_cost"
   end
 
   add_index "line_items", ["line_item_id"], name: "index_line_items_on_line_item_id", using: :btree

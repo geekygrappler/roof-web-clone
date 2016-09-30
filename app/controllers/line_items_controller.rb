@@ -1,5 +1,6 @@
 class LineItemsController < ApplicationController
     before_action :set_line_item, only: [:update, :destroy]
+    before_action :line_item_adapter, only: [:update]
     respond_to :json
 
     #TODO remove this
@@ -49,5 +50,13 @@ class LineItemsController < ApplicationController
 
     def set_line_item
         @line_item = LineItem.find(params[:id])
+    end
+
+    # Transform any incomping data to the correct format.
+    # Currently deals with any incoming value for 'material_cost'
+    def line_item_adapter
+        if params[:line_item][:material_cost]
+            params[:line_item][:material_cost] = Monetize.parse(params[:line_item][:material_cost], "GBP").cents
+        end
     end
 end

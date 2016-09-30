@@ -10,7 +10,7 @@ class LineItem < ActiveRecord::Base
   delegate :name, to: :unit, prefix: true, allow_nil: true
   delegate :name, to: :location, prefix: true, allow_nil: true
 
-  before_save :convert_material_cost, :calculate_total
+  before_save :calculate_total
   after_save :calculate_section_totals
 
   pg_search_scope :full_text_search,
@@ -33,9 +33,5 @@ class LineItem < ActiveRecord::Base
 
   def calculate_total
     self.total = quantity.to_i * rate.to_i + material_cost.to_i
-  end
-
-  def convert_material_cost
-    self.material_cost =  Monetize.parse(material_cost, "GBP").cents
   end
 end
