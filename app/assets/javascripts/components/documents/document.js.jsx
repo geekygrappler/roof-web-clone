@@ -42,7 +42,7 @@ class Document extends React.Component {
                             <h5>Terms</h5>
                             <textarea
                                 className="section-notes form-control"
-                                placeholder="Enter terms & conditions here..."
+                                placeholder="Manually enter terms & conditions here or upload document below."
                                 />
                             <h5>Upload Documents</h5>
                             <form id="my-awesome-dropzone" action="/spec/upload_document" className="dropzone">
