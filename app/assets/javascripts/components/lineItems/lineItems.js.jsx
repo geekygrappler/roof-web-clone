@@ -29,6 +29,7 @@ class LineItems extends React.Component {
                 <thead>
                     <tr>
                         <th className="line-item-name-header">Item</th>
+                        <th className="line-item-notes-header">Notes</th>
                         <th className="line-item-quantity-header">Quantity</th>
                         <th className="line-item-rate-header">Est. Rate</th>
                         <th className="line-item-material-cost-header">Material Cost</th>

@@ -2,12 +2,15 @@ table.line-items-table {
     width: 100%;
     table-layout: fixed;
     th.line-item-name-header {
-        width: 50%;
+        width: 30%;
+    }
+    th.line-item-notes-header {
+        width: 30%;
     }
     th.line-item-quantity-header,  th.line-item-material-cost-header {
         width: 10%;
     }
     th.line-item-rate-header, th.line-item-price-header {
-        width: 15%;
+        width: 10%;
     }
 }

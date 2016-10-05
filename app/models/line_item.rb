@@ -32,6 +32,6 @@ class LineItem < ActiveRecord::Base
   end
 
   def calculate_total
-    self.total = quantity.to_i * rate.to_i + material_cost.to_i
+    self.total = (material_cost.to_i + rate.to_i) * quantity.to_i
   end
 end

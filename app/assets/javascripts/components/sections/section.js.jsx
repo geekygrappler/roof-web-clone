@@ -25,34 +25,35 @@ class Section extends React.Component {
                             </h2>
                         </div>
                     </div>
-                    <div className="row">
-                        <div className="col-xs-12">
-                            <textarea
-                                className="section-notes form-control"
-                                defaultValue={this.props.section.notes}
-                                placeholder={`Add ${this.props.section.name} notes`}
-                                onKeyDown={this.update.bind(this, "notes")} />
+                    <div className="section-input-wrapper">
+                        <div className="row">
+                            <div className="col-xs-12">
+                                <h4>
+                                    {this.props.section.name} notes:
+                                </h4>
+                                <textarea
+                                    className="section-notes form-control"
+                                    defaultValue={this.props.section.notes}
+                                    placeholder={`Add ${this.props.section.name} notes`}
+                                    onKeyDown={this.update.bind(this, "notes")} />
+                            </div>
                         </div>
+                        <div className="row">
+                            <div className="col-xs-6">
+                                <h4>
+                                    Spec of Works:
+                                </h4>
+                            </div>
+                        </div>
+                        <LineItems
+                            lineItems = {this.props.section.line_items}
+                            document = {this.props.document}
+                            createLineItem = {this.props.createLineItem}
+                            updateLineItem = {this.props.updateLineItem}
+                            deleteLineItem={this.props.deleteLineItem}
+                            sectionId = {this.props.section.id}
+                            />
                     </div>
-                    <div className="row">
-                        <div className="col-xs-6">
-                            <h3>
-                                Labour
-                            </h3>
-                        </div>
-                        <div className="col-xs-6 text-right">
-                            <h3>{this.props.section.total_cost_line_items}</h3>
-                        </div>
-                    </div>
-                    <small>Add tasks that you need a contractor to quote on.</small>
-                    <LineItems
-                        lineItems = {this.props.section.line_items}
-                        document = {this.props.document}
-                        createLineItem = {this.props.createLineItem}
-                        updateLineItem = {this.props.updateLineItem}
-                        deleteLineItem={this.props.deleteLineItem}
-                        sectionId = {this.props.section.id}
-                        />
                 </div>
             </div>
         );
