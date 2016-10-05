@@ -1,4 +1,19 @@
 class LineItem extends React.Component {
+    constructor(props) {
+        super(props);
+        this.masterLineItems = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            remote: {
+                url: '/search/line_items?query=%QUERY',
+                wildcard: '%QUERY',
+                transform: (data) => {
+                    return data.results
+                }
+            }
+        });
+    }
+
     render() {
         return (
             <tr className="line-item-row">
@@ -6,7 +21,7 @@ class LineItem extends React.Component {
                     <p>
                         <input
                             type="text"
-                            className="form-control item-input"
+                            className={`form-control item-input line-item-name-${this.props.lineItem.id}`}
                             defaultValue={this.props.lineItem.name}
                             onKeyDown={this.handleKeyDown.bind(this, "name")}
                             onBlur={this.update.bind(this, "name")}
@@ -50,6 +65,14 @@ class LineItem extends React.Component {
                 </td>
             </tr>
         );
+    }
+
+    componentDidMount() {
+        $(`.line-item-name-${this.props.lineItem.id}`).typeahead({highlight: true}, {
+            name: "lineItems",
+            source: this.masterLineItems,
+            display: 'name'
+        });
     }
 
     calculateLineItemTotal() {

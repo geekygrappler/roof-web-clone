@@ -9,7 +9,7 @@ class LineItemsController < ApplicationController
     # POST /line_items
     # POST /line_items.json
     def create
-        parent_line_item = LineItem.where(name: line_item_params["name"], searchable: true).first
+        parent_line_item = get_parent_line_item
         if parent_line_item
             @line_item = parent_line_item.dup
             @line_item.line_item = parent_line_item
@@ -29,7 +29,18 @@ class LineItemsController < ApplicationController
 
     # PATCH /line_items/:id
     def update
-        @line_item.assign_attributes(line_item_params)
+        # We could be submitting a new parent line item, we want to change this line_item
+        # to be a duplicate of the new parent
+        new_parent_line_item = get_parent_line_item
+        if new_parent_line_item
+            @line_item.name = new_parent_line_item.name
+            @line_item.line_item = new_parent_line_item
+            @line_item.rate = new_parent_line_item.rate
+        else
+            # In a case where we're not changing the parent line item, simply
+            # assign attributes
+            @line_item.assign_attributes(line_item_params)
+        end
         if @line_item.save
             render json: @line_item, status: :ok, location: @line_item
         else
@@ -52,11 +63,17 @@ class LineItemsController < ApplicationController
         @line_item = LineItem.find(params[:id])
     end
 
-    # Transform any incomping data to the correct format.
+    # Transform any incoming data to the correct format.
     # Currently deals with any incoming value for 'material_cost'
     def line_item_adapter
         if params[:line_item][:material_cost]
             params[:line_item][:material_cost] = Monetize.parse(params[:line_item][:material_cost], "GBP").cents
+        end
+    end
+
+    def get_parent_line_item
+        if line_item_params[:name]
+            LineItem.where(name: line_item_params["name"], searchable: true).first
         end
     end
 end
