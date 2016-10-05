@@ -23,11 +23,6 @@ class Document extends React.Component {
                                     <h3 className="heading-total">
                                         Estimated Total: {this.state.total_cost}
                                     </h3>
-                                    <h5>Upload Documents</h5>
-                                    <form id="my-awesome-dropzone" action="/spec/upload_document" className="dropzone">
-                                        <input type="hidden" name="authenticity_token" value={jQuery('[name="csrf-token"]').attr('content')} />
-                                        <input type="hidden" name="document_id" value={this.state.id} />
-                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -40,7 +35,22 @@ class Document extends React.Component {
                         </div>
                     </div>
                 </div>
-                <div className="container document-section-containers">
+                <div className="container document-sections-container">
+                    <div className="row section" id="section-drawings">
+                        <div className="col-sm-12">
+                            <h2>Terms & Drawings</h2>
+                            <h5>Terms</h5>
+                            <textarea
+                                className="section-notes form-control"
+                                placeholder="Enter terms & conditions here..."
+                                />
+                            <h5>Upload Documents</h5>
+                            <form id="my-awesome-dropzone" action="/spec/upload_document" className="dropzone">
+                                <input type="hidden" name="authenticity_token" value={jQuery('[name="csrf-token"]').attr('content')} />
+                                <input type="hidden" name="document_id" value={this.state.id} />
+                            </form>
+                        </div>
+                    </div>
                     {this.state.sections.map((section) => {
                         return(
                             <Section
