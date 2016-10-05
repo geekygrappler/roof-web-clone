@@ -26,6 +26,11 @@ class SpecController < ApplicationController
   def thanks
   end
 
+  def upload_document
+    upload_documents({doc: {url: params[:file]}}, params[:document_id])
+    render json: {received: true}
+  end
+
   private
 
   def document_params

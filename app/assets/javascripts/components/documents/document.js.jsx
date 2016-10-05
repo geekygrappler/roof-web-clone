@@ -23,6 +23,11 @@ class Document extends React.Component {
                                     <h3 className="heading-total">
                                         Estimated Total: {this.state.total_cost}
                                     </h3>
+                                    <h5>Upload Documents</h5>
+                                    <form id="my-awesome-dropzone" action="/spec/upload_document" className="dropzone">
+                                        <input type="hidden" name="authenticity_token" value={jQuery('[name="csrf-token"]').attr('content')} />
+                                        <input type="hidden" name="document_id" value={this.state.id} />
+                                    </form>
                                 </div>
                             </div>
                         </div>

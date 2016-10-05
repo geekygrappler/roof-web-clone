@@ -15,6 +15,8 @@ Rails.application.routes.draw do
   post 'spec/create_invites', to: 'spec#create_invites', as: :create_spec_invites
   get 'spec/thanks', to: 'spec#thanks', as: :thanks_spec
 
+  post 'spec/upload_document', to: 'spec#upload_document', as: :upload_document
+
   #devise_for :accounts, path: '/users'
   #
   #devise_scope :account do
