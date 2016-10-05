@@ -4,7 +4,7 @@ class SearchController < ApplicationController
   def line_items
     render json: {
         results:
-            LineItem.full_text_search(params[:query])
+            LineItem.where(searchable: true).full_text_search(params[:query])
                 .map {|item| LineItemSearchSerializer.new(item)}
     }
   end
@@ -12,7 +12,7 @@ class SearchController < ApplicationController
   def building_materials
     render json: {
         results:
-            BuildingMaterial.full_text_search(params[:query])
+            BuildingMaterial.where(searchable: true).full_text_search(params[:query])
                 .map {|item| BuildingMaterialSearchSerializer.new(item)}
     }
   end

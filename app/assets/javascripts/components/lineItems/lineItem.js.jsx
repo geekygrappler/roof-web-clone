@@ -18,24 +18,22 @@ class LineItem extends React.Component {
         return (
             <tr className="line-item-row">
                 <td>
-                    <p>
-                        <input
-                            type="text"
-                            className={`form-control item-input line-item-name-${this.props.lineItem.id}`}
-                            defaultValue={this.props.lineItem.name}
-                            onKeyDown={this.handleKeyDown.bind(this, "name")}
-                            onBlur={this.update.bind(this, "name")}
-                            />
-                    </p>
+                    <textarea
+                        type="text"
+                        className={`form-control item-input line-item-name-${this.props.lineItem.id}`}
+                        defaultValue={this.props.lineItem.name}
+                        onKeyDown={this.handleKeyDown.bind(this, "name")}
+                        onBlur={this.update.bind(this, "name")}
+                        />
                 </td>
                 <td>
-                    <input
+                    <textarea
                         type="text"
-                        className="form-control description-input"
+                        className="form-control item-input"
                         defaultValue={this.props.lineItem.description}
                         onKeyDown={this.handleKeyDown.bind(this, "description")}
                         onBlur={this.update.bind(this, "description")}
-                        placeholder="Add specification"
+                        placeholder="Add notes"
                         />
                 </td>
                 <td>

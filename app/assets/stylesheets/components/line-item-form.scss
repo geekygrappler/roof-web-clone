@@ -1,5 +1,7 @@
-.line-item-search {
-    width: 100%;
+.twitter-typeahead {
+    // This is shit, overriding all typeaheads for this one, not using typeahed anywhere else as yet.
+    width: 90%;
+    margin-left: 5px;
 }
 
 .tt-suggestion {

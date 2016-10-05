@@ -19,15 +19,17 @@ class LineItemForm extends React.Component {
 
     render() {
         return(
-            <div>
-                <span className="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                <input className={`line-item-search-${this.props.sectionId} form-control`}
-                    onChange={this.handleChange.bind(this)}
-                    value={this.state.newLineItem}
-                    onKeyDown={this.handleKeyDown.bind(this)}
-                    placeholder="Search for an item..."
-                    autoFocus={true}
-                    />
+            <div className="col-md-8">
+                <div className="form-group">
+                    <span className="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                    <input className={`line-item-search-${this.props.sectionId} form-control`}
+                        onChange={this.handleChange.bind(this)}
+                        value={this.state.newLineItem}
+                        onKeyDown={this.handleKeyDown.bind(this)}
+                        placeholder="Search for an item..."
+                        autoFocus={true}
+                        />
+                </div>
             </div>
         );
     }
