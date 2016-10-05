@@ -2,7 +2,13 @@
     ul.navbar {
         margin-bottom: 0px;
     }
-    .sections-list-li.active {
-        background-color: #F5C341;
+    .sections-list-li {
+        margin-right: 10px;
+        &.active {
+            background-color: #F5C341;
+        }
+    }
+    .btn-group > .btn {
+        border-radius: 0;
     }
 }
