@@ -30,6 +30,8 @@ CSV.foreach("#{Rails.root}/db/line_items.csv", {headers: true, skip_blanks: true
 
     row.delete("spec")
 
+    row["quantity"].nil? ? row["quantity"] = 1 : nil
+
     line_item_attrs = row.to_h
     line_item_attrs["searchable"] = true
     line_item_attrs["admin_verified"] = true
