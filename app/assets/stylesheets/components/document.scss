@@ -28,6 +28,11 @@ body {
 .document-sections-list {
     background: $dark-blue;
     padding: 20px;
+    height: 90px;
+    #document-sections-menu {
+        height: 100%;
+        overflow-y: scroll;
+    }
 }
 
 .document-add-section {

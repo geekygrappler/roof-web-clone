@@ -15,6 +15,7 @@ class Section extends React.Component {
                                     className="section-name"
                                     defaultValue={this.props.section.name}
                                     onKeyDown={this.update.bind(this, "name")}
+                                    onBlur={this.update.bind(this, "name")}
                                     />
                             </h2>
                         </div>
@@ -60,7 +61,7 @@ class Section extends React.Component {
     }
 
     update(attribute, e) {
-        if (e.keyCode === this.props.ENTER_KEY_CODE || e.keyCode === this.props.TAB_KEY_CODE) {
+        if (e.keyCode === this.props.ENTER_KEY_CODE || e.keyCode === this.props.TAB_KEY_CODE || e.type == "blur") {
             e.preventDefault();
             let inputs = $(':input').not(':button,:hidden,[readonly]');
             let nextInput = inputs.get(inputs.index(e.target) + 1);
