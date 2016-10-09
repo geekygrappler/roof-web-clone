@@ -46,9 +46,6 @@ class LineItem extends React.Component {
                         />
                 </td>
                 <td>
-                    {this.renderEstimatedRate()}
-                </td>
-                <td>
                     <input
                         type="text"
                         className="form-control"
@@ -58,7 +55,6 @@ class LineItem extends React.Component {
                         />
                 </td>
                 <td>
-                    {this.renderPrice()}
                     <a className="glyphicon glyphicon-trash" onClick={this.props.deleteLineItem.bind(this, this.props.lineItem.id)} />
                 </td>
             </tr>
@@ -71,34 +67,6 @@ class LineItem extends React.Component {
             source: this.masterLineItems,
             display: 'name'
         });
-    }
-
-    calculateLineItemTotal() {
-        return this.props.lineItem.rate * this.props.lineItem.quantity
-    }
-
-    renderEstimatedRate() {
-        if (this.props.lineItem.rate === null) {
-            return (
-                <span> To be quoted </span>
-            );
-        } else {
-            return (
-                <span>{this.props.lineItem.rate}</span>
-            );
-        }
-    }
-
-    renderPrice() {
-        if (this.props.lineItem.rate === null) {
-            return (
-                <span> N/A </span>
-            );
-        } else {
-            return (
-                <span>{this.props.lineItem.total}</span>
-            );
-        }
     }
 
     handleKeyDown(attribute, e) {

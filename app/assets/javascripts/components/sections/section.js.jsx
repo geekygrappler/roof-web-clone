@@ -21,9 +21,6 @@ class Section extends React.Component {
                         </div>
                         <div className="col-sm-4 text-right">
                             <a className="glyphicon glyphicon-trash" onClick={this.props.deleteSection.bind(this, this.props.section.id)} />
-                            <h2 className="section-total">
-                                Section Total: {this.props.section.total_cost}
-                            </h2>
                         </div>
                     </div>
                     <div className="section-input-wrapper">

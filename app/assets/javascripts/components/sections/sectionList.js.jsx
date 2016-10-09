@@ -39,6 +39,7 @@ class SectionList extends React.Component {
     }
 
     componentDidMount() {
+        $("body").css('padding-top', this.calcHeaderSize())
         this.setState({
             headerSize: this.calcHeaderSize(),
             collapsed: true

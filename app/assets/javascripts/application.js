@@ -7,6 +7,7 @@
 //= require jquery.iframe-transport
 //= require jquery.fileupload
 //= require jquery.animatecss
+//= require jquery.impromptu
 //= require typeahead.bundle
 //= require bootstrap.scrollSpy.min
 //= require price_format

@@ -15,14 +15,11 @@ class Document extends React.Component {
                                     <h1 className="title">
                                         <input value={this.state.name} onChange={this.updateTitle.bind(this)}/>
                                     </h1>
-                                </div>
-                                <div className="col-md-5 text-right">
+                                </div>{/*
+                                    */}<div className="col-md-5 text-right">
                                     <a href={this.props.invite_path}>
                                         <button className="btn btn-warning">Request Quotes</button>
                                     </a>
-                                    <h3 className="heading-total">
-                                        Estimated Total: {this.state.total_cost}
-                                    </h3>
                                 </div>
                             </div>
                         </div>
@@ -31,7 +28,7 @@ class Document extends React.Component {
                         <div className="container" id="document-sections-menu">
                             <SectionList
                                 sections={this.state.sections}
-                            />
+                                />
                         </div>
                     </div>
                 </div>
@@ -91,6 +88,8 @@ class Document extends React.Component {
             target: "#document-sections-menu",
             offset: 260
         })
+
+        this.setupTour();
     }
 
     updateTitle(e) {
@@ -236,5 +235,65 @@ class Document extends React.Component {
                 console.log("Saved Line_item, but failed to fetch document");
             }
         });
+    }
+
+    setupTour() {
+        let tour;
+
+        let tourSubmitFunc = (e,v,m,f) => {
+            if(v === -1){
+                $.prompt.prevState();
+                return false;
+            }
+            else if(v === 1){
+                $.prompt.nextState();
+                return false;
+            }
+        };
+
+        let tourStates = [
+            {
+                title: 'A Quick Tour',
+                html: 'Name your project here',
+                buttons: { Next: 1 },
+                focus: 0,
+                position: { container: '.title', x: 200, y: 60, width: 200, arrow: 'tc' },
+                submit: tourSubmitFunc
+            },
+            {
+                title: 'Sections',
+                html: 'This is a list of the sections in your tender',
+                buttons: { Prev: -1, Next: 1 },
+                focus: 1,
+                position: { container: '.document-sections-list', x: 500, y: 80, width: 300, arrow: 'tc' },
+                submit: tourSubmitFunc
+            },
+            {
+                title: 'Terms & Drawings',
+                html: 'Add terms and drawings for the tender here.',
+                buttons: { Prev: -1, Next: 1 },
+                focus: 1,
+                position: { container: '#my-awesome-dropzone', x: 200, y: -140, width: 300, height: 200, arrow: 'bc' },
+                submit: tourSubmitFunc
+            },
+            {
+                title: 'Edit Sections',
+                html: 'Click on a section\'s title to edit it.',
+                buttons: { Prev: -1, Next: 1 },
+                focus: 1,
+                position: { container: '.section-name', x: 200, y: 0, width: 300, arrow: 'lt' },
+                submit: tourSubmitFunc
+            },
+            {
+                title: 'Line Item Search',
+                html: "Search for line items on the fly by clicking their name.",
+                buttons: { Done: 2 },
+                focus: 0,
+                position: { container: '.item-input', x: 200, y: 0, width: 300, arrow: 'lt' },
+                submit: tourSubmitFunc
+            },
+        ]
+
+        $.prompt(tourStates);
     }
 }

@@ -2,22 +2,22 @@
   position: fixed;
   top: 0px;
   width: 100%;
-  z-index: 1300;
+  z-index: 100;
 }
 
 body {
-  padding-top: 260px;
+  padding-top:5000px; // Animates in on Chrome
 }
 
 .document-header {
+    .title {
+        margin: 0;
+    }
     background: #495258;
     color: white;
     padding: 20px;
     input {
         background: transparent;
-    }
-    .heading-total {
-        display: inline-block;
     }
     button {
         margin-left: 20px;
