@@ -1,6 +1,5 @@
 class BuildingMaterialsController < ApplicationController
     before_action :set_building_material, only: [:update, :destroy]
-    respond_to :json
 
     # POST /building_materials
     # POST /building_materials.json
