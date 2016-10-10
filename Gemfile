@@ -18,9 +18,6 @@ gem 'active_model_serializers', '~> 0.9.0'
 
 gem 'react-rails', '~> 1.0'
 
-#gem 'roof_api', '0.0.6.fix6'
-#gem 'roof_api', path: '../roof-api'
-gem 'roof_api', path: 'vendor/engines/roof-api'
 gem 'carrierwave', git: 'https://github.com/carrierwaveuploader/carrierwave.git'
 gem 'carrierwave_backgrounder', git: 'https://github.com/pictrs/carrierwave_backgrounder.git'
 gem 'fog-aws'
