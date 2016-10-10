@@ -1,5 +1,4 @@
 name,spec,quantity,rate
-,,,
 Survey,,,
 Survey,"Site boundary, buildings and structures, features, services, hazards",1,100
 Demolish,,1,
@@ -11,8 +10,6 @@ Strip out and set aside for re-use by employer,,1,
 Strip out and set aside for re-use by employer,External brickwork,1,12
 Install temporary works,,1,
 Install temporary works,Security hoardings,1,20
-,,,
-,,,
 Install foundations,,1,
 Install foundations,Concrete,1,145
 Install foundations,Aggregate,1,125
@@ -36,8 +33,6 @@ Install damp proof membrane,,1,
 Install damp proof membrane,Gas retardant damp proof membrane,1,
 Install damp proof membrane,Separating membrane,1,
 Install damp proof membrane,Gas venting geomembrane,1,
-,,,
-,,,
 Install external wall,,,
 Install external wall,Brick exterior aerated block interior,1,110
 Install external wall,Aerated block exterior and interior,1,90
@@ -55,8 +50,6 @@ Install opening in existing wall,Reclaimed bricks,1,150
 Repoint wall,,1,
 Repoint wall,Bucket handle,1,27
 Repoint wall,Flush,1,30
-,,,
-,,,
 Install steel frame,,,
 Install steel frame,Lightweight steel,,470
 Install steel frame,Hollow steel,,560
@@ -73,8 +66,6 @@ Install steel roof beam,,,
 Install steel roof beam,Lightweight steel,,780
 Install steel roof beam,Hollow steel,,860
 Install steel roof beam,Hot rolled steel,,990
-,,,
-,,,
 Install timber joist suspended ground floor structure,,,
 Install timber joist suspended ground floor structure,Solid timber,,125
 Install timber joist suspended ground floor structure,Composite I beam,,135
@@ -96,33 +87,25 @@ Install timber stud internal partition structure,Composite I beam,,55
 Install new opening in timber floors,,,120
 Install new opening in stud partitions,,,25
 Install new opening in pitched roofs,,,120
-,,,
-,,,
 Install wood weatherboarding,,,32
 Install plastics weatherboarding,,,28
 Install fascia boards,,,22
 Install soffit boards,,,22
 Install bargeboards,,,22
-,,,
-,,,
 Install pitched roof covering,,,
 Install pitched roof covering,Cement slate,,42
 Install pitched roof covering,Natural slate,,45
 Install pitched roof covering,Plain tiles,,38
-Install pitched roof covering,SIngle lap tiles,,40
+Install pitched roof covering,Single lap tiles,,40
 Install cladding,,,
 Install cladding,Cement slate,,42
 Install cladding,Natural slate,,45
 Install cladding,Plain tiles,,38
-Install cladding,SIngle lap tiles,,40
-,,,
-,,,
+Install cladding,Single lap tiles,,40
 Install bitumen membrane warm flat roof covering,,,
 Install single layer polymeric membrane warm flat roof covering,,,
 Install zinc sheet or strip roof covering,,,
 Install zinc sheet dormer covering,,,
-,,,
-,,,
 Install flooring,,,
 Install flooring,Softwood,,55
 Install flooring,Hardwood,,65
@@ -134,15 +117,11 @@ Install softwood board,Wall,,18
 Install softwood board,Ceiling,,22
 Install rigid sheet lining,,,
 Install rigid sheet lining,Wall,,28
-,,,
-,,,
 Install windows,,,
 Install windows,Casement,,160
 Install windows,Sash,,240
 Install roof windows,,,
 Install roof windows,Flat,,180
-,,,
-,,,
 Install external doors,,,
 Install external doors,PVCu,,220
 Install external doors,Wood,,240
@@ -150,11 +129,7 @@ Install external doors,Steel,,280
 Install garage doors,,,
 Install patio doors,,,
 Install internal doors,,,
-,,,
-,,,
 Install internal stairs,,,
-,,,
-,,,
 Install plasterboard backings,,,
 Install plasterboard backings,Standard,,28
 Install plasterboard backings,Moisture resistant,,40
@@ -186,8 +161,6 @@ Install levelling screeds,,,
 Install levelling screeds,Bonded,,28
 Install levelling screeds,Unbonded,,24
 Install levelling screeds,Floating,,32
-,,,
-,,,
 Install carpet,,,
 Install carpet,Without underlay,,8
 Install carpet,With underlay,,16
@@ -207,8 +180,6 @@ Install rigid tiling to walls,Stone,,60
 Install papering to walls,,,
 Install papering to walls,Lining paper,,8
 Install papering to walls,Wall paper,,12
-,,,
-,,,
 Install coating systems to plastered walls,,,
 Install coating systems to plastered walls,Emulsion,,12
 Install coating systems to plastered ceilings,,,
@@ -252,8 +223,6 @@ Install coating systems to gutters and downpipes,,,
 Install coating systems to gutters and downpipes,Exterior gloss,,18
 Install coating systems to external walls,,,
 Install coating systems to external walls,Masonry paint,,12
-,,,
-,,,
 Install window coverings,,,
 Install window coverings,Curtain rails,,80
 Install window coverings,Curtain poles,,60
@@ -326,8 +295,6 @@ Install toilet,,,
 Install toilet,Close coupled,,180
 Install vanity unit,,,
 Install mirror,,,
-,,,
-,,,
 Install in situ concrete pavings,,,
 Install asphalt concrete pavings,,,
 Install interlocking unit pavings,,,
@@ -372,8 +339,6 @@ Install prefabricated conservatory,,,
 Install prefabricated garage,,,
 Install prefabricated porch,,,
 Install timber decking,,,
-,,,
-,,,
 Install topsoil,,,
 Install tree,,,
 Install shrub,,,
@@ -381,7 +346,6 @@ Install flowers,,,
 Install turf,,,
 Install grass seed,,,
 Install green roof,,,
-,,,
 Install eaves rainwater drainage,,,
 Install eaves rainwater drainage,Alluminium,,20
 Install eaves rainwater drainage,Cast iron,,24
@@ -417,8 +381,6 @@ Install drainage fields,,,
 Install soakaways,,,
 Install outfalls to watercourses or swales,,,
 Install water distribution pipework,,,
-,,,
-,,,
 Install water distribution heat sources,,,
 Install water distribution heat sources,Boiler,,750
 Install water distribution heat sources,Pump,,140
@@ -426,8 +388,6 @@ Install water distribution heat sources,Solar,,
 Install water distribution storage,Feed and expansion cysterns,,
 Install water distribution storage,Hot water storage cylinders,,
 Install domestic sprinkler systems,,,
-,,,
-,,,
 Install mains gas supply,,,
 Install mains gas distribution,,,
 Install liquid fuel storage and distribution,,,
@@ -447,8 +407,6 @@ Install underfloor hot water central heating system,Plumbed in,,140
 Install local heating systems,,,
 Install local heating systems,Gas fire,,230
 Install local heating systems,Wood burning stove,,240
-,,,
-,,,
 Install bathroom intermittent mechanical ventilation,,,
 Install bathroom intermittent mechanical ventilation,Ceiling,,140
 Install bathroom intermittent mechanical ventilation,In-line,,220
@@ -456,8 +414,6 @@ Install bathroom intermittent mechanical ventilation,Wall,,140
 Install background ventilation,,,
 Install passive stack ventilation component based system,,,
 Install passive stack ventilation proprietary system,,,
-,,,
-,,,
 Install electrical supply,,,
 Install consumer unit,,,
 Install consumer unit,12 Fuse,,320

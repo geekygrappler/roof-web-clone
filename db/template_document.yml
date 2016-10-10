@@ -1,0 +1,203 @@
+sections:
+    -   name: Site preparation
+        line_items:
+            - Survey
+            - Demolish
+            - Strip out and remove
+            - Strip out and set aside for re-use by employer
+            - Install temporary works
+    -   name: Foundations and floors
+        line_items:
+            - Install foundations
+            - Install pad foundations
+            - Install insulation below concrete
+            - Install sub-floor
+            - Install wall underpinning
+            - Install damp proof membrane
+    -   name: Masonry walling
+        line_items:
+            - Install external wall
+            - Install internal wall
+            - Install opening in existing wall
+            - Repoint wall
+            - Install steel frame
+            - Install steel post - Lightweight steel
+            - Install steel floor beam - Lightweight steel
+            - Install steel roof beam
+    -   name: Structural timber and carpentry
+        line_items:
+            - Install timber joist suspended ground floor structure
+            - Install timber joist upper floor structure
+            - Install timber joist ceiling structure
+            - Install timber joist flat roof structure
+            - Install timber common rafter pitched roof structure
+            - Install timber stud internal partition structure
+    -   name: Pitched roof coverings and cladding
+        line_items:
+            - Install pitched roof covering
+    -   name: Flat roof coverings
+        line_items:
+            - Install bitumen membrane warm flat roof covering
+            - Install single layer polymeric membrane warm flat roof covering
+            - Install zinc sheet or strip roof covering
+            - Install zinc sheet dormer covering
+    -   name: Wood internal flooring, linings and trim
+        line_items:
+            - Install softwood board
+            - Install rigid sheet lining
+    -   name: Windows, roof windows and patent glazing
+        line_items:
+            - Install windows
+            - Install roof windows
+    -   name: Doors and frames
+        line_items:
+            - Install external doors
+            - Install garage doors
+            - Install patio doors
+            - Install internal doors
+    -   name: Stairs and guarding
+        line_items:
+            - Install internal stairs
+    -   name: Plastering, rendering and screeding
+        line_items:
+            - Install plasterboard backings
+            - Install plasterboard backings to ceilings
+            - Install plasterboard dry lining on metal studs
+            - Install plasterboard dry lining direct to masonry
+            - Install gypsum plaster coatings to plasterboard backings
+            - Install gypsum plaster coatings to masonry
+            - Install metal lathing with plaster finish
+            - Install render coatings to external masonry
+            - Install render coatings on metal lathing
+            - Install render coatings to internal masonry
+            - Install levelling screeds
+    -   name: Sheet and tile internal finishes
+        line_items:
+            - Install carpet
+            - Install flexible sheeting to floors
+            - Install flexible tiling to floors
+            - Install rigid tiling to floors
+            - Install rigid tiling to walls
+            - Install papering to walls
+    -   name: Painting, staining and varnishing
+        line_items:
+            - Install coating systems to plastered walls
+            - Install coating systems to plastered ceilings
+            - Install coating systems to concrete floors
+            - Install coating systems to wood floors
+            - Install coating systems to wood trim
+            - Install coating systems to internal doors and frames
+            - Install coating systems to windows internally
+            - Install coating systems to external doors and frames
+            - Install coating systems to windows externally
+            - Install coating systems to fascias and bargeboards
+            - Install coating systems to gutters and downpipes
+            - Install coating systems to external walls
+    -   name: Appliances and fittings
+        line_items:
+            - Install window coverings
+            - Install fireplaces
+            - Install kitchen units
+            - Install kitchen worktop
+            - Install kitchen sink
+            - Install kitchen taps
+            - Install cooked hood
+            - Install dishwasher
+            - Install freezer
+            - Install hob
+            - Install oven
+            - Install refrigerator
+            - Install washing machine
+            - Install bath
+            - Install bath taps
+            - Install bath panels
+            - Install shower head
+            - Install shower mixer
+            - Install shower tray
+            - Install shower enclosure
+            - Install shower curtain and rail
+            - Install bathroom sink
+            - Install bathroom sink taps
+            - Install toilet
+            - Install vanity unit
+            - Install mirror
+    -   name: Hard Landscaping
+        line_items:
+            - Install in situ concrete pavings
+            - Install interlocking unit pavings
+            - Install hard binding gravel pavings
+            - Install brick, flag and slab mortar bedded pavings
+            - Install brick or block permeable sand bedded pavings
+            - Install gravel pavings
+            - Install brick, flag and slab mortar bedded pavings
+            - Install metal fencing
+            - Install wood fencing
+            - Install masonry freestanding walls
+            - Install masonry piers
+            - Install pedestrian gates
+            - Install vehicular gates
+            - Install prefabricated conservatory
+            - Install prefabricated garage
+            - Install prefabricated porch
+            - Install timber decking
+    -   name: Soft Landscaping
+        line_items:
+            - Install topsoil
+            - Install tree
+            - Install shrub
+            - Install flowers
+            - Install turf
+            - Install grass seed
+            - Install green roof
+    -   name: Above and below ground drainage
+        line_items:
+            - Install eaves rainwater drainage
+            - Install internal rainwater drainage
+            - Install rainwater harvesting
+            - Install threshold rainwater drainage
+            - Install internal branch discharge pipework for bath
+            - Install internal branch discharge pipework for shower
+            - Install internal branch discharge pipework for sink
+            - Install internal branch discharge pipework for toilet
+            - Install external discharge stacks and branches
+            - Install internal discharge stacks
+            - Install foul drainage pipework
+            - Install surface water drainage pipework
+            - Install subsoil drainage pipework
+            - Install inspection chamber
+            - Install manhole
+            - Install septic tank systems
+            - Install sewage treatment system
+            - Install drainage fields
+            - Install soakaways
+            - Install outfalls to watercourses or swales
+            - Install water distribution pipework
+    -   name: Hot and cold water systems
+        line_items:
+            - Install water distribution heat sources
+            - Install domestic sprinkler systems
+    -   name: Heating systems
+        line_items:
+            - Install mains gas supply
+            - Install mains gas distribution
+            - Install liquid fuel storage and distribution
+            - Install heat sources for hot water central heating system
+            - Install pipework and heat emitters for hot water central heating system
+            - Install underfloor hot water central heating system
+            - Install local heating systems
+    -   name: Ventilation systems
+        line_items:
+            - Install bathroom intermittent mechanical ventilation
+            - Install background ventilation
+    -   name: Electrical systems
+        line_items:
+            - Install electrical supply
+            - Install consumer unit
+            - Install power circuit
+            - Install power socket
+            - Install lighting circuit
+            - Install television distribution
+            - Install fire detection and alarm
+            - Install intruder alarm
+    -   name: External Envelope
+        line_items:

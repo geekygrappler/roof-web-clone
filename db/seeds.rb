@@ -7,6 +7,7 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 require 'csv'
+require 'yaml'
 
 # Task.delete_all
 # CSV.foreach("#{Rails.root}/db/tasks.csv", {headers: true}) do |row|
@@ -38,6 +39,27 @@ CSV.foreach("#{Rails.root}/db/line_items.csv", {headers: true, skip_blanks: true
     line_item_attrs["rate"] = line_item_attrs["rate"].to_i * 100
 
     line_item = LineItem.create(line_item_attrs)
+end
+
+document_hash = YAML.load(File.read("#{Rails.root}/db/template_document.yml"))
+
+master_document = Document.create(name: "Master Document")
+document_hash["sections"].each do |section|
+    new_section = master_document.sections.create(name: section["name"])
+    if section["line_items"]
+        section["line_items"].each do |name|
+            parent_line_item = LineItem.where(name: name, searchable: true).first
+            if parent_line_item
+                line_item = parent_line_item.dup
+                line_item.line_item = parent_line_item
+                line_item.searchable = false
+                line_item.admin_verified = false
+                if line_item.save
+                    new_section.line_items << line_item
+                end
+            end
+        end
+    end
 end
 
 

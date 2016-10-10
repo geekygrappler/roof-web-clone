@@ -12,15 +12,25 @@ class DocumentsController < ApplicationController
 
     # GET /documents/new
     def new
-        default_sections = ["Preliminary", "Plumbing", "Electrics", "Carpentry", "Decorating", "Flooring", "General"]
-        @document = Document.create(
-            name: "Name your project..."
-        )
-        default_sections.each do |section|
-            @document.sections.create(name: section)
+        master_document = Document.where(name: "Master Document").first
+        @document = master_document.dup
+        @document.name = "New tender"
+        if @document.save
+            master_document.sections.each do |section|
+                new_section = section.dup
+                new_section.document = @document
+                if new_section.save
+                    section.line_items.each do |line_item|
+                        new_line_item = line_item.dup
+                        new_line_item.section = new_section
+                        new_line_item.save
+                    end
+                end
+            end
         end
-        # @document.user_id = current_user.id if current_user.present?
+        # @document.user_id = current_user.id if current_user.present
         redirect_to @document
+
     end
 
     private
