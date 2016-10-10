@@ -235,6 +235,8 @@ GEM
       tilt
     representable (2.3.0)
       uber (~> 0.0.7)
+    responders (2.3.0)
+      railties (>= 4.2.0, < 5.1)
     retriable (2.1.0)
     rspec (3.4.0)
       rspec-core (~> 3.4.0)
@@ -325,6 +327,7 @@ DEPENDENCIES
   rails (= 4.2.5.1)
   rails_12factor
   react-rails (~> 1.0)
+  responders (~> 2.0)
   rspec (~> 3.0)
   rspec-rails
   sass-rails (~> 5.0)

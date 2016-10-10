@@ -15,6 +15,7 @@ gem 'puma'
 gem 'money'
 gem 'font-awesome-rails'
 gem 'active_model_serializers', '~> 0.9.0'
+gem 'responders', '~>2.0'
 
 gem 'react-rails', '~> 1.0'
 
