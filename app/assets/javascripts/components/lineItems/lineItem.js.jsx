@@ -29,7 +29,7 @@ class LineItem extends React.Component {
                 <td>
                     <textarea
                         type="text"
-                        className="form-control item-input"
+                        className="form-control item-input line-item-notes"
                         defaultValue={this.props.lineItem.description}
                         onKeyDown={this.handleKeyDown.bind(this, "description")}
                         onBlur={this.update.bind(this, "description")}
@@ -39,7 +39,7 @@ class LineItem extends React.Component {
                 <td>
                     <input
                         type="text"
-                        className="form-control"
+                        className="form-control line-item-quantity"
                         defaultValue={this.props.lineItem.quantity}
                         onKeyDown={this.handleKeyDown.bind(this, "quantity")}
                         onBlur={this.update.bind(this, "quantity")}
@@ -48,7 +48,7 @@ class LineItem extends React.Component {
                 <td>
                     <input
                         type="text"
-                        className="form-control"
+                        className="form-control line-item-material-cost"
                         defaultValue={this.props.lineItem.material_cost}
                         onKeyDown={this.handleKeyDown.bind(this, "material_cost")}
                         onBlur={this.update.bind(this, "material_cost")}

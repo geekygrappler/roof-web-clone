@@ -36,11 +36,7 @@ class Document extends React.Component {
                     <div className="row section" id="section-drawings">
                         <div className="col-sm-12">
                             <h2>Terms & Drawings</h2>
-                            <h5>Terms</h5>
-                            <textarea
-                                className="section-notes form-control"
-                                placeholder="Manually enter terms & conditions here or upload document below."
-                                />
+                            <p>Upload drawings and your companies terms and conditions for tenders.</p>
                             <h5>Upload Documents</h5>
                             <form id="my-awesome-dropzone" action="/spec/upload_document" className="dropzone">
                                 <input type="hidden" name="authenticity_token" value={jQuery('[name="csrf-token"]').attr('content')} />
@@ -253,47 +249,98 @@ class Document extends React.Component {
 
         let tourStates = [
             {
-                title: 'A Quick Tour',
-                html: 'Name your project here',
+                title: 'Welcome to your Project Tender',
+                html: 'You can rename it at any time by clicking on the title.',
                 buttons: { Next: 1 },
                 focus: 0,
-                position: { container: '.title', x: 200, y: 60, width: 200, arrow: 'tc' },
+                position: { container: '.title', x: 0, y: 60, width: 300, arrow: 'tc' },
                 submit: tourSubmitFunc
             },
             {
                 title: 'Sections',
-                html: 'This is a list of the sections in your tender',
+                html: 'This is a list of the sections in your tender.<b/><b/>We\'ve pre-populated this tender with suggested sections, but feel free to edit and delete at will.',
                 buttons: { Prev: -1, Next: 1 },
                 focus: 1,
                 position: { container: '.document-sections-list', x: 500, y: 80, width: 300, arrow: 'tc' },
                 submit: tourSubmitFunc
             },
             {
-                title: 'Terms & Drawings',
-                html: 'Add terms and drawings for the tender here.',
+                title: 'All the Sections',
+                html: 'You can expand this box to see all the sections',
                 buttons: { Prev: -1, Next: 1 },
                 focus: 1,
-                position: { container: '#my-awesome-dropzone', x: 200, y: -140, width: 300, height: 200, arrow: 'bc' },
+                position: { container: '.section-list-expander', x: -310, y: 0, width: 300, arrow: 'rt' },
                 submit: tourSubmitFunc
             },
             {
-                title: 'Edit Sections',
-                html: 'Click on a section\'s title to edit it.',
+                title: 'Terms & Drawings',
+                html: 'Add terms and drawings for the tender here. These will be viewable by professionals quoting on your tender.',
+                buttons: { Prev: -1, Next: 1 },
+                focus: 1,
+                position: { container: '#my-awesome-dropzone', x: 200, y: -200, width: 300, height: 200, arrow: 'bc' },
+                submit: tourSubmitFunc
+            },
+            {
+                title: 'Edit Section title',
+                html: 'As with the tender title, you can edit the section\'s title by clicking on it.',
                 buttons: { Prev: -1, Next: 1 },
                 focus: 1,
                 position: { container: '.section-name', x: 200, y: 0, width: 300, arrow: 'lt' },
                 submit: tourSubmitFunc
             },
             {
-                title: 'Line Item Search',
-                html: "Search for line items on the fly by clicking their name.",
-                buttons: { Done: 2 },
+                title: 'Delete Section',
+                html: 'If the section isn\'t relevant to your tender delete it here.',
+                buttons: { Prev: -1, Next: 1 },
+                focus: 1,
+                position: { container: '.glyphicon-trash', x: -25, y: 25, width: 300, arrow: 'tr' },
+                submit: tourSubmitFunc
+            },
+            {
+                title: 'Line Item',
+                html: "Record all the work you'd like a quote on as a line item.</br> </br>You can edit the suggested line items by clicking on them. We'll also display items from our database while you're editing.",
+                buttons: { Prev: -1, Next: 1  },
                 focus: 0,
-                position: { container: '.item-input', x: 200, y: 0, width: 300, arrow: 'lt' },
+                position: { container: '.item-input', x: 100, y: 0, width: 300, arrow: 'lt' },
+                submit: tourSubmitFunc
+            },
+            {
+                title: 'Notes',
+                html: "Add any specific notes you associated with this line item to the notes section for professionals to read. Include dimensions, drawing references, specific materials etc.",
+                buttons: { Prev: -1, Next: 1  },
+                focus: 0,
+                position: { container: '.line-item-notes', x: 100, y: 0, width: 300, arrow: 'lt' },
+                submit: tourSubmitFunc
+            },
+            {
+                title: 'Quantity',
+                html: "If you know the quantity of a line item, i.e. 7m long wall, it will help our professionals quote faster.",
+                buttons: { Prev: -1, Next: 1  },
+                focus: 0,
+                position: { container: '.line-item-quantity', x: 50, y: -10, width: 300, arrow: 'lt' },
+                submit: tourSubmitFunc
+            },
+            {
+                title: 'Bespoke Materials',
+                html: "If you've already purchased, or sourced specific materials associated to the line item, please include the cost here so it's included in the final quote.",
+                buttons: { Prev: -1, Next: 1  },
+                focus: 0,
+                position: { container: '.line-item-material-cost', x: 50, y: -10, width: 300, arrow: 'lt' },
+                submit: tourSubmitFunc
+            },
+            {
+                title: 'Add line items',
+                html: "Use this input to add line items. It's a free text search of our database, or if you don't find the specific task you're looking for, simply add it and we'll get you a quote.",
+                buttons: { Prev: -1, Done: 2  },
+                focus: 0,
+                position: { container: '[class^=line-item-search]', x: 200, y: 0, width: 300, arrow: 'lt' },
                 submit: tourSubmitFunc
             },
         ]
-
+        $.prompt.setDefaults({
+            top: "30%",
+            opacity: 0.2
+        });
         $.prompt(tourStates);
     }
 }
