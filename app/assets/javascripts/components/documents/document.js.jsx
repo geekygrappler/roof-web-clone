@@ -300,7 +300,7 @@ class Document extends React.Component {
                 title: 'Line Item',
                 html: "Record all the work you'd like a quote on as a line item.</br> </br>You can edit the suggested line items by clicking on them. We'll also display items from our database while you're editing.",
                 buttons: { Prev: -1, Next: 1  },
-                focus: 0,
+                focus: 1,
                 position: { container: '.item-input', x: 100, y: 0, width: 300, arrow: 'lt' },
                 submit: tourSubmitFunc
             },
@@ -308,7 +308,7 @@ class Document extends React.Component {
                 title: 'Notes',
                 html: "Add any specific notes you associated with this line item to the notes section for professionals to read. Include dimensions, drawing references, specific materials etc.",
                 buttons: { Prev: -1, Next: 1  },
-                focus: 0,
+                focus: 1,
                 position: { container: '.line-item-notes', x: 100, y: 0, width: 300, arrow: 'lt' },
                 submit: tourSubmitFunc
             },
@@ -316,23 +316,23 @@ class Document extends React.Component {
                 title: 'Quantity',
                 html: "If you know the quantity of a line item, i.e. 7m long wall, it will help our professionals quote faster.",
                 buttons: { Prev: -1, Next: 1  },
-                focus: 0,
-                position: { container: '.line-item-quantity', x: 50, y: -10, width: 300, arrow: 'lt' },
+                focus: 1,
+                position: { container: '.line-item-quantity', x: -305, y: -10, width: 300, arrow: 'rt' },
                 submit: tourSubmitFunc
             },
             {
                 title: 'Bespoke Materials',
                 html: "If you've already purchased, or sourced specific materials associated to the line item, please include the cost here so it's included in the final quote.",
                 buttons: { Prev: -1, Next: 1  },
-                focus: 0,
-                position: { container: '.line-item-material-cost', x: 50, y: -10, width: 300, arrow: 'lt' },
+                focus: 1,
+                position: { container: '.line-item-material-cost', x: -305, y: -10, width: 300, arrow: 'rt' },
                 submit: tourSubmitFunc
             },
             {
                 title: 'Add line items',
                 html: "Use this input to add line items. It's a free text search of our database, or if you don't find the specific task you're looking for, simply add it and we'll get you a quote.",
                 buttons: { Prev: -1, Done: 2  },
-                focus: 0,
+                focus: 1,
                 position: { container: '[class^=line-item-search]', x: 200, y: 0, width: 300, arrow: 'lt' },
                 submit: tourSubmitFunc
             },
