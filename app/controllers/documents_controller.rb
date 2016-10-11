@@ -12,16 +12,24 @@ class DocumentsController < ApplicationController
 
     # GET /documents/new
     def new
+        # Duplicate our master document
         master_document = Document.where(name: "Master Document").first
         @document = master_document.dup
         @document.name = "New tender"
         if @document.save
+            # Copy each section in the master document and set the new section's
+            # document to be our new document, @document.
             master_document.sections.each do |section|
                 new_section = section.dup
                 new_section.document = @document
                 if new_section.save
+                    # Copy each line item in the master section and set the new
+                    # line item's master line item, i.e. the one the line item on
+                    # the master document was originally copied from.
+                    # Finally set the line item's section to be the new section.
                     section.line_items.each do |line_item|
-                        new_line_item = line_item.dup
+                        new_line_item = line_item.line_item.dup
+                        new_line_item.line_item = line_item.line_item
                         new_line_item.section = new_section
                         new_line_item.save
                     end
@@ -30,7 +38,6 @@ class DocumentsController < ApplicationController
         end
         # @document.user_id = current_user.id if current_user.present
         redirect_to @document
-
     end
 
     private
