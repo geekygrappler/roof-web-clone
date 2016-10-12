@@ -46,15 +46,6 @@ class LineItem extends React.Component {
                         />
                 </td>
                 <td>
-                    <input
-                        type="text"
-                        className="form-control line-item-material-cost"
-                        defaultValue={this.props.lineItem.material_cost}
-                        onKeyDown={this.handleKeyDown.bind(this, "material_cost")}
-                        onBlur={this.update.bind(this, "material_cost")}
-                        />
-                </td>
-                <td>
                     <a className="glyphicon glyphicon-trash" onClick={this.props.deleteLineItem.bind(this, this.props.lineItem.id)} />
                 </td>
             </tr>
