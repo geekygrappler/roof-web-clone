@@ -31,6 +31,8 @@ class DocumentsController < ApplicationController
                         new_line_item = line_item.line_item.dup
                         new_line_item.line_item = line_item.line_item
                         new_line_item.section = new_section
+                        new_line_item.searchable = false
+                        new_line_item.admin_verified = false
                         new_line_item.save
                     end
                 end
