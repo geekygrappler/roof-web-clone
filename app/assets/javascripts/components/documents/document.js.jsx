@@ -321,14 +321,6 @@ class Document extends React.Component {
                 submit: tourSubmitFunc
             },
             {
-                title: 'Bespoke Materials',
-                html: "If you've already purchased, or sourced specific materials associated to the line item, please include the cost here so it's included in the final quote.",
-                buttons: { Prev: -1, Next: 1  },
-                focus: 1,
-                position: { container: '.line-item-material-cost', x: -305, y: -10, width: 300, arrow: 'rt' },
-                submit: tourSubmitFunc
-            },
-            {
                 title: 'Add line items',
                 html: "Use this input to add line items. It's a free text search of our database, or if you don't find the specific task you're looking for, simply add it and we'll get you a quote.",
                 buttons: { Prev: -1, Done: 2  },
