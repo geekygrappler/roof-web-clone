@@ -1,6 +1,9 @@
 class LineItem extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            quantity: this.props.lineItem.quantity
+        }
         this.masterLineItems = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
             queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -40,7 +43,8 @@ class LineItem extends React.Component {
                     <input
                         type="text"
                         className="form-control line-item-quantity"
-                        defaultValue={this.props.lineItem.quantity}
+                        value={this.renderQuantity()}
+                        onChange={this.handleChange.bind(this)}
                         onKeyDown={this.handleKeyDown.bind(this, "quantity")}
                         onBlur={this.update.bind(this, "quantity")}
                         />
@@ -58,6 +62,31 @@ class LineItem extends React.Component {
             source: this.masterLineItems,
             display: 'name'
         });
+    }
+
+    handleChange(e) {
+        let quantity = isNaN(parseInt(e.target.value)) ? 1 : parseInt(e.target.value);
+        if (e.target.value == "m\u00b2" || e.target.value == "m") {
+            quantity = e.target.value;
+        }
+        this.setState({quantity: quantity});
+    }
+
+    renderQuantity() {
+        let quantity = this.state.quantity;
+        if (this.props.lineItem.unit) {
+            if (this.props.lineItem.unit.abbreviation) {
+                quantity += this.props.lineItem.unit.abbreviation;
+            }
+            if (this.props.lineItem.unit.power) {
+                quantity += `\u00b2`;
+            }
+        }
+        // If we're mid edit, don't interfere
+        if (this.state.quantity == "m\u00b2" || this.state.quantity == "m") {
+            quantity = "m\u00b2";
+        }
+        return quantity;
     }
 
     handleKeyDown(attribute, e) {
