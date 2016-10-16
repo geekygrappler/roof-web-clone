@@ -13,7 +13,10 @@ class Document extends React.Component {
                             <div className="row">
                                 <div className="col-md-7">
                                     <h1 className="title">
-                                        <input value={this.state.name} onChange={this.updateTitle.bind(this)}/>
+                                        <input value={this.state.name}
+                                            onChange={this.updateTitle.bind(this)}
+                                            onBlur={this.updateDocument.bind(this)}
+                                            />
                                     </h1>
                                 </div>{/*
                                     */}<div className="col-md-5 text-right">
@@ -75,21 +78,36 @@ class Document extends React.Component {
                     </div>
                 </div>
             </div>
-        )
+        );
     }
 
     componentDidMount() {
-        window.scrollTo(0, 0)
+        window.scrollTo(0, 0);
         $("body").scrollspy({
             target: "#document-sections-menu",
             offset: 260
-        })
+        });
 
         this.setupTour();
     }
 
     updateTitle(e) {
         this.setState({name: e.target.value});
+    }
+
+    /* Currently only update is to name of document */
+    updateDocument(e) {
+        fetch(`/documents/${this.state.id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                document: {
+                    name: e.target.value
+                }
+            })
+        });
     }
 
     addSection(e) {
@@ -106,7 +124,7 @@ class Document extends React.Component {
             method: "POST",
             dataType: "json",
             data: data
-        }).done((data) => {
+        }).done(() => {
             this.fetchDocument();
         });
     }

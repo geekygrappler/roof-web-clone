@@ -1,5 +1,8 @@
 class DocumentsController < ApplicationController
-    before_action :set_document, only: [:show]
+    before_action :set_document, only: [:show, :update]
+
+    #TODO remove this
+    skip_before_filter :verify_authenticity_token, only: [:update]
 
     # GET /document_states/1
     # GET /document_states/1.json
@@ -40,6 +43,15 @@ class DocumentsController < ApplicationController
         end
         # @document.user_id = current_user.id if current_user.present
         redirect_to @document
+    end
+
+    def update
+        @document.assign_attributes(document_params)
+        if @document.save
+            render json: @document
+        else
+            render nothing: true, status: :bad_request
+        end
     end
 
     private

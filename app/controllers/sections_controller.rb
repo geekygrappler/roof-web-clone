@@ -1,6 +1,6 @@
 class SectionsController < ApplicationController
     respond_to :json
-    before_filter :find_section, only: [:show, :update, :destroy]
+    before_action :set_section, only: [:show, :update, :destroy]
 
 
     #TODO remove this
@@ -35,7 +35,7 @@ class SectionsController < ApplicationController
 
     private
 
-    def find_section
+    def set_section
         @section = Section.find(params[:id])
     end
 

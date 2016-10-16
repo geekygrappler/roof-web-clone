@@ -13,7 +13,7 @@ module.exports = {
     "plugins": [
         "react"
     ],
-     "extends": ["eslint:recommended", "plugin:react/recommended"],
+    "extends": "eslint:recommended",
     "rules": {
         "indent": [
             "error",
