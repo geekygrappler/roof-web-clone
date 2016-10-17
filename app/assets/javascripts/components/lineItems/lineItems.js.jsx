@@ -4,20 +4,10 @@ class LineItems extends React.Component {
     }
 
     render() {
-        let table = null;
-        if (this.props.lineItems.length > 0) {
-            table = this.renderTable();
-        }
-
         return (
             <div className="row">
                 <div className="col-xs-12">
-                    {table}
-                    <LineItemForm
-                        document = {this.props.document}
-                        createLineItem = {this.props.createLineItem}
-                        sectionId = {this.props.sectionId}
-                        />
+                    {this.renderTable()}
                 </div>
             </div>
         );
@@ -31,6 +21,7 @@ class LineItems extends React.Component {
                         <th className="line-item-name-header">Item</th>
                         <th className="line-item-notes-header">Notes</th>
                         <th className="line-item-quantity-header">Quantity</th>
+                        <th className="line-item-unit-header">Units</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -45,6 +36,11 @@ class LineItems extends React.Component {
                                 />
                         );
                     })}
+                    <LineItemForm
+                        document = {this.props.document}
+                        createLineItem = {this.props.createLineItem}
+                        sectionId = {this.props.sectionId}
+                        />
                 </tbody>
             </table>
         );

@@ -2,18 +2,17 @@ class LineItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            quantity: this.props.lineItem.quantity
-        }
-        this.masterLineItems = new Bloodhound({
-            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-            queryTokenizer: Bloodhound.tokenizers.whitespace,
-            remote: {
-                url: '/search/line_items?query=%QUERY',
-                wildcard: '%QUERY',
-                transform: (data) => {
-                    return data.results
-                }
+            lineItem: {
+                name: this.props.lineItem.name || "",
+                description: this.props.lineItem.description || "",
+                quantity: this.props.lineItem.quantity || 1,
+                unit: this.props.lineItem.unit || ""
             }
+        };
+        this.savedLineItems = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.whitespace,
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            local: JSON.parse(localStorage.getItem("oneRoofLineItems")) || []
         });
     }
 
@@ -24,7 +23,8 @@ class LineItem extends React.Component {
                     <textarea
                         type="text"
                         className={`form-control item-input line-item-name-${this.props.lineItem.id}`}
-                        defaultValue={this.props.lineItem.name}
+                        value={this.state.lineItem.name}
+                        onChange={this.handleChange.bind(this, "name")}
                         onKeyDown={this.handleKeyDown.bind(this, "name")}
                         onBlur={this.update.bind(this, "name")}
                         />
@@ -33,7 +33,8 @@ class LineItem extends React.Component {
                     <textarea
                         type="text"
                         className="form-control item-input line-item-notes"
-                        defaultValue={this.props.lineItem.description}
+                        value={this.state.lineItem.description}
+                        onChange={this.handleChange.bind(this, "description")}
                         onKeyDown={this.handleKeyDown.bind(this, "description")}
                         onBlur={this.update.bind(this, "description")}
                         placeholder="Add notes"
@@ -43,10 +44,20 @@ class LineItem extends React.Component {
                     <input
                         type="text"
                         className="form-control line-item-quantity"
-                        value={this.renderQuantity()}
-                        onChange={this.handleChange.bind(this)}
+                        value={this.state.lineItem.quantity}
+                        onChange={this.handleChange.bind(this, "quantity")}
                         onKeyDown={this.handleKeyDown.bind(this, "quantity")}
                         onBlur={this.update.bind(this, "quantity")}
+                        />
+                </td>
+                <td>
+                    <input
+                        type="text"
+                        className="form-control line-item-unit"
+                        value={this.state.lineItem.unit}
+                        onChange={this.handleChange.bind(this, "unit")}
+                        onKeyDown={this.handleKeyDown.bind(this, "unit")}
+                        onBlur={this.update.bind(this, "unit")}
                         />
                 </td>
                 <td>
@@ -58,35 +69,14 @@ class LineItem extends React.Component {
 
     componentDidMount() {
         $(`.line-item-name-${this.props.lineItem.id}`).typeahead({highlight: true}, {
-            name: "lineItems",
-            source: this.masterLineItems,
-            display: 'name'
+            source: this.savedLineItems,
         });
     }
 
-    handleChange(e) {
-        let quantity = isNaN(parseInt(e.target.value)) ? 1 : parseInt(e.target.value);
-        if (e.target.value == "m\u00b2" || e.target.value == "m") {
-            quantity = e.target.value;
-        }
-        this.setState({quantity: quantity});
-    }
-
-    renderQuantity() {
-        let quantity = this.state.quantity;
-        if (this.props.lineItem.unit) {
-            if (this.props.lineItem.unit.abbreviation) {
-                quantity += this.props.lineItem.unit.abbreviation;
-            }
-            if (this.props.lineItem.unit.power) {
-                quantity += `\u00b2`;
-            }
-        }
-        // If we're mid edit, don't interfere
-        if (this.state.quantity == "m\u00b2" || this.state.quantity == "m") {
-            quantity = "m\u00b2";
-        }
-        return quantity;
+    handleChange(attribute, e) {
+        let nextState = this.state.lineItem;
+        nextState[attribute] = e.target.value;
+        this.setState({lineItem: nextState});
     }
 
     handleKeyDown(attribute, e) {
@@ -103,9 +93,16 @@ class LineItem extends React.Component {
 
     update(attribute, e) {
         let lineItemId = this.props.lineItem.id;
-        let attributes = {};
-        attributes[attribute] = e.target.value.trim();
-        this.props.updateLineItem(lineItemId, attributes)
+        this.props.updateLineItem(lineItemId, this.state.lineItem);
+        this.saveLineItemLocally(this.state.lineItem.name);
+    }
+
+    saveLineItemLocally(name) {
+        let savedLineItems = JSON.parse(localStorage.getItem('oneRoofLineItems'));
+        savedLineItems.push(name);
+        localStorage.setItem('oneRoofLineItems', JSON.stringify(savedLineItems));
+        this.savedLineItems.local = JSON.parse(localStorage.getItem("oneRoofLineItems")) || [];
+        this.savedLineItems.initialize(true);
     }
 }
 

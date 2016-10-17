@@ -36,10 +36,12 @@ body {
 }
 
 .document-add-section {
-    text-align: right;
+    text-align: left;
     button {
         margin-left: 10px;
     }
+    margin-bottom: 40px;
+    margin-top: 40px;
 }
 
 .item-input {

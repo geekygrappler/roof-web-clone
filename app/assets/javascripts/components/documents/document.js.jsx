@@ -69,6 +69,7 @@ class Document extends React.Component {
                             <div className="form-group">
                                 <input type="text"
                                     className="form-control"
+                                    id="add-section"
                                     name="name"
                                     placeholder="Enter your section name"
                                     />
@@ -88,7 +89,9 @@ class Document extends React.Component {
             offset: 260
         });
 
-        this.setupTour();
+        if (localStorage.getItem("oneRoofSkipDemo") != "true") {
+            this.setupTour();
+        }
     }
 
     updateTitle(e) {
@@ -316,7 +319,7 @@ class Document extends React.Component {
             },
             {
                 title: 'Line Item',
-                html: "Record all the work you'd like a quote on as a line item.</br> </br>You can edit the suggested line items by clicking on them. We'll also display items from our database while you're editing.",
+                html: "Record all the work you'd like a quote on as a line item.",
                 buttons: { Prev: -1, Next: 1  },
                 focus: 1,
                 position: { container: '.item-input', x: 100, y: 0, width: 300, arrow: 'lt' },
@@ -340,17 +343,27 @@ class Document extends React.Component {
             },
             {
                 title: 'Add line items',
-                html: "Use this input to add line items. It's a free text search of our database, or if you don't find the specific task you're looking for, simply add it and we'll get you a quote.",
-                buttons: { Prev: -1, Done: 2  },
+                html: "Use this input to add line items. We'll save your history of line items to make your task quicker",
+                buttons: { Prev: -1, Next: 1  },
                 focus: 1,
                 position: { container: '[class^=line-item-search]', x: 200, y: 0, width: 300, arrow: 'lt' },
                 submit: tourSubmitFunc
             },
+            {
+                title: 'Add a section',
+                html: "Use this input to add a section.",
+                buttons: { Prev: -1, Done: 2 },
+                focus: 1,
+                position: { container: "#add-section", x: 280, y: -120, width: 300, arrow: "lb" },
+                submit: tourSubmitFunc
+            },
         ]
         $.prompt.setDefaults({
-            top: "30%",
-            opacity: 0.2
+            top: "40%",
+            opacity: 0.3
         });
+        localStorage.setItem('oneRoofSkipDemo', true);
         $.prompt(tourStates);
+
     }
 }
