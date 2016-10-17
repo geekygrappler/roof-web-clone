@@ -26,13 +26,8 @@ class DocumentsController < ApplicationController
                 new_section = section.dup
                 new_section.document = @document
                 if new_section.save
-                    # Copy each line item in the master section and set the new
-                    # line item's master line item, i.e. the one the line item on
-                    # the master document was originally copied from.
-                    # Finally set the line item's section to be the new section.
                     section.line_items.each do |line_item|
-                        new_line_item = line_item.line_item.dup
-                        new_line_item.line_item = line_item.line_item
+                        new_line_item = line_item.dup
                         new_line_item.section = new_section
                         new_line_item.searchable = false
                         new_line_item.admin_verified = false
