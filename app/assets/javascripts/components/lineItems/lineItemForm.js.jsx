@@ -108,7 +108,7 @@ class LineItemForm extends React.Component {
     }
 
     saveLineItemLocally(name) {
-        let savedLineItems = JSON.parse(localStorage.getItem('oneRoofLineItems'));
+        let savedLineItems = JSON.parse(localStorage.getItem('oneRoofLineItems')) || [];
         savedLineItems.push(name);
         localStorage.setItem('oneRoofLineItems', JSON.stringify(savedLineItems));
         this.savedLineItems.local = JSON.parse(localStorage.getItem("oneRoofLineItems")) || [];
