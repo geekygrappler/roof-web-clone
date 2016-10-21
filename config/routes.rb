@@ -27,6 +27,7 @@ Rails.application.routes.draw do
   resources :line_items, except: [:new, :edit]
   resources :building_materials, except: [:new, :edit]
   resources :documents, except: [:edit]
+  resources :quotes, except: [:edit, :new, :delete]
   resources :sections, except: [:new, :edit]
   get 'app' => 'pages#app'
   get 'app/*path' => 'pages#app'

@@ -18,9 +18,11 @@ class LineItems extends React.Component {
             <table className="table table-striped line-items-table">
                 <thead>
                     <tr>
+                        <th className="line-item-action-header">Action</th>
                         <th className="line-item-name-header">Item</th>
+                        <th className="line-item-spec-header">Spec.</th>
                         <th className="line-item-notes-header">Notes</th>
-                        <th className="line-item-quantity-header">Quantity</th>
+                        <th className="line-item-quantity-header">Quant.</th>
                         <th className="line-item-unit-header">Units</th>
                         <th></th>
                     </tr>
@@ -31,6 +33,7 @@ class LineItems extends React.Component {
                             <LineItem
                                 key={`lineItem-${lineItem.id}`}
                                 lineItem={lineItem}
+                                document={this.props.document}
                                 updateLineItem = {this.props.updateLineItem}
                                 deleteLineItem = {this.props.deleteLineItem}
                                 />

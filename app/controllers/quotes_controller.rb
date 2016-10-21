@@ -1,0 +1,3 @@
+class QuotesController < DocumentsController
+    
+end

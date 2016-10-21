@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161016204102) do
+ActiveRecord::Schema.define(version: 20161020093948) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,6 +36,20 @@ ActiveRecord::Schema.define(version: 20161016204102) do
   add_index "accounts", ["email"], name: "index_accounts_on_email", unique: true, using: :btree
   add_index "accounts", ["reset_password_token"], name: "index_accounts_on_reset_password_token", unique: true, using: :btree
   add_index "accounts", ["user_type", "user_id"], name: "index_accounts_on_user_type_and_user_id", using: :btree
+
+  create_table "actions", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "actions_items", id: false, force: :cascade do |t|
+    t.integer "item_id"
+    t.integer "action_id"
+  end
+
+  add_index "actions_items", ["action_id"], name: "index_actions_items_on_action_id", using: :btree
+  add_index "actions_items", ["item_id"], name: "index_actions_items_on_item_id", using: :btree
 
   create_table "activities", force: :cascade do |t|
     t.integer  "actor_id"
@@ -258,6 +272,15 @@ ActiveRecord::Schema.define(version: 20161016204102) do
   add_index "invitations", ["inviter_id"], name: "index_invitations_on_inviter_id", using: :btree
   add_index "invitations", ["project_id"], name: "index_invitations_on_project_id", using: :btree
 
+  create_table "items", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer  "spec_id"
+  end
+
+  add_index "items", ["spec_id"], name: "index_items_on_spec_id", using: :btree
+
   create_table "leads", force: :cascade do |t|
     t.jsonb    "data"
     t.datetime "created_at", null: false
@@ -349,6 +372,15 @@ ActiveRecord::Schema.define(version: 20161016204102) do
   end
 
   add_index "sections", ["document_id"], name: "index_sections_on_document_id", using: :btree
+
+  create_table "specs", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer  "item_id"
+  end
+
+  add_index "specs", ["item_id"], name: "index_specs_on_item_id", using: :btree
 
   create_table "stat_decimals", force: :cascade do |t|
     t.integer  "stat_id"
@@ -460,6 +492,7 @@ ActiveRecord::Schema.define(version: 20161016204102) do
   add_foreign_key "documents", "document_states"
   add_foreign_key "documents", "documents"
   add_foreign_key "invitations", "projects"
+  add_foreign_key "items", "specs"
   add_foreign_key "line_items", "line_items"
   add_foreign_key "line_items", "locations"
   add_foreign_key "line_items", "sections"
@@ -469,6 +502,7 @@ ActiveRecord::Schema.define(version: 20161016204102) do
   add_foreign_key "quotes", "projects"
   add_foreign_key "quotes", "tenders"
   add_foreign_key "sections", "documents"
+  add_foreign_key "specs", "items"
   add_foreign_key "stat_decimals", "stats"
   add_foreign_key "stat_floats", "stats"
   add_foreign_key "stat_integers", "stats"

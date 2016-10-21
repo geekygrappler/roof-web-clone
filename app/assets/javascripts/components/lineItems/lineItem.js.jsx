@@ -20,6 +20,12 @@ class LineItem extends React.Component {
         return (
             <tr className="line-item-row">
                 <td>
+                    <select placeholder="Action">
+                        <option value="install">Install</option>
+                        <option value="remove">Remove</option>
+                    </select>
+                </td>
+                <td>
                     <textarea
                         type="text"
                         className={`form-control item-input line-item-name-${this.props.lineItem.id}`}
@@ -27,6 +33,17 @@ class LineItem extends React.Component {
                         onChange={this.handleChange.bind(this, "name")}
                         onKeyDown={this.handleKeyDown.bind(this, "name")}
                         onBlur={this.update.bind(this, "name")}
+                        />
+                </td>
+                <td>
+                    <textarea
+                        type="text"
+                        className="form-control item-input line-item-spec"
+                        value={this.state.lineItem.description}
+                        onChange={this.handleChange.bind(this, "description")}
+                        onKeyDown={this.handleKeyDown.bind(this, "description")}
+                        onBlur={this.update.bind(this, "description")}
+                        placeholder="Add notes"
                         />
                 </td>
                 <td>
