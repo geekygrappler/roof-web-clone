@@ -5,6 +5,7 @@ class LineItem < ActiveRecord::Base
   belongs_to :location
   belongs_to :section
   has_many :line_items
+  has_one :item
 
   delegate :name, to: :unit, prefix: true, allow_nil: true
   delegate :name, to: :location, prefix: true, allow_nil: true

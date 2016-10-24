@@ -19,7 +19,10 @@ class SearchController < ApplicationController
 
     def items
         render json: {
-
+            results:
+                Item.full_text_search(params[:query])
+                .select { |item| item.action.exists?(params[:action_id]) }
+                .map { |item| ItemSearchSerializer.new(item) }
         }
     end
 end

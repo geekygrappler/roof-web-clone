@@ -1,6 +1,7 @@
 class LineItemSerializer < ActiveModel::Serializer
   attributes :id, :name, :description, :quantity, :rate, :total, :admin_verified, :location, :material_cost
   has_one :unit
+  has_one :item
 
   def location
     object.location_name

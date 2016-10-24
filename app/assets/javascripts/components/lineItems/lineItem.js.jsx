@@ -7,7 +7,8 @@ class LineItem extends React.Component {
                 description: this.props.lineItem.description || "",
                 quantity: this.props.lineItem.quantity || 1,
                 unit: this.props.lineItem.unit || ""
-            }
+            },
+            action_id: 2
         };
         this.savedLineItems = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.whitespace,
@@ -20,9 +21,10 @@ class LineItem extends React.Component {
         return (
             <tr className="line-item-row">
                 <td>
-                    <select placeholder="Action">
-                        <option value="install">Install</option>
-                        <option value="remove">Remove</option>
+                    <select onChange={this.setActionId.bind(this)} value={this.state.action_id} className={`line-item-action-${this.props.lineItem.id}`}>
+                        <option value="1">Install</option>
+                        <option value="2">Strip out</option>
+                        <option value="3">Remove</option>
                     </select>
                 </td>
                 <td>
@@ -31,8 +33,8 @@ class LineItem extends React.Component {
                         className={`form-control item-input line-item-name-${this.props.lineItem.id}`}
                         value={this.state.lineItem.name}
                         onChange={this.handleChange.bind(this, "name")}
-                        onKeyDown={this.handleKeyDown.bind(this, "name")}
-                        onBlur={this.update.bind(this, "name")}
+                        onKeyDown={this.handleChange.bind(this, "name")}
+                        onBlur={this.handleChange.bind(this, "name")}
                         />
                 </td>
                 <td>
@@ -85,19 +87,26 @@ class LineItem extends React.Component {
     }
 
     componentDidMount() {
+        this.setupSearchRemotes();
         $(`.line-item-name-${this.props.lineItem.id}`).typeahead({highlight: true}, {
-            source: this.savedLineItems,
+            source: this.searchItems,
+            display: "name"
         });
     }
 
+    /*
+        All changes need to come through here before going to
+        handleKeyDown() otherwise we might be updating our line item
+        without up to date attributes
+    */
     handleChange(attribute, e) {
         let nextState = this.state.lineItem;
         nextState[attribute] = e.target.value;
-        this.setState({lineItem: nextState});
+        this.setState({lineItem: nextState}, this.handleKeyDown(attribute, e));
     }
 
     handleKeyDown(attribute, e) {
-        if (e.keyCode === this.props.ENTER_KEY_CODE || e.keyCode === this.props.TAB_KEY_CODE) {
+        if (e.keyCode === this.props.ENTER_KEY_CODE || e.keyCode === this.props.TAB_KEY_CODE || e.type == "blur") {
             e.preventDefault()
             this.update(attribute, e)
             let inputs = $(':input').not(':button,:hidden,[readonly]');
@@ -110,6 +119,7 @@ class LineItem extends React.Component {
 
     update(attribute, e) {
         let lineItemId = this.props.lineItem.id;
+
         this.props.updateLineItem(lineItemId, this.state.lineItem);
         this.saveLineItemLocally(this.state.lineItem.name);
     }
@@ -120,6 +130,31 @@ class LineItem extends React.Component {
         localStorage.setItem('oneRoofLineItems', JSON.stringify(savedLineItems));
         this.savedLineItems.local = JSON.parse(localStorage.getItem("oneRoofLineItems")) || [];
         this.savedLineItems.initialize(true);
+    }
+
+    setActionId(e) {
+        this.setState({action_id: e.target.value});
+    }
+
+    /*
+        Setup Bloodhound search remotes
+        This will need to change when some params change on the component, e.g. action_id
+    */
+    setupSearchRemotes() {
+        this.searchItems = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.whitespace,
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            remote: {
+                url: `/search/items?query=`,
+                prepare: (query, settings) => {
+                    return settings.url += `${query}&action_id=${this.state.action_id}`;
+                },
+                wildcard: '%QUERY',
+                transform: (data) => {
+                    return data.results
+                }
+            }
+        });
     }
 }
 
