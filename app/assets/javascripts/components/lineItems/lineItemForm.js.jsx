@@ -10,59 +10,38 @@ class LineItemForm extends React.Component {
                 unit: ""
             }
         };
-        this.savedLineItems = new Bloodhound({
+        this.searchItems = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.whitespace,
             queryTokenizer: Bloodhound.tokenizers.whitespace,
-            local: JSON.parse(localStorage.getItem("oneRoofLineItems")) || []
+            remote: {
+                url: `/search/items?query=`,
+                prepare: (query, settings) => {
+                    return settings.url += `${query}`;
+                },
+                transform: (data) => {
+                    return data.results
+                }
+            }
         });
     }
 
     render() {
         return(
             <tr>
-                <td>
+                <td colSpan="3">
                     <input className={`line-item-search-${this.props.sectionId} form-control`}
                         onChange={this.handleChange.bind(this, "name")}
+                        onKeyDown={this.handleChange.bind(this, "name")}
                         value={this.state.lineItem.name}
-                        onKeyDown={this.handleKeyDown.bind(this, "name")}
-                        onBlur={this.handleKeyDown.bind(this, "name")}
+                        onBlur={this.handleChange.bind(this, "name")}
                         placeholder="Search for an item..."
                         autoFocus={true}
                         />
                 </td>
                 <td>
-                    <textarea
-                        type="text"
-                        className="form-control item-input line-item-notes"
-                        onChange={this.handleChange.bind(this, "description")}
-                        defaultValue={this.state.lineItem.description}
-                        onKeyDown={this.handleKeyDown.bind(this, "description")}
-                        onBlur={this.handleKeyDown.bind(this, "description")}
-                        placeholder="Add notes"
-                        />
                 </td>
-                <td>
-                    <input
-                        type="text"
-                        className="form-control line-item-quantity"
-                        onChange={this.handleChange.bind(this, "quantity")}
-                        value={this.state.lineItem.quantity}
-                        onChange={this.handleChange.bind(this)}
-                        onKeyDown={this.handleKeyDown.bind(this, "quantity")}
-                        onBlur={this.handleKeyDown.bind(this, "quantity")}
-                        />
-                </td>
-                <td>
-                    <input
-                        type="text"
-                        className="form-control line-item-unit"
-                        onChange={this.handleChange.bind(this, "unit")}
-                        value={this.state.lineItem.unit}
-                        onChange={this.handleChange.bind(this)}
-                        onKeyDown={this.handleKeyDown.bind(this, "unit")}
-                        onBlur={this.handleKeyDown.bind(this, "unit")}
-                        />
-                </td>
+                <td></td>
+                <td></td>
                 <td></td>
             </tr>
         );
@@ -70,14 +49,15 @@ class LineItemForm extends React.Component {
 
     componentDidMount() {
         $(`.line-item-search-${this.props.sectionId}`).typeahead({highlight: true, hint: true, minLength: 1}, {
-            source: this.savedLineItems
+            source: this.searchItems,
+            display: "name"
         });
     }
 
     handleChange(attribute, e) {
         let nextState = this.state.lineItem;
         nextState[attribute] = e.target.value;
-        this.setState({lineItem: nextState});
+        this.setState({lineItem: nextState}, this.handleKeyDown(attribute, e));
     }
 
     handleKeyDown(attribute, e) {
@@ -89,30 +69,14 @@ class LineItemForm extends React.Component {
 
             if (attribute == "name") {
                 let lineItem = this.state.lineItem;
-                this.saveLineItemLocally(this.state.lineItem.name);
                 this.props.createLineItem(lineItem);
-                this.setState({
-                    lineItem: {
-                        name: "",
-                        description: "",
-                        quantity: "",
-                        section_id: this.props.sectionId,
-                        unit: ""
-                    }
-                });
-                e.target.value = "";
+                let nextState = lineItem;
+                lineItem[attribute] = "";
+                this.setState({lineItem: nextState});
             }
         } else {
             return;
         }
-    }
-
-    saveLineItemLocally(name) {
-        let savedLineItems = JSON.parse(localStorage.getItem('oneRoofLineItems')) || [];
-        savedLineItems.push(name);
-        localStorage.setItem('oneRoofLineItems', JSON.stringify(savedLineItems));
-        this.savedLineItems.local = JSON.parse(localStorage.getItem("oneRoofLineItems")) || [];
-        this.savedLineItems.initialize(true);
     }
 }
 

@@ -1,7 +1,7 @@
 class Item < ActiveRecord::Base
     include PgSearch
 
-    belongs_to :action
+    has_and_belongs_to_many :actions
     has_many :spec
 
     pg_search_scope(

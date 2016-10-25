@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161024092534) do
+ActiveRecord::Schema.define(version: 20161025114454) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -42,6 +42,14 @@ ActiveRecord::Schema.define(version: 20161024092534) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  create_table "actions_items", id: false, force: :cascade do |t|
+    t.integer "action_id"
+    t.integer "item_id"
+  end
+
+  add_index "actions_items", ["action_id"], name: "index_actions_items_on_action_id", using: :btree
+  add_index "actions_items", ["item_id"], name: "index_actions_items_on_item_id", using: :btree
 
   create_table "activities", force: :cascade do |t|
     t.integer  "actor_id"
@@ -269,10 +277,8 @@ ActiveRecord::Schema.define(version: 20161024092534) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer  "spec_id"
-    t.integer  "action_id"
   end
 
-  add_index "items", ["action_id"], name: "index_items_on_action_id", using: :btree
   add_index "items", ["spec_id"], name: "index_items_on_spec_id", using: :btree
 
   create_table "leads", force: :cascade do |t|
@@ -298,12 +304,16 @@ ActiveRecord::Schema.define(version: 20161024092534) do
     t.integer  "material_cost"
     t.string   "unit"
     t.integer  "item_id"
+    t.integer  "action_id"
+    t.integer  "spec_id"
   end
 
+  add_index "line_items", ["action_id"], name: "index_line_items_on_action_id", using: :btree
   add_index "line_items", ["item_id"], name: "index_line_items_on_item_id", using: :btree
   add_index "line_items", ["line_item_id"], name: "index_line_items_on_line_item_id", using: :btree
   add_index "line_items", ["location_id"], name: "index_line_items_on_location_id", using: :btree
   add_index "line_items", ["section_id"], name: "index_line_items_on_section_id", using: :btree
+  add_index "line_items", ["spec_id"], name: "index_line_items_on_spec_id", using: :btree
 
   create_table "locations", force: :cascade do |t|
     t.string   "name"
@@ -488,12 +498,13 @@ ActiveRecord::Schema.define(version: 20161024092534) do
   add_foreign_key "documents", "document_states"
   add_foreign_key "documents", "documents"
   add_foreign_key "invitations", "projects"
-  add_foreign_key "items", "actions"
   add_foreign_key "items", "specs"
+  add_foreign_key "line_items", "actions"
   add_foreign_key "line_items", "items"
   add_foreign_key "line_items", "line_items"
   add_foreign_key "line_items", "locations"
   add_foreign_key "line_items", "sections"
+  add_foreign_key "line_items", "specs"
   add_foreign_key "payments", "projects"
   add_foreign_key "payments", "quotes"
   add_foreign_key "projects", "accounts"

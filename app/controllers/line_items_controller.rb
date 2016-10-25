@@ -31,7 +31,9 @@ class LineItemsController < ApplicationController
     def update
         # We could be submitting a new parent line item, we want to change this line_item
         # to be a duplicate of the new parent
-        new_parent_line_item = get_parent_line_item
+        if line_item_params[:name] != @line_item.name
+            new_parent_line_item = get_parent_line_item
+        end
         if new_parent_line_item
             @line_item.name = new_parent_line_item.name
             @line_item.line_item = new_parent_line_item
@@ -56,7 +58,7 @@ class LineItemsController < ApplicationController
     private
 
     def line_item_params
-        params.require(:line_item).permit(:name, :section_id, :quantity, :description, :material_cost, :unit)
+        params.require(:line_item).permit(:name, :section_id, :quantity, :description, :material_cost, :unit, :action_id)
     end
 
     def set_line_item
