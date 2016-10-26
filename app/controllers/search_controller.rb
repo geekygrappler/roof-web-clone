@@ -42,4 +42,16 @@ class SearchController < ApplicationController
             results: results
         }
     end
+
+    def actions
+        item = Item.where(name: params[:item_name]).first
+        if item
+            results = item.actions.map { |action| {id: action.id, name: action.name} }
+        else
+            results = []
+        end
+        render json: {
+            results: results
+        }
+    end
 end

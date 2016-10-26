@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   get 'search/building_materials', to: 'search#building_materials'
   get 'search/items', to: 'search#items'
   get 'search/specs', to: 'search#specs'
+  get 'search/actions', to: 'search#actions'
 
   get 'spec/new', to: 'spec#new', as: :new_spec
   post 'spec/create', to: 'spec#create', as: :create_spec

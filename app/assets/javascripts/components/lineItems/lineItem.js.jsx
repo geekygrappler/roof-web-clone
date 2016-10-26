@@ -1,4 +1,4 @@
-/*global React*/
+/*global React Bloodhound $ localStorage*/
 
 class LineItem extends React.Component {
     constructor(props) {
@@ -23,10 +23,10 @@ class LineItem extends React.Component {
         return (
             <tr className="line-item-row">
                 <td>
-                    <select onChange={this.handleChange.bind(this, "action_id")} value={this.state.lineItem.action_id} className={`line-item-action-${this.props.lineItem.id}`}>
-                        <option value="1">Install</option>
-                        <option value="2">Remove</option>
-                    </select>
+                    <ActionSelect
+                        onChange={this.handleChange.bind(this, "action_id")}
+                        itemName={this.state.lineItem.name}
+                        />
                 </td>
                 <td>
                     <textarea
