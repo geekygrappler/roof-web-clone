@@ -132,10 +132,12 @@ class LineItem extends React.Component {
             (e.type == "change" && attribute == "spec_id")) {
             e.preventDefault()
             this.update(attribute, e)
-            let inputs = $(':input').not(':button,:hidden,[readonly]');
-            let nextInput = inputs.get(inputs.index(e.target) + 1);
-            if (nextInput) {
-                nextInput.focus();
+            if (e.keyCode === this.props.TAB_KEY_CODE || e.keyCode === this.props.ENTER_KEY_CODE) {
+                let inputs = $(':input').not(':button,:hidden,[readonly]');
+                let nextInput = inputs.get(inputs.index(e.target) + 1);
+                if (nextInput) {
+                    nextInput.focus();
+                }
             }
         }
     }
