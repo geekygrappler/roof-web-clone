@@ -11,6 +11,8 @@ class LineItem extends React.Component {
                 unit: this.props.lineItem.unit || "",
                 action_id: this.props.lineItem.action_id || 1,
                 price: this.props.lineItem.price || 0,
+                rate: this.props.lineItem.rate || 0,
+                rate: this.props.lineItem.total || 0
             },
         };
         this.savedLineItems = new Bloodhound({
