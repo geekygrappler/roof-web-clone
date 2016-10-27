@@ -10,6 +10,7 @@ class LineItem extends React.Component {
                 quantity: this.props.lineItem.quantity || 1,
                 unit: this.props.lineItem.unit || "",
                 action_id: this.props.lineItem.action_id || 1,
+                price: this.props.lineItem.price || 0,
             },
         };
         this.savedLineItems = new Bloodhound({
@@ -50,9 +51,19 @@ class LineItem extends React.Component {
                         className="form-control item-input line-item-notes"
                         value={this.state.lineItem.description}
                         onChange={this.handleChange.bind(this, "description")}
-                        onKeyDown={this.handleKeyDown.bind(this, "description")}
-                        onBlur={this.update.bind(this, "description")}
+                        onKeyDown={this.handleChange.bind(this, "description")}
+                        onBlur={this.handleChange.bind(this, "description")}
                         placeholder="Add notes"
+                        />
+                </td>
+                <td>
+                    <input
+                        type="text"
+                        className="form-control line-item-unit"
+                        value={this.state.lineItem.price}
+                        onChange={this.handleChange.bind(this, "rate")}
+                        onKeyDown={this.handleChange.bind(this, "rate")}
+                        onBlur={this.handleChange.bind(this, "rate")}
                         />
                 </td>
                 <td>
@@ -61,8 +72,8 @@ class LineItem extends React.Component {
                         className="form-control line-item-quantity"
                         value={this.state.lineItem.quantity}
                         onChange={this.handleChange.bind(this, "quantity")}
-                        onKeyDown={this.handleKeyDown.bind(this, "quantity")}
-                        onBlur={this.update.bind(this, "quantity")}
+                        onKeyDown={this.handleChange.bind(this, "quantity")}
+                        onBlur={this.handleChange.bind(this, "quantity")}
                         />
                 </td>
                 <td>
@@ -71,8 +82,18 @@ class LineItem extends React.Component {
                         className="form-control line-item-unit"
                         value={this.state.lineItem.unit}
                         onChange={this.handleChange.bind(this, "unit")}
-                        onKeyDown={this.handleKeyDown.bind(this, "unit")}
-                        onBlur={this.update.bind(this, "unit")}
+                        onKeyDown={this.handleChange.bind(this, "unit")}
+                        onBlur={this.handleChange.bind(this, "unit")}
+                        />
+                </td>
+                <td>
+                    <input
+                        type="text"
+                        className="form-control line-item-unit"
+                        value={this.state.lineItem.price}
+                        onChange={this.handleChange.bind(this, "total")}
+                        onKeyDown={this.handleChange.bind(this, "total")}
+                        onBlur={this.handleChange.bind(this, "total")}
                         />
                 </td>
                 <td>
@@ -105,7 +126,8 @@ class LineItem extends React.Component {
         if (e.keyCode === this.props.ENTER_KEY_CODE ||
             e.keyCode === this.props.TAB_KEY_CODE ||
             e.type == "blur" ||
-            (e.type == "change" && attribute == "action_id")) {
+            (e.type == "change" && attribute == "action_id") ||
+            (e.type == "change" && attribute == "spec_id")) {
             e.preventDefault()
             this.update(attribute, e)
             let inputs = $(':input').not(':button,:hidden,[readonly]');
