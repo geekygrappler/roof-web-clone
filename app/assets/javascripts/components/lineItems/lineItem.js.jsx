@@ -12,7 +12,7 @@ class LineItem extends React.Component {
                 action_id: this.props.lineItem.action_id || 1,
                 price: this.props.lineItem.price || 0,
                 rate: this.props.lineItem.rate || 0,
-                rate: this.props.lineItem.total || 0
+                total: this.props.lineItem.total || 0
             },
         };
         this.savedLineItems = new Bloodhound({
@@ -62,7 +62,7 @@ class LineItem extends React.Component {
                     <input
                         type="text"
                         className="form-control line-item-unit"
-                        value={this.state.lineItem.price}
+                        value={this.state.lineItem.rate}
                         onChange={this.handleChange.bind(this, "rate")}
                         onKeyDown={this.handleChange.bind(this, "rate")}
                         onBlur={this.handleChange.bind(this, "rate")}
@@ -92,7 +92,7 @@ class LineItem extends React.Component {
                     <input
                         type="text"
                         className="form-control line-item-unit"
-                        value={this.state.lineItem.price}
+                        value={this.state.lineItem.total}
                         onChange={this.handleChange.bind(this, "total")}
                         onKeyDown={this.handleChange.bind(this, "total")}
                         onBlur={this.handleChange.bind(this, "total")}
