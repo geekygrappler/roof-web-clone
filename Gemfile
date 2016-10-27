@@ -13,6 +13,7 @@ gem 'turbolinks'
 gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'puma'
 gem 'money'
+gem 'monetize'
 gem 'font-awesome-rails'
 gem 'active_model_serializers', '~> 0.9.0'
 gem 'responders', '~>2.0'

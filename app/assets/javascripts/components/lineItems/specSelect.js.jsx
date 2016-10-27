@@ -24,8 +24,10 @@ class SpecSelect extends React.Component {
         this.fetchSpecs();
     }
 
-    componentWillReceiveProps() {
-        this.fetchSpecs();
+    componentWillReceiveProps(nextProps) {
+        if (this.props.itemName != nextProps.itemName) {
+            this.fetchSpecs();
+        }
     }
 
     fetchSpecs() {

@@ -7,10 +7,10 @@ table.line-items-table {
     th.line-item-notes-header, th.line-item-name-header {
         width: 20%
     }
-    th.line-item-action-header {
+    th.line-item-action-header, th.line-item-rate-header, th.line-item-total-header {
         width: 10%;
     }
     th.line-item-quantity-header, th.line-item-unit-header {
-        width: 7%;
+        width: 6%;
     }
 }

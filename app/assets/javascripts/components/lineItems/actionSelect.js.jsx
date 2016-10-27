@@ -24,8 +24,10 @@ class ActionSelect extends React.Component {
         this.fetchActions();
     }
 
-    componentWillReceiveProps() {
-        this.fetchActions();
+    componentWillReceiveProps(nextProps) {
+        if (this.props.itemName != nextProps.itemName) {
+            this.fetchActions();
+        }
     }
 
     fetchActions() {

@@ -10,7 +10,6 @@ class LineItem extends React.Component {
                 quantity: this.props.lineItem.quantity || 1,
                 unit: this.props.lineItem.unit || "",
                 action_id: this.props.lineItem.action_id || 1,
-                price: this.props.lineItem.price || 0,
                 rate: this.props.lineItem.rate || 0,
                 total: this.props.lineItem.total || 0
             },
@@ -61,7 +60,7 @@ class LineItem extends React.Component {
                 <td>
                     <input
                         type="text"
-                        className="form-control line-item-unit"
+                        className={`form-control line-item-rate-${this.props.lineItem.id}`}
                         value={this.state.lineItem.rate}
                         onChange={this.handleChange.bind(this, "rate")}
                         onKeyDown={this.handleChange.bind(this, "rate")}
@@ -121,6 +120,12 @@ class LineItem extends React.Component {
     handleChange(attribute, e) {
         let nextState = this.state.lineItem;
         nextState[attribute] = e.target.value;
+        if (attribute == "rate" || attribute == "quantity") {
+            this.calculateTotal(nextState);
+        }
+        if (attribute == "total") {
+            this.calculateRate(nextState);
+        }
         this.setState({lineItem: nextState}, this.handleKeyDown(attribute, e));
     }
 
@@ -144,17 +149,7 @@ class LineItem extends React.Component {
 
     update(attribute, e) {
         let lineItemId = this.props.lineItem.id;
-
         this.props.updateLineItem(lineItemId, this.state.lineItem);
-        this.saveLineItemLocally(this.state.lineItem.name);
-    }
-
-    saveLineItemLocally(name) {
-        let savedLineItems = JSON.parse(localStorage.getItem('oneRoofLineItems')) || [];
-        savedLineItems.push(name);
-        localStorage.setItem('oneRoofLineItems', JSON.stringify(savedLineItems));
-        this.savedLineItems.local = JSON.parse(localStorage.getItem("oneRoofLineItems")) || [];
-        this.savedLineItems.initialize(true);
     }
 
     /*
@@ -177,27 +172,16 @@ class LineItem extends React.Component {
         });
     }
 
-    renderSpecSelect() {
-        return fetch(`/search/specs?item_name=${this.state.lineItem.name}`)
-        .then((response) => {
-            if (response.ok) {
-                response.json().then((data) => {
-                    if (data.results.length > 0) {
-                        return (
-                            <select onChange={this.handleChange.bind(this, "spec_id")} value={this.state.lineItem.spec_id}>
-                                {data.results.map((spec) => {
-                                    return (
-                                        <option key={spec.id} value={spec.id}>{spec.name}</option>
-                                    )
-                                })}
-                            </select>
-                        );
-                    } else {
-                        return null;
-                    }
-                });
-            }
-        });
+    calculateTotal(lineItem) {
+        let rate = parseFloat(lineItem.rate.replace("£", ""));
+        let quantity = parseFloat(lineItem.quantity);
+        lineItem.total = `£${rate * quantity}` || "£0";
+    }
+
+    calculateRate(lineItem) {
+        let total = parseFloat(lineItem.total.replace("£", ""));
+        let quantity = parseFloat(lineItem.quantity);
+        lineItem.rate = `£${total / quantity}` || "£0";
     }
 }
 

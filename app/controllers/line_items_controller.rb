@@ -58,7 +58,7 @@ class LineItemsController < ApplicationController
     private
 
     def line_item_params
-        params.require(:line_item).permit(:name, :section_id, :quantity, :description, :material_cost, :unit, :action_id)
+        params.require(:line_item).permit(:name, :section_id, :quantity, :description, :material_cost, :unit, :action_id, :rate, :total)
     end
 
     def set_line_item
@@ -68,8 +68,11 @@ class LineItemsController < ApplicationController
     # Transform any incoming data to the correct format.
     # Currently deals with any incoming value for 'material_cost'
     def line_item_adapter
-        if params[:line_item][:material_cost]
-            params[:line_item][:material_cost] = Monetize.parse(params[:line_item][:material_cost], "GBP").cents
+        if line_item_params[:rate]
+            line_item_params[:rate] = Monetize.parse(line_item_params[:rate]).cents
+        end
+        if line_item_params[:total]
+            line_item_params[:total] = Monetize.parse(line_item_params[:total]).cents
         end
     end
 
