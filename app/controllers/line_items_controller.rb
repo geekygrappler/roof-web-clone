@@ -1,6 +1,5 @@
 class LineItemsController < ApplicationController
     before_action :set_line_item, only: [:update, :destroy]
-    before_action :line_item_adapter, only: [:update]
     respond_to :json
 
     #TODO remove this
@@ -58,6 +57,7 @@ class LineItemsController < ApplicationController
     private
 
     def line_item_params
+        line_item_adapter
         params.require(:line_item).permit(:name, :section_id, :quantity, :description, :material_cost, :unit, :action_id, :rate, :total)
     end
 
@@ -68,12 +68,16 @@ class LineItemsController < ApplicationController
     # Transform any incoming data to the correct format.
     # Currently deals with any incoming value for 'material_cost'
     def line_item_adapter
-        if line_item_params[:rate]
-            line_item_params[:rate] = Monetize.parse(line_item_params[:rate]).cents
-        end
-        if line_item_params[:total]
-            line_item_params[:total] = Monetize.parse(line_item_params[:total]).cents
-        end
+        clean_string_to_cents(params[:line_item], :rate)
+        clean_string_to_cents(params[:line_item], :total)
+    end
+
+    def clean_string_to_cents(obj, key)
+        obj[key] = Monetize.parse(obj[key]).cents if obj[key] && !is_number?(obj[key])
+    end
+
+    def is_number? string
+        true if Float(string) rescue false
     end
 
     def get_parent_line_item

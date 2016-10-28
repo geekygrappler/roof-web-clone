@@ -37,8 +37,6 @@ class LineItem < ActiveRecord::Base
     end
 
     def set_default_action
-        if self.action == nil
-            self.update_attributes(action_id: 1)
-        end
+        self.action_id = 1 if self.action == nil
     end
 end
