@@ -11,7 +11,6 @@ class LineItem < ActiveRecord::Base
     delegate :name, to: :unit, prefix: true, allow_nil: true
     delegate :name, to: :location, prefix: true, allow_nil: true
 
-    before_save :set_default_action
     after_save :calculate_section_totals
 
     pg_search_scope :full_text_search,
@@ -34,9 +33,5 @@ class LineItem < ActiveRecord::Base
 
     def calculate_total
         self.total = rate.to_i * quantity.to_i
-    end
-
-    def set_default_action
-        self.action_id = 1 if self.action == nil
     end
 end

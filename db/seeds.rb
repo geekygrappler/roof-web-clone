@@ -48,16 +48,7 @@ document_hash["sections"].each do |section|
     new_section = master_document.sections.create(name: section["name"])
     if section["line_items"]
         section["line_items"].each do |name|
-            parent_line_item = LineItem.where(name: name, searchable: true).first
-            if parent_line_item
-                line_item = parent_line_item.dup
-                line_item.line_item = parent_line_item
-                line_item.searchable = false
-                line_item.admin_verified = false
-                if line_item.save
-                    new_section.line_items << line_item
-                end
-            end
+            LineItem.create(name: name, section: new_section)
         end
     end
 end

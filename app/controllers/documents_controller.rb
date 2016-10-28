@@ -16,7 +16,7 @@ class DocumentsController < ApplicationController
     # GET /documents/new
     def new
         # Duplicate our master document
-        master_document = Document.where(name: "Master Document").first
+        master_document = Document.where(name: "Master Document").last
         @document = master_document.dup
         @document.name = "New tender"
         if @document.save
