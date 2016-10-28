@@ -38,6 +38,7 @@ class LineItems extends React.Component {
                                 document={this.props.document}
                                 updateLineItem = {this.props.updateLineItem}
                                 deleteLineItem = {this.props.deleteLineItem}
+                                fetchDocument={this.props.fetchDocument}
                                 />
                         );
                     })}

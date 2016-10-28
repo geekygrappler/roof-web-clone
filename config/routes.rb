@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  
+
   get 'admin/specs', to: 'admin_spec#specs'
   get '/admin/document/:id', to: 'admin_spec#document', as: :admin_document
   delete '/admin/architect/:id', to: 'admin_spec#destroy_architect', as: :destroy_architect
@@ -34,6 +34,9 @@ Rails.application.routes.draw do
   resources :documents, except: [:edit]
   resources :quotes, except: [:edit, :new, :delete]
   resources :sections, except: [:new, :edit]
+  resources :actions, except: [:show, :edit, :delete]
+  # This is an Item Specification not spec which is document above
+  resources :specs, except: [:show, :edit, :delete]
   get 'app' => 'pages#app'
   get 'app/*path' => 'pages#app'
   get 'pages/*path' => 'pages#show'

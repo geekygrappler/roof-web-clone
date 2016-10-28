@@ -14,11 +14,6 @@ class LineItem extends React.Component {
                 total: this.props.lineItem.total || 0
             },
         };
-        this.savedLineItems = new Bloodhound({
-            datumTokenizer: Bloodhound.tokenizers.whitespace,
-            queryTokenizer: Bloodhound.tokenizers.whitespace,
-            local: JSON.parse(localStorage.getItem("oneRoofLineItems")) || []
-        });
     }
 
     render() {
@@ -28,6 +23,8 @@ class LineItem extends React.Component {
                     <ActionSelect
                         onChange={this.handleChange.bind(this, "action_id")}
                         itemName={this.state.lineItem.name}
+                        lineItemId={this.props.lineItem.id}
+                        fetchDocument={this.props.fetchDocument}
                         />
                 </td>
                 <td>
@@ -44,6 +41,7 @@ class LineItem extends React.Component {
                     <SpecSelect
                         onChange={this.handleChange.bind(this, "spec_id")}
                         itemName={this.state.lineItem.name}
+                        lineItemId={this.state.lineItem.id}
                         />
                 </td>
                 <td>
@@ -135,10 +133,10 @@ class LineItem extends React.Component {
             e.type == "blur" ||
             (e.type == "change" && attribute == "action_id") ||
             (e.type == "change" && attribute == "spec_id")) {
-            e.preventDefault()
-            this.update(attribute, e)
+            e.preventDefault();
+            this.update(attribute, e);
             if (e.keyCode === this.props.TAB_KEY_CODE || e.keyCode === this.props.ENTER_KEY_CODE) {
-                let inputs = $(':input').not(':button,:hidden,[readonly]');
+                let inputs = $(":input").not(":button,:hidden,[readonly]");
                 let nextInput = inputs.get(inputs.index(e.target) + 1);
                 if (nextInput) {
                     nextInput.focus();
@@ -147,7 +145,7 @@ class LineItem extends React.Component {
         }
     }
 
-    update(attribute, e) {
+    update() {
         let lineItemId = this.props.lineItem.id;
         this.props.updateLineItem(lineItemId, this.state.lineItem);
     }
@@ -161,12 +159,12 @@ class LineItem extends React.Component {
             datumTokenizer: Bloodhound.tokenizers.whitespace,
             queryTokenizer: Bloodhound.tokenizers.whitespace,
             remote: {
-                url: `/search/items?query=`,
+                url: "/search/items?query=",
                 prepare: (query, settings) => {
                     return settings.url += `${query}&action_id=${this.state.lineItem.action_id}`;
                 },
                 transform: (data) => {
-                    return data.results
+                    return data.results;
                 }
             }
         });
@@ -188,4 +186,4 @@ class LineItem extends React.Component {
 LineItem.defaultProps = {
     ENTER_KEY_CODE: 13,
     TAB_KEY_CODE: 9
-}
+};

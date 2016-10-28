@@ -16,6 +16,7 @@ class LineItemsController < ApplicationController
             @line_item.admin_verified = false
             @line_item.section_id = line_item_params["section_id"]
         else
+            create_new_item
             @line_item = LineItem.new(line_item_params);
         end
 
@@ -54,6 +55,7 @@ class LineItemsController < ApplicationController
         @line_item.destroy
         render json: @line_item, status: :ok
     end
+
     private
 
     def line_item_params
@@ -84,5 +86,9 @@ class LineItemsController < ApplicationController
         if line_item_params[:name]
             LineItem.where(name: line_item_params["name"], searchable: true).first
         end
+    end
+
+    def create_new_item
+        Item.find_or_create_by(name: line_item_params[:name])
     end
 end

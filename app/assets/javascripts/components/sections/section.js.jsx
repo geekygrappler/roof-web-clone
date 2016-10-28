@@ -49,6 +49,7 @@ class Section extends React.Component {
                             createLineItem = {this.props.createLineItem}
                             updateLineItem = {this.props.updateLineItem}
                             deleteLineItem={this.props.deleteLineItem}
+                            fetchDocument={this.props.fetchDocument}
                             sectionId = {this.props.section.id}
                             />
                     </div>

@@ -8,14 +8,14 @@ namespace :migrate do
         CSV.foreach("#{Rails.root}/db/migration/items.csv",{headers: true, header_converters: :symbol, converters: :all}) do |row|
             row = row.to_hash
             if row[:item]
-                current_item = Item.create(name: row[:item])
+                current_item = Item.create(name: row[:item].strip)
             end
             if current_item
                 if row[:action]
-                    current_item.actions << Action.find_or_create_by(name: row[:action])
+                    current_item.actions << Action.find_or_create_by(name: row[:action].strip)
                 end
                 if row[:spec]
-                    Spec.create(name: row[:spec], item: current_item)
+                    Spec.create(name: row[:spec].strip, item: current_item)
                 end
             end
         end

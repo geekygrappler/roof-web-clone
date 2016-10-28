@@ -65,9 +65,7 @@ class Document extends React.Component {
                                 createLineItem={this.createLineItem.bind(this)}
                                 updateLineItem={this.updateLineItem.bind(this)}
                                 deleteLineItem={this.deleteLineItem.bind(this)}
-                                createBuildingMaterial={this.createBuildingMaterial.bind(this)}
-                                updateBuildingMaterial={this.updateBuildingMaterial.bind(this)}
-                                deleteBuildingMaterial={this.deleteBuildingMaterial.bind(this)}
+                                fetchDocument={this.fetchDocument.bind(this)}
                                 />
                         );
                     })}
@@ -175,7 +173,7 @@ class Document extends React.Component {
         $.ajax({
             url: "/line_items",
             method: "POST",
-            dataTyep: "json",
+            dataType: "json",
             data: { line_item: lineItem }
         }).done((data) => {
             this.fetchDocument();
@@ -201,42 +199,6 @@ class Document extends React.Component {
     deleteLineItem(lineItemId) {
         $.ajax({
             url: `/line_items/${lineItemId}`,
-            method: "DELETE",
-            dataType: "json"
-        }).done((data) => {
-            this.fetchDocument();
-        });
-    }
-
-    createBuildingMaterial(buildingMaterial) {
-        $.ajax({
-            url: "/building_materials",
-            method: "POST",
-            dataType: "json",
-            data: {
-                building_material: buildingMaterial
-            }
-        }).done((data) => {
-            this.fetchDocument();
-        });
-    }
-
-    updateBuildingMaterial(buildingMaterialId, attributes) {
-        $.ajax({
-            url: `/building_materials/${buildingMaterialId}`,
-            method: "PATCH",
-            dataType: "json",
-            data: {
-                building_material: attributes
-            }
-        }).done((data) => {
-            this.fetchDocument();
-        });
-    }
-
-    deleteBuildingMaterial(buildingMaterialId) {
-        $.ajax({
-            url: `/building_materials/${buildingMaterialId}`,
             method: "DELETE",
             dataType: "json"
         }).done((data) => {
