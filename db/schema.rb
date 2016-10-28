@@ -276,10 +276,7 @@ ActiveRecord::Schema.define(version: 20161025114454) do
     t.string   "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer  "spec_id"
   end
-
-  add_index "items", ["spec_id"], name: "index_items_on_spec_id", using: :btree
 
   create_table "leads", force: :cascade do |t|
     t.jsonb    "data"
@@ -301,15 +298,13 @@ ActiveRecord::Schema.define(version: 20161025114454) do
     t.integer  "section_id"
     t.integer  "unit_id"
     t.boolean  "searchable",     default: false
-    t.integer  "material_cost"
+    t.integer  "material_cost",  default: 0
     t.string   "unit"
-    t.integer  "item_id"
     t.integer  "action_id"
     t.integer  "spec_id"
   end
 
   add_index "line_items", ["action_id"], name: "index_line_items_on_action_id", using: :btree
-  add_index "line_items", ["item_id"], name: "index_line_items_on_item_id", using: :btree
   add_index "line_items", ["line_item_id"], name: "index_line_items_on_line_item_id", using: :btree
   add_index "line_items", ["location_id"], name: "index_line_items_on_location_id", using: :btree
   add_index "line_items", ["section_id"], name: "index_line_items_on_section_id", using: :btree
@@ -498,9 +493,7 @@ ActiveRecord::Schema.define(version: 20161025114454) do
   add_foreign_key "documents", "document_states"
   add_foreign_key "documents", "documents"
   add_foreign_key "invitations", "projects"
-  add_foreign_key "items", "specs"
   add_foreign_key "line_items", "actions"
-  add_foreign_key "line_items", "items"
   add_foreign_key "line_items", "line_items"
   add_foreign_key "line_items", "locations"
   add_foreign_key "line_items", "sections"

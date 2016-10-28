@@ -12,6 +12,7 @@ class Backup < ActiveRecord::Base
     obj.upload_file(save_path)
     backup.s3_url = obj.key
     backup.save
+    backup
   end
 
   def create_pdf_backup(document)

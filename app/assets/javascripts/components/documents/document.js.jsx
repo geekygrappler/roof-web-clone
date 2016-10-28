@@ -19,10 +19,17 @@ class Document extends React.Component {
                                             />
                                     </h1>
                                 </div>{/*
-                                    */}<div className="col-md-5 text-right">
+                                    */}
+                                <div className="col-md-5 text-right">
                                     <a href={this.props.invite_path}>
                                         <button className="btn btn-warning">Request Quotes</button>
                                     </a>
+                                    <div className="clearfix"></div>
+                                    <div className="btn-group backup-buttons">
+                                        <button onClick={this.downloadBackup.bind(this, 'CSV')} className="btn btn-default backup-button" type="button">
+                                            CSV
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -234,6 +241,26 @@ class Document extends React.Component {
             dataType: "json"
         }).done((data) => {
             this.fetchDocument();
+        });
+    }
+
+    downloadBackup(type) {
+        $.ajax({
+            url: `/spec/create_backup/`,
+            method: "POST",
+            dataType: "json",
+            data: {
+                type: type,
+                id: this.state.id
+            }
+        }).done((data) => {
+            var anchor = document.createElement("a")
+            anchor.href = data.url
+            anchor.download = ''
+            document.body.appendChild(anchor)
+            anchor.click()
+            document.body.removeChild(anchor)
+            delete anchor
         });
     }
 

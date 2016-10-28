@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-
+  
   get 'admin/specs', to: 'admin_spec#specs'
   get '/admin/document/:id', to: 'admin_spec#document', as: :admin_document
   delete '/admin/architect/:id', to: 'admin_spec#destroy_architect', as: :destroy_architect
@@ -19,6 +19,8 @@ Rails.application.routes.draw do
   get 'spec/thanks', to: 'spec#thanks', as: :thanks_spec
 
   post 'spec/upload_document', to: 'spec#upload_document', as: :upload_document
+
+  post 'spec/create_backup', to: 'backups#create', as: :create_backup
 
   #devise_for :accounts, path: '/users'
   #
