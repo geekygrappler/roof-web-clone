@@ -9,7 +9,7 @@ class LineItem extends React.Component {
                 description: this.props.lineItem.description || "",
                 quantity: this.props.lineItem.quantity || 1,
                 unit: this.props.lineItem.unit || "",
-                action_id: this.props.lineItem.action_id || 1,
+                action_id: this.props.lineItem.action_id,
                 rate: this.props.lineItem.rate || 0,
                 total: this.props.lineItem.total || 0
             },
