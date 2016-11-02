@@ -9,8 +9,8 @@ Rails.application.routes.draw do
   get 'search/line_items', to: 'search#line_items'
   get 'search/building_materials', to: 'search#building_materials'
   get 'search/items', to: 'search#items'
-  get 'search/specs', to: 'search#specs'
-  get 'search/actions', to: 'search#actions'
+  get 'search/item_specs', to: 'search#item_specs'
+  get 'search/item_actions', to: 'search#item_actions'
 
   get 'spec/new', to: 'spec#new', as: :new_spec
   post 'spec/create', to: 'spec#create', as: :create_spec
@@ -34,9 +34,9 @@ Rails.application.routes.draw do
   resources :documents, except: [:edit]
   resources :quotes, except: [:edit, :new, :delete]
   resources :sections, except: [:new, :edit]
-  resources :actions, except: [:show, :edit, :delete]
+  resources :item_actions, except: [:show, :edit, :delete]
   # This is an Item Specification not spec which is document above
-  resources :specs, except: [:show, :edit, :delete]
+  resources :item_specs, except: [:show, :edit, :delete]
   get 'app' => 'pages#app'
   get 'app/*path' => 'pages#app'
   get 'pages/*path' => 'pages#show'

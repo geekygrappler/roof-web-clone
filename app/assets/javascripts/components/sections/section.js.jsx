@@ -25,18 +25,6 @@ class Section extends React.Component {
                     </div>
                     <div className="section-input-wrapper">
                         <div className="row">
-                            <div className="col-xs-12">
-                                <h4>
-                                    {this.props.section.name} notes:
-                                </h4>
-                                <textarea
-                                    className="section-notes form-control"
-                                    defaultValue={this.props.section.notes}
-                                    placeholder={`Add ${this.props.section.name} notes`}
-                                    onKeyDown={this.update.bind(this, "notes")} />
-                            </div>
-                        </div>
-                        <div className="row">
                             <div className="col-xs-6">
                                 <h4>
                                     Spec of Works:

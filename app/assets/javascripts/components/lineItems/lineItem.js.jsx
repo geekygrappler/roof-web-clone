@@ -3,52 +3,45 @@
 class LineItem extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            lineItem: {
-                name: this.props.lineItem.name || "",
-                description: this.props.lineItem.description || "",
-                quantity: this.props.lineItem.quantity || 1,
-                unit: this.props.lineItem.unit || "",
-                action_id: this.props.lineItem.action_id,
-                rate: this.props.lineItem.rate || 0,
-                total: this.props.lineItem.total || 0
-            },
-        };
+        this.state = props.lineItem;
     }
 
     render() {
         return (
             <tr className="line-item-row">
                 <td>
-                    <ActionSelect
-                        onChange={this.handleChange.bind(this, "action_id")}
-                        itemName={this.state.lineItem.name}
+                    <RemoteModelSelect
+                        itemName={this.state.name}
                         lineItemId={this.props.lineItem.id}
-                        fetchDocument={this.props.fetchDocument}
+                        modelName="item_action"
+                        model={this.state.item_action}
+                        updateLineItem={this.updateActionOrSpec.bind(this, "item_action")}
                         />
                 </td>
                 <td>
                     <textarea
                         type="text"
                         className={`form-control item-input line-item-name-${this.props.lineItem.id}`}
-                        value={this.state.lineItem.name}
+                        value={this.state.name}
                         onChange={this.handleChange.bind(this, "name")}
                         onKeyDown={this.handleChange.bind(this, "name")}
                         onBlur={this.handleChange.bind(this, "name")}
                         />
                 </td>
                 <td>
-                    <SpecSelect
-                        onChange={this.handleChange.bind(this, "spec_id")}
-                        itemName={this.state.lineItem.name}
-                        lineItemId={this.state.lineItem.id}
+                    <RemoteModelSelect
+                        itemName={this.state.name}
+                        lineItemId={this.props.lineItem.id}
+                        modelName="item_spec"
+                        model={this.state.item_spec}
+                        updateLineItem={this.updateActionOrSpec.bind(this, "item_spec")}
                         />
                 </td>
                 <td>
                     <textarea
                         type="text"
                         className="form-control item-input line-item-notes"
-                        value={this.state.lineItem.description}
+                        value={this.state.description}
                         onChange={this.handleChange.bind(this, "description")}
                         onKeyDown={this.handleChange.bind(this, "description")}
                         onBlur={this.handleChange.bind(this, "description")}
@@ -58,8 +51,8 @@ class LineItem extends React.Component {
                 <td>
                     <input
                         type="text"
-                        className={`form-control line-item-rate-${this.props.lineItem.id}`}
-                        value={this.state.lineItem.rate}
+                        className={`form-control line-item-rate-${this.props.id}`}
+                        value={this.state.rate}
                         onChange={this.handleChange.bind(this, "rate")}
                         onKeyDown={this.handleChange.bind(this, "rate")}
                         onBlur={this.handleChange.bind(this, "rate")}
@@ -69,7 +62,7 @@ class LineItem extends React.Component {
                     <input
                         type="text"
                         className="form-control line-item-quantity"
-                        value={this.state.lineItem.quantity}
+                        value={this.state.quantity}
                         onChange={this.handleChange.bind(this, "quantity")}
                         onKeyDown={this.handleChange.bind(this, "quantity")}
                         onBlur={this.handleChange.bind(this, "quantity")}
@@ -79,7 +72,7 @@ class LineItem extends React.Component {
                     <input
                         type="text"
                         className="form-control line-item-unit"
-                        value={this.state.lineItem.unit}
+                        value={this.state.unit}
                         onChange={this.handleChange.bind(this, "unit")}
                         onKeyDown={this.handleChange.bind(this, "unit")}
                         onBlur={this.handleChange.bind(this, "unit")}
@@ -89,7 +82,7 @@ class LineItem extends React.Component {
                     <input
                         type="text"
                         className="form-control line-item-unit"
-                        value={this.state.lineItem.total}
+                        value={this.state.total}
                         onChange={this.handleChange.bind(this, "total")}
                         onKeyDown={this.handleChange.bind(this, "total")}
                         onBlur={this.handleChange.bind(this, "total")}
@@ -116,7 +109,7 @@ class LineItem extends React.Component {
         without up to date attributes
     */
     handleChange(attribute, e) {
-        let nextState = this.state.lineItem;
+        let nextState = this.state;
         nextState[attribute] = e.target.value;
         if (attribute == "rate" || attribute == "quantity") {
             this.calculateTotal(nextState);
@@ -124,7 +117,7 @@ class LineItem extends React.Component {
         if (attribute == "total") {
             this.calculateRate(nextState);
         }
-        this.setState({lineItem: nextState}, this.handleKeyDown(attribute, e));
+        this.setState({ nextState }, this.handleKeyDown(attribute, e));
     }
 
     handleKeyDown(attribute, e) {
@@ -147,7 +140,13 @@ class LineItem extends React.Component {
 
     update() {
         let lineItemId = this.props.lineItem.id;
-        this.props.updateLineItem(lineItemId, this.state.lineItem);
+        this.props.updateLineItem(lineItemId, this.state);
+    }
+
+    updateActionOrSpec(modelName, model) {
+        let nextState = this.state;
+        nextState[modelName] = model;
+        this.setState(nextState, this.update());
     }
 
     /*
@@ -161,7 +160,7 @@ class LineItem extends React.Component {
             remote: {
                 url: "/search/items?query=",
                 prepare: (query, settings) => {
-                    return settings.url += `${query}&action_id=${this.state.lineItem.action_id}`;
+                    return settings.url += `${query}&item_action_id=${this.state.item_action.id}`;
                 },
                 transform: (data) => {
                     return data.results;

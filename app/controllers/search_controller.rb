@@ -18,9 +18,9 @@ class SearchController < ApplicationController
     end
 
     def items
-        if (params[:action_id])
+        if (params[:item_action_id])
             results = Item.full_text_search(params[:query])
-            .select { |item| item.actions.exists?(params[:action_id]) }
+            .select { |item| item.item_actions.exists?(params[:item_action_id]) }
             .map { |item| ItemSearchSerializer.new(item) }
         else
             results = Item.full_text_search(params[:query])
@@ -31,10 +31,10 @@ class SearchController < ApplicationController
         }
     end
 
-    def specs
-        item = Item.where(name: params[:item_name]).first
+    def item_specs
+        item = Item.where(name: params[:item_name]).last
         if item
-            results = item.spec.map { |spec| {id: spec.id, name: spec.name} }
+            results = item.item_specs.map { |spec| {id: spec.id, name: spec.name} }
         else
             results = []
         end
@@ -43,10 +43,10 @@ class SearchController < ApplicationController
         }
     end
 
-    def actions
-        item = Item.where(name: params[:item_name]).first
+    def item_actions
+        item = Item.where(name: params[:item_name]).last
         if item
-            results = item.actions.map { |action| {id: action.id, name: action.name} }
+            results = item.item_actions.map { |action| {id: action.id, name: action.name} }
         else
             results = []
         end

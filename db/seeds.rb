@@ -24,24 +24,42 @@ require 'yaml'
 #   end
 # end
 
-CSV.foreach("#{Rails.root}/db/line_items.csv", {headers: true, skip_blanks: true}) do |row|
-    if row["spec"]
-        row["name"] += " - #{row["spec"]}"
+# Create Items
+current_item = nil
+CSV.foreach("#{Rails.root}/db/migration/items.csv",{headers: true, header_converters: :symbol, converters: :all}) do |row|
+    row = row.to_hash
+    if row[:item]
+        current_item = Item.create(name: row[:item].strip)
     end
-
-    row.delete("spec")
-
-    row["quantity"].nil? ? row["quantity"] = 1 : nil
-
-    line_item_attrs = row.to_h
-    line_item_attrs["searchable"] = true
-    line_item_attrs["admin_verified"] = true
-    line_item_attrs["rate"] = line_item_attrs["rate"].to_i * 100
-
-    line_item = LineItem.create(line_item_attrs)
+    if current_item
+        if row[:item_action]
+            current_item.item_actions << ItemAction.find_or_create_by(name: row[:item_action].strip)
+        end
+        if row[:item_spec]
+            ItemSpec.create(name: row[:item_spec].strip, item: current_item)
+        end
+    end
 end
 
-document_hash = YAML.load(File.read("#{Rails.root}/db/template_document.yml"))
+# CSV.foreach("#{Rails.root}/db/line_items.csv", {headers: true, skip_blanks: true}) do |row|
+#     if row["spec"]
+#         row["name"] += " - #{row["spec"]}"
+#     end
+#
+#     row.delete("spec")
+#
+#     row["quantity"].nil? ? row["quantity"] = 1 : nil
+#
+#     line_item_attrs = row.to_h
+#     line_item_attrs["searchable"] = true
+#     line_item_attrs["admin_verified"] = true
+#     line_item_attrs["rate"] = line_item_attrs["rate"].to_i * 100
+#
+#     line_item = LineItem.create(line_item_attrs)
+# end
+
+# Create a master document
+document_hash = YAML.load(File.read("#{Rails.root}/db/master_template_document.yml"))
 
 master_document = Document.create(name: "Master Document")
 document_hash["sections"].each do |section|

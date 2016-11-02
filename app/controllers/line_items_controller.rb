@@ -8,17 +8,7 @@ class LineItemsController < ApplicationController
     # POST /line_items
     # POST /line_items.json
     def create
-        parent_line_item = get_parent_line_item
-        if parent_line_item
-            @line_item = parent_line_item.dup
-            @line_item.line_item = parent_line_item
-            @line_item.searchable = false
-            @line_item.admin_verified = false
-            @line_item.section_id = line_item_params["section_id"]
-        else
-            create_new_item
-            @line_item = LineItem.new(line_item_params);
-        end
+        @line_item = LineItem.new(line_item_params);
 
         if @line_item.save
             render json: @line_item, status: :created, location: @line_item
@@ -29,19 +19,11 @@ class LineItemsController < ApplicationController
 
     # PATCH /line_items/:id
     def update
-        # We could be submitting a new parent line item, we want to change this line_item
-        # to be a duplicate of the new parent
-        if line_item_params[:name] != @line_item.name
-            new_parent_line_item = get_parent_line_item
+        if params[:line_item][:item_action]
+            @line_item.item_action = ItemAction.find(item_action_params[:id])
         end
-        if new_parent_line_item
-            @line_item.name = new_parent_line_item.name
-            @line_item.line_item = new_parent_line_item
-            @line_item.rate = new_parent_line_item.rate
-        else
-            # In a case where we're not changing the parent line item, simply
-            # assign attributes
-            @line_item.assign_attributes(line_item_params)
+        if params[:line_item][:item_spec]
+            @line_item.item_spec = ItemSpec.find(item_spec_params[:id])
         end
         if @line_item.save
             render json: @line_item, status: :ok, location: @line_item
@@ -60,7 +42,15 @@ class LineItemsController < ApplicationController
 
     def line_item_params
         line_item_adapter
-        params.require(:line_item).permit(:name, :section_id, :quantity, :description, :material_cost, :unit, :action_id, :rate, :total)
+        params.require(:line_item).permit(:name, :section_id, :quantity, :description, :unit, :item_action, :item_spec, :rate, :total)
+    end
+
+    def item_action_params
+        params.require(:line_item).require(:item_action).permit(:id, :name)
+    end
+
+    def item_spec_params
+        params.require(:line_item).require(:item_spec).permit(:id, :name)
     end
 
     def set_line_item
@@ -80,15 +70,5 @@ class LineItemsController < ApplicationController
 
     def is_number? string
         true if Float(string) rescue false
-    end
-
-    def get_parent_line_item
-        if line_item_params[:name]
-            LineItem.where(name: line_item_params["name"], searchable: true).first
-        end
-    end
-
-    def create_new_item
-        Item.find_or_create_by(name: line_item_params[:name])
     end
 end

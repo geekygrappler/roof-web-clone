@@ -3,14 +3,12 @@ sections:
         line_items:
             - Room
             - Building
-            - Scaffolding
     -   name: Foundations and floors
         line_items:
             - Foundations
             - Pad foundations
             - Insulation
             - Sub-floor
-            - Wall underpinning
             - Damp proof membrane
     -   name: Masonry walling
         line_items:
@@ -25,11 +23,11 @@ sections:
             - Steel roof beam
     -   name: Structural timber and carpentry
         line_items:
-            - Ground floor joist
-            - Upper floor joist
-            - Ceiling joist
-            - Flat roof joist
-            - Pitched roof joist
+            - Ground floor joists
+            - Upper floor joists
+            - Ceiling joists
+            - Flat roof joists
+            - Pitched roof joists
             - Partition wall
     -   name: Pitched roof coverings and cladding
         line_items:
@@ -61,7 +59,7 @@ sections:
             - Plasterboard to wall
             - Plasterboard to ceiling
             - Dry lining to wall
-            - Dry linging to ceiling
+            - Dry lining to ceiling
             - Plaster to plasterboard ceiling
             - Plaster to plasterboard walls
             - Plaster to masonry
@@ -111,20 +109,20 @@ sections:
             - Washing machine
             - Bath
             - Bath taps
-            - Bath panels
+            - Bath panel
             - Shower head
             - Shower mixer
             - Shower tray
             - Shower enclosure
-            - Shower curtain and rail
+            - Shower curtain
             - Bathroom sink
-            - Bathroom sink taps
+            - Sink taps
             - Toilet
             - Vanity unit
             - Mirror
     -   name: Hard Landscaping
         line_items:
-            - Concrete pavings
+            - Concrete paving
             - Asphalt concrete paving
             - Hard binding gravel paving
             - Interlocking units paving

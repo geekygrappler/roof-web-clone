@@ -1,11 +1,4 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
-#require '/Users/alexdollery/projects/roof-web/vendor/engines/roof-api/'
-require "cancan"
-require "active_record"
-require "devise"
-
-#Dir["/Users/alexdollery/projects/roof-web/vendor/engines/roof-api/app/models/*"].each { |f| require f }
-require File.expand_path('../../vendor/engines/roof-api/lib/roof_api', __FILE__)
 
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../config/environment', __FILE__)
@@ -31,7 +24,7 @@ require 'rspec/rails'
 # directory. Alternatively, in the individual `*_spec.rb` files, manually
 # require only the support files necessary.
 #
-# Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
+Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
 # Checks for pending migration and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove this line.

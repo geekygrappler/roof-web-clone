@@ -11,11 +11,11 @@ namespace :migrate do
                 current_item = Item.create(name: row[:item].strip)
             end
             if current_item
-                if row[:action]
-                    current_item.actions << Action.find_or_create_by(name: row[:action].strip)
+                if row[:item_action]
+                    current_item.item_actions << ItemAction.find_or_create_by(name: row[:item_action].strip)
                 end
-                if row[:spec]
-                    Spec.create(name: row[:spec].strip, item: current_item)
+                if row[:item_spec]
+                    ItemSpec.create(name: row[:item_spec].strip, item: current_item)
                 end
             end
         end

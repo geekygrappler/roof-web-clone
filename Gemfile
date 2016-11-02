@@ -25,7 +25,6 @@ gem 'carrierwave_backgrounder', git: 'https://github.com/pictrs/carrierwave_back
 gem 'fog-aws'
 gem 'rails_12factor'
 gem 'delayed_job_active_record'
-gem 'clockwork'
 # only for migration
 # gem 'asset_sync'
 
@@ -45,6 +44,7 @@ group :development, :test do
   gem "letter_opener"
   gem 'rspec-rails'
   gem 'rspec', '~> 3.0'
+  gem 'factory_girl_rails'
 end
 
 group :development do
