@@ -11,12 +11,6 @@ class SectionList extends React.Component {
             <div className="row">
                 <div className="col-xs-11">
                     <ul className="nav navbar btn-group">
-                        <li onClick={this.properOffset.bind(this)}
-                            className="btn btn-default navbar-btn sections-list-li"
-                            >
-                            <a href="#section-drawings" className="hide"></a>
-                            Terms & Drawings
-                        </li>
                         {this.props.sections.map((section) => {
                             return (
                                 <li key={section.id} className="btn btn-default navbar-btn sections-list-li" onClick={this.properOffset.bind(this)}>
