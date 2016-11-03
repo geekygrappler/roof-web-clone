@@ -1,4 +1,4 @@
-/*global React Bloodhound $ localStorage*/
+/*global React Bloodhound $ accounting*/
 
 class LineItem extends React.Component {
     constructor(props) {
@@ -117,7 +117,7 @@ class LineItem extends React.Component {
         if (attribute == "total") {
             this.calculateRate(nextState);
         }
-        this.setState({ nextState }, this.handleKeyDown(attribute, e));
+        this.setState(nextState, this.handleKeyDown(attribute, e));
     }
 
     handleKeyDown(attribute, e) {
@@ -170,15 +170,17 @@ class LineItem extends React.Component {
     }
 
     calculateTotal(lineItem) {
-        let rate = parseFloat(lineItem.rate.replace("£", ""));
-        let quantity = parseFloat(lineItem.quantity);
-        lineItem.total = `£${rate * quantity}` || "£0";
+        let rate = accounting.unformat(lineItem.rate);
+        let quantity = accounting.unformat(lineItem.quantity);
+        let total = rate * quantity;
+        lineItem.total = accounting.formatMoney(total, "£");
     }
 
     calculateRate(lineItem) {
-        let total = parseFloat(lineItem.total.replace("£", ""));
-        let quantity = parseFloat(lineItem.quantity);
-        lineItem.rate = `£${total / quantity}` || "£0";
+        let total = accounting.unformat(lineItem.total);
+        let quantity = accounting.unformat(lineItem.quantity);
+        let rate = total / quantity;
+        lineItem.rate = accounting.formatMoney(rate, "£");
     }
 }
 

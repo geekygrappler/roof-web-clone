@@ -19,6 +19,7 @@ class LineItemsController < ApplicationController
 
     # PATCH /line_items/:id
     def update
+        @line_item.assign_attributes(line_item_params)
         if params[:line_item][:item_action]
             @line_item.item_action = ItemAction.find(item_action_params[:id])
         end

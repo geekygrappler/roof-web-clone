@@ -1,9 +1,11 @@
+/* global React $*/
+
 class SectionList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             collapsed: true
-        }
+        };
     }
 
     render() {
@@ -17,7 +19,7 @@ class SectionList extends React.Component {
                                     <a href={`#section-${section.id}`} className='hide'></a>
                                     {section.name}
                                 </li>
-                            )
+                            );
                         })}
                     </ul>
                 </div>
@@ -27,17 +29,17 @@ class SectionList extends React.Component {
     }
 
     properOffset(e) {
-        let anchor = e.currentTarget.getElementsByTagName('a')[0];
+        let anchor = e.currentTarget.getElementsByTagName("a")[0];
         anchor.click();
         scrollBy(0, -this.state.headerSize);
     }
 
     componentDidMount() {
-        $("body").css('padding-top', this.calcHeaderSize())
+        $("body").css("padding-top", this.calcHeaderSize());
         this.setState({
             headerSize: this.calcHeaderSize(),
             collapsed: true
-        })
+        });
     }
 
     renderSectionListExpander() {
@@ -64,21 +66,21 @@ class SectionList extends React.Component {
         let sectionList = $(".document-sections-list");
         let expandedHeight = sectionList.find(".row").height();
         sectionList.height(expandedHeight);
-        $("body").css('padding-top', this.calcHeaderSize())
+        $("body").css("padding-top", this.calcHeaderSize());
         this.setState({
             headerSize: this.calcHeaderSize(),
             collapsed: false
-        })
+        });
     }
 
     collapseSectionList() {
         let sectionList = $(".document-sections-list");
         sectionList.height("50px");
-        $("body").css('padding-top', this.calcHeaderSize())
+        $("body").css("padding-top", this.calcHeaderSize());
         this.setState({
             headerSize: this.calcHeaderSize(),
             collapsed: true
-        })
+        });
     }
 
     calcHeaderSize () {
