@@ -26,6 +26,7 @@ require 'yaml'
 
 # Create Items
 current_item = nil
+current_action = nil
 CSV.foreach("#{Rails.root}/db/migration/items.csv",{headers: true, header_converters: :symbol, converters: :all}) do |row|
     row = row.to_hash
     if row[:item]
@@ -33,10 +34,19 @@ CSV.foreach("#{Rails.root}/db/migration/items.csv",{headers: true, header_conver
     end
     if current_item
         if row[:item_action]
-            current_item.item_actions << ItemAction.find_or_create_by(name: row[:item_action].strip)
+            current_action = ItemAction.find_or_create_by(name: row[:item_action].strip)
+            current_item.item_actions << current_action
         end
         if row[:item_spec]
-            ItemSpec.create(name: row[:item_spec].strip, item: current_item)
+            current_spec = ItemSpec.create(name: row[:item_spec].strip, item: current_item)
+            if row[:rate] && current_action && current_item
+                Rate.create(
+                    item: current_item,
+                    item_action: current_action,
+                    item_spec: current_spec,
+                    rate: row[:rate].to_i * 100
+                )
+            end
         end
     end
 end

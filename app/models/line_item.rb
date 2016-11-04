@@ -11,7 +11,7 @@ class LineItem < ActiveRecord::Base
     delegate :name, to: :unit, prefix: true, allow_nil: true
     delegate :name, to: :location, prefix: true, allow_nil: true
 
-    before_save :set_defaults
+    after_initialize :set_defaults
     after_save :calculate_section_totals
 
     pg_search_scope :full_text_search,
@@ -36,15 +36,32 @@ class LineItem < ActiveRecord::Base
         self.total = rate.to_i * quantity.to_i
     end
 
-    # Set default values for item
+    # Set default values for Item
     def set_defaults
+        item = Item.where(name: self.name).last
         if self.item_action.nil?
-            item = Item.where(name: self.name).last
             self.item_action = item.item_actions.first
         end
         if self.item_spec.nil?
-            item = Item.where(name: self.name).last
             self.item_spec = item.item_specs.first
+        end
+        if self.rate == 0
+            self.rate = default_rate(item)
+        end
+    end
+
+    # Finds default rate for a newly created LineItem
+    #
+    # @param [Item] the Item associated to the LineItem
+    # @return [Rate] the Rate for the LineItem
+    def default_rate(item)
+        rate = Rate.where(
+           item: item,
+           item_action: self.item_action,
+           item_spec: self.item_spec
+        )
+        if !rate.empty?
+            return rate.first.rate
         end
     end
 end

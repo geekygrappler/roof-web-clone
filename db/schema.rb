@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161102170137) do
+ActiveRecord::Schema.define(version: 20161104115956) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -376,6 +376,20 @@ ActiveRecord::Schema.define(version: 20161102170137) do
   add_index "quotes", ["project_id"], name: "index_quotes_on_project_id", using: :btree
   add_index "quotes", ["tender_id"], name: "index_quotes_on_tender_id", using: :btree
 
+  create_table "rates", force: :cascade do |t|
+    t.integer  "item_id"
+    t.integer  "item_spec_id"
+    t.integer  "item_action_id"
+    t.integer  "rate"
+    t.string   "formatted_rate"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  add_index "rates", ["item_action_id"], name: "index_rates_on_item_action_id", using: :btree
+  add_index "rates", ["item_id"], name: "index_rates_on_item_id", using: :btree
+  add_index "rates", ["item_spec_id"], name: "index_rates_on_item_spec_id", using: :btree
+
   create_table "sections", force: :cascade do |t|
     t.integer  "document_id"
     t.string   "name"
@@ -513,6 +527,9 @@ ActiveRecord::Schema.define(version: 20161102170137) do
   add_foreign_key "projects", "accounts"
   add_foreign_key "quotes", "projects"
   add_foreign_key "quotes", "tenders"
+  add_foreign_key "rates", "item_actions"
+  add_foreign_key "rates", "item_specs"
+  add_foreign_key "rates", "items"
   add_foreign_key "sections", "documents"
   add_foreign_key "stat_decimals", "stats"
   add_foreign_key "stat_floats", "stats"

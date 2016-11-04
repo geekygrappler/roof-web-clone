@@ -1,0 +1,23 @@
+<h1>Hello Rates</h1>
+
+<table>
+    <thead>
+        <td>
+            Item Action
+        </td>
+        <td>
+            Item Name
+        </td>
+        <td>
+            Item Spec
+        </td>
+        <td>
+            Saved Rate
+        </td>
+    </thead>
+    <tbody>
+        <% @rates.each do |rate| %>
+            <tr><%= render partial: "rate", locals: { rate: rate } %></tr>
+        <% end %>
+    </tbody>
+</table>

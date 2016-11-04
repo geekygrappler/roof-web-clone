@@ -37,6 +37,7 @@ Rails.application.routes.draw do
   resources :item_actions, except: [:show, :edit, :delete]
   # This is an Item Specification not spec which is document above
   resources :item_specs, except: [:show, :edit, :delete]
+  resources :rates
   get 'app' => 'pages#app'
   get 'app/*path' => 'pages#app'
   get 'pages/*path' => 'pages#show'
