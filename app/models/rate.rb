@@ -8,8 +8,21 @@ class Rate < ActiveRecord::Base
 
     before_save :format_rate
 
+    def rate=(rate)
+        byebug
+        if rate.is_a?(String)
+            super(sanitize_rate(rate))
+        else
+            super(rate)
+        end
+    end
+
     private
     def format_rate
         self.formatted_rate = Money.new(self.rate, :GBP).format
+    end
+
+    def sanitize_rate(rate)
+        Monetize.parse(rate, :GBP).cents
     end
 end

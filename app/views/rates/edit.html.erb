@@ -1,6 +1,5 @@
 <div class="container">
-
-    <h1>Rates</h1>
+    <h1>Edit Rate</h1>
 
     <table>
         <thead>
@@ -14,16 +13,14 @@
                 Item Spec
             </td>
             <td>
-                Saved Rate
+                Rate
             </td>
             <td>
-
             </td>
         </thead>
         <tbody>
-            <% @rates.each do |rate| %>
-            <tr><%= render partial: "rate", locals: { rate: rate } %></tr>
-            <% end %>
+            <tr><%= render partial: "rate", locals: { rate: @rate } %></tr>
         </tbody>
     </table>
+    <%= link_to "Rates List", rates_path %>
 </div>

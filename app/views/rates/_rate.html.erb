@@ -7,6 +7,20 @@
 <td>
     <%= rate.item_spec.name %>
 </td>
-<td>
-    <%= rate.formatted_rate %>
-</td>
+<% if current_page?(action: 'index') %>
+    <td>
+        <%= rate.formatted_rate %>
+    </td>
+    <td>
+        <%= link_to "Edit", edit_rate_path(rate) %>
+    </td>
+<% else %>
+    <td>
+        <%= form_for @rate do |f| %>
+        <%= f.text_field :rate, value: @rate.formatted_rate %>
+    </td>
+    <td>
+        <%= f.submit %>
+        <% end %>
+    </td>
+<% end %>
