@@ -1,0 +1,20 @@
+The statistic modules are designed to remove complexity spread across multiple files and database tables, and place all logic for each operation into a dedicated module.
+
+The Stat model is a layer that acts as an API wrapper to the modules and provides two simple methods, get and set. Its very easy to understand how the Stat model stores data and interacts with the statistic modules. This serves as example for our statistic implementation, so that all statistics are used and stored in the same way, with only the raw calculation logic that differs.  
+
+Stat.set(:name_of_stat_as_symbol_key, {value: value(optional), statable: statable(optional), referenceable: referenceable(optional))
+ Stat.get(:name_of_stat_as_symbol_key, {statable: statable(optional), referenceable: referenceable(optional))
+
+The arguments placed above are optional, depending on the logic in the module, its entirely possible that a module doesn’t need any arguments (in the case that the statistic doesn’t need any objects to be scoped to and can do all operations without scopes or references).
+
+StatType is the type of Statistic, and is NOT polymorphic. So a StatType can be saved in the database with a description of what it is doing for reference. The calculation is the method to be invoked on the value.
+
+Statable is the Object that is being recorded or measured. For example, it could be a document, a section, a line_item (configuration), a room, or a city (future).
+
+Referenceable is the Owner of the statistic, which is usually a user. This is probably not always going to be used, but it will when we are keeping statistics that vary by the builder, scoped by the objects they have access to.
+
+Inside each module are two class methods, calc and val. Calc is the actual calculation method, used for updating the value, while val is the presenter that presents the value in its desired form (to float, integer, decimal..). Note: This is not for converting the value to a money string or value.
+
+All statistics are stored as BigDecimals, this is because BigDecimals are accurate, can be fractions, and converted to floats, and can be stored and can be converted to integers.
+
+All money values will continue to be stored as integers in cents ($10 will be 1000 and stored as 1000.0 in Stats), but must be converted to the integer type (to_i) before returning the value.
