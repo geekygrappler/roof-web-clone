@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161104115956) do
+ActiveRecord::Schema.define(version: 20161107124936) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -313,15 +313,13 @@ ActiveRecord::Schema.define(version: 20161104115956) do
     t.integer  "section_id"
     t.integer  "unit_id"
     t.boolean  "searchable",     default: false
-    t.integer  "material_cost"
+    t.integer  "material_cost",  default: 0
     t.string   "unit"
-    t.integer  "item_id"
     t.integer  "item_action_id"
     t.integer  "item_spec_id"
   end
 
   add_index "line_items", ["item_action_id"], name: "index_line_items_on_item_action_id", using: :btree
-  add_index "line_items", ["item_id"], name: "index_line_items_on_item_id", using: :btree
   add_index "line_items", ["item_spec_id"], name: "index_line_items_on_item_spec_id", using: :btree
   add_index "line_items", ["line_item_id"], name: "index_line_items_on_line_item_id", using: :btree
   add_index "line_items", ["location_id"], name: "index_line_items_on_location_id", using: :btree
@@ -376,20 +374,6 @@ ActiveRecord::Schema.define(version: 20161104115956) do
   add_index "quotes", ["project_id"], name: "index_quotes_on_project_id", using: :btree
   add_index "quotes", ["tender_id"], name: "index_quotes_on_tender_id", using: :btree
 
-  create_table "rates", force: :cascade do |t|
-    t.integer  "item_id"
-    t.integer  "item_spec_id"
-    t.integer  "item_action_id"
-    t.integer  "rate"
-    t.string   "formatted_rate"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
-  end
-
-  add_index "rates", ["item_action_id"], name: "index_rates_on_item_action_id", using: :btree
-  add_index "rates", ["item_id"], name: "index_rates_on_item_id", using: :btree
-  add_index "rates", ["item_spec_id"], name: "index_rates_on_item_spec_id", using: :btree
-
   create_table "sections", force: :cascade do |t|
     t.integer  "document_id"
     t.string   "name"
@@ -405,37 +389,9 @@ ActiveRecord::Schema.define(version: 20161104115956) do
 
   add_index "sections", ["document_id"], name: "index_sections_on_document_id", using: :btree
 
-  create_table "stat_decimals", force: :cascade do |t|
-    t.integer  "stat_id"
-    t.decimal  "value"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_index "stat_decimals", ["stat_id"], name: "index_stat_decimals_on_stat_id", using: :btree
-
-  create_table "stat_floats", force: :cascade do |t|
-    t.integer  "stat_id"
-    t.float    "value"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_index "stat_floats", ["stat_id"], name: "index_stat_floats_on_stat_id", using: :btree
-
-  create_table "stat_integers", force: :cascade do |t|
-    t.integer  "stat_id"
-    t.integer  "value"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_index "stat_integers", ["stat_id"], name: "index_stat_integers_on_stat_id", using: :btree
-
   create_table "stat_types", force: :cascade do |t|
     t.string   "name"
     t.string   "metric"
-    t.string   "calculation"
     t.text     "description"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
@@ -451,6 +407,7 @@ ActiveRecord::Schema.define(version: 20161104115956) do
     t.string   "referenceable_type"
     t.datetime "created_at",         null: false
     t.datetime "updated_at",         null: false
+    t.decimal  "value"
   end
 
   add_index "stats", ["enumerable_type", "enumerable_id"], name: "index_stats_on_enumerable_type_and_enumerable_id", using: :btree
@@ -518,7 +475,6 @@ ActiveRecord::Schema.define(version: 20161104115956) do
   add_foreign_key "item_specs", "items"
   add_foreign_key "line_items", "item_actions"
   add_foreign_key "line_items", "item_specs"
-  add_foreign_key "line_items", "items"
   add_foreign_key "line_items", "line_items"
   add_foreign_key "line_items", "locations"
   add_foreign_key "line_items", "sections"
@@ -527,13 +483,7 @@ ActiveRecord::Schema.define(version: 20161104115956) do
   add_foreign_key "projects", "accounts"
   add_foreign_key "quotes", "projects"
   add_foreign_key "quotes", "tenders"
-  add_foreign_key "rates", "item_actions"
-  add_foreign_key "rates", "item_specs"
-  add_foreign_key "rates", "items"
   add_foreign_key "sections", "documents"
-  add_foreign_key "stat_decimals", "stats"
-  add_foreign_key "stat_floats", "stats"
-  add_foreign_key "stat_integers", "stats"
   add_foreign_key "stats", "stat_types"
   add_foreign_key "tenders", "projects"
   add_foreign_key "tenders", "tender_templates"
