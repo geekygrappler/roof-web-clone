@@ -38,7 +38,7 @@ class LineItem < ActiveRecord::Base
 
     # Set default values for Item
     def set_defaults
-        item = Item.where(name: self.name).last
+        item = Item.find_or_create_by(name: self.name)
         if self.item_action.nil?
             self.item_action = item.item_actions.first
         end

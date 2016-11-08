@@ -9,7 +9,6 @@ class LineItemsController < ApplicationController
     # POST /line_items.json
     def create
         @line_item = LineItem.new(line_item_params);
-        @line_item.rate = default_rate
 
         if @line_item.save
             render json: @line_item, status: :created, location: @line_item
@@ -72,17 +71,5 @@ class LineItemsController < ApplicationController
 
     def is_number? string
         true if Float(string) rescue false
-    end
-
-    # Finds default rate for a newly created LineItem
-    #
-    # @return [Rate] the Rate for the LineItem
-    def default_rate
-        item = Item.where(name: @line_item.name).last
-        rate = Rate.where(
-            item: item,
-            item_action: @line_item.item_action,
-            item_spec: @line_item.item_spec
-        ).first.rate
     end
 end

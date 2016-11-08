@@ -11,8 +11,11 @@ class ItemSpecsController < ApplicationController
     # POST /specs
     def create
         item = Item.where(name: item_params).last
-        @item_spec = ItemSpec.create(name: item_spec_params[:name], item: item)
-        render json: @item_spec
+        @item_spec = ItemSpec.find_or_create_by(name: item_spec_params[:name])
+        @item_spec.item = item
+        if @item_spec.save
+            render json: @item_spec
+        end
     end
 
     private

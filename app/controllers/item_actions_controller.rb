@@ -11,10 +11,13 @@ class ItemActionsController < ApplicationController
     # POST /actions
     # We always require an Item for an action to be associated to, no floating actions.
     def create
+        byebug
         item = Item.where(name: item_params).last
         @item_action = ItemAction.find_or_create_by(name: item_action_params[:name])
         item.item_actions << @item_action
-        render json: @item_action
+        if item.save && @item_action.save
+            render json: @item_action
+        end
     end
 
     private

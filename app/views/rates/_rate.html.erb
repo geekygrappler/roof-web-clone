@@ -1,11 +1,15 @@
 <td>
-    <%= rate.item_action.name %>
+    <% if rate.item_action %>
+        <%= rate.item_action.name %>
+    <% end %>
 </td>
 <td>
     <%= rate.item.name %>
 </td>
 <td>
-    <%= rate.item_spec.name %>
+    <% if rate.item_spec %>
+        <%= rate.item_spec.name %>
+    <% end %>
 </td>
 <% if current_page?(action: 'index') %>
     <td>
