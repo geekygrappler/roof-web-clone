@@ -26,6 +26,9 @@ class LineItemsController < ApplicationController
         if params[:line_item][:item_spec]
             @line_item.item_spec = ItemSpec.find(item_spec_params[:id])
         end
+        if params[:line_item][:location]
+            @line_item.location = Location.find(location_params[:id])
+        end
         if @line_item.save
             render json: @line_item, status: :ok, location: @line_item
         else
@@ -52,6 +55,10 @@ class LineItemsController < ApplicationController
 
     def item_spec_params
         params.require(:line_item).require(:item_spec).permit(:id, :name)
+    end
+
+    def location_params
+        params.require(:line_item).require(:location).permit(:id, :name)
     end
 
     def set_line_item

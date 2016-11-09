@@ -15,7 +15,7 @@ class LineItem extends React.Component {
                         lineItemId={this.props.lineItem.id}
                         modelName="item_action"
                         model={this.state.item_action}
-                        updateLineItem={this.updateActionOrSpec.bind(this, "item_action")}
+                        updateLineItem={this.updateRelatedModel.bind(this, "item_action")}
                         />
                 </td>
                 <td>
@@ -34,18 +34,15 @@ class LineItem extends React.Component {
                         lineItemId={this.props.lineItem.id}
                         modelName="item_spec"
                         model={this.state.item_spec}
-                        updateLineItem={this.updateActionOrSpec.bind(this, "item_spec")}
+                        updateLineItem={this.updateRelatedModel.bind(this, "item_spec")}
                         />
                 </td>
                 <td>
-                    <textarea
-                        type="text"
-                        className="form-control item-input line-item-notes"
-                        value={this.state.description}
-                        onChange={this.handleChange.bind(this, "description")}
-                        onKeyDown={this.handleChange.bind(this, "description")}
-                        onBlur={this.handleChange.bind(this, "description")}
-                        placeholder="Add notes"
+                    <LocationSelect
+                        documentId={this.props.document.id}
+                        lineItemId={this.props.lineItem.id}
+                        model={this.state.location}
+                        updateLineItem={this.updateRelatedModel.bind(this, "location")}
                         />
                 </td>
                 <td>
@@ -143,7 +140,7 @@ class LineItem extends React.Component {
         this.props.updateLineItem(lineItemId, this.state);
     }
 
-    updateActionOrSpec(modelName, model) {
+    updateRelatedModel(modelName, model) {
         let nextState = this.state;
         nextState[modelName] = model;
         this.setState(nextState, this.update());

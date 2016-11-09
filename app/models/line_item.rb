@@ -9,7 +9,6 @@ class LineItem < ActiveRecord::Base
     has_many :line_items
 
     delegate :name, to: :unit, prefix: true, allow_nil: true
-    delegate :name, to: :location, prefix: true, allow_nil: true
 
     after_initialize :set_defaults
     after_save :calculate_section_totals

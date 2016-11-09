@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161107124936) do
+ActiveRecord::Schema.define(version: 20161108104428) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -329,9 +329,12 @@ ActiveRecord::Schema.define(version: 20161107124936) do
 
   create_table "locations", force: :cascade do |t|
     t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.integer  "document_id"
   end
+
+  add_index "locations", ["document_id"], name: "index_locations_on_document_id", using: :btree
 
   create_table "materials", force: :cascade do |t|
     t.jsonb    "data",       default: {}
@@ -495,6 +498,7 @@ ActiveRecord::Schema.define(version: 20161107124936) do
   add_foreign_key "line_items", "line_items"
   add_foreign_key "line_items", "locations"
   add_foreign_key "line_items", "sections"
+  add_foreign_key "locations", "documents"
   add_foreign_key "payments", "projects"
   add_foreign_key "payments", "quotes"
   add_foreign_key "projects", "accounts"

@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   get 'search/items', to: 'search#items'
   get 'search/item_specs', to: 'search#item_specs'
   get 'search/item_actions', to: 'search#item_actions'
+  get 'search/locations', to: 'search#locations'
 
   get 'spec/new', to: 'spec#new', as: :new_spec
   post 'spec/create', to: 'spec#create', as: :create_spec
@@ -37,6 +38,7 @@ Rails.application.routes.draw do
   resources :item_actions, except: [:show, :edit, :delete]
   # This is an Item Specification not spec which is document above
   resources :item_specs, except: [:show, :edit, :delete]
+  resources :locations, except: [:new, :edit]
   resources :rates
   get 'app' => 'pages#app'
   get 'app/*path' => 'pages#app'
@@ -46,7 +48,6 @@ Rails.application.routes.draw do
 
   resources :backup_types, except: [:new, :edit]
   resources :state_types, except: [:new, :edit]
-  resources :locations, except: [:new, :edit]
   resources :document_states, except: [:new, :edit]
   resources :documents, except: [:new, :edit]
 end

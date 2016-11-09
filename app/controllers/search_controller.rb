@@ -54,4 +54,10 @@ class SearchController < ApplicationController
             results: results
         }
     end
+
+    def locations
+        render json: {
+            results: Location.where(document_id: params[:document_id])
+        }
+    end
 end
