@@ -9,7 +9,6 @@ class Rate < ActiveRecord::Base
     before_save :format_rate
 
     def rate=(rate)
-        byebug
         if rate.is_a?(String)
             super(sanitize_rate(rate))
         else

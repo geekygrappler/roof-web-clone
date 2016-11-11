@@ -318,8 +318,10 @@ ActiveRecord::Schema.define(version: 20161108104428) do
     t.integer  "item_id"
     t.integer  "item_action_id"
     t.integer  "item_spec_id"
+    t.integer  "document_id"
   end
 
+  add_index "line_items", ["document_id"], name: "index_line_items_on_document_id", using: :btree
   add_index "line_items", ["item_action_id"], name: "index_line_items_on_item_action_id", using: :btree
   add_index "line_items", ["item_id"], name: "index_line_items_on_item_id", using: :btree
   add_index "line_items", ["item_spec_id"], name: "index_line_items_on_item_spec_id", using: :btree
@@ -492,6 +494,7 @@ ActiveRecord::Schema.define(version: 20161108104428) do
   add_foreign_key "documents", "documents"
   add_foreign_key "invitations", "projects"
   add_foreign_key "item_specs", "items"
+  add_foreign_key "line_items", "documents"
   add_foreign_key "line_items", "item_actions"
   add_foreign_key "line_items", "item_specs"
   add_foreign_key "line_items", "items"

@@ -1,14 +1,11 @@
 class LineItem < ActiveRecord::Base
     include PgSearch
     include TaskCsvReset
-    belongs_to :line_item
     belongs_to :location
-    belongs_to :section
+    belongs_to :document
     belongs_to :item_action
     belongs_to :item_spec
-    has_many :line_items
-
-    delegate :name, to: :unit, prefix: true, allow_nil: true
+    belongs_to :section
 
     after_initialize :set_defaults
     after_save :calculate_section_totals
