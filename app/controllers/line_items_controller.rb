@@ -46,7 +46,7 @@ class LineItemsController < ApplicationController
 
     def line_item_params
         line_item_adapter
-        params.require(:line_item).permit(:name, :section_id, :quantity, :description, :unit, :item_action, :item_spec, :rate, :total)
+        params.require(:line_item).permit(:name, :section_id, :quantity, :description, :unit, :item_action, :item_spec, :rate, :total, :location_id, :stage_id, :document_id)
     end
 
     def item_action_params

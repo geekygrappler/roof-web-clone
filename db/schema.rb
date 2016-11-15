@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161108104428) do
+ActiveRecord::Schema.define(version: 20161114124941) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -310,7 +310,7 @@ ActiveRecord::Schema.define(version: 20161108104428) do
     t.boolean  "admin_verified"
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
-    t.integer  "section_id"
+    t.integer  "stage_id"
     t.integer  "unit_id"
     t.boolean  "searchable",     default: false
     t.integer  "material_cost"
@@ -327,7 +327,7 @@ ActiveRecord::Schema.define(version: 20161108104428) do
   add_index "line_items", ["item_spec_id"], name: "index_line_items_on_item_spec_id", using: :btree
   add_index "line_items", ["line_item_id"], name: "index_line_items_on_line_item_id", using: :btree
   add_index "line_items", ["location_id"], name: "index_line_items_on_location_id", using: :btree
-  add_index "line_items", ["section_id"], name: "index_line_items_on_section_id", using: :btree
+  add_index "line_items", ["stage_id"], name: "index_line_items_on_stage_id", using: :btree
 
   create_table "locations", force: :cascade do |t|
     t.string   "name"
@@ -395,7 +395,7 @@ ActiveRecord::Schema.define(version: 20161108104428) do
   add_index "rates", ["item_id"], name: "index_rates_on_item_id", using: :btree
   add_index "rates", ["item_spec_id"], name: "index_rates_on_item_spec_id", using: :btree
 
-  create_table "sections", force: :cascade do |t|
+  create_table "stages", force: :cascade do |t|
     t.integer  "document_id"
     t.string   "name"
     t.text     "notes"
@@ -408,7 +408,7 @@ ActiveRecord::Schema.define(version: 20161108104428) do
     t.integer  "total_pro_costs",                      default: 0
   end
 
-  add_index "sections", ["document_id"], name: "index_sections_on_document_id", using: :btree
+  add_index "stages", ["document_id"], name: "index_stages_on_document_id", using: :btree
 
   create_table "stat_types", force: :cascade do |t|
     t.string   "name"
@@ -485,7 +485,7 @@ ActiveRecord::Schema.define(version: 20161108104428) do
   add_foreign_key "backups", "documents"
   add_foreign_key "building_materials", "building_materials"
   add_foreign_key "building_materials", "locations"
-  add_foreign_key "building_materials", "sections"
+  add_foreign_key "building_materials", "stages", column: "section_id"
   add_foreign_key "building_materials", "units"
   add_foreign_key "comments", "accounts"
   add_foreign_key "document_invitations", "documents"
@@ -500,7 +500,7 @@ ActiveRecord::Schema.define(version: 20161108104428) do
   add_foreign_key "line_items", "items"
   add_foreign_key "line_items", "line_items"
   add_foreign_key "line_items", "locations"
-  add_foreign_key "line_items", "sections"
+  add_foreign_key "line_items", "stages"
   add_foreign_key "locations", "documents"
   add_foreign_key "payments", "projects"
   add_foreign_key "payments", "quotes"
@@ -510,7 +510,7 @@ ActiveRecord::Schema.define(version: 20161108104428) do
   add_foreign_key "rates", "item_actions"
   add_foreign_key "rates", "item_specs"
   add_foreign_key "rates", "items"
-  add_foreign_key "sections", "documents"
+  add_foreign_key "stages", "documents"
   add_foreign_key "stats", "stat_types"
   add_foreign_key "tenders", "projects"
   add_foreign_key "tenders", "tender_templates"

@@ -1,3 +1,5 @@
+/* global React Bloodhound $ */
+
 class LineItemForm extends React.Component {
     constructor(props) {
         super(props);
@@ -6,20 +8,22 @@ class LineItemForm extends React.Component {
                 name: "",
                 description: "",
                 quantity: "",
-                section_id: this.props.sectionId,
-                unit: ""
+                unit: "",
+                location_id: this.props.location ? this.props.location.id : null,
+                stage_id: this.props.stage ? this.props.stage.id : null,
+                document_id: this.props.document.id
             }
         };
         this.searchItems = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.whitespace,
             queryTokenizer: Bloodhound.tokenizers.whitespace,
             remote: {
-                url: `/search/items?query=`,
+                url: "/search/items?query=",
                 prepare: (query, settings) => {
                     return settings.url += `${query}`;
                 },
                 transform: (data) => {
-                    return data.results
+                    return data.results;
                 }
             }
         });
@@ -27,23 +31,14 @@ class LineItemForm extends React.Component {
 
     render() {
         return(
-            <tr>
-                <td colSpan="3">
-                    <input className={`line-item-search-${this.props.sectionId} form-control`}
-                        onChange={this.handleChange.bind(this, "name")}
-                        onKeyDown={this.handleChange.bind(this, "name")}
-                        value={this.state.lineItem.name}
-                        onBlur={this.handleChange.bind(this, "name")}
-                        placeholder="Search for an item..."
-                        autoFocus={true}
-                        />
-                </td>
-                <td>
-                </td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
+            <input className={`line-item-search-${this.props.sectionId} form-control`}
+                onChange={this.handleChange.bind(this, "name")}
+                onKeyDown={this.handleChange.bind(this, "name")}
+                value={this.state.lineItem.name}
+                onBlur={this.handleChange.bind(this, "name")}
+                placeholder="Search for an item..."
+                autoFocus={true}
+                />
         );
     }
 

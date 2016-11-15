@@ -8,8 +8,9 @@ class DocumentsController < ApplicationController
     # GET /document_states/1.json
     def show
         respond_to do |format|
-            format.json { render json: @document, serializer: DocumentSerializer }
-            format.html { @invite_path = invite_spec_path(document_id: @document.id) }
+            format.json { render json: @document }
+            # We want to return a serialized version of the Document for React Component
+            format.html { @document = DocumentSerializer.new(@document) }
         end
     end
 
@@ -20,24 +21,24 @@ class DocumentsController < ApplicationController
         @document = master_document.dup
         @document.name = "New tender"
         if @document.save
-            # Copy each section in the master document and set the new section's
-            # document to be our new document, @document.
-            master_document.sections.each do |section|
-                new_section = section.dup
-                new_section.document = @document
-                if new_section.save
-                    section.line_items.each do |line_item|
-                        new_line_item = line_item.dup
-                        new_line_item.section = new_section
-                        new_line_item.searchable = false
-                        new_line_item.admin_verified = false
-                        new_line_item.save
-                    end
-                end
+            master_document.stages.each do |stage|
+                new_stage = stage.dup
+                new_stage.document = @document
+                @document.stages << new_stage
             end
+            master_document.locations.each do |location|
+                new_location = location.dup
+                new_location.document = @document
+                @document.locations << new_location
+            end
+            master_document.line_items.each do |line_item|
+                new_line_item = line_item.dup
+                new_line_item.document = @document
+                new_line_item.save
+            end
+            redirect_to @document
         end
         # @document.user_id = current_user.id if current_user.present
-        redirect_to @document
     end
 
     def update

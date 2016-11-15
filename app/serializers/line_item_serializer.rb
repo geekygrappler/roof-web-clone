@@ -3,6 +3,7 @@ class LineItemSerializer < ActiveModel::Serializer
     has_one :item_action
     has_one :item_spec
     has_one :location
+    has_one :stage
 
     def rate
         Money.new(object.rate, "GBP").format

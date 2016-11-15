@@ -1,7 +1,11 @@
+/* global React delete */
+
 class Document extends React.Component {
     constructor(props) {
         super(props);
         this.state = this.props.document;
+        this.state.viewGroup = "stages";
+        this.state = this.filterViewGroups(this.state);
     }
 
     render() {
@@ -36,39 +40,19 @@ class Document extends React.Component {
                     </div>
                     <div className="document-sections-list">
                         <div className="container" id="document-sections-menu">
-                            <SectionList
-                                sections={this.state.sections}
-                                />
+                            <p>A section list</p>
+                            <p>
+                                View by:
+                                <select value={this.state.viewGroup} onChange={this.changeViewGroup.bind(this)}>
+                                    <option value="locations">Locations</option>
+                                    <option value="stages">Stages</option>
+                                </select>
+                            </p>
                         </div>
                     </div>
                 </div>
                 <div className="container document-sections-container">
-                    <div className="row section" id="section-drawings">
-                        <div className="col-sm-12">
-                            <h2>Terms & Drawings</h2>
-                            <p>Upload drawings and your companies terms and conditions for tenders.</p>
-                            <h5>Upload Documents</h5>
-                            <form id="my-awesome-dropzone" action="/spec/upload_document" className="dropzone">
-                                <input type="hidden" name="authenticity_token" value={jQuery('[name="csrf-token"]').attr('content')} />
-                                <input type="hidden" name="document_id" value={this.state.id} />
-                            </form>
-                        </div>
-                    </div>
-                    {this.state.sections.map((section) => {
-                        return(
-                            <Section
-                                key={section.id}
-                                section={section}
-                                document={this.props.document}
-                                updateSection={this.updateSection.bind(this)}
-                                deleteSection={this.deleteSection.bind(this)}
-                                createLineItem={this.createLineItem.bind(this)}
-                                updateLineItem={this.updateLineItem.bind(this)}
-                                deleteLineItem={this.deleteLineItem.bind(this)}
-                                fetchDocument={this.fetchDocument.bind(this)}
-                                />
-                        );
-                    })}
+                    {this.renderGroups()}
                     <div className="row document-add-section">
                         <form className="form-inline" onSubmit={this.addSection.bind(this)}>
                             <div className="form-group">
@@ -99,8 +83,58 @@ class Document extends React.Component {
         }
     }
 
+    componentWillUpdate(nextProps, nextState) {
+        nextState = this.filterViewGroups(nextState);
+    }
+
     updateTitle(e) {
         this.setState({name: e.target.value});
+    }
+
+    changeViewGroup(e) {
+        this.setState({viewGroup: e.target.value});
+    }
+
+    renderGroups() {
+        let viewGroupType = this.state.viewGroup;
+        return this.state[viewGroupType].map((viewGroup) => {
+            return (
+                <LineItemGroup
+                    group={viewGroup}
+                    document = {this.props.document}
+                    createLineItem = {this.createLineItem.bind(this)}
+                    updateLineItem = {this.updateLineItem.bind(this)}
+                    deleteLineItem={this.deleteLineItem.bind(this)}
+                    fetchDocument={this.fetchDocument.bind(this)}
+                    key={`${viewGroupType}-${viewGroup.name}`}
+                    viewGroupType={this.state.viewGroup}
+                    />
+            )
+        });
+    }
+
+    // This whole function is probably the antithesis of React.
+    filterViewGroups(state) {
+        let viewGroupType = state.viewGroup;
+        let viewGroups = state[viewGroupType];
+        // Initialize empty LineItems Array for each view group.
+        viewGroups.forEach(group => group.lineItems = []);
+        if (viewGroups.findIndex(group => group.name === "Ungrouped") === -1) {
+            viewGroups.push({name: "Ungrouped", lineItems: []})
+        }
+        // Assign each LineItem to a view group
+        state.line_items.forEach((lineItem) => {
+            let lineItemViewGroup = lineItem[viewGroupType.slice(0, -1)]
+            if (lineItemViewGroup) {
+                let viewGroupIndex = viewGroups.findIndex(group => group.name == lineItemViewGroup.name);
+                // Add LineItem to appropriate view group
+                viewGroups[viewGroupIndex].lineItems.push(lineItem);
+            } else {
+                // Add LineItem to "ungrouped" view group
+                viewGroups[viewGroups.length - 1].lineItems.push(lineItem);
+            }
+        });
+        return state;
     }
 
     /* Currently only update is to name of document */

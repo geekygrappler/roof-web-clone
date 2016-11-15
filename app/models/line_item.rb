@@ -5,10 +5,10 @@ class LineItem < ActiveRecord::Base
     belongs_to :document
     belongs_to :item_action
     belongs_to :item_spec
-    belongs_to :section
+    belongs_to :stage
 
     after_initialize :set_defaults
-    after_save :calculate_section_totals
+    # after_save :calculate_section_totals
 
     pg_search_scope :full_text_search,
         :against => :name,

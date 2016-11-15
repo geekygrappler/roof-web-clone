@@ -30,24 +30,21 @@ Rails.application.routes.draw do
   #  post '/sign_in', to: 'sessions#create', as: :sign_in_post
   #end
 
-  resources :line_items, except: [:new, :edit]
-  resources :building_materials, except: [:new, :edit]
   resources :documents, except: [:edit]
-  resources :quotes, except: [:edit, :new, :delete]
-  resources :sections, except: [:new, :edit]
+  resources :line_items, except: [:new, :edit]
+  resources :stages, except: [:new, :edit]
+  resources :locations, except: [:new, :edit]
   resources :item_actions, except: [:show, :edit, :delete]
   # This is an Item Specification not spec which is document above
   resources :item_specs, except: [:show, :edit, :delete]
-  resources :locations, except: [:new, :edit]
   resources :rates
-  get 'app' => 'pages#app'
-  get 'app/*path' => 'pages#app'
-  get 'pages/*path' => 'pages#show'
-  root to: 'pages#show', pathname: 'landing'
-  get "*path" => "pages#show", pathname: '404'
+  # get 'app' => 'pages#app'
+  # get 'app/*path' => 'pages#app'
+  # get 'pages/*path' => 'pages#show'
+  # root to: 'pages#show', pathname: 'landing'
+  # get "*path" => "pages#show", pathname: '404'
 
   resources :backup_types, except: [:new, :edit]
   resources :state_types, except: [:new, :edit]
   resources :document_states, except: [:new, :edit]
-  resources :documents, except: [:new, :edit]
 end

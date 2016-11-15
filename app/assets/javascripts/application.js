@@ -12,7 +12,6 @@
 //= require bootstrap.scrollSpy.min
 //= require price_format
 //= require dropzone.min
-//= require application.bundle
 //= require react
 //= require react_ujs
 //= require components
