@@ -1,5 +1,9 @@
 /* global React */
 
+/*
+ * A group being either a "Stage" or a "Location"
+ */
+
 class LineItemGroup extends React.Component {
     constructor(props) {
         super(props);

@@ -77,10 +77,6 @@ class Document extends React.Component {
             target: "#document-sections-menu",
             offset: 260
         });
-
-        if (localStorage.getItem("oneRoofSkipDemo") != "true") {
-            this.setupTour();
-        }
     }
 
     componentWillUpdate(nextProps, nextState) {
@@ -275,118 +271,5 @@ class Document extends React.Component {
                 console.log("Saved Line_item, but failed to fetch document");
             }
         });
-    }
-
-    setupTour() {
-        let tour;
-
-        let tourSubmitFunc = (e,v,m,f) => {
-            if(v === -1){
-                $.prompt.prevState();
-                return false;
-            }
-            else if(v === 1){
-                $.prompt.nextState();
-                return false;
-            }
-        };
-
-        let tourStates = [
-            {
-                title: 'Welcome to your Project Tender',
-                html: 'You can rename it at any time by clicking on the title.',
-                buttons: { Next: 1 },
-                focus: 0,
-                position: { container: '.title', x: 0, y: 60, width: 300, arrow: 'tc' },
-                submit: tourSubmitFunc
-            },
-            {
-                title: 'Sections',
-                html: 'This is a list of the sections in your tender.<b/><b/>We\'ve pre-populated this tender with suggested sections, but feel free to edit and delete at will.',
-                buttons: { Prev: -1, Next: 1 },
-                focus: 1,
-                position: { container: '.document-sections-list', x: 500, y: 80, width: 300, arrow: 'tc' },
-                submit: tourSubmitFunc
-            },
-            {
-                title: 'All the Sections',
-                html: 'You can expand this box to see all the sections',
-                buttons: { Prev: -1, Next: 1 },
-                focus: 1,
-                position: { container: '.section-list-expander', x: -310, y: 0, width: 300, arrow: 'rt' },
-                submit: tourSubmitFunc
-            },
-            {
-                title: 'Terms & Drawings',
-                html: 'Add terms and drawings for the tender here. These will be viewable by professionals quoting on your tender.',
-                buttons: { Prev: -1, Next: 1 },
-                focus: 1,
-                position: { container: '#my-awesome-dropzone', x: 200, y: -200, width: 300, height: 200, arrow: 'bc' },
-                submit: tourSubmitFunc
-            },
-            {
-                title: 'Edit Section title',
-                html: 'As with the tender title, you can edit the section\'s title by clicking on it.',
-                buttons: { Prev: -1, Next: 1 },
-                focus: 1,
-                position: { container: '.section-name', x: 200, y: 0, width: 300, arrow: 'lt' },
-                submit: tourSubmitFunc
-            },
-            {
-                title: 'Delete Section',
-                html: 'If the section isn\'t relevant to your tender delete it here.',
-                buttons: { Prev: -1, Next: 1 },
-                focus: 1,
-                position: { container: '.glyphicon-trash', x: -25, y: 25, width: 300, arrow: 'tr' },
-                submit: tourSubmitFunc
-            },
-            {
-                title: 'Line Item',
-                html: "Record all the work you'd like a quote on as a line item.",
-                buttons: { Prev: -1, Next: 1  },
-                focus: 1,
-                position: { container: '.item-input', x: 100, y: 0, width: 300, arrow: 'lt' },
-                submit: tourSubmitFunc
-            },
-            {
-                title: 'Notes',
-                html: "Add any specific notes you associated with this line item to the notes section for professionals to read. Include dimensions, drawing references, specific materials etc.",
-                buttons: { Prev: -1, Next: 1  },
-                focus: 1,
-                position: { container: '.line-item-notes', x: 100, y: 0, width: 300, arrow: 'lt' },
-                submit: tourSubmitFunc
-            },
-            {
-                title: 'Quantity',
-                html: "If you know the quantity of a line item, i.e. 7m long wall, it will help our professionals quote faster.",
-                buttons: { Prev: -1, Next: 1  },
-                focus: 1,
-                position: { container: '.line-item-quantity', x: -305, y: -10, width: 300, arrow: 'rt' },
-                submit: tourSubmitFunc
-            },
-            {
-                title: 'Add line items',
-                html: "Use this input to add line items. We'll save your history of line items to make your task quicker",
-                buttons: { Prev: -1, Next: 1  },
-                focus: 1,
-                position: { container: '[class^=line-item-search]', x: 200, y: 0, width: 300, arrow: 'lt' },
-                submit: tourSubmitFunc
-            },
-            {
-                title: 'Add a section',
-                html: "Use this input to add a section.",
-                buttons: { Prev: -1, Done: 2 },
-                focus: 1,
-                position: { container: "#add-section", x: 280, y: -120, width: 300, arrow: "lb" },
-                submit: tourSubmitFunc
-            },
-        ]
-        $.prompt.setDefaults({
-            top: "40%",
-            opacity: 0.3
-        });
-        localStorage.setItem('oneRoofSkipDemo', true);
-        $.prompt(tourStates);
-
     }
 }
